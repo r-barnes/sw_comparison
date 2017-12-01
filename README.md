@@ -31,7 +31,7 @@ SWIMM2.0 execution
   
   -g,   --gap_open=<integer> Gap open penalty (default: 10).
 
-  -p,   --profile=<char> Profile technique: ’Q’ for Query Profile, ’S’ for Score Profile (default: S).
+  -p,   --profile=<char> Profile technique: â€™Qâ€™ for Query Profile, â€™Sâ€™ for Score Profile (default: S).
   
   -r,   --top=<integer> Number of scores to show (default: 10). 
   
@@ -54,7 +54,7 @@ SWIMM2.0 execution
 
   `./swimm2 -S search -q query.fasta -d out`
   
-  Search query sequence *query.fasta* against *out* preprocessed database (*replace swimm2 with the corresponding binary*).
+  Search query sequence *query.fasta* against *out* preprocessed database (replace *swimm2* with the corresponding binary).
   
   `./swimm2 --help`
   
@@ -70,17 +70,17 @@ SWIMM2.0 execution
 
 ## Reference
 *SWIMM 2.0: enhanced Smith-Waterman on Intel's Multicore and Manycore architectures based on AVX-512 vector extensions*
-Enzo Rucci, Carlos García, Guillermo Botella, Armando De Giusti, Marcelo Naiouf and Manuel Prieto-Matías.
+Enzo Rucci, Carlos GarcÃ­a, Guillermo Botella, Armando De Giusti, Marcelo Naiouf and Manuel Prieto-MatÃ­as.
 *Under evaluation*
 
-*First Experiences Accelerating Smith-Waterman on Intel’s Knights Landing Processor.*
+*First Experiences Accelerating Smith-Waterman on Intelâ€™s Knights Landing Processor.*
 Enzo Rucci, Carlos Garcia, Guillermo Botella, Armando De Giusti, Marcelo Naiouf and Manuel Prieto-Matias
 In: Ibrahim S., Choo KK., Yan Z., Pedrycz W. (eds) Algorithms and Architectures for Parallel Processing. ICA3PP 2017. Lecture Notes in Computer Science, vol 10393. Springer, Cham.
 DOI: https://doi.org/10.1007/978-3-319-65482-9_42
 
 ## Changelog
 * November 30, 2017 (v2.0.0-BETA)
-Binary code released. *Source code will be releases soon*
+Binary code released. *Source code will be released soon*
 
 ## Contact
 If you have any question or suggestion, please contact Enzo Rucci (erucci [at] lidi.info.unlp.edu.ar)
