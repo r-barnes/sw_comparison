@@ -25,7 +25,7 @@ SWIMM2.0 execution
   
   -d,   --db=<string> Preprocessed database output filename. [REQUIRED]
   
-  -t,   --cpu_threads=<integer> Number of threads (default: SWIMM2.0 select the best choice considering your processor).
+  -t,   --threads=<integer> Number of threads (default: SWIMM2.0 select the best choice considering your processor).
   
   -e,   --gap_extend=<integer> Gap extend penalty (default: 2).
   
