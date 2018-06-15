@@ -1,5 +1,5 @@
 Smith-Waterman Implementation Comparison
-========================================
+==========================================
 
 This repository contains material for comparing the performance of
 implementations of the [Smith-Waterman
@@ -9,7 +9,7 @@ widely used as a step in genome sequencing.
 
 
 Selection Criteria
-========================================
+==========================================
 
 A "good" implementation of the Smith-Waterman algorithm for our purposes must
 possess the following properties.
@@ -20,13 +20,37 @@ possess the following properties.
 
 
 Candidate Implementations
-========================================
+==========================================
 
 Comparison Matrix
 -----------------
 
-    ID    |  doi          | GPU-enabled | CPU-enabled | Claims Faster Than | TODO
+    ID           | doi                           | Architecture | Claims Faster Than | Open Source | TODO
+    Liu2006      | 10.1007/11758549_29           | GPU          | TODO               | TODO        | TODO
+    Manavski2008 | 10.1186/1471-2105-9-S2-S10    | GPU          | TODO               | TODO        |
+    Rognes2011   | 10.1186/1471-2105-12-221      | CPU-SSSE3    | Farrar2007         | TODO        |
+    Farrar2007   | 10.1093/bioinformatics/btl582 | CPU-SSE2     | TODO               | TODO        |
 
 
 Summary of Algorithmic Tricks/Improvements
 ------------------------------------------
+
+### Liu2006 **GPU Accelerated Smith-Waterman**
+
+### Farrar2007 **Striped Smith–Waterman speeds database searches six times over other SIMD implementations**
+
+### Manavski2008 **CUDA compatible GPU cards as efficient hardware accelerators for Smith-Waterman sequence alignment**
+
+### Rognes2011 **Faster Smith-Waterman database searches with inter-sequence SIMD parallelisation**
+
+
+
+
+Misc
+==========================================
+
+Sites with useful information to be extracted:
+
+ * http://www.nvidia.com/object/bio_info_life_sciences.html
+ * http://www.nvidia.com/object/cuda_showcase_html.html
+
