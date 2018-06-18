@@ -25,22 +25,21 @@ Candidate Implementations
 Comparison Matrix
 -----------------
 
-    ID             | Software Name | doi                           | Architecture | Claims Faster Than | Open Source | Source dir     | Homepage
-    Liu2006        |               | 10.1007/11758549_29           | GPU          | TODO               | TODO        | --             |
-    Manavski2008   |               | 10.1186/1471-2105-9-S2-S10    | GPU          | TODO               | TODO        | --             |
-    Rognes2011     | SWIPE         | 10.1186/1471-2105-12-221      | CPU-SSSE3    | Farrar2007         | AGPL-3.0    | rogness2011    |
-    Farrar2007     |               | 10.1093/bioinformatics/btl582 | CPU-SSE2     | TODO               | TODO        | --             |
-    Pankaj2012     | SWIFT         |                               | GPU          | TODO               | GPL-2.0     | pankaj2012     |
-    Klus2012       | BarraCUDA     | 10.1186/1756-0500-5-27        | GPU          | TODO               | MIT/GPLv3   | klus2012       | http://seqbarracuda.sourceforge.net/
-    Zhao2013       | SSW           | 10.1371/journal.pone.0082138  | SIMD         | TODO               | MIT         | zhao2013       |
-    Rucci2014      | SWIMM         | 10.1109/CLUSTER.2014.6968784  | Xeon Phi     | TODO               | Unspecified | rucci2015      |
-    Rucci2015      | SWIMM         | 10.1002/cpe.3598              | Xeon Phi     | TODO               | Unspecified | rucci2015      |
-    Szalkowski2008 | SWPS3         | 10.1186/1756-0500-1-107       | SSE2         | TODO               | MIT         | szalkowski2008 | https://lab.dessimoz.org/swps3/
-    Warris2015     | PaSWAS        | 10.1371/journal.pone.0122524  | GPU          | TODO               | MIT         | warris2015     |
-    Warris2018     | pyPaSWAS      | 10.1371/journal.pone.0190279  | Python+GPU   | TODO               | MIT         | warris2018     |
+    ID             | Software Name | doi                           | Architecture     | Claims Faster Than | Open Source | Source dir     | Homepage
+    Liu2006        |               | 10.1007/11758549_29           | GPU              | TODO               | TODO        | --             |
+    Manavski2008   |               | 10.1186/1471-2105-9-S2-S10    | GPU              | TODO               | TODO        | --             |
+    Rognes2011     | SWIPE         | 10.1186/1471-2105-12-221      | CPU-SSSE3        | Farrar2007         | AGPL-3.0    | rogness2011    |
+    Farrar2007     |               | 10.1093/bioinformatics/btl582 | CPU-SSE2         | TODO               | TODO        | --             |
+    Pankaj2012     | SWIFT         |                               | GPU              | TODO               | GPL-2.0     | pankaj2012     |
+    Klus2012       | BarraCUDA     | 10.1186/1756-0500-5-27        | GPU              | TODO               | MIT/GPLv3   | klus2012       | http://seqbarracuda.sourceforge.net/
+    Zhao2013       | SSW           | 10.1371/journal.pone.0082138  | SIMD             | TODO               | MIT         | zhao2013       |
+    Rucci2014      | SWIMM         | 10.1109/CLUSTER.2014.6968784  | Xeon Phi         | TODO               | Unspecified | rucci2015      |
+    Rucci2015      | SWIMM         | 10.1002/cpe.3598              | Xeon Phi         | TODO               | Unspecified | rucci2015      |
+    Szalkowski2008 | SWPS3         | 10.1186/1756-0500-1-107       | SSE2             | TODO               | MIT         | szalkowski2008 | https://lab.dessimoz.org/swps3/
+    Warris2015     | PaSWAS        | 10.1371/journal.pone.0122524  | GPU              | TODO               | MIT         | warris2015     |
+    Warris2018     | pyPaSWAS      | 10.1371/journal.pone.0190279  | Python+GPU       | TODO               | MIT         | warris2018     |
+    Sjolund2016    | DiagonalSW    |                               | CPU-SSE4/AltiVec | TODO               | MIT         | sjolund2016    | http://diagonalsw.sourceforge.net/
 
-
-https://lab.dessimoz.org/swps3/
 
 
 Summary of Algorithmic Tricks/Improvements
