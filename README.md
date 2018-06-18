@@ -44,6 +44,7 @@ Comparison Matrix
     Venkatachalam2012 |               |                               |                  |                    |             |                |
     Liu2010           | CUDASW++ 2.0  | 10.1186/1756-0500-3-93        | GPU              | TODO               | GPLv2       | liu2010        | http://cudasw.sourceforge.net/homepage.htm#latest
     Liu2013           | CUDASW++ 3.0  | 10.1186/1471-2105-14-117      | GPU              | TODO               | GPLv2       | liu2013        | http://cudasw.sourceforge.net/homepage.htm#latest
+    nvbio_sw          | nvbio         |                               | GPU              | TODO               | BSD-3       | nvbio_sw       | https://nvlabs.github.io/nvbio/
 
 
 Summary of Algorithmic Tricks/Improvements
