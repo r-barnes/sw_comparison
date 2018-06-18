@@ -27,7 +27,7 @@ Comparison Matrix
 
     ID                | Software Name | doi                           | Architecture     | Claims Faster Than | Licnese     | Source dir     | Homepage
     Liu2006           |               | 10.1007/11758549_29           | GPU              | TODO               | TODO        | --             |
-    Manavski2008      |               | 10.1186/1471-2105-9-S2-S10    | GPU              | TODO               | TODO        | manavski2008   | http://bioinformatics.cribi.unipd.it/cuda/swcuda.html
+    Manavski2008      | SWCUDA        | 10.1186/1471-2105-9-S2-S10    | GPU              | TODO               | TODO        | manavski2008   | http://bioinformatics.cribi.unipd.it/cuda/swcuda.html
     Striemer2009      | GSW           | 10.1109/IPDPS.2009.5161066    | GPU              | TODO               | Custom      | striemer2009   | http://www2.engr.arizona.edu/~rcl/SmithWaterman.html
     Rognes2011        | SWIPE         | 10.1186/1471-2105-12-221      | CPU-SSSE3        | Farrar2007         | AGPL-3.0    | rogness2011    |
     Farrar2007        |               | 10.1093/bioinformatics/btl582 | CPU-SSE2         | TODO               | TODO        | --             |
