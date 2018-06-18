@@ -1,0 +1,41 @@
+
+To compile SmithWaterman-CUDA ensure you have QT4 
+development libraries installed (http://www.trolltech.com) 
+and cuda 1.1 or later ( hhttp://www.nvidia.com/object/cuda_get.html ) 
+installed on your workstation
+
+Then download the project package ( gpubiotools-xx.tgz ) 
+from http://bioinformatics.cribi.unipd.it/cuda/downloads 
+You need to extract it and compile according to the following instructions.
+
+The user manual in pdf format is available in the "doc" 
+sub-directory of the gpubiotools/swcuda
+
+
+To compile libkrlcuda.a and libgpubiolib.a
+-----------------------------------------------------------------------------
+1. go in the directory cudakernels under the home directory of the project
+2. fix the paths in the compilation script comp_cu.sh
+3. ./comp_cu.sh (to run the compilation script for the CUDA kernels) 
+4. go in the directory gpubiolib under the home directory of the project
+5. fix the paths in gpubiolib.pro according to your environment
+6. qmake-qt4 (to create your Makefiles automatically)
+7. make
+8. you should find your compiled library in the same folder
+
+
+To compile SmithWaterman-CUDA :
+-----------------------------------------------------------------------------
+1. go in the directory swcuda/src under the home directory of the project
+2. fix the paths in src.pro according to your environment
+3. cd .. ( to go to the project directory)
+4. qmake-qt4 (to create your Makefiles automatically)
+6. you should find your compiled binary in the swcuda/bin directory under the project 
+   source tree 
+
+
+Do not hesitate to ask any questions and provide your feedback 
+to svetlin.a@manavski.com
+
+Svetlin Manavski
+

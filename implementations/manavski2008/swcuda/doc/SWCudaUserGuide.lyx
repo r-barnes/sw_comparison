@@ -1,0 +1,1208 @@
+#LyX 1.5.6 created this file. For more info see http://www.lyx.org/
+\lyxformat 276
+\begin_document
+\begin_header
+\textclass article
+\language english
+\inputencoding auto
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+\graphics default
+\paperfontsize default
+\spacing single
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 0
+\cite_engine basic
+\use_bibtopic false
+\paperorientation portrait
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\author "" 
+\author "" 
+\end_header
+
+\begin_body
+
+\begin_layout Title
+SmithWaterman-CUDA 1.92 User's Guide
+\end_layout
+
+\begin_layout Author
+Svetlin Manavski [ svetlin.a@manavski.com ]
+\end_layout
+
+\begin_layout Section
+Introduction 
+\begin_inset LatexCommand label
+name "sec:Introduction"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In the Bioinformatics industry searching similarities in protein and genomic
+ databases has become a routine procedure while the amount of data being
+ sequenced and made accessible for analysis is doubling every 12 months.
+\end_layout
+
+\begin_layout Standard
+The Smith-Waterman algorithm 
+\begin_inset LatexCommand cite
+key "key-1"
+
+\end_inset
+
+, available for more than 25 years, is the only one guaranteed to find the
+ optimal local alignment.
+\end_layout
+
+\begin_layout Standard
+SmithWaterman-CUDA allows to perform alignments between one or more sequences
+ and a database (all the sequences, even in the DB, are intended to be proteinic
+).
+\end_layout
+
+\begin_layout Standard
+The application dynamically performs load balancing among all the computational
+ devices available on the machine.
+ The user can decide how and which resources to use as explained in 
+\begin_inset LatexCommand ref
+reference "sub:The-configuration-file"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+SmithWaterman-CUDA computes the maximum value of the alignment between each
+ query sequence and each sequence in the given database.
+ 
+\end_layout
+
+\begin_layout Section
+System requirements
+\end_layout
+
+\begin_layout Subsection
+Hardware
+\end_layout
+
+\begin_layout Standard
+SmithWaterman-CUDA has some harware requirements that need to be ensured
+ before installing the application.
+ This is the minimal configuration needed:
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace 0.2in
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="6" columns="2">
+<features>
+<column alignment="left" valignment="middle" leftline="true" width="1.5in">
+<column alignment="center" valignment="middle" leftline="true" rightline="true" width="2in">
+<row topline="true" bottomline="true">
+<cell multicolumn="1" alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+SmithWaterman-CUDA hardware requirements
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\series bold
+\shape italic
+GPU
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+NVIDIA GeForce 8600 or superior
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\series bold
+\shape italic
+CPU
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Dual core
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\series bold
+\shape italic
+RAM
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+1 GB 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\series bold
+\shape italic
+MOTHER BOARD
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Pci-Express
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\series bold
+\shape italic
+HARD DISK
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+200 MB of free space
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Software
+\end_layout
+
+\begin_layout Standard
+SmithWaterman-CUDA has also some software requirements that need to be ensured
+ before installing the application.
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace 0.2in
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="5" columns="2">
+<features>
+<column alignment="left" valignment="middle" leftline="true" width="1.7in">
+<column alignment="center" valignment="middle" leftline="true" rightline="true" width="3.9in">
+<row topline="true" bottomline="true">
+<cell multicolumn="1" alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+SmithWaterman-CUDA
+\series bold
+ Software Requirements
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\series bold
+\shape italic
+OPERATING SYSTEM
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Unix & Windows
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\series bold
+\shape italic
+DISTRIBUTION
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+- Linux Fedora Core 7
+\end_layout
+
+\begin_layout Standard
+- Linux Fedora Core 8
+\end_layout
+
+\begin_layout Standard
+- OpenSUSE 10.1, 10.2, 10.3
+\end_layout
+
+\begin_layout Standard
+- Ubuntu 7.04, 7.10
+\end_layout
+
+\begin_layout Standard
+- Red Hat Enterprise Linux 3
+\end_layout
+
+\begin_layout Standard
+- Red Hat Enterprise Linux 4
+\end_layout
+
+\begin_layout Standard
+- Red Hat Enterprise Linux 5.0 (32-bit and 64-bit)
+\end_layout
+
+\begin_layout Standard
+- SUSE Linux Enterprise Desktop 10.0 
+\end_layout
+
+\begin_layout Standard
+- Windows XP 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\series bold
+LIBRARIES
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Qt4
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\series bold
+\shape italic
+OTHER
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+NVIDIA Driver with CUDA Support (169.09) (display driver)
+\end_layout
+
+\begin_layout Standard
+CUDA Toolkit version 1.1 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace 0.2in
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+For the installation of the CUDA run-time see 
+\begin_inset LatexCommand ref
+reference "sec:Installing-CUDA"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Section
+Installation 
+\begin_inset LatexCommand label
+name "sec:Installation"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The installation involves 3 elements: the executable swcuda, a folder 
+\emph on
+lib
+\emph default
+ with 3 files (
+\emph on
+libQtCore.so.4, libQtGui.so.4, libQtGui.so.4.2.2
+\emph default
+) and a configuration file named 
+\emph on
+config.ini
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Put all of them into a new directory named swcuda.
+ Then set and export the 
+\emph on
+LD_LIBRARY_PATH
+\emph default
+ variable in the following way:
+\end_layout
+
+\begin_layout Verse
+
+\emph on
+LD_LIBRARY_PATH=/home/username/swcuda/lib:/usr/local/cuda/lib/
+\end_layout
+
+\begin_layout Verse
+
+\emph on
+export LD_LIBRARY_PATH
+\end_layout
+
+\begin_layout Standard
+Above we have supposed two things:
+\end_layout
+
+\begin_layout Enumerate
+the swcuda directory is placed in the user personal folder
+\end_layout
+
+\begin_layout Enumerate
+CUDA has been installed in /usr/local
+\end_layout
+
+\begin_layout Standard
+If in your case there is something different, change the 
+\emph on
+LD_LIBRARY_PATH
+\emph default
+ setting in the right way.
+\end_layout
+
+\begin_layout Section
+Getting started
+\end_layout
+
+\begin_layout Standard
+A complete comprehension of SmithWaterman-CUDA functionalities can be obtain
+ through an exhaustive explanation of the command line options and of the
+ configuration file that controls the application.
+\end_layout
+
+\begin_layout Subsection
+Command Line Options
+\end_layout
+
+\begin_layout Standard
+SmithWaterman-CUDA has three simple command line options.
+ The application can be run with the following command:
+\end_layout
+
+\begin_layout Verse
+
+\emph on
+./swcuda query_sequences_file database_file offset
+\end_layout
+
+\begin_layout Standard
+Here there is an explanation:
+\end_layout
+
+\begin_layout Enumerate
+
+\emph on
+query_sequences_file
+\emph default
+: it is the file containing the sequences (at least one) to align.
+ It must be in fasta format and in the same directory of the executable.
+ If this option is not provided the application enters the interactive mode
+ and asks directly to the user to type the name of the file.
+\end_layout
+
+\begin_layout Enumerate
+
+\emph on
+database_file
+\emph default
+: it is the database containing the sequence against which those in the
+ 
+\emph on
+query_sequences_file
+\emph default
+ have to be aligned.
+ It must be in fasta format and in the same directory of the executable.
+ If this option is not provided the application enters the interactive mode
+ and asks directly to the user to type the name of the file.
+\end_layout
+
+\begin_layout Enumerate
+
+\emph on
+offset
+\emph default
+: the user can decide to start the alignment not from the first sequence
+ in the 
+\emph on
+query_sequences_file
+\emph default
+ but from the offset one.
+ The sequences numeration is intended to start from zero.
+\end_layout
+
+\begin_layout Standard
+All the output scores are saved in a single file but divided according to
+ the query sequence.
+ The output file, that can be found into the output directory (
+\begin_inset LatexCommand ref
+reference "sub:The-configuration-file"
+
+\end_inset
+
+), has a name composed by the 
+\emph on
+query_sequences_file
+\emph default
+ plus the 
+\emph on
+database_file
+\emph default
+ plus the date and hour of the run.
+ The date and hour at the end of the file name are important to avoid accidental
+ overwriting.
+\end_layout
+
+\begin_layout Subsection
+The configuration file 
+\begin_inset LatexCommand label
+name "sub:The-configuration-file"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+A really important part of SmithWaterman-CUDA is represented by the configuratio
+n file named 
+\series bold
+config.ini.
+
+\series default
+ It must be in the same directory of the executable.
+\end_layout
+
+\begin_layout Standard
+Through this, it is possible to control a lot of aspects of the execution
+ of SmithWaterman-CUDA, as for example the computational resources to be
+ used.
+ 
+\end_layout
+
+\begin_layout Standard
+The configuration file is composed by different fields that the user can
+ set to different values.
+ Here there is the list of fields, values and their meanings.
+\end_layout
+
+\begin_layout Description
+CPU: this field takes an 
+\series bold
+F (false)
+\series default
+ or a 
+\series bold
+T (true)
+\series default
+ as value.
+ Default: T.
+ Through this, the user can decide to use (T) the CPU to work on the alignments.
+ 
+\end_layout
+
+\begin_layout Description
+CPUNUM: this field takes a positive integer as value.
+ Default: 1.
+ Through this, the user can set the number of CPU cores used.
+ Obviously it doesn't make any sense to set CPUNUM=2 if ther CPU has only
+ one core.
+\end_layout
+
+\begin_layout Description
+GPU: this field takes an 
+\series bold
+F (false)
+\series default
+ or a 
+\series bold
+T (true)
+\series default
+ as value.
+ Default: T.
+ Through this, the user can decide to use (T) the GPU to work on the alignments.
+ 
+\end_layout
+
+\begin_layout Description
+GPUNUM: this field takes a positive integer as value.
+ Default: 1.
+ Through this, the user can set the number of GPU used.
+ Obviously it doesn't make any sense to set GPUNUM=2 if there is only one
+ GPU.
+\end_layout
+
+\begin_layout Description
+MAT: it is the first algorithm-specific field.
+ Default: BL50.
+ Through this, the user can set the substitution matrix used.
+ At the moment there are three possible choices: BL50 (for blosum50), BL62(for
+ blosum62), BL90(for blosum90) and DNA1 (for identity, match = +5, mismatch
+ = -4).
+ 
+\end_layout
+
+\begin_layout Description
+GAP_FIRST: this field takes an integer as value.
+ Default: 10.
+ Through this, the user can set the penalty for opening a gap.
+\end_layout
+
+\begin_layout Description
+GAP_NEXT: this field takes an integer as value.
+ Default: 2.
+ Through this, the user can set the penalty for extending a gap.
+\end_layout
+
+\begin_layout Description
+SCORES_THRLD: this field takes a real number as value.
+ Default: 0.
+ Through this, the user decides that only the alignment scores over this
+ threshold will be saved into the output file.
+\end_layout
+
+\begin_layout Description
+SCORES_SCALING_FACTOR: this field takes an 
+\series bold
+F (false)
+\series default
+ or a 
+\series bold
+T (true)
+\series default
+ as value.
+ Default: F.
+ Through this, the user can decide to activate a kind of normalization of
+ the output scores.
+ In fact, sometimes it could be significant to divide the alignments scores
+ by the one obtained aligning the query sequence with itself (this alignment
+ obviously gives the maximum possible score).
+\end_layout
+
+\begin_layout Description
+OUTDIR: this field takes a string as value.
+ Default: result.
+ Through this, the user can set the output directory where to save the alignment
+s results.
+ The directory used for the output and whose name is given to this field
+ must be created before running the application.
+\end_layout
+
+\begin_layout Description
+SSE2: this field may be set to 
+\series bold
+F (false, default)
+\series default
+ or 
+\series bold
+T (true)
+\series default
+.
+ When set to T it enables an SSE2 implementation on the CPU which is much
+ faster than the common CPU implementation but it does not support COMPUTE_ENDPO
+SITIONS = T
+\end_layout
+
+\begin_layout Description
+COMPUTE_ENDPOSITIONS: this field may be set to 
+\series bold
+F (false, default)
+\series default
+ or 
+\series bold
+T (true)
+\series default
+.
+ When enabled it makes the software calculate end-positions of the local
+ alignment for both the query and the subject
+\end_layout
+
+\begin_layout Standard
+As said in 
+\begin_inset LatexCommand ref
+reference "sec:Introduction"
+
+\end_inset
+
+, when the user choices more than one computational device (GPU or CPU),
+ the application dynamically manages the load balancing according to their
+ number and their computational power.
+ The database is splitted in the same number of segments as the number of
+ resources.
+ Each device then computes the alignment of the query with one database
+ segment.
+ The size of the segment depends upon the power of that device.
+ The speed of each resource is computed after every alignment.
+ A new partitioning of the database is done for the successive query on
+ the base of a weighted average of the performances detected during previous
+ runs.
+ Pre-fixed weights are used for the first run.
+\end_layout
+
+\begin_layout Section
+Troubleshooting
+\end_layout
+
+\begin_layout Standard
+In this section there are some suggestions to solve some problems that can
+ be encountered while using the application:
+\end_layout
+
+\begin_layout Enumerate
+For instance, if you have a quad-core processor and two GPUs, you could
+ try to set CPUNUM=4 and GPUNUM=2 to fully exploit your computational power.
+ But you will see that only two cores of the CPU will be activated.
+ This is not an error.
+ In fact a consideration on the relationship between CPU and GPU has to
+ be done.
+ Each GPU used to compute alignments needs to be managed by an idle core
+ of the CPU.
+ Thus in the case above, two cores of the CPU manage the two GPUs and the
+ remaining two are available for computation.
+\end_layout
+
+\begin_layout Enumerate
+With sequence longer than 400 residues it is necessary to use at least a
+ core of the CPU.
+ Serious problems could be encountered if this warning was unheard.
+\end_layout
+
+\begin_layout Enumerate
+Trying to run the application, a message like this 
+\emph on
+
+\begin_inset Quotes eld
+\end_inset
+
+NVIDIA: could not open the device file /dev/nvidiactl (No such file or directory
+).
+\begin_inset Quotes erd
+\end_inset
+
+
+\emph default
+ means that drivers for the NVIDIA GPUs are not installed.
+\end_layout
+
+\begin_layout Enumerate
+Trying to run the application, a message like this 
+\begin_inset Quotes eld
+\end_inset
+
+
+\emph on
+error while loading shared libraries:
+\emph default
+ ........
+\begin_inset Quotes erd
+\end_inset
+
+ means that the variable 
+\emph on
+LD_LIBRARY_PATH
+\emph default
+ has not been correctly set and exported.
+ See 
+\begin_inset LatexCommand ref
+reference "sec:Installation"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+The application can manage queries with a maximum lenght of 2050 residues.
+ This is due to a limitation on the available local memory of the GPU.
+ The user can gather all the queries above this threshold using (only for
+ these) SmithWaterman-CUDA without any GPUs activated.
+\end_layout
+
+\begin_layout Subsubsection
+Double GPU
+\end_layout
+
+\begin_layout Standard
+An important detail for the troubleshooting section is represented by the
+ problem that can occur trying to 
+\series bold
+run the application with more than one GPU
+\series default
+.
+\end_layout
+
+\begin_layout Standard
+It could happen that SmithWaterman-CUDA finds from zero to one GPU.
+ To solve the problem try to insert two boostrap kernel parameters: 
+\emph on
+uppermem=524288
+\emph default
+ and 
+\emph on
+vmalloc=256M
+\emph default
+.
+\end_layout
+
+\begin_layout Section
+The output file 
+\begin_inset LatexCommand label
+name "sec:The-output-file"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+As said before, SmithWaterman-CUDA computes the maximum value of the alignment
+ between each query sequence and each sequence in the given database.
+ All the output scores are saved in a single file but divided according
+ to the query sequence.
+\end_layout
+
+\begin_layout Standard
+The output file, that can be found into the output directory (
+\begin_inset LatexCommand ref
+reference "sub:The-configuration-file"
+
+\end_inset
+
+), has a name composed by the 
+\emph on
+query_sequences_file
+\emph default
+ plus the 
+\emph on
+database_file
+\emph default
+ plus the date and hour of the run.
+ The date and hour at the end of the file name are important to avoid accidental
+ overwriting.
+\end_layout
+
+\begin_layout Standard
+Suppose that we are aligning the file 
+\emph on
+query.fasta
+\emph default
+ with the DB 
+\emph on
+uniprot.fasta
+\emph default
+ at 17.23.05 on the 19/07/2007.
+ The output file will be created in the output directory with the name 
+\emph on
+query_uniprot_17_23_05_19_07_2007.out.
+
+\emph default
+ If in the query file we have two sequences (O29181 and P03630) the output
+ file will be like in the following figure.
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace 0.2in
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename outfile.bmp
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
+A typical SmithWaterman-CUDA output file.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace 0.2in
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+For each query the user can find the alignment scores with the entire DB
+ ordered by descending order.
+ If option COMPUTE_ENDPOSITIONS is set to true than two more columns apper
+ in the output file: Q_END (endpoint local elignment in the query) and S_END
+ (endpoint local elignment in the subject)
+\end_layout
+
+\begin_layout Section
+A simple example
+\end_layout
+
+\begin_layout Standard
+In this section we describe a simple example that can guide the user while
+ using SmithWaterman-CUDA.
+\end_layout
+
+\begin_layout Standard
+Suppose, as in 
+\begin_inset LatexCommand ref
+reference "sec:The-output-file"
+
+\end_inset
+
+, that we have two queries (O29181 and P03630) in the file 
+\emph on
+query.fasta
+\emph default
+ and the DB in the file 
+\emph on
+uniprot.fasta.
+
+\emph default
+ Both the files are in the same directory of the executable.
+ Furthermore, suppose also that we want to align only the second query using
+ 1 core of the CPU, 1 GPU, the blosum50 matrix, an opening penalty equal
+ to 10, an extension penalty equal to 2, an output directory called out
+ and using the normalization of results saving only those ones above 0.08.
+\end_layout
+
+\begin_layout Standard
+Start setting the configuration file in a proper way:
+\end_layout
+
+\begin_layout Enumerate
+CPU=T
+\end_layout
+
+\begin_layout Enumerate
+CPUNUM=1
+\end_layout
+
+\begin_layout Enumerate
+GPU=T
+\end_layout
+
+\begin_layout Enumerate
+GPUNUM=1
+\end_layout
+
+\begin_layout Enumerate
+MAT=BL50
+\end_layout
+
+\begin_layout Enumerate
+GAP_FIRST=10
+\end_layout
+
+\begin_layout Enumerate
+GAP_NEXT=2
+\end_layout
+
+\begin_layout Enumerate
+SCORE_THRLD=0.08
+\end_layout
+
+\begin_layout Enumerate
+SCORE_SCALING_FACT=T
+\end_layout
+
+\begin_layout Enumerate
+OUTDIR=out
+\end_layout
+
+\begin_layout Standard
+To proceed and complete the alignment, use the following command 
+\emph on
+./
+\emph default
+smithwaterman
+\emph on
+ query.fasta uniprot.fasta 1.
+
+\emph default
+ If the run has been done at 17.23.05 on the 19/07/2007, in the directory
+ out you can find the file 
+\emph on
+query_uniprot_17_23_05_19_07_2007.out
+\emph default
+ that looks like this:
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace 0.2in
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename outfile2.bmp
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
+The outfile in the example above.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset LatexCommand bibitem
+key "key-1"
+
+\end_inset
+
+Bio Sequence Database Scanning on GPU, W.
+ Liu, B.
+ Schmidt, G.
+ Voss, A.
+ Schroder, W.
+ Muller-Wittig.
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset LatexCommand bibitem
+key "key-2"
+
+\end_inset
+
+
+\begin_inset LatexCommand url
+target "http://developer.nvidia.com/object/cuda.html"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Section
+\start_of_appendix
+Installing CUDA run-time 
+\begin_inset LatexCommand label
+name "sec:Installing-CUDA"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Follow the instructions at 
+\end_layout
+
+\begin_layout Standard
+http://www.nvidia.com/object/cuda_get.html
+\end_layout
+
+\end_body
+\end_document

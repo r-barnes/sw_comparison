@@ -1,0 +1,28 @@
+
+Version 1.92 (Sept 14, 2008)
+	- max elements in DB expanded from 400000 to 900000 (MAX_DB_STRUCT_SIZE)
+	- matrix IDT changed to DNA1 ( match: +5 mismatch -4 )
+	- internal redesign: removed dependency of elaidecpp, introduced internal library gpubiotools
+	- fixed a bug in reading DB when fasta format is not limited to lines of 60 columns 
+
+Version 1.91 (July 30, 2008)
+  - implementation of COMPUTE_ENDPOSITIONS
+
+Version 1.85 (July 9, 2008)
+  - added support for larger DB
+  - added support for IDT matrix
+  - fixed to be possible to run SSE2 and GPU together
+
+Version 1.83 (June 4, 2007)
+  - Normalized output
+  - Changes in the config file
+  - Fix in the output threshold 
+
+Version 1.82 (May 28, 2007)
+  - Implemented the output in a single file
+  - Fixed a bug in the files path
+
+Version 1.81 (May 25, 2007)
+  - Seems to contain a bug in case of short seqs 
+
+

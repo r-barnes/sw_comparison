@@ -1,0 +1,6 @@
+
+
+TODO:
+- 3 thread sulla sola CPU vanno in Segmentation fault
+
+- capire perche' se per il carattere 0 e per il padding usiamo '[' SOLO sulla scheda alcuni valori di PAM(i,j) sono valori non inizializzati
