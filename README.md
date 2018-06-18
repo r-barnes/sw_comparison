@@ -31,6 +31,8 @@ Comparison Matrix
     Rognes2011   | 10.1186/1471-2105-12-221      | CPU-SSSE3    | Farrar2007         | AGPL-3.0    | swipe
     Farrar2007   | 10.1093/bioinformatics/btl582 | CPU-SSE2     | TODO               | TODO        | --
     Zhao2013     | 10.1371/journal.pone.0082138  | SIMD         | TODO               | MIT         | Complete-Striped-Smith-Waterman-Library
+    Rucci2014    | 10.1109/CLUSTER.2014.6968784  | Xeon Phi     | TODO               | Unspecified | rucci2015
+    Rucci2015    | 10.1002/cpe.3598              | Xeon Phi     | TODO               | Unspecified | rucci2015
 
 
 Summary of Algorithmic Tricks/Improvements
