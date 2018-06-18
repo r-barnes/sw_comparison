@@ -35,6 +35,7 @@ Comparison Matrix
     Rucci2014    | SWIMM         | 10.1109/CLUSTER.2014.6968784  | Xeon Phi     | TODO               | Unspecified | rucci2015
     Rucci2015    | SWIMM         | 10.1002/cpe.3598              | Xeon Phi     | TODO               | Unspecified | rucci2015
     Warris2015   | PaSWAS        | 10.1371/journal.pone.0122524  | GPU          | TODO               | MIT         | warris2015
+    Warris2018   | pyPaSWAS      | 10.1371/journal.pone.0190279  | Python+GPU   | TODO               | MIT         | warris2018
 
 
 Summary of Algorithmic Tricks/Improvements
