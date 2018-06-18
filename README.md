@@ -34,6 +34,7 @@ Comparison Matrix
     Zhao2013     | SSW           | 10.1371/journal.pone.0082138  | SIMD         | TODO               | MIT         | zhao2013
     Rucci2014    | SWIMM         | 10.1109/CLUSTER.2014.6968784  | Xeon Phi     | TODO               | Unspecified | rucci2015
     Rucci2015    | SWIMM         | 10.1002/cpe.3598              | Xeon Phi     | TODO               | Unspecified | rucci2015
+    Warris2015   | PaSWAS        | 10.1371/journal.pone.0122524  | GPU          | TODO               | MIT         | warris2015
 
 
 Summary of Algorithmic Tricks/Improvements
