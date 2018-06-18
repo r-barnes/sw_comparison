@@ -39,7 +39,8 @@ Comparison Matrix
     Warris2015     | PaSWAS        | 10.1371/journal.pone.0122524  | GPU              | TODO               | MIT         | warris2015     |
     Warris2018     | pyPaSWAS      | 10.1371/journal.pone.0190279  | Python+GPU       | TODO               | MIT         | warris2018     |
     Sjolund2016    | DiagonalSW    |                               | CPU-SSE4/AltiVec | TODO               | MIT         | sjolund2016    | http://diagonalsw.sourceforge.net/
-
+    Liu2010        | CUDASW++ 2.0  | 10.1186/1756-0500-3-93        | GPU              | TODO               | GPLv2       | liu2010        | http://cudasw.sourceforge.net/homepage.htm#latest
+    Liu2013        | CUDASW++ 3.0  | 10.1186/1471-2105-14-117      | GPU              | TODO               | GPLv2       | liu2013        | http://cudasw.sourceforge.net/homepage.htm#latest
 
 
 Summary of Algorithmic Tricks/Improvements
