@@ -31,6 +31,7 @@ Comparison Matrix
     Rognes2011   | SWIPE         | 10.1186/1471-2105-12-221      | CPU-SSSE3    | Farrar2007         | AGPL-3.0    | rogness2011
     Farrar2007   |               | 10.1093/bioinformatics/btl582 | CPU-SSE2     | TODO               | TODO        | --
     Pankaj2012   | SWIFT         |                               | GPU          | TODO               | GPL-2.0     | pankaj2012
+    Klus2012     | BarraCUDA     | 10.1186/1756-0500-5-27        | GPU          | TODO               | MIT/GPLv3   | klus2012
     Zhao2013     | SSW           | 10.1371/journal.pone.0082138  | SIMD         | TODO               | MIT         | zhao2013
     Rucci2014    | SWIMM         | 10.1109/CLUSTER.2014.6968784  | Xeon Phi     | TODO               | Unspecified | rucci2015
     Rucci2015    | SWIMM         | 10.1002/cpe.3598              | Xeon Phi     | TODO               | Unspecified | rucci2015
