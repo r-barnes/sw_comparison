@@ -60,3 +60,7 @@ Sites with useful information to be extracted:
 Communication:
 
  * https://github.com/torognes/swipe
+
+Omitted repos:
+
+ * https://github.com/vgteam/gssw conflicts with Zhao2013 and is a generalization, so probably not needed
