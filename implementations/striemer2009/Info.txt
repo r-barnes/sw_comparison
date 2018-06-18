@@ -1,0 +1,40 @@
+___________________________________________________________________________________
+* Copyright 2008 by Gregory Striemer.  All rights reserved. This program 
+* is for educational purposes only. It may not be sold or incorporated 
+* into a commercial product in whole or in part, without written consent 
+* of Gregory Striemer.  For further information regarding permission for 
+* use or reproduction, contact: Gregory Striemer at gmstrie@email.ece.arizona.edu                  
+___________________________________________________________________________________
+
+
+
+This program is an implementation of the Smith-Waterman Algorithm for use on 
+an NVIDIA GPU using CUDA. To compile and run, simply copy the folder "SmithWaterman"
+to the NVIDIA CUDA SDK projects directory, open the project using Visual Studio 2005, then build and run. 
+There are a few items which have been hard coded into the program which the user will
+need to change to test different query sequences. On line 62 of SmithWaterman_kernel.cu
+the actual query sequence is hard coded, as well as its length on line 66. The query length
+is also hard coded in SmithWaterman.cu on lines 252, 258, 266, and SmithWaterman_gold.cpp on 
+line 300. These values will need to change with respect to the query sequence which is 
+being tested. The database file is read by the program and must be in the fasta file format. (file
+extension can be .fasta or .txt). The path to the file to be scanned is entered through the command
+line in the program. For example: C:\user\Desktop\database.txt. Reading of the database file is not optimized 
+for speed, as the focus of this study was not reading databases, so expect fairly slow read times for the CPU for the database.
+Results from the alignments are written to a file as directed by the user after running Smith-Waterman
+on the GPU. Timing results for the alignments on the GPU are printed to the screen in milliseconds. 
+"All" alignment scores are written for each sequence to the specified file.  
+Tracebacks are not performed in this program. This code was created for use on
+the NVIDIA Tesla C870, which has 1.5GB main memory. If a card with smaller memories is used
+memory issues may occur. If this happens simply use a smaller database to scan. The program
+does not have a built in cutoff point for number of sequences. With the Tesla I have had no
+problems scanning databases with over 300,000 sequences. This code was originally
+optimized for query sequences which were multiples of 4. Additional support has been added for 
+sequences which are not multiples of 4, however a slight drop in performance may be encountered.
+
+
+
+
+If you have any questions or comments, please feel
+free to contact me at gmstrie@ece.arizona.edu.
+
+
