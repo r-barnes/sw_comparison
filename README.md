@@ -25,11 +25,12 @@ Candidate Implementations
 Comparison Matrix
 -----------------
 
-    ID           | doi                           | Architecture | Claims Faster Than | Open Source | TODO
-    Liu2006      | 10.1007/11758549_29           | GPU          | TODO               | TODO        | TODO
-    Manavski2008 | 10.1186/1471-2105-9-S2-S10    | GPU          | TODO               | TODO        |
-    Rognes2011   | 10.1186/1471-2105-12-221      | CPU-SSSE3    | Farrar2007         | TODO        |
-    Farrar2007   | 10.1093/bioinformatics/btl582 | CPU-SSE2     | TODO               | TODO        |
+    ID           | doi                           | Architecture | Claims Faster Than | Open Source | Source dir
+    Liu2006      | 10.1007/11758549_29           | GPU          | TODO               | TODO        | --
+    Manavski2008 | 10.1186/1471-2105-9-S2-S10    | GPU          | TODO               | TODO        | --
+    Rognes2011   | 10.1186/1471-2105-12-221      | CPU-SSSE3    | Farrar2007         | AGPL-3.0    | swipe
+    Farrar2007   | 10.1093/bioinformatics/btl582 | CPU-SSE2     | TODO               | TODO        | --
+    Zhao2013     | 10.1371/journal.pone.0082138  | SIMD         | TODO               | MIT         | Complete-Striped-Smith-Waterman-Library
 
 
 Summary of Algorithmic Tricks/Improvements
