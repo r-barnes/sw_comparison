@@ -55,3 +55,6 @@ Sites with useful information to be extracted:
  * http://www.nvidia.com/object/bio_info_life_sciences.html
  * http://www.nvidia.com/object/cuda_showcase_html.html
 
+Communication:
+
+ * https://github.com/torognes/swipe
