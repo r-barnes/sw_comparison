@@ -1,0 +1,8 @@
+<map id="DynProgr_SPE.h" name="DynProgr_SPE.h">
+<area shape="rect" id="node3" href="$DynProgr__PPU_8c.html" title="PPU frontend to the alignment routines on the SPU." alt="" coords="5,155,128,181"/>
+<area shape="rect" id="node5" href="$DynProgr__PPU_8h.html" title="PPU frontend to the alignment routines on the SPU." alt="" coords="121,80,244,107"/>
+<area shape="rect" id="node10" href="$DynProgr__SPE__functions_8h.html" title="Profile generation and alignment on Cell/BE SPE." alt="" coords="319,80,501,107"/>
+<area shape="rect" id="node12" href="$DynProgr__SPE__functions_8cc.html" title="Profile generation and alignment on Cell/BE SPE." alt="" coords="248,155,437,181"/>
+<area shape="rect" id="node14" href="$DynProgr__SPE__main_8c.html" title="Main routine and message handling on the SPE." alt="" coords="461,155,619,181"/>
+<area shape="rect" id="node8" href="$swps3_8c.html" title="Main procedure and multi&#45;threading code." alt="" coords="153,155,223,181"/>
+</map>

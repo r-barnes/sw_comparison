@@ -1,0 +1,26 @@
+var annotated =
+[
+    [ "FastaLib", "structFastaLib.html", "structFastaLib" ],
+    [ "IsInteger", "structIsInteger.html", "structIsInteger" ],
+    [ "IsInteger< int16_t >", "structIsInteger_3_01int16__t_01_4.html", "structIsInteger_3_01int16__t_01_4" ],
+    [ "IsInteger< int32_t >", "structIsInteger_3_01int32__t_01_4.html", "structIsInteger_3_01int32__t_01_4" ],
+    [ "IsInteger< int8_t >", "structIsInteger_3_01int8__t_01_4.html", "structIsInteger_3_01int8__t_01_4" ],
+    [ "IsInteger< u_int16_t >", "structIsInteger_3_01u__int16__t_01_4.html", "structIsInteger_3_01u__int16__t_01_4" ],
+    [ "IsInteger< u_int32_t >", "structIsInteger_3_01u__int32__t_01_4.html", "structIsInteger_3_01u__int32__t_01_4" ],
+    [ "IsInteger< u_int8_t >", "structIsInteger_3_01u__int8__t_01_4.html", "structIsInteger_3_01u__int8__t_01_4" ],
+    [ "IsSigned", "structIsSigned.html", "structIsSigned" ],
+    [ "MaxValue", "structMaxValue.html", "structMaxValue" ],
+    [ "MaxValue< double >", "structMaxValue_3_01double_01_4.html", "structMaxValue_3_01double_01_4" ],
+    [ "MaxValue< float >", "structMaxValue_3_01float_01_4.html", "structMaxValue_3_01float_01_4" ],
+    [ "MinValue", "structMinValue.html", "structMinValue" ],
+    [ "MinValue< double >", "structMinValue_3_01double_01_4.html", "structMinValue_3_01double_01_4" ],
+    [ "MinValue< float >", "structMinValue_3_01float_01_4.html", "structMinValue_3_01float_01_4" ],
+    [ "Options", "structOptions.html", "structOptions" ],
+    [ "Profile", "structProfile.html", "structProfile" ],
+    [ "ProfileByte", "structProfileByte.html", "structProfileByte" ],
+    [ "ProfileShort", "structProfileShort.html", "structProfileShort" ],
+    [ "SPECommand", "structSPECommand.html", "structSPECommand" ],
+    [ "SPEMatrix", "structSPEMatrix.html", "structSPEMatrix" ],
+    [ "SPEProfile", "structSPEProfile.html", "structSPEProfile" ],
+    [ "SPESequence", "structSPESequence.html", "structSPESequence" ]
+];

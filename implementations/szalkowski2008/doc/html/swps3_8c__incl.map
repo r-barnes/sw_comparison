@@ -1,0 +1,10 @@
+<map id="swps3.c" name="swps3.c">
+<area shape="rect" id="node3" href="$swps3_8h.html" title="swps3.h" alt="" coords="298,229,368,256"/>
+<area shape="rect" id="node5" href="$matrix_8h.html" title="Routines for reading matrix files and converting matrices." alt="" coords="536,155,606,181"/>
+<area shape="rect" id="node10" href="$fasta_8h.html" title="Routines for reading FASTA databases." alt="" coords="98,80,160,107"/>
+<area shape="rect" id="node15" href="$DynProgr__scalar_8h.html" title="Scalar platform independent alignment routine." alt="" coords="166,155,295,181"/>
+<area shape="rect" id="node18" href="$DynProgr__sse__byte_8h.html" title="Profile generation and alignment for packed byte vectors on SSE2." alt="" coords="440,80,587,107"/>
+<area shape="rect" id="node24" href="$DynProgr__sse__short_8h.html" title="Profile generation and alignment for packed short vectors on SSE2." alt="" coords="263,80,415,107"/>
+<area shape="rect" id="node29" href="$DynProgr__PPU_8h.html" title="PPU frontend to the alignment routines on the SPU." alt="" coords="663,80,786,107"/>
+<area shape="rect" id="node33" href="$DynProgr__SPE_8h.html" title="Definitions for message handling and memory management on the SPE." alt="" coords="680,155,803,181"/>
+</map>
