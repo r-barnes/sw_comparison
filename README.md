@@ -30,6 +30,7 @@ Comparison Matrix
     Manavski2008 | 10.1186/1471-2105-9-S2-S10    | GPU          | TODO               | TODO        | --
     Rognes2011   | 10.1186/1471-2105-12-221      | CPU-SSSE3    | Farrar2007         | AGPL-3.0    | swipe
     Farrar2007   | 10.1093/bioinformatics/btl582 | CPU-SSE2     | TODO               | TODO        | --
+    Pankaj2012   |                               | GPU          | TODO               | GPL-2.0     | pankaj2012
     Zhao2013     | 10.1371/journal.pone.0082138  | SIMD         | TODO               | MIT         | Complete-Striped-Smith-Waterman-Library
     Rucci2014    | 10.1109/CLUSTER.2014.6968784  | Xeon Phi     | TODO               | Unspecified | rucci2015
     Rucci2015    | 10.1002/cpe.3598              | Xeon Phi     | TODO               | Unspecified | rucci2015
@@ -46,6 +47,9 @@ Summary of Algorithmic Tricks/Improvements
 
 ### Rognes2011 **Faster Smith-Waterman database searches with inter-sequence SIMD parallelisation**
 
+### Pankaj2012 **Swift: A GPU-based Smith-Waterman Sequence Alignment Program**
+
+  Video: http://on-demand.gputechconf.com/gtc/2012/video/S0083-Swift-GPU-Based-Smith-Waterman-Sequence-Alignment-Program.flv
 
 
 
