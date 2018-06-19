@@ -47,7 +47,11 @@ Comparison Matrix
     nvbio_sw          | nvbio         |                               | GPU              | TODO               | BSD-3       | nvbio_sw       | https://nvlabs.github.io/nvbio/
     Munekawa2008      |               | 10.1109/BIBE.2008.4696721     | GPU              |                    |             |                |                                                       | Emailed for source code on 2018-06-19. y-munekw address is dead.
     Khajeh-Saeed2010  |               | 10.1016/j.jcp.2010.02.009     | GPU              | TODO               | Unknown     |                |
-    Sandes2010        |               | 10.1145/1693453.1693473       | GPU              | TODO               |             |                |                                                       | Emailed for source code on 2018-06-19.
+    Sandes2010        |               | 10.1145/1693453.1693473       | GPU              | TODO               |             |                |                                                       | Emailed for source code on 2018-06-19. edans address is dead.
+    Steinfadt2009     | SWAMP         | 10.1109/OCCBIO.2009.12        | GPU              | TODO               |             |                |                                                       | Uncontacted
+    Steinfadt2013     | SWAMP         | 10.1016/j.parco.2013.08.008   | GPU              | TODO               |             |                |                                                       | Uncontacted
+    Ligowski2009      |               | 10.1109/IPDPS.2009.5160931    | GPU              | TODO               |             |                |                                                       | Emailed for source code on 2018-06-19.
+    Akoglu            |               | 10.1007/s10586-009-0089-8     | GPU              | TODO               |             | striemer2009   |                                                       | Code likely the same as striemer2009
 
 
 Summary of Algorithmic Tricks/Improvements
