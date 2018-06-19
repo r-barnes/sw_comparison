@@ -45,8 +45,10 @@ Comparison Matrix
     Liu2010           | CUDASW++ 2.0  | 10.1186/1756-0500-3-93        | GPU              | TODO               | GPLv2       | liu2010        | http://cudasw.sourceforge.net/homepage.htm#latest
     Liu2013           | CUDASW++ 3.0  | 10.1186/1471-2105-14-117      | GPU              | TODO               | GPLv2       | liu2013        | http://cudasw.sourceforge.net/homepage.htm#latest
     nvbio_sw          | nvbio         |                               | GPU              | TODO               | BSD-3       | nvbio_sw       | https://nvlabs.github.io/nvbio/
-    Munekawa2008      |               | 10.1109/BIBE.2008.4696721     | GPU              |                    |             |                |
-    Khajeh-Saeed2010  |               | 10.1016/j.jcp.2010.02.009     | GPU              | TODO               |             |         
+    Munekawa2008      |               | 10.1109/BIBE.2008.4696721     | GPU              |                    |             |                |                                                       | Emailed for source code on 2018-06-19. y-munekw address is dead.
+    Khajeh-Saeed2010  |               | 10.1016/j.jcp.2010.02.009     | GPU              | TODO               | Unknown     |                |
+    Sandes2010        |               | 10.1145/1693453.1693473       | GPU              | TODO               |             |                |                                                       | Emailed for source code on 2018-06-19.
+
 
 Summary of Algorithmic Tricks/Improvements
 ------------------------------------------
