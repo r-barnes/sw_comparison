@@ -26,32 +26,32 @@ Comparison Matrix
 -----------------
 
     ID                | Software Name | doi                           | Architecture     | Claims Faster Than | Licnese     | Source dir     | Homepage
-    Liu2006           |               | 10.1007/11758549_29           | GPU              | TODO               | TODO        | --             |
-    Manavski2008      | SWCUDA        | 10.1186/1471-2105-9-S2-S10    | GPU              | TODO               | TODO        | manavski2008   | http://bioinformatics.cribi.unipd.it/cuda/swcuda.html
-    Striemer2009      | GSW           | 10.1109/IPDPS.2009.5161066    | GPU              | TODO               | Custom      | striemer2009   | http://www2.engr.arizona.edu/~rcl/SmithWaterman.html
     Rognes2011        | SWIPE         | 10.1186/1471-2105-12-221      | CPU-SSSE3        | Farrar2007         | AGPL-3.0    | rogness2011    |
     Farrar2007        |               | 10.1093/bioinformatics/btl582 | CPU-SSE2         | TODO               | TODO        | --             |
-    Pankaj2012        | SWIFT         |                               | GPU              | TODO               | GPL-2.0     | pankaj2012     |
-    Klus2012          | BarraCUDA     | 10.1186/1756-0500-5-27        | GPU              | TODO               | MIT/GPLv3   | klus2012       | http://seqbarracuda.sourceforge.net/
-    Zhao2013          | SSW           | 10.1371/journal.pone.0082138  | SIMD             | TODO               | MIT         | zhao2013       |
     Rucci2014         | SWIMM         | 10.1109/CLUSTER.2014.6968784  | Xeon Phi         | TODO               | Unspecified | rucci2015      |
     Rucci2015         | SWIMM         | 10.1002/cpe.3598              | Xeon Phi         | TODO               | Unspecified | rucci2015      |
     Szalkowski2008    | SWPS3         | 10.1186/1756-0500-1-107       | SSE2             | TODO               | MIT         | szalkowski2008 | https://lab.dessimoz.org/swps3/
-    Warris2015        | PaSWAS        | 10.1371/journal.pone.0122524  | GPU              | TODO               | MIT         | warris2015     |
-    Warris2018        | pyPaSWAS      | 10.1371/journal.pone.0190279  | Python+GPU       | TODO               | MIT         | warris2018     |
     Sjolund2016       | DiagonalSW    |                               | CPU-SSE4/AltiVec | TODO               | MIT         | sjolund2016    | http://diagonalsw.sourceforge.net/
     Hains2011         |               |                               |                  |                    |             |                |
     Venkatachalam2012 |               |                               |                  |                    |             |                |
-    Liu2010           | CUDASW++ 2.0  | 10.1186/1756-0500-3-93        | GPU              | TODO               | GPLv2       | liu2010        | http://cudasw.sourceforge.net/homepage.htm#latest
-    Liu2013           | CUDASW++ 3.0  | 10.1186/1471-2105-14-117      | GPU              | TODO               | GPLv2       | liu2013        | http://cudasw.sourceforge.net/homepage.htm#latest
-    nvbio_sw          | nvbio         |                               | GPU              | TODO               | BSD-3       | nvbio_sw       | https://nvlabs.github.io/nvbio/
+    Liu2006           |               | 10.1007/11758549_29           | GPU              | TODO               | TODO        | --             |
+    Manavski2008      | SWCUDA        | 10.1186/1471-2105-9-S2-S10    | GPU              | TODO               | TODO        | manavski2008   | http://bioinformatics.cribi.unipd.it/cuda/swcuda.html
     Munekawa2008      |               | 10.1109/BIBE.2008.4696721     | GPU              |                    |             |                |                                                       | Emailed for source code on 2018-06-19. y-munekw address is dead.
+    Akoglu2009        |               | 10.1007/s10586-009-0089-8     | GPU              | TODO               |             | striemer2009   |                                                       | Code likely the same as striemer2009
+    Ligowski2009      |               | 10.1109/IPDPS.2009.5160931    | GPU              | TODO               |             |                |                                                       | Emailed for source code on 2018-06-19.
+    Steinfadt2009     | SWAMP         | 10.1109/OCCBIO.2009.12        | GPU              | TODO               |             |                |                                                       | Uncontacted
+    Striemer2009      | GSW           | 10.1109/IPDPS.2009.5161066    | GPU              | TODO               | Custom      | striemer2009   | http://www2.engr.arizona.edu/~rcl/SmithWaterman.html
+    Liu2010           | CUDASW++ 2.0  | 10.1186/1756-0500-3-93        | GPU              | TODO               | GPLv2       | liu2010        | http://cudasw.sourceforge.net/homepage.htm#latest
     Khajeh-Saeed2010  |               | 10.1016/j.jcp.2010.02.009     | GPU              | TODO               | Unknown     |                |
     Sandes2010        |               | 10.1145/1693453.1693473       | GPU              | TODO               |             |                |                                                       | Emailed for source code on 2018-06-19. edans address is dead.
-    Steinfadt2009     | SWAMP         | 10.1109/OCCBIO.2009.12        | GPU              | TODO               |             |                |                                                       | Uncontacted
+    Klus2012          | BarraCUDA     | 10.1186/1756-0500-5-27        | GPU              | TODO               | MIT/GPLv3   | klus2012       | http://seqbarracuda.sourceforge.net/
+    Pankaj2012        | SWIFT         |                               | GPU              | TODO               | GPL-2.0     | pankaj2012     |
+    Liu2013           | CUDASW++ 3.0  | 10.1186/1471-2105-14-117      | GPU              | TODO               | GPLv2       | liu2013        | http://cudasw.sourceforge.net/homepage.htm#latest
     Steinfadt2013     | SWAMP         | 10.1016/j.parco.2013.08.008   | GPU              | TODO               |             |                |                                                       | Uncontacted
-    Ligowski2009      |               | 10.1109/IPDPS.2009.5160931    | GPU              | TODO               |             |                |                                                       | Emailed for source code on 2018-06-19.
-    Akoglu            |               | 10.1007/s10586-009-0089-8     | GPU              | TODO               |             | striemer2009   |                                                       | Code likely the same as striemer2009
+    Zhao2013          | SSW           | 10.1371/journal.pone.0082138  | SIMD             | TODO               | MIT         | zhao2013       |
+    Warris2015        | PaSWAS        | 10.1371/journal.pone.0122524  | GPU              | TODO               | MIT         | warris2015     |
+    Warris2018        | pyPaSWAS      | 10.1371/journal.pone.0190279  | Python+GPU       | TODO               | MIT         | warris2018     |
+    nvbio_sw          | nvbio         |                               | GPU              | TODO               | BSD-3       | nvbio_sw       | https://nvlabs.github.io/nvbio/
 
 
 Summary of Algorithmic Tricks/Improvements
