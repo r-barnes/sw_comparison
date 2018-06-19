@@ -1,0 +1,133 @@
+#@UGENE_WORKFLOW
+#This simple workflow finds patterns in you sequences and save them as annotations.
+#
+#You can use the workflow to map primers, regulatory signals, genes, etc.
+#
+#It loads any set of sequences from your files or folders and finds patterns in them. Just specify a dataset for the algorithm in the "Read sequence" element.
+#
+#Patterns are entered in comma-delimited format in the corresponding field of the "Find Pattern" element. Also you can load patterns from a file. In that case names of patterns can be saved as names of annotations. Files with patterns can be in any sequence format or in newline-delimited format.
+
+
+
+workflow "Find patterns"{
+    read-sequence {
+        type:read-sequence;
+        name:"Read Sequence";
+        url-in {
+            dataset:Dataset;
+        }
+    }
+    search {
+        type:search;
+        name:"Find Pattern";
+        result-name:misc_feature;
+        use-names:true;
+    }
+    write-sequence {
+        type:write-sequence;
+        name:"Write Sequence";
+        document-format:genbank;
+        write-mode:0;
+        url-out:annotations.gb;
+    }
+
+
+    .actor-bindings {
+        search.out-annotations->write-sequence.in-sequence
+        read-sequence.out-sequence->search.in-sequence
+    }
+
+    read-sequence.sequence->search.in-sequence.sequence
+    read-sequence.annotations->write-sequence.in-sequence.annotations
+    search.annotations->write-sequence.in-sequence.annotations
+    read-sequence.sequence->write-sequence.in-sequence.sequence
+
+    .meta {
+        visual {
+            read-sequence {
+                pos:"-855 -645";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                out-sequence.angle:360;
+            }
+            search {
+                pos:"-660 -645";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                in-sequence.angle:180;
+                out-annotations.angle:360;
+            }
+            write-sequence {
+                pos:"-375 -645";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                in-sequence.angle:180;
+            }
+            read-sequence.out-sequence->search.in-sequence {
+                text-pos:"-27.5 -24";
+            }
+            search.out-annotations->write-sequence.in-sequence {
+                text-pos:"-45 -37";
+            }
+        }
+        wizard {
+            name:"Find patterns Wizard";
+            help-page-id:16122701;
+            page {
+                id:1;
+                next:2;
+                title:"Input sequence(s)";
+                parameters-area {
+                    read-sequence.url-in {
+                        type:datasets;
+                    }
+                }
+            }
+            page {
+                id:2;
+                next:3;
+                title:"Find Pattern";
+                parameters-area {
+                    group {
+                        title:"Find Pattern parameters";
+                        label-size:150;
+                        search.pattern_file {
+                            label:"Pattern";
+                        }
+                        search.result-name {
+                        }
+                        search.use-names {
+                        }
+                        search.max-mismatches-num {
+                        }
+                        search.allow-ins-del {
+                        }
+                        search.amino {
+                        }
+                        search.ambiguous {
+                        }
+                        search.pattern-name-qual {
+                            label:"Qualifier name";
+                        }
+                    }
+                }
+            }
+            page {
+                id:3;
+                title:"Output data";
+                parameters-area {
+                    group {
+                        title:"Output data";
+                        label-size:120;
+                        write-sequence.url-out {
+                            label:"Result file";
+                        }
+                        write-sequence.accumulate {
+                            label:"Accumulate results";
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

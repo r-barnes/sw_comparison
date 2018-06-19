@@ -1,0 +1,66 @@
+#@UGENE_WORKFLOW
+#The workflow takes FASTQ files as input and process this data as follows:
+#    - Filters the input sequencing reads by the CASAVA header (for Illumina platform).
+#    - Cuts of adapter sequences.
+#    - Trims the sequencing reads by quality.
+#    - Merges different FASTQ files.
+#    - [Optionally] Maps the sequencing reads by TopHat. You can skip this step, if after running this workflow you’re going to analyze the data with the Tuxedo workflow.
+#
+#The workflow also performs quality control of the data with FastQC: first, on the input FASTQ files and, second, after the pre-processing step.
+#
+#Besides intermediate files and FastQC reports, the final result of the workflow running is a merged FASTQ file. If mapping was selected, the output would also contain a BAM file with aligned reads and other TopHat output files.
+#
+
+
+workflow "Raw RNA-Seq data processing" {
+    .meta {
+        wizard {
+            help-page-id:16122727;
+            auto-run: true;
+            has-run-button: false;
+            has-defaults-button: false;
+            name: "Configure Raw RNA-Seq Data Processing";
+            finish-label: "Setup";
+            result {
+                NGS/raw_ngs/rnaseq/rnaseq_single.uwl: "tags.single topHatAlignment.with";
+                NGS/raw_ngs/rnaseq/rnaseq_paired.uwl: "tags.paired topHatAlignment.with";
+                NGS/raw_ngs/rnaseq/rnaseq_filtration_single.uwl: "tags.single topHatAlignment.without";
+                NGS/raw_ngs/rnaseq/rnaseq_filtration_paired.uwl: "tags.paired topHatAlignment.without";
+            }
+            page {
+                id: 1;
+                title: "General settings";
+                parameters-area {
+                    group {
+                        title:"Analysis type";
+                        radio {
+                            id: topHatAlignment;
+                            value {
+                                id: with;
+                                label: "Include mapping with TopHat";
+                            }
+                            value {
+                                id: without;
+                                label: "Skip mapping";
+                            }
+                        }
+                    }
+                    group {
+                        title: "Sequencing reads";
+                        radio {
+                            id: tags;
+                            value {
+                                id: single;
+                                label: "Single-end";
+                            }
+                            value {
+                                id: paired;
+                                label: "Paired-end";
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

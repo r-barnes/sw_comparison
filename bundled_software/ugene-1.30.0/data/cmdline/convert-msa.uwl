@@ -1,0 +1,61 @@
+#@UGENE_WORKFLOW
+#Converts multiple sequence alignment from one document format to another
+
+
+
+workflow convert-msa{
+
+    read-msa {
+        type:read-msa;
+        name:"Read alignment";
+        url-in {
+            dataset:"Dataset 1";
+        }
+    }
+    write-msa {
+        type:write-msa;
+        name:"Write alignment";
+    }
+
+
+    .actor-bindings {
+        read-msa.out-msa->write-msa.in-msa
+    }
+
+    read-msa.msa->write-msa.in-msa.msa
+
+    .meta {
+        parameter-aliases {
+            read-msa.url-in {
+                alias:in;
+                description:"Input alignment";
+            }
+            write-msa.document-format {
+                alias:format;
+                description:"Document format of output alignment (using 'clustal' by default)";
+            }
+            write-msa.url-out {
+                alias:out;
+                description:"Output alignment";
+            }
+        }
+        visual {
+            read-msa {
+                pos:"-780 -630";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                out-msa.angle:360;
+            }
+            write-msa {
+                pos:"-480 -630";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                in-msa.angle:180;
+            }
+            read-msa.out-msa->write-msa.in-msa {
+                text-pos:"-45 -50";
+            }
+        }
+    }
+}
+

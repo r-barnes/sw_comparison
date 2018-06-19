@@ -1,0 +1,5 @@
+#include "../../corelibs/U2Lang/src/model/actor/Actor.h"
+#include "../../corelibs/U2Lang/src/model/actor/ActorConfigurationEditor.h"
+#include "../../corelibs/U2Lang/src/model/actor/ActorDocument.h"
+#include "../../corelibs/U2Lang/src/model/actor/ActorPrototype.h"
+#include "../../corelibs/U2Lang/src/model/actor/ActorValidator.h"

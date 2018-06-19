@@ -1,0 +1,43 @@
+<RCC>
+    <qresource prefix="/U2Designer">
+        <file>html/Dashboard.css</file>
+        <file>html/Dashboard.html</file>
+        <file>html/EstimationReport.css</file>
+        <file>html/EstimationReport.html</file>
+        <file>javascript/Common.js</file>
+        <file>javascript/ParametersWidget.js</file>
+        <file>javascript/ExternalToolsWidget.js</file>
+        <file>javascript/ContextMenu.js</file>
+        <file>images/add.png</file>
+        <file>images/background.png</file>
+        <file>images/background-menu.png</file>
+        <file>images/background-menu-button.png</file>
+        <file>images/directory.png</file>
+        <file>images/down.png</file>
+        <file>images/exit.png</file>
+        <file>images/file.png</file>
+        <file>images/hard_disk.png</file>
+        <file>images/load_schema.png</file>
+        <file>images/logo.png</file>
+        <file>images/up.png</file>
+        <file>images/add_directory.png</file>
+        <file>images/add_file.png</file>
+        <file>images/outside.png</file>
+        <file>images/settings.png</file>
+        <file>images/copy.png</file>
+        <file>images/database_add.png</file>
+        <file>images/database_folder.png</file>
+        <file>images/blue_circle.png</file>
+    </qresource>
+    <qresource prefix="/">
+        <file>javascript/bootstrap/css/bootstrap-responsive.css</file>
+        <file>javascript/bootstrap/css/bootstrap-responsive.min.css</file>
+        <file>javascript/bootstrap/css/bootstrap.css</file>
+        <file>javascript/bootstrap/css/bootstrap.min.css</file>
+        <file>javascript/bootstrap/img/glyphicons-halflings-white.png</file>
+        <file>javascript/bootstrap/img/glyphicons-halflings.png</file>
+        <file>javascript/bootstrap/js/bootstrap.js</file>
+        <file>javascript/bootstrap/js/bootstrap.min.js</file>
+        <file>javascript/jquery/jquery.js</file>
+    </qresource>
+</RCC>

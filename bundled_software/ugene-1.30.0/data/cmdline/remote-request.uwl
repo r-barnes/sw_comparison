@@ -1,0 +1,112 @@
+#@UGENE_WORKFLOW
+#Finds annotations for DNA sequence in remote database: NCBI BLSAT or CDD. Result annotations store to file in genbank format. Source data can be of any format containing sequences or alignments
+
+
+
+workflow remote-request{
+
+    read-sequence {
+        type:read-sequence;
+        name:"Read sequence";
+        url-in {
+            dataset:"Dataset 1";
+        }
+    }
+    blast-ncbi {
+        type:blast-ncbi;
+        name:"Request to remote database";
+    }
+    write-genbank {
+        type:write-sequence;
+        name:"Write Genbank";
+        document-format:genbank;
+    }
+
+
+    .actor-bindings {
+        read-sequence.out-sequence->blast-ncbi.in-sequence
+        blast-ncbi.out-annotations->write-genbank.in-sequence
+    }
+
+    read-sequence.sequence->blast-ncbi.in-sequence.sequence
+    blast-ncbi.annotations->write-genbank.in-sequence.annotations
+    read-sequence.annotations->write-genbank.in-sequence.annotations
+    read-sequence.sequence->write-genbank.in-sequence.sequence
+
+    .meta {
+        parameter-aliases {
+            read-sequence.url-in {
+                alias:in;
+                description:"Input sequence";
+            }
+            blast-ncbi.megablast {
+                alias:megablast;
+                description:"Use megablast";
+            }
+            blast-ncbi.blast-output {
+                alias:blast-output;
+                description:"Location of BLAST output file";
+            }
+            blast-ncbi.alg {
+                alias:alg;
+                description:"The database to search through (using 'ncbi-blastn' by default)";
+            }
+            blast-ncbi.db {
+                alias:db;
+                description:"The database to search through (using 'ncbi-blastn' by default)";
+            }
+            blast-ncbi.e-value {
+                alias:eval;
+                description:"The statistical significance threshold of reporting matches against the database sequences (using '10.0' by default)";
+            }
+            blast-ncbi.hits {
+                alias:hits;
+                description:"Maximum number of hits (using '10' by default)";
+            }
+            blast-ncbi.result-name {
+                alias:name;
+                description:"Name of the result annotations";
+            }
+            blast-ncbi.short_seq {
+                alias:short;
+                description:"Optimize search for short sequences (using 'False' by default)";
+            }
+            write-genbank.accumulate {
+                alias:accumulate;
+                description:"Accumulate all incoming data in one file or create separate files for each input. In the latter case, an incremental numerical suffix is added to the file name (using 'True' by default)";
+            }
+            write-genbank.url-out {
+                alias:out;
+                description:"Output file with annotations";
+            }
+        }
+        visual {
+            blast-ncbi {
+                pos:"-600 -630";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                in-sequence.angle:180;
+                out-annotations.angle:360;
+            }
+            read-sequence {
+                pos:"-780 -630";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                out-sequence.angle:360;
+            }
+            write-genbank {
+                pos:"-360 -630";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                in-sequence.angle:180;
+            }
+            blast-ncbi.out-annotations->write-genbank.in-sequence {
+                text-pos:"-33 -24";
+            }
+            read-sequence.out-sequence->blast-ncbi.in-sequence {
+                text-pos:"-27.5 -24";
+            }
+        }
+    }
+}
+

@@ -1,0 +1,140 @@
+#@UGENE_WORKFLOW
+#This sample describes how to identify sequences with the specified length.
+#
+#First, the schema reads sequences input by a user.
+#Then, each sequence is marked either with the "Short" or with the "Long" mark, depending on the length of the sequence. After marking, the sequences are filtered by the marks. And finally, the filtered sequences are written into files, specified by a user.
+#
+#By default, a sequence with a length 200 or less bp. is marks as "Short". A sequence with a length more than 200 bp. is marks as "Long". You can configure this value in the Sequence Marker  element parameters.
+#
+#To try out this sample, add the input files to the Read Sequence  element, select the name and location of the output files to the Write Sequence  elements
+#(Write "Short" Sequence(s) and Write "Long" Sequence(s)) and run the schema.
+#
+
+workflow "Marking by length"{
+    read-sequence {
+        type:read-sequence;
+        name:"Read Sequences";
+    }
+    mark-sequence {
+        type:mark-sequence;
+        name:"Sequence Marker";
+        markers:m1;
+    }
+    filter-by-values {
+        type:filter-by-values;
+        name:"Filter 'Short' Sequences";
+        text:short;
+    }
+    filter-by-values2 {
+        type:filter-by-values;
+        name:"Filter 'Long' Sequences";
+        text:long;
+    }
+    write-sequence {
+        type:write-sequence;
+        name:"Write 'Short' Sequences";
+    }
+    write-sequence2 {
+        type:write-sequence;
+        name:"Write 'Long' Sequences";
+    }
+
+    @mark-sequence.m1 {
+        type:marker;
+        marker-type:sequence-length;
+        marker-name:seq_length;
+        "<=200":short;
+        ">=200":long;
+        "rest":Rest;
+    }
+
+    .actor-bindings {
+        read-sequence.out-sequence->mark-sequence.in-sequence
+        mark-sequence.out-marked-seq->filter-by-values.in-data
+        mark-sequence.out-marked-seq->filter-by-values2.in-data
+        filter-by-values.filtered-data->write-sequence.in-sequence
+        filter-by-values2.filtered-data->write-sequence2.in-sequence
+    }
+
+    read-sequence.annotations->mark-sequence.in-sequence.annotations
+    read-sequence.sequence->mark-sequence.in-sequence.sequence
+    mark-sequence.seq_length->filter-by-values.in-data.text
+    mark-sequence.seq_length->filter-by-values2.in-data.text
+    read-sequence.annotations->write-sequence.in-sequence.annotations {
+        path-through:filter-by-values;
+    }
+    read-sequence.sequence->write-sequence.in-sequence.sequence {
+        path-through:filter-by-values;
+    }
+    read-sequence.annotations->write-sequence2.in-sequence.annotations {
+        path-through:filter-by-values2;
+    }
+    read-sequence.sequence->write-sequence2.in-sequence.sequence {
+        path-through:filter-by-values2;
+    }
+
+    .meta {
+        visual {
+            read-sequence {
+                pos:"-857 -688";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                bounds:"-30 -30 65.25 79";
+                out-sequence.angle:346.701;
+            }
+            mark-sequence {
+                pos:"-698 -689";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                bounds:"-30 -30 60.25 79";
+                in-sequence.angle:208.811;
+                out-marked-seq.angle:345.579;
+            }
+            filter-by-values {
+                pos:"-500 -757";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                bounds:"-30 -30 98.25 68";
+                in-data.angle:213.311;
+                filtered-data.angle:353.601;
+            }
+            filter-by-values2 {
+                pos:"-501 -608";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                bounds:"-30 -30 98.25 70";
+                in-data.angle:212.574;
+                filtered-data.angle:349.216;
+            }
+            write-sequence {
+                pos:"-291 -758";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                bounds:"-30 -30 97.25 72";
+                in-sequence.angle:201.251;
+            }
+            write-sequence2 {
+                pos:"-291 -608";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                bounds:"-30 -30 96.25 74";
+                in-sequence.angle:212.471;
+            }
+            filter-by-values2.filtered-data->write-sequence2.in-sequence {
+                text-pos:"-33 -29";
+            }
+            read-sequence.out-sequence->mark-sequence.in-sequence {
+                text-pos:"-27.5 -28";
+            }
+            mark-sequence.out-marked-seq->filter-by-values.in-data {
+                text-pos:"-46 -14";
+            }
+            mark-sequence.out-marked-seq->filter-by-values2.in-data {
+                text-pos:"-45 -15";
+            }
+            filter-by-values.filtered-data->write-sequence.in-sequence {
+                text-pos:"-34 -29";
+            }
+        }
+    }
+}

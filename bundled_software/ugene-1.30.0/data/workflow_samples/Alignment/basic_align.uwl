@@ -1,0 +1,101 @@
+#@UGENE_WORKFLOW
+#Performs multiple sequence alignment with MUSCLE algorithm and saves the resulting alignment to document. Source data can be of any format containing sequences or alignments.
+#
+#To use this workflow, you need to specify locations for input and output file(s). To do this, select a corresponding task, so its' parameters appear in Property Inspector panel, and specify desired value(s) for "URL" parameter. Then you can launch the workflow with pressing Ctrl+R keys.
+
+workflow "Align sequences with MUSCLE"{
+    read-msa {
+        type:read-msa;
+        name:"Read alignment";
+    }
+    muscle {
+        type:muscle;
+        name:"Align with MUSCLE";
+    }
+    write-msa {
+        type:write-msa;
+        name:"Write alignment";
+        document-format:clustal;
+        url-out:muscle_alignment.aln;
+    }
+
+
+    .actor-bindings {
+        read-msa.out-msa->muscle.in-msa
+        muscle.out-msa->write-msa.in-msa
+    }
+
+    read-msa.msa->muscle.in-msa.msa
+    muscle.msa->write-msa.in-msa.msa
+
+    .meta {
+        visual {
+            read-msa {
+                pos:"-645 -555";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                out-msa.angle:360;
+            }
+            muscle {
+                pos:"-480 -555";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                in-msa.angle:180;
+                out-msa.angle:360;
+            }
+            write-msa {
+                pos:"-240 -555";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                in-msa.angle:180;
+            }
+            read-msa.out-msa->muscle.in-msa {
+                text-pos:"-45 -50";
+            }
+            muscle.out-msa->write-msa.in-msa {
+                text-pos:"-45 -50";
+            }
+        }
+        wizard {
+            name:"Align Sequences with MUSCLE Wizard";
+            help-page-id:16122700;
+            page {
+                id:1;
+                next:2;
+                title:"Input MSA(s)";
+                parameters-area {
+                    read-msa.url-in {
+                        type:datasets;
+                    }
+                }
+            }
+            page {
+                id:2;
+                title:"Align Sequences with MUSCLE";
+                parameters-area {
+                    group {
+                        title:"MUSCLE Algorithm parameters";
+                        label-size:120;
+                        muscle.mode {
+                        }
+                        muscle.stable {
+                        }
+                        muscle.max-iterations {
+                        }
+                        muscle.range {
+                        }
+                    }
+                    group {
+                        title:"Output File";
+                        label-size:120;
+                        write-msa.url-out {
+                            label:"Result alignment";
+                        }
+                        write-msa.document-format {
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

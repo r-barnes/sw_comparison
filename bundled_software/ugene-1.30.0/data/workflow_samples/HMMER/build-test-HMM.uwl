@@ -1,0 +1,211 @@
+#@UGENE_WORKFLOW
+#Builds a new profile HMM from input alignment, calibrates the HMM and saves to a file. Then runs a test HMM search over sample sequence and saves test results to Genbank file. To run this workflow, you need to specify appropriate locations for input/output files. This is achieved by selecting a task and editing interesting parameters in Property Inspector panel.Optionally, fine tune the build/search parameters as you see fit. Then schedule the workflow for execution by pressing CTRL+R shortcut. You can watch its" progress in a Task View of UGENE.
+
+workflow "Build HMM from alignment and test it"{
+    read-sequence {
+        type:read-sequence;
+        name:"Read sequence";
+        merge-gap:10;
+        mode:0;
+    }
+    read-msa {
+        type:read-msa;
+        name:"Read alignment";
+    }
+    hmm2-build {
+        type:hmm2-build;
+        name:"HMM build";
+        calibrate:true;
+        calibration-threads:1;
+        deviation:200;
+        fix-samples-length:0;
+        mean-samples-length:325;
+        samples-num:5000;
+        seed:0;
+        strategy:1;
+    }
+    hmm2-write-profile {
+        type:hmm2-write-profile;
+        name:"Write HMM profile";
+        write-mode:2;
+        url-out:profile.hmm;
+    }
+    hmm2-search {
+        type:hmm2-search;
+        name:"HMM search";
+        e-val:-1;
+        result-name:hmm_signal;
+        score:-1000000000;
+        seqs-num:1;
+    }
+    write-genbank {
+        type:write-sequence;
+		document-format:genbank;
+        name:"Write Genbank";
+        accumulate:true;
+        write-mode:2;
+        url-out:output.gb;
+    }
+
+    read-msa.msa->hmm2-build.in-msa.msa
+    hmm2-build.hmm2-profile->hmm2-write-profile.in-hmm2.hmm2-profile
+    hmm2-build.hmm2-profile->hmm2-search.in-hmm2.hmm2-profile
+    read-sequence.sequence->hmm2-search.in-sequence.sequence
+    hmm2-search.annotations->write-genbank.in-sequence.annotations
+    read-sequence.annotations->write-genbank.in-sequence.annotations
+    read-sequence.sequence->write-genbank.in-sequence.sequence
+
+    .meta {
+        visual {
+            read-sequence {
+                pos:"-780 -525";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                out-sequence.angle:360;
+            }
+            read-msa {
+                pos:"-780 -675";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                out-msa.angle:360;
+            }
+            hmm2-build {
+                pos:"-630 -675";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                in-msa.angle:180;
+                out-hmm2.angle:360;
+            }
+            hmm2-write-profile {
+                pos:"-435 -675";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                in-hmm2.angle:180;
+            }
+            hmm2-search {
+                pos:"-435 -540";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                in-hmm2.angle:150;
+                in-sequence.angle:210;
+                out-annotations.angle:360;
+            }
+            write-genbank {
+                pos:"-195 -540";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                in-sequence.angle:180;
+            }
+            read-msa.out-msa->hmm2-build.in-msa {
+                text-pos:"-45 -50";
+            }
+            hmm2-build.out-hmm2->hmm2-write-profile.in-hmm2 {
+                text-pos:"-32 -24";
+            }
+            read-sequence.out-sequence->hmm2-search.in-sequence {
+                text-pos:"-27.5 -24";
+            }
+            hmm2-build.out-hmm2->hmm2-search.in-hmm2 {
+                text-pos:"-32 -24";
+            }
+            hmm2-search.out-annotations->write-genbank.in-sequence {
+                text-pos:"-45 -37";
+            }
+        }
+        wizard {
+            name:"Build HMM from alignment and test it Wizard";
+            help-page-id:16122715;
+            page {
+                id:1;
+                next:2;
+                title:"Input MSA(s)"
+                parameters-area {
+                    read-msa.url-in {
+                        type:datasets;
+                    }
+                }
+            }
+            page {
+                id:2;
+                next:3;
+                title:"Input sequence(s)";
+                parameters-area {
+                    read-sequence.url-in {
+                        type:datasets;
+                    }
+                }
+            }
+            page {
+                id:3;
+                next:4;
+                title:"HMM Build";
+                parameters-area {
+                    group {
+                        title:"Output data";
+                        label-size:120;
+                        hmm2-write-profile.url-out {
+                            label:"Output HMM profile";
+                        }
+                    }
+                    group {
+                        title:"HMM Build parameters";
+                        label-size:120;
+                        hmm2-build.strategy {
+                        }
+                        hmm2-build.profile-name {
+                        }
+                        hmm2-build.calibrate {
+                        }
+                    }
+                    group {
+                        title:"Additional";
+                        label-size:120;
+                        type:hideable;
+                        hmm2-build.calibration-threads {
+                        }
+                        hmm2-build.fix-samples-length {
+                            label:"Fixed length";
+                        }
+                        hmm2-build.mean-samples-length {
+                            label:"Mean length";
+                        }
+                        hmm2-build.samples-num {
+                        }
+                        hmm2-build.deviation {
+                        }
+                        hmm2-build.seed {
+                        }
+                    }
+                }
+            }
+            page {
+                id:4;
+                title:"HMM Search";
+                parameters-area {
+                    group {
+                        title:"Output data";
+                        label-size:120;
+                        write-genbank.url-out {
+                            label:"Output genbank";
+                        }
+                        write-genbank.accumulate {
+                            label:"Accumulate results";
+                        }
+                    }
+                    group {
+                        title:"HMM Search parameters";
+                        label-size:120;
+                        hmm2-search.result-name {
+                        }
+                        hmm2-search.seqs-num {
+                        }
+                        hmm2-search.e-val {
+                        }
+                        hmm2-search.score {
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,92 @@
+#@UGENE_WORKFLOW
+#FastQC aims to provide a simple way to do some quality control checks on raw sequence data coming from high throughput sequencing pipelines. It provides a modular set of analyses which you can use to give a quick impression of whether your data has any problems of which you should be aware before doing any further analysis.
+
+
+
+workflow "Quality control by FastQC"{
+
+    fastqc {
+        type:fastqc;
+        name:"FastQC Quality Control";
+        out-mode:1;
+    }
+    get-file-list {
+        type:get-file-list;
+        name:"FASTQ File List";
+        url-in {
+            dataset:"Dataset 1";
+        }
+    }
+
+    .actor-bindings {
+        get-file-list.out-url->fastqc.in-file
+    }
+
+    get-file-list.url->fastqc.in-file.url
+
+    .meta {
+        parameter-aliases {
+            fastqc.contaminants {
+                alias:c;
+            }
+            fastqc.custom-dir {
+                alias:out_dir;
+            }
+            fastqc.out-mode {
+                alias:mode;
+            }
+            get-file-list.url-in {
+                alias:in;
+            }
+        }
+        visual {
+            fastqc {
+                pos:"-493 -559";
+                style:ext;
+                bg-color-ext:"0 128 64 64";
+                in-file.angle:180;
+            }
+            get-file-list {
+                pos:"-773 -560";
+                style:ext;
+                bg-color-ext:"216 113 57 64";
+                bounds:"-30 -30 116.25 84";
+                out-url.angle:360;
+            }
+            get-file-list.out-url->fastqc.in-file {
+                text-pos:"-40.7578 -29";
+            }
+        }
+        wizard {
+            name:"Quality Control by FastQC Wizard";
+            help-page-id:16122729;
+            page {
+                id:1;
+                title:"QC report settings";
+                parameters-area {
+                    group {
+                        title:"Input parameters";
+                        label-size:120;
+                        get-file-list.url-in {
+                            label:"Input file(s)";
+                        }
+                    }
+                    group {
+                        title:Advanced;
+                        label-size:120;
+                        type:hideable;
+                        fastqc.out-mode {
+                        }
+                        fastqc.custom-dir {
+                        }
+                        fastqc.adapter {
+                        }
+                        fastqc.contaminants {
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+

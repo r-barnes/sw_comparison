@@ -1,0 +1,35 @@
+#ifndef SSPRED_AVPRED_H
+#define SSPRED_AVPRED_H
+
+#include <QVector>
+#include <QByteArray>
+#include <QStringList>
+
+#include "ssdefs.h"
+
+class QByteArray;
+class QTemporaryFile;
+
+class PsiPassOne {
+    int     *fwt_to, *lwt_to;
+    float   *activation, *bias, **weight;
+    int     **profile;
+    int     seqlen;
+    QTemporaryFile* matrixFile;
+    QByteArray seq;
+    QStringList weightFileNames;
+public:
+    PsiPassOne(QTemporaryFile* matFile, const QStringList& weightFiles);
+    ~PsiPassOne();
+    void compute_output(void);
+    void load_wts(const char *fname);
+    void init(void);
+    int getmtx();
+    void predict();
+    int runPsiPass();
+   
+};
+
+
+#endif // SSPRED_AVPRED_H
+

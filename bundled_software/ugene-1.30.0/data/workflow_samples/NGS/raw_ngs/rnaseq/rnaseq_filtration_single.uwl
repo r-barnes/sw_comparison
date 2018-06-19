@@ -1,0 +1,218 @@
+#@UGENE_WORKFLOW
+#The workflow takes FASTQ files (with single-end sequencing reads) as input and process this data as follows:
+#    - Filters the input sequencing reads by the CASAVA header (for Illumina platform).
+#    - Cuts of adapter sequences.
+#    - Trims the sequencing reads by quality.
+#    - Merges different FASTQ files.
+#
+#The workflow also performs quality control of the data with FastQC: first, on the input FASTQ files and, second, after the pre-processing step.
+#
+#Besides intermediate files and FastQC reports, the final result of the workflow running is a merged FASTQ file.
+#
+
+
+
+workflow "Processing of raw RNA-Seq single-end reads"{
+
+    CASAVAFilter {
+        type:CASAVAFilter;
+        name:"Filter Reads by CASAVA Header";
+        custom-dir:filtered_fastq;
+    }
+    QualityTrim {
+        type:QualityTrim;
+        name:"Trim Reads by Quality";
+        custom-dir:filtered_fastq;
+        out-mode:0;
+        len-id:10;
+        qual-id:20;
+    }
+    get-file-list {
+        type:get-file-list;
+        name:"Read FASTQ Files with Reads";
+        url-in {
+            dataset:"Dataset 1";
+        }
+    }
+    MergeFastq {
+        type:MergeFastq;
+        name:"Merge FASTQ Files";
+        custom-dir:filtered_fastq;
+        out-mode:0;
+        out-name:in_1.fq;
+    }
+    CutAdaptFastq {
+        type:CutAdaptFastq;
+        name:"Cut Adapter";
+        out-mode:0;
+    }
+    fastqc {
+        type:fastqc;
+        name:"FastQC Quality Control";
+        out-mode:1;
+    }
+    fastqc-1 {
+        type:fastqc;
+        name:"FastQC Quality Control";
+        out-mode:1;
+    }
+
+    .actor-bindings {
+        get-file-list.out-url->CASAVAFilter.in-file
+        get-file-list.out-url->fastqc.in-file
+        CutAdaptFastq.out-file->QualityTrim.in-file
+        CASAVAFilter.out-file->CutAdaptFastq.in-file
+        QualityTrim.out-file->MergeFastq.in-file
+        QualityTrim.out-file->fastqc-1.in-file
+    }
+
+    get-file-list.url->CASAVAFilter.in-file.url
+    CutAdaptFastq.url->QualityTrim.in-file.url
+    QualityTrim.url->MergeFastq.in-file.url
+    CASAVAFilter.url->CutAdaptFastq.in-file.url
+    get-file-list.url->fastqc.in-file.url
+    QualityTrim.url->fastqc-1.in-file.url
+
+    .meta {
+        parameter-aliases {
+            CASAVAFilter.out-mode {
+                alias:out_mode;
+            }
+            get-file-list.url-in {
+                alias:in;
+            }
+        }
+        visual {
+            CASAVAFilter {
+                pos:"-840 -536";
+                style:ext;
+                bg-color-ext:"194 0 0 64";
+                bounds:"-30 -30 179.875 92";
+                in-file.angle:180;
+                out-file.angle:360;
+            }
+            CutAdaptFastq {
+                pos:"-525 -534";
+                style:ext;
+                bg-color-ext:"236 177 178 64";
+                bounds:"-30 -30 173.25 95";
+                in-file.angle:180;
+                out-file.angle:303.69;
+            }
+            MergeFastq {
+                pos:"-475 -103";
+                style:simple;
+                bg-color-simple:"78 151 184 255";
+                in-file.angle:90;
+                out-file.angle:251.565;
+            }
+            QualityTrim {
+                pos:"-500 -327";
+                style:ext;
+                bg-color-ext:"204 68 102 64";
+                bounds:"-30 -30 140 96";
+                in-file.angle:37.5041;
+                out-file.angle:293.86;
+            }
+            fastqc {
+                pos:"-871 -329";
+                style:simple;
+                bg-color-simple:"0 128 128 255";
+                in-file.angle:128.047;
+            }
+            fastqc-1 {
+                pos:"-307 -26";
+                style:simple;
+                bg-color-simple:"0 128 128 255";
+                in-file.angle:149.744;
+            }
+            get-file-list {
+                pos:"-1055 -536";
+                style:ext;
+                bg-color-ext:"24 102 175 64";
+                bounds:"-30 -30 74.25 92";
+                out-url.angle:360;
+            }
+            CASAVAFilter.out-file->CutAdaptFastq.in-file {
+                text-pos:"-38.75 -27";
+            }
+            CutAdaptFastq.out-file->QualityTrim.in-file {
+                text-pos:"-41.75 -18";
+            }
+            QualityTrim.out-file->MergeFastq.in-file {
+                text-pos:"-60.75 -3";
+            }
+            QualityTrim.out-file->fastqc-1.in-file {
+                text-pos:"0.25 7";
+            }
+            get-file-list.out-url->CASAVAFilter.in-file {
+                text-pos:"-36.7578 -28";
+            }
+            get-file-list.out-url->fastqc.in-file {
+                text-pos:"-33.7578 26";
+            }
+        }
+        wizard {
+            name:"Raw RNA-Seq Data Processing Wizard";
+            help-page-id:16122727;
+            page {
+                id:1;
+                next:2;
+                title:"Input data";
+                parameters-area {
+                    group {
+                        title:"Sequencing reads";
+                        label-size:120;
+                        get-file-list.url-in {
+                            label:"FASTQ files";
+                        }
+                    }
+                }
+            }
+            page {
+                id:2;
+                next:3;
+                title:Pre-processing;
+                parameters-area {
+                    group {
+                        title:"Reads filtration";
+                        label-size:120;
+                        QualityTrim.qual-id {
+                        }
+                        QualityTrim.len-id {
+                            label:"Min length";
+                        }
+                        QualityTrim.both-ends {
+                            label:"Trim both ends";
+                        }
+                        CutAdaptFastq.adapters-url {
+                            label:"3' adapters";
+                        }
+                        CutAdaptFastq.front-url {
+                            label:"5' adapters";
+                        }
+                        CutAdaptFastq.anywhere-url {
+                            label:"5' and 3' adapters";
+                        }
+                    }
+                }
+            }
+            page {
+                id:3;
+                title:"Output data";
+                parameters-area {
+                    group {
+                        title:"Filtered FASTQ";
+                        label-size:130;
+                        type:hideable;
+                        CASAVAFilter.out-mode {
+                        }
+                        CASAVAFilter.custom-dir {
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+

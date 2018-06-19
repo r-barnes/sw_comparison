@@ -1,0 +1,140 @@
+#@UGENE_WORKFLOW
+#This workflow simulates the PCR process. You are required to input:
+#1) File(s) with DNA sequences.
+#2) A file with DNA sequences of primers pairs. The pairs must be ordered as follows:
+#    a. The first sequence of the first pair.
+#    b. The second sequence of the first pair.
+#    c. The first sequence of the second pair.
+#    d. The second sequence of the second pair.
+#    e. etc.
+#
+#As the output data you will get:
+#1) A file with the HTML report about the in silico PCR:
+#    a. Products count table.
+#    b. Pairs details.
+#2) Files with the amplified PCR products.
+
+
+workflow "In silico PCR"{
+
+    in-silico-pcr {
+        type:in-silico-pcr;
+        name:"In Silico PCR";
+        primers-url:"";
+    }
+    read-sequence {
+        type:read-sequence;
+        name:"Read Sequence";
+        url-in {
+            dataset:"Dataset 1";
+        }
+    }
+    write-sequence {
+        type:write-sequence;
+        name:"Write Sequence";
+        accumulate:false;
+        document-format:genbank;
+    }
+
+    .actor-bindings {
+        read-sequence.out-sequence->in-silico-pcr.in-sequence
+        in-silico-pcr.out->write-sequence.in-sequence
+    }
+
+    read-sequence.annotations->in-silico-pcr.in-sequence.annotations
+    read-sequence.sequence->in-silico-pcr.in-sequence.sequence
+    in-silico-pcr.annotations->write-sequence.in-sequence.annotations
+    in-silico-pcr.sequence->write-sequence.in-sequence.sequence
+
+    .meta {
+        parameter-aliases {
+            in-silico-pcr.primers-url {
+                alias:primers;
+            }
+            in-silico-pcr.report-url {
+                alias:report;
+            }
+            read-sequence.url-in {
+                alias:in;
+            }
+            write-sequence.url-out {
+                alias:out;
+            }
+        }
+        visual {
+            in-silico-pcr {
+                pos:"-465 -390";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                in-sequence.angle:180;
+                out.angle:360;
+            }
+            read-sequence {
+                pos:"-705 -390";
+                style:ext;
+                bg-color-ext:"24 102 175 64";
+                out-sequence.angle:360;
+            }
+            write-sequence {
+                pos:"-180 -390";
+                style:ext;
+                bg-color-ext:"64 26 96 64";
+                in-sequence.angle:180;
+            }
+            in-silico-pcr.out->write-sequence.in-sequence {
+                text-pos:"-34 -24";
+            }
+            read-sequence.out-sequence->in-silico-pcr.in-sequence {
+                text-pos:"-27.5 -24";
+            }
+        }
+        wizard {
+            name:"In Silico PCR";
+            help-page-id:16123482;
+            page {
+                id:1;
+                next:2;
+                title:"Input DNA sequences";
+                parameters-area {
+                    read-sequence.url-in {
+                        type:datasets;
+                    }
+                }
+            }
+            page {
+                id:2;
+                next:3;
+                title:"Primers and parameters";
+                parameters-area {
+                    group {
+                        title:Primers;
+                        label-size:120;
+                        in-silico-pcr.primers-url {
+                        }
+                    }
+                    group {
+                        title:"In silico PCR";
+                        label-size:120;
+                        in-silico-pcr.mismatches {
+                        }
+                        in-silico-pcr.perfect-match {
+                        }
+                        in-silico-pcr.max-product {
+                        }
+                    }
+                }
+            }
+            page {
+                id:3;
+                title:"Output data";
+                parameters-area {
+                    label {
+                        text:"The workflow output consists of the HTML report and the found amplified PCR products. File names of the products are based on the DNA sequence name and the primer names.";
+                        background-color:"rgb(203,222,228)";
+                    }
+                }
+            }
+        }
+    }
+}
+

@@ -1,0 +1,559 @@
+#@UGENE_WORKFLOW
+#The workflow takes FASTQ files as input and process this data as follows:
+#    - Filters the input sequencing reads by the CASAVA header (for Illumina platform).
+#    - Cuts of adapter sequences.
+#    - Trims the sequencing reads by quality.
+#    - Merges different FASTQ files.
+#    - Maps the sequencing reads by TopHat.
+#
+#The workflow also performs quality control of the data with FastQC: first, on the input FASTQ files and, second, after the pre-processing step.
+#
+#Besides intermediate files and FastQC reports, the final result is a BAM file with aligned reads and other TopHat output files.
+#
+
+
+
+workflow "Processing of raw RNA-Seq paired-end reads with mapping"{
+
+    CASAVAFilter {
+        type:CASAVAFilter;
+        name:"Filter Reads by CASAVA Header";
+        custom-dir:filtered_fastq;
+    }
+    QualityTrim {
+        type:QualityTrim;
+        name:"Trim Reads by Quality";
+        custom-dir:filtered_fastq;
+        len-id:10;
+        out-mode:0;
+        qual-id:20;
+    }
+    get-file-list {
+        type:get-file-list;
+        name:"Read FASTQ Files with Reads 1";
+        url-in {
+            dataset:"Dataset 1";
+        }
+    }
+    MergeFastq {
+        type:MergeFastq;
+        name:"Merge FASTQ Files";
+        custom-dir:filtered_fastq;
+        out-mode:0;
+        out-name:in_1.fq;
+    }
+    tophat {
+        type:tophat;
+        name:"Align Reads with TopHat";
+        bowtie-version:1;
+        mate-inner-distance:170;
+        no-novel-junctions:true;
+        out-dir:output;
+    }
+    get-file-list-1 {
+        type:get-file-list;
+        name:"Read FASTQ Files with Reads 2";
+        url-in {
+            dataset:"Dataset 1";
+        }
+    }
+    CASAVAFilter-1 {
+        type:CASAVAFilter;
+        name:"Filter Reads by CASAVA Header";
+        custom-dir:filtered_fastq;
+    }
+    QualityTrim-1 {
+        type:QualityTrim;
+        name:"Trim Reads by Quality";
+        custom-dir:filtered_fastq;
+        len-id:10;
+        out-mode:0;
+        qual-id:20;
+    }
+    MergeFastq-1 {
+        type:MergeFastq;
+        name:"Merge FASTQ Files";
+        custom-dir:filtered_fastq;
+        out-mode:0;
+        out-name:in_2.fq;
+    }
+    multiplexer {
+        type:multiplexer;
+        name:Multiplexer;
+    }
+    CutAdaptFastq {
+        type:CutAdaptFastq;
+        name:"Cut Adapter";
+        out-mode:0;
+    }
+    CutAdaptFastq-1 {
+        type:CutAdaptFastq;
+        name:"Cut Adapter";
+        out-mode:0;
+    }
+    fastqc {
+        type:fastqc;
+        name:"FastQC Quality Control";
+    }
+    fastqc-1 {
+        type:fastqc;
+        name:"FastQC Quality Control";
+    }
+    fastqc-2 {
+        type:fastqc;
+        name:"FastQC Quality Control";
+    }
+    fastqc-3 {
+        type:fastqc;
+        name:"FastQC Quality Control";
+    }
+    fastqc-2-1 {
+        type:fastqc;
+        name:"FastQC Quality Control";
+    }
+
+    .actor-bindings {
+        CutAdaptFastq-1.out-file->QualityTrim.in-file
+        tophat.out-assembly->fastqc-2-1.in-file
+        CASAVAFilter-1.out-file->CutAdaptFastq.in-file
+        MergeFastq-1.out-file->multiplexer.input-data-2
+        MergeFastq-1.out-file->fastqc-2.in-file
+        MergeFastq.out-file->multiplexer.input-data-1
+        MergeFastq.out-file->fastqc-3.in-file
+        QualityTrim.out-file->MergeFastq.in-file
+        CutAdaptFastq.out-file->QualityTrim-1.in-file
+        QualityTrim-1.out-file->MergeFastq-1.in-file
+        CASAVAFilter.out-file->CutAdaptFastq-1.in-file
+        multiplexer.output-data->tophat.in-sequence
+        get-file-list-1.out-url->CASAVAFilter-1.in-file
+        get-file-list-1.out-url->fastqc.in-file
+        get-file-list.out-url->CASAVAFilter.in-file
+        get-file-list.out-url->fastqc-1.in-file
+    }
+
+    get-file-list.url->CASAVAFilter.in-file.url
+    CutAdaptFastq-1.url->QualityTrim.in-file.url
+    QualityTrim.url->MergeFastq.in-file.url
+    MergeFastq.url->tophat.in-sequence.in-url
+    MergeFastq-1.url->tophat.in-sequence.paired-url
+    get-file-list-1.url->CASAVAFilter-1.in-file.url
+    CutAdaptFastq.url->QualityTrim-1.in-file.url
+    QualityTrim-1.url->MergeFastq-1.in-file.url
+    CASAVAFilter-1.url->CutAdaptFastq.in-file.url
+    CASAVAFilter.url->CutAdaptFastq-1.in-file.url
+    get-file-list-1.url->fastqc.in-file.url
+    get-file-list.url->fastqc-1.in-file.url
+    MergeFastq-1.url->fastqc-2.in-file.url
+    MergeFastq.url->fastqc-3.in-file.url
+    tophat.hits-url->fastqc-2-1.in-file.url
+
+    .meta {
+        parameter-aliases {
+            CASAVAFilter.custom-dir {
+                alias:casava1_out_dir;
+            }
+            CASAVAFilter.out-mode {
+                alias:casava1_out_dir_type;
+            }
+            QualityTrim.custom-dir {
+                alias:trim_reads2_out_dir;
+            }
+            QualityTrim.out-mode {
+                alias:trim_reads2_out_dir_type;
+            }
+            get-file-list.url-in {
+                alias:in;
+            }
+            tophat.bowtie-index-basename {
+                alias:idx_name;
+            }
+            tophat.bowtie-index-dir {
+                alias:idx_dir;
+            }
+            tophat.out-dir {
+                alias:out_dir;
+            }
+            get-file-list-1.url-in {
+                alias:in_mate;
+            }
+            CASAVAFilter-1.custom-dir {
+                alias:casava2_out_dir;
+            }
+            CASAVAFilter-1.out-mode {
+                alias:casava2_out_dir_type;
+            }
+            QualityTrim-1.custom-dir {
+                alias:trim_reads1_out_dir;
+            }
+            QualityTrim-1.out-mode {
+                alias:trim_reads1_out_dir_type;
+            }
+            fastqc.custom-dir {
+                alias:fasqc1_out_dir;
+            }
+            fastqc.out-mode {
+                alias:fasqc1_out_dir_type;
+            }
+            fastqc-1.custom-dir {
+                alias:fasqc2_out_dir;
+            }
+            fastqc-1.out-mode {
+                alias:fasqc2_out_dir_type;
+            }
+            fastqc-2.custom-dir {
+                alias:fasqc3_out_dir;
+            }
+            fastqc-2.out-mode {
+                alias:fasqc3_out_dir_type;
+            }
+            fastqc-3.custom-dir {
+                alias:fasqc4_out_dir;
+            }
+            fastqc-3.out-mode {
+                alias:fasqc4_out_dir_type;
+            }
+        }
+        visual {
+            CASAVAFilter {
+                pos:"-1245 -570";
+                style:ext;
+                bg-color-ext:"194 0 0 64";
+                bounds:"-30 -30 123.875 82";
+                in-file.angle:97.4959;
+                out-file.angle:268.768;
+            }
+            CASAVAFilter-1 {
+                pos:"-735 -945";
+                style:ext;
+                bg-color-ext:"194 0 0 64";
+                bounds:"-30 -30 119.875 81";
+                in-file.angle:181.79;
+                out-file.angle:359.076;
+            }
+            CutAdaptFastq {
+                pos:"-510 -840";
+                style:ext;
+                bg-color-ext:"236 177 178 64";
+                in-file.angle:49.8991;
+                out-file.angle:344.434;
+            }
+            CutAdaptFastq-1 {
+                pos:"-1125 -345";
+                style:ext;
+                bg-color-ext:"236 177 178 64";
+                in-file.angle:34.1145;
+                out-file.angle:351.588;
+            }
+            MergeFastq {
+                pos:"-450 -225";
+                style:simple;
+                bg-color-simple:"78 151 184 255";
+                in-file.angle:171.87;
+                out-file.angle:1.4688;
+            }
+            MergeFastq-1 {
+                pos:"-180 -450";
+                style:simple;
+                bg-color-simple:"78 151 184 255";
+                in-file.angle:91.9092;
+                out-file.angle:271.432;
+            }
+            QualityTrim {
+                pos:"-840 -270";
+                style:ext;
+                bg-color-ext:"204 68 102 64";
+                in-file.angle:211.827;
+                out-file.angle:347.391;
+            }
+            QualityTrim-1 {
+                pos:"-225 -720";
+                style:ext;
+                bg-color-ext:"204 68 102 64";
+                bounds:"-30 -30 107.125 96";
+                in-file.angle:188.13;
+                out-file.angle:292.859;
+            }
+            fastqc {
+                pos:"-885 -795";
+                style:simple;
+                bg-color-simple:"0 128 128 255";
+                in-file.angle:90;
+            }
+            fastqc-1 {
+                pos:"-1050 -720";
+                style:simple;
+                bg-color-simple:"0 128 128 255";
+                in-file.angle:180;
+            }
+            fastqc-2 {
+                pos:"0 -405";
+                style:simple;
+                bg-color-simple:"0 128 128 255";
+                in-file.angle:180;
+            }
+            fastqc-2-1 {
+                pos:"-330 -555";
+                style:simple;
+                bg-color-simple:"0 128 128 255";
+                in-file.angle:180;
+            }
+            fastqc-3 {
+                pos:"-420 -90";
+                style:simple;
+                bg-color-simple:"0 128 128 255";
+                in-file.angle:88.0251;
+            }
+            get-file-list {
+                pos:"-1305 -810";
+                style:ext;
+                bg-color-ext:"24 102 175 64";
+                bounds:"-30 -30 87.25 90";
+                out-url.angle:296.095;
+            }
+            get-file-list-1 {
+                pos:"-975 -990";
+                style:ext;
+                bg-color-ext:"24 102 175 64";
+                bounds:"-30 -30 86 92";
+                out-url.angle:328.062;
+            }
+            multiplexer {
+                pos:"-180 -225";
+                style:simple;
+                bg-color-simple:"84 84 84 255";
+                input-data-1.angle:186.911;
+                input-data-2.angle:88.2643;
+                output-data.angle:145.62;
+            }
+            tophat {
+                pos:"-585 -525";
+                style:ext;
+                bg-color-ext:"0 128 0 64";
+                bounds:"-30 -30 140.375 90";
+                in-sequence.angle:327.046;
+                out-assembly.angle:11.0864;
+            }
+            CASAVAFilter-1.out-file->CutAdaptFastq.in-file {
+                text-pos:"-1.75 -27";
+            }
+            CASAVAFilter.out-file->CutAdaptFastq-1.in-file {
+                text-pos:"-35.75 -24";
+            }
+            CutAdaptFastq-1.out-file->QualityTrim.in-file {
+                text-pos:"-35.75 -24";
+            }
+            CutAdaptFastq.out-file->QualityTrim-1.in-file {
+                text-pos:"-39.75 -10";
+            }
+            MergeFastq-1.out-file->fastqc-2.in-file {
+                text-pos:"-34.75 -28";
+            }
+            MergeFastq-1.out-file->multiplexer.input-data-2 {
+                text-pos:"-2.75 -17";
+            }
+            MergeFastq.out-file->fastqc-3.in-file {
+                text-pos:"-47.75 1";
+            }
+            MergeFastq.out-file->multiplexer.input-data-1 {
+                text-pos:"-31.75 -26";
+            }
+            QualityTrim-1.out-file->MergeFastq-1.in-file {
+                text-pos:"-48.75 -13";
+            }
+            QualityTrim.out-file->MergeFastq.in-file {
+                text-pos:"-35.75 -26";
+            }
+            get-file-list-1.out-url->CASAVAFilter-1.in-file {
+                text-pos:"-38.7578 -25";
+            }
+            get-file-list-1.out-url->fastqc.in-file {
+                text-pos:"-31.7578 -14";
+            }
+            get-file-list.out-url->CASAVAFilter.in-file {
+                text-pos:"-39.7578 -13";
+            }
+            get-file-list.out-url->fastqc-1.in-file {
+                text-pos:"-28.7578 -27";
+            }
+            multiplexer.output-data->tophat.in-sequence {
+                text-pos:"-111 -64";
+            }
+            tophat.out-assembly->fastqc-2-1.in-file {
+                text-pos:"-44.2266 -24";
+            }
+        }
+        wizard {
+            name:"Raw RNA-Seq Data Processing Wizard";
+            page {
+                id:1;
+                next:2;
+                title:"Input data";
+                parameters-area {
+                    group {
+                        title:"Sequencing reads";
+                        label-size:120;
+                        get-file-list.url-in {
+                            label:"FASTQ files";
+                        }
+                        get-file-list-1.url-in {
+                            label:"FASTQ files with pairs";
+                        }
+                    }
+                }
+            }
+            page {
+                id:2;
+                next:3;
+                title:Pre-processing;
+                parameters-area {
+                    group {
+                        title:"Reads filtration";
+                        label-size:120;
+                        QualityTrim.qual-id {
+                        }
+                        QualityTrim.len-id {
+                            label:"Min length";
+                        }
+                        QualityTrim.both-ends {
+                            label:"Trim both ends";
+                        }
+                        CutAdaptFastq.adapters-url {
+                            label:"3' adapters";
+                        }
+                        CutAdaptFastq.front-url {
+                            label:"5' adapters";
+                        }
+                        CutAdaptFastq.anywhere-url {
+                            label:"5' and 3' adapters";
+                        }
+                    }
+                    group {
+                        title:"Read pairs filtration";
+                        label-size:120;
+                        QualityTrim-1.qual-id {
+                        }
+                        QualityTrim-1.len-id {
+                            label:"Min length";
+                        }
+                        QualityTrim-1.both-ends {
+                            label:"Trim both ends";
+                        }
+                        CutAdaptFastq-1.adapters-url {
+                            label:"3' adapters";
+                        }
+                        CutAdaptFastq-1.front-url {
+                            label:"5' adapters";
+                        }
+                        CutAdaptFastq-1.anywhere-url {
+                            label:"5' and 3' adapters";
+                        }
+                    }
+                }
+            }
+            page {
+                id:3;
+                next:4;
+                title:Mapping;
+                parameters-area {
+                    group {
+                        title:"TopHat input";
+                        label-size:180;
+                        bowtie-index {
+                            tophat.bowtie-index-dir {
+                            }
+                            tophat.bowtie-index-basename {
+                            }
+                        }
+                        tophat.bowtie-version {
+                        }
+                    }
+                    group {
+                        title:Parameters;
+                        label-size:170;
+                        tophat.known-transcript {
+                        }
+                        tophat.raw-junctions {
+                        }
+                    }
+                    group {
+                        title:Additional;
+                        label-size:170;
+                        type:hideable;
+                        tophat.mate-inner-distance {
+                        }
+                        tophat.mate-standard-deviation {
+                        }
+                        tophat.library-type {
+                        }
+                        tophat.no-novel-junctions {
+                        }
+                        tophat.max-multihits {
+                        }
+                        tophat.segment-length {
+                        }
+                        tophat.fusion-search {
+                        }
+                        tophat.transcriptome-only {
+                        }
+                        tophat.transcriptome-max-hits {
+                        }
+                        tophat.prefilter-multihits {
+                        }
+                        tophat.min-anchor-length {
+                        }
+                        tophat.splice-mismatches {
+                        }
+                        tophat.read-mismatches {
+                        }
+                        tophat.segment-mismatches {
+                        }
+                        tophat.solexa-1-3-quals {
+                        }
+                        tophat.bowtie-n-mode {
+                        }
+                        tophat.bowtie-tool-path {
+                        }
+                        tophat.samtools-tool-path {
+                        }
+                        tophat.path {
+                        }
+                        tophat.temp-dir {
+                        }
+                    }
+                }
+            }
+            page {
+                id:4;
+                title:"Output data";
+                parameters-area {
+                    group {
+                        title:"TopHat data";
+                        label-size:130;
+                        tophat.out-dir {
+                            label:Tophat;
+                        }
+                    }
+                    group {
+                        title:"Filtered FASTQ";
+                        label-size:130;
+                        type:hideable;
+                        CASAVAFilter.out-mode {
+                        }
+                        CASAVAFilter.custom-dir {
+                        }
+                    }
+                    group {
+                        title:"Filtered FASTQ with pairs";
+                        label-size:130;
+                        type:hideable;
+                        CASAVAFilter-1.out-mode {
+                        }
+                        CASAVAFilter-1.custom-dir {
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+

@@ -1,0 +1,939 @@
+// -*- Mode: C++; tab-width: 2; -*-
+// vi: set ts=2:
+//
+
+BALL_INLINE 
+String::String()
+	: string()
+{
+}
+
+BALL_INLINE String::String(const String& s)
+	: string(s)
+{
+}
+
+#ifdef BALL_STD_STRING_HAS_RVALUE_REFERENCES
+BALL_INLINE
+String::String(String&& s)
+	: string(std::move(s))
+{
+}
+
+BALL_INLINE
+String::String(string&& s)
+	: string(std::move(s))
+{
+}
+
+BALL_INLINE
+String& String::operator=(String&& s)
+{
+	if (this != &s)
+	{
+		string::operator=(std::move(s));
+	}
+
+	return *this;
+}
+
+BALL_INLINE
+String& String::operator=(string&& s)
+{
+	if (this != &s)
+	{
+		string::operator=(std::move(s));
+	}
+
+	return *this;
+}
+#endif
+
+BALL_INLINE 
+String::String(const unsigned char c)
+	: string(1, (char)c)
+{
+}
+
+BALL_INLINE 
+String::String(const char c, Size len)
+	: string(len, c)
+{
+}
+
+BALL_INLINE 
+String::String(const string& s)
+	: string(s)
+{
+}
+
+BALL_INLINE 
+String::String(const String& s, Index from, Size len)
+	: string("")
+{
+	s.validateRange_(from, len);
+	if (len > 0)
+	{
+		assign(s.c_str() + from, len);
+	}
+}
+
+BALL_INLINE 
+#ifdef BALL_HAS_SSTREAM
+void String::set(std::stringstream& s)
+#else
+void String::set(std::strstream& s)
+#endif
+{
+	s >> (*this);
+}
+
+BALL_INLINE 
+void String::set(char c, Size len)
+{
+	assign(len, c);
+}
+
+BALL_INLINE 
+void String::set(unsigned char c)
+{
+	assign(1, (char)c);
+}
+
+BALL_INLINE 
+bool String::operator == (const char* char_ptr) const
+{
+  return (compare(char_ptr) == 0);
+}
+
+BALL_INLINE 
+bool String::operator != (const char* char_ptr) const
+{
+  return (compare(char_ptr) != 0);
+}
+
+BALL_INLINE 
+bool Substring::operator == (const String& s) const
+{
+	if (bound_ == 0)
+	{
+		throw UnboundSubstring(__FILE__, __LINE__);
+	}
+
+  return (s.compare(bound_->c_str() + from_, 0, to_ - from_ + 1) == 0);
+}
+
+BALL_INLINE 
+bool Substring::operator != (const String& s) const
+{
+  if (bound_ == 0)
+  {
+    throw UnboundSubstring(__FILE__, __LINE__);
+	}
+
+  return (s.compare(bound_->c_str() + from_, 0, to_ - from_ + 1) != 0);
+}
+
+BALL_INLINE
+Size Substring::size() const
+{
+	if (bound_ == 0)
+	{
+		return 0;
+	}
+
+	return (to_ - from_ + 1);
+}
+
+BALL_INLINE 
+Substring::operator String() const
+{
+	if (bound_ == 0)
+	{
+		throw UnboundSubstring(__FILE__, __LINE__);
+	}
+
+  return String(bound_->c_str(), from_, to_ - from_ + 1);
+}
+
+BALL_INLINE 
+void Substring::unbind()
+{
+  bound_ = 0;
+  from_ = to_ = (Index)String::EndPos;
+}
+
+BALL_INLINE 
+void Substring::destroy()
+{
+	if (bound_ != 0)
+	{
+	  bound_->erase(from_, to_ - from_ + 1);
+	}
+
+  unbind();
+}
+
+BALL_INLINE 
+void Substring::clear()
+{
+	destroy();
+}
+
+BALL_INLINE 
+String Substring::toString() const
+{
+	if (bound_ == 0)
+	{
+		throw UnboundSubstring(__FILE__, __LINE__);
+	}
+
+  return String(bound_->c_str(), from_, to_ - from_ + 1);
+}
+
+BALL_INLINE 
+Substring& Substring::bind(const String& s, Index from, Size len)
+{
+	s.validateRange_(from, len);
+
+  bound_ = (String *)&s;
+  from_ = from;
+  to_ = from + (Index)len - 1;
+
+  return *this;
+}
+
+BALL_INLINE 
+void Substring::set(const String& s)
+{
+	if (bound_ == 0)
+	{
+		throw Substring::UnboundSubstring(__FILE__, __LINE__);
+	}
+
+  bound_->replace(from_, to_ - from_ + 1, s);
+}
+
+BALL_INLINE 
+void Substring::set(const Substring& s)
+{
+	if (bound_ == 0 || s.bound_ == 0)
+	{
+		throw Substring::UnboundSubstring(__FILE__, __LINE__);
+	}
+
+  bound_->replace(from_, to_ - from_ + 1, s.bound_->c_str() + s.from_, s.size());
+}
+
+BALL_INLINE 
+const Substring& Substring::operator = (const String& s)
+{
+  set(s);
+  return *this;
+}
+
+BALL_INLINE 
+const Substring& Substring::operator = (const Substring& s)
+{
+  set(s);
+  return *this;
+}
+
+BALL_INLINE 
+const Substring& Substring::operator = (const char* char_ptr)
+{
+  set(char_ptr);
+  return *this;
+}
+
+BALL_INLINE 
+String* Substring::getBoundString()
+{
+  return bound_;
+}
+
+BALL_INLINE 
+const String* Substring::getBoundString() const
+{
+  return bound_;
+}
+
+BALL_INLINE 
+char* Substring::c_str()
+{
+  if (bound_ == 0)
+  {
+    throw UnboundSubstring(__FILE__, __LINE__);
+	}
+
+  return (char*)&(bound_->c_str()[from_]);
+}
+
+BALL_INLINE 
+const char* Substring::c_str() const
+{
+  if (bound_ == 0)
+  {
+    throw UnboundSubstring(__FILE__, __LINE__);
+	}
+ 
+  return &(bound_->c_str()[from_]);
+}
+
+BALL_INLINE 
+Index Substring::getFirstIndex() const
+{
+  if (bound_ == 0)
+  {
+    throw UnboundSubstring(__FILE__, __LINE__);
+	}
+ 
+  return from_;
+}
+
+BALL_INLINE 
+Index Substring::getLastIndex() const
+{
+  if (bound_ == 0)
+  {
+    throw UnboundSubstring(__FILE__, __LINE__);
+	}
+ 
+  return to_;
+}
+
+BALL_INLINE 
+char& Substring::operator [] (Index index)
+{
+  if (bound_ == 0)
+  {
+    throw UnboundSubstring(__FILE__, __LINE__);
+	}
+ 
+	Size len = String::EndPos;
+	validateRange_(index, len);
+
+  return (*bound_)[from_ + index];
+}
+
+BALL_INLINE 
+char Substring::operator [] (Index index) const
+{
+  if (bound_ == 0)
+  {
+    throw UnboundSubstring(__FILE__, __LINE__);
+	}
+ 
+	Size len = String::EndPos;
+	validateRange_(index, len);
+
+  return (*bound_)[from_ + index];
+}
+
+BALL_INLINE 
+bool Substring::isBound() const
+{
+  return (bound_ != 0);
+}
+
+BALL_INLINE 
+bool Substring::isEmpty() const
+{
+  return (bound_ == 0);
+}
+
+BALL_INLINE 
+int String::compare(char c, Index from) const
+{
+	validateIndex_(from);
+	return (c_str()[from] - c);
+}
+
+
+BALL_INLINE 
+bool Substring::operator == (char c) const
+{
+  if (bound_ == 0)
+  {
+    throw UnboundSubstring(__FILE__, __LINE__);
+	}
+  return (bound_->compare(c, from_, to_ - from_ + 1) == 0);
+}
+
+BALL_INLINE 
+bool Substring::operator != (char c) const
+{
+  if (bound_ == 0)
+  {
+    throw UnboundSubstring(__FILE__, __LINE__);
+	}
+
+  return (bound_->compare(c, from_, to_ - from_ + 1) != 0);
+}
+
+BALL_INLINE 
+bool Substring::isValid() const
+{
+  return (bound_ != 0 && from_ >= 0 && from_ <= to_ && to_ < (Index)bound_->size()) ;
+}
+
+BALL_INLINE 
+Substring& Substring::toLower()
+{
+  if (bound_ == 0)
+  {
+    throw UnboundSubstring(__FILE__, __LINE__);
+	}
+	(*bound_).toLower(from_, to_ - from_);
+  return *this;
+}
+
+BALL_INLINE 
+Substring& Substring::toUpper()
+{
+  if (bound_ == 0)
+  {
+    throw UnboundSubstring(__FILE__, __LINE__);
+	}
+	(*bound_).toUpper(from_, to_ - from_);
+  return *this;
+}
+
+BALL_INLINE 
+const String& String::operator = (const String& s)
+{
+  set(s);
+  return *this;
+}
+
+BALL_INLINE 
+const String& String::operator = (const char* char_ptr)
+{
+  set(char_ptr, 0);
+  return *this;
+}
+
+BALL_INLINE 
+
+#ifdef BALL_HAS_SSTREAM
+const String& String::operator = (std::stringstream& s)
+#else
+const String& String::operator = (std::strstream& s)
+#endif
+{
+  set(s);
+  return *this;
+}
+
+#define BALL_STRING_DEFINE_ASSIGNMENT_METHOD(Type) \
+BALL_INLINE \
+const String& String::operator = (Type t) \
+{ \
+  set(t); \
+\
+  return *this; \
+}
+
+BALL_STRING_DEFINE_ASSIGNMENT_METHOD(char)
+BALL_STRING_DEFINE_ASSIGNMENT_METHOD(unsigned char)
+BALL_STRING_DEFINE_ASSIGNMENT_METHOD(short)
+BALL_STRING_DEFINE_ASSIGNMENT_METHOD(unsigned short)
+BALL_STRING_DEFINE_ASSIGNMENT_METHOD(int)
+BALL_STRING_DEFINE_ASSIGNMENT_METHOD(unsigned int)
+BALL_STRING_DEFINE_ASSIGNMENT_METHOD(long)
+BALL_STRING_DEFINE_ASSIGNMENT_METHOD(unsigned long)
+#ifdef BALL_ALLOW_LONG64_TYPE_OVERLOADS
+BALL_STRING_DEFINE_ASSIGNMENT_METHOD(LongIndex)
+BALL_STRING_DEFINE_ASSIGNMENT_METHOD(LongSize)
+#endif
+BALL_STRING_DEFINE_ASSIGNMENT_METHOD(float)
+BALL_STRING_DEFINE_ASSIGNMENT_METHOD(double)
+#undef BALL_STRING_DEFINE_ASSIGNMENT_METHOD
+
+BALL_INLINE 
+void String::setCompareMode(CompareMode mode)
+{
+  compare_mode_ = mode;
+}
+
+BALL_INLINE 
+String::CompareMode String::getCompareMode()
+{
+  return compare_mode_;
+}
+
+BALL_INLINE 
+char String::toChar() const
+{
+  return *c_str();
+}
+
+BALL_INLINE 
+unsigned char String::toUnsignedChar() const
+{
+  return (unsigned char)*c_str();
+}
+
+BALL_INLINE 
+Substring String::getSubstring(Index from, Size len) const
+{
+	validateRange_(from, len);
+  return Substring(*this, from, len);
+}
+
+BALL_INLINE 
+Substring String::operator () (Index from, Size len) const
+{
+  return getSubstring(from, len);
+}
+
+BALL_INLINE 
+String& String::trim(const char* trimmed)
+{
+  return trimRight(trimmed).trimLeft(trimmed);
+}
+
+BALL_INLINE 
+String String::trim(const char* trimmed) const
+{
+	String tmp(*this);
+	tmp.trimRight(trimmed);
+	tmp.trimLeft(trimmed);
+  return tmp;
+}
+
+BALL_INLINE 
+String& String::truncate(Size max_size)
+{
+  if (max_size < (Size) size())
+	{
+    resize(max_size);
+	}
+
+	return *this;
+}
+
+BALL_INLINE 
+Substring String::left(Size len) const
+{
+	if (len > (Size)size())
+	{
+		len = (Size)size();
+	}
+
+  return Substring(*this, 0, len);
+}
+
+BALL_INLINE 
+Substring String::instr(const String& patterns, Index from) const
+{
+  string::size_type found = find(patterns, from); 
+
+  return (found == string::npos)
+         ? Substring(*this, 0, 0)
+         : Substring(*this, (Index)found, (Size)patterns.size());
+}
+
+BALL_INLINE 
+String operator + (const String& s1, const string& s2)
+{
+  String result(s1);
+  result.append(s2);
+  return result;
+}
+
+BALL_INLINE 
+String operator + (const string& s1, const String& s2)
+{
+  String result(s1);
+  result.append(s2);
+  return result;
+}
+
+BALL_INLINE
+String operator + (const String& s1, const String& s2)
+{
+  String result(s1);
+  result.append(s2);
+  return result;
+}
+
+BALL_INLINE 
+String operator +(const String& s1, const char* char_ptr) 
+{
+  String result(s1);
+  result.append(char_ptr);
+  return result;
+}
+
+BALL_INLINE 
+String operator + (const String& s1, char c)
+{
+  String result(s1);
+  result.append(1, c);
+  return result;
+}
+
+#ifdef BALL_STD_STRING_HAS_RVALUE_REFERENCES
+///	Concatenates two strings
+BALL_INLINE
+String operator + (String&& s1, const string& s2)
+{
+	s1.append(s2);
+	return std::move(s1);
+}
+
+BALL_INLINE
+String operator + (String&& s1, const String& s2)
+{
+	s1.append(s2);
+	return std::move(s1);
+}
+
+BALL_INLINE
+String operator + (String&& s1, String&& s2)
+{
+	s1.append(s2);
+	return std::move(s1);
+}
+
+BALL_INLINE
+String operator + (const String& s1, string&& s2)
+{
+	return std::move(std::operator+(s1, std::move(s2)));
+}
+
+BALL_INLINE
+String operator + (const String& s1, String&& s2)
+{
+	return std::move(std::operator+(s1, std::move(s2)));
+}
+
+BALL_INLINE
+String operator + (string&& s1, const String& s2)
+{
+	s1.append(s2);
+	return std::move(s1);
+}
+
+BALL_INLINE
+String operator + (const string& s1, String&& s2)
+{
+	return std::move(std::operator+(s1, std::move(s2)));
+}
+
+/// Concatenates a string and a C type string
+BALL_INLINE
+String operator + (String&& s1, const char* char_ptr)
+{
+	s1 += char_ptr;
+	return std::move(s1);
+}
+
+/// Concatenates a C type string and a string
+BALL_INLINE
+String operator + (const char* char_ptr, String&& s)
+{
+	return std::move(std::operator+(char_ptr,std::move(s)));
+}
+
+/// Concatenates a string and a character
+BALL_INLINE
+String operator + (String&& s, char c)
+{
+	s += c;
+	return std::move(s);
+}
+
+/// Concatenates a character and a string
+BALL_INLINE
+String operator + (char c, String&& s)
+{
+	return std::move(std::operator+(c, std::move(s)));
+}
+
+#endif
+
+BALL_INLINE 
+void String::destroy()
+{
+  assign("");
+}
+
+BALL_INLINE 
+void String::clear()
+{
+  assign("");
+}
+
+BALL_INLINE 
+bool String::has(char c) const
+{
+  return ((c != (char)0) && (find(c, 0) != string::npos));
+}
+
+BALL_INLINE 
+bool String::hasSubstring(const String& s, Index from) const
+{
+	if (s.size() == 0)
+	{
+		return true;
+	}
+
+  return (find(s, from) != string::npos);
+}
+
+BALL_INLINE 
+bool String::isEmpty() const
+{
+  return (size() == 0);
+}
+
+BALL_INLINE 
+bool String::isAlpha(char c)
+{
+	return ((c != 0) && ((char*)strchr(CHARACTER_CLASS__ASCII_ALPHA, c) != 0));
+}
+
+BALL_INLINE 
+bool String::isAlnum(char c)
+{
+	return ((c != 0) && ((char*)strchr(CHARACTER_CLASS__ASCII_ALPHANUMERIC, c) != 0));
+}
+
+BALL_INLINE 
+bool String::isDigit(char c)
+{
+  return ((c != 0) && ((char*)strchr(CHARACTER_CLASS__ASCII_NUMERIC, c) != 0));
+}
+
+BALL_INLINE 
+bool String::isFloat() const 
+{
+	char* test;
+	char* str = const_cast<char*>(c_str());
+  errno = 0;
+
+//Get rid of those friggin warnings
+#if defined BALL_COMPILER_GXX && ((BALL_COMPILER_VERSION_MAJOR == 4 && BALL_COMPILER_VERSION_MINOR < 6) || BALL_COMPILER_VERSION_MAJOR < 4)
+	double d = 0;
+	d = strtod(str, &test);
+#else
+	strtod(str, &test);
+#endif
+	return (errno == 0 && *test == '\0');
+}
+
+BALL_INLINE 
+bool String::isSpace(char c)
+{
+  return (c == ' ');
+}
+
+BALL_INLINE 
+bool String::isWhitespace(char c)
+{
+  return ((c != 0) && ((char*)strchr(CHARACTER_CLASS__WHITESPACE, c) != 0));
+}
+
+BALL_INLINE 
+bool String::operator != (const String& s) const
+{
+  return (compare(s) != 0);
+}
+
+BALL_INLINE 
+bool String::operator < (const String& s) const
+{
+  return (compare(s) < 0);
+}
+
+BALL_INLINE 
+bool String::operator <= (const String& s) const
+{
+  return (compare(s) <= 0);
+}
+
+BALL_INLINE 
+bool String::operator >= (const String& s) const
+{
+  return (compare(s) >= 0);
+}
+
+BALL_INLINE 
+bool String::operator > (const String& s) const
+{
+  return (compare(s) > 0);
+}
+
+BALL_INLINE
+bool String::operator == (const String& string) const
+{
+	return (compare(string.c_str()) == 0);
+}
+
+BALL_INLINE 
+bool String::operator < (const char* char_ptr) const
+{
+  return (compare(char_ptr) < 0);
+}
+
+BALL_INLINE
+bool String::operator <= (const char* char_ptr) const
+{
+  return (compare(char_ptr) <= 0);
+}
+
+BALL_INLINE 
+bool String::operator >= (const char* char_ptr) const
+{
+  return (compare(char_ptr) >= 0);
+}
+
+BALL_INLINE 
+bool String::operator > (const char* char_ptr) const
+{
+  return (compare(char_ptr) > 0);
+}
+
+BALL_INLINE 
+bool String::operator == (char c) const
+{
+  return (compare(c) == 0);
+}
+
+BALL_INLINE 
+bool String::operator != (char c) const
+{
+  return (compare(c) != 0);
+}
+
+BALL_INLINE 
+bool String::operator < (char c) const
+{
+  return (compare(c) < 0);
+}
+
+BALL_INLINE 
+bool String::operator <= (char c) const
+{
+  return (compare(c) <= 0);
+}
+
+BALL_INLINE 
+bool String::operator >= (char c) const
+{
+  return (compare(c) >= 0);
+}
+
+BALL_INLINE 
+bool String::operator > (char c) const
+{
+  return (compare(c) > 0);
+}
+
+BALL_INLINE 
+bool String::isValid() const
+{
+  return (c_str() != 0 && size() <= capacity()); 
+}
+
+BALL_INLINE 
+std::istream& String::getline(std::istream& s,  char delimiter)
+{
+	static vector<char> line_buffer(8192);
+  s.getline(&(line_buffer[0]), 8191, delimiter);
+	set(&(line_buffer[0]));
+	
+	return s;
+}
+
+BALL_INLINE 
+bool operator != (const String& s, const Substring& substring)
+{
+	return (substring != s);
+}
+
+BALL_INLINE 
+bool operator == (const String& s, const Substring& substring)
+{
+	return (substring == s);
+}
+
+BALL_INLINE 
+void String::swap(String& s)
+{
+	string::swap(s);
+}
+
+BALL_INLINE 
+bool operator == (const char* char_ptr, const String &s)
+{
+	return (s.compare(char_ptr) == 0);
+}
+
+BALL_INLINE 
+bool operator != (const char* char_ptr, const String &s)
+{
+	return (s.compare(char_ptr) != 0);
+}
+
+BALL_INLINE 
+bool operator < (const char* char_ptr, const String& s)
+{
+	return (s.compare(char_ptr) > 0);
+}
+
+BALL_INLINE 
+bool operator <= (const char* char_ptr, const String &s)
+{
+	return (s.compare(char_ptr) >= 0);
+}
+
+BALL_INLINE 
+bool operator >= (const char* char_ptr, const String& s)
+{
+	return (s.compare(char_ptr) <= 0);
+}
+
+BALL_INLINE 
+bool operator > (const char* char_ptr, const String& s)
+{
+	return (s.compare(char_ptr) < 0);
+}
+
+BALL_INLINE 
+bool operator == (char c, const String& s)
+{
+	return (s.compare(c) == 0);
+}
+
+BALL_INLINE 
+bool operator != (char c, const String &s)
+{
+	return (s.compare(c) != 0);
+}
+
+BALL_INLINE 
+bool operator < (char c, const String& s)
+{
+	return (s.compare(c) > 0);
+}
+
+BALL_INLINE 
+bool operator <= (char c, const String &s)
+{
+	return (s.compare(c) >= 0);
+}
+
+BALL_INLINE 
+bool operator >= (char c, const String &s)
+{
+	return (s.compare(c) <= 0);
+}
+
+BALL_INLINE 
+bool operator > (char c, const String &s)
+{
+	return (s.compare(c) < 0);
+}

@@ -1,0 +1,77 @@
+#@UGENE_WORKFLOW
+#Build frequency matrix from existing multiple sequence alignment
+
+
+
+workflow "Build frequency matrix"{
+
+    read-msa {
+        type:read-msa;
+        name:"Read alignment";
+        url-in {
+            dataset:"Dataset 1";
+        }
+    }
+    fmatrix-build {
+        type:fmatrix-build;
+        name:"Build frequency matrix";
+    }
+    fmatrix-write {
+        type:fmatrix-write;
+        name:"Write frequency matrix";
+    }
+
+
+    .actor-bindings {
+        read-msa.out-msa->fmatrix-build.in-msa
+        fmatrix-build.out-fmatrix->fmatrix-write.in-fmatrix
+    }
+
+    read-msa.msa->fmatrix-build.in-msa.msa
+    fmatrix-build.fmatrix->fmatrix-write.in-fmatrix.fmatrix
+
+    .meta {
+        parameter-aliases {
+            read-msa.url-in {
+                alias:in;
+                description:"Input alignment";
+            }
+            fmatrix-build.matrix-type {
+                alias:type;
+                description:"Frequency matrix type (using 'Mononucleic' by default)";
+            }
+            fmatrix-write.url-out {
+                alias:out;
+                description:"Output frequency matrix";
+            }
+        }
+        visual {
+            fmatrix-build {
+                pos:"-600 -645";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                in-msa.angle:180;
+                out-fmatrix.angle:360;
+            }
+            fmatrix-write {
+                pos:"-390 -645";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                in-fmatrix.angle:180;
+            }
+            read-msa {
+                pos:"-780 -645";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                out-msa.angle:360;
+            }
+            fmatrix-build.out-fmatrix->fmatrix-write.in-fmatrix {
+                text-pos:"-45 -37";
+            }
+            read-msa.out-msa->fmatrix-build.in-msa {
+                text-pos:"-45 -50";
+            }
+        }
+    }
+}
+

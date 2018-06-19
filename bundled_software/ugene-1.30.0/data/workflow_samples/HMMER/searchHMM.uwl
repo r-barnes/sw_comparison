@@ -1,0 +1,125 @@
+#@UGENE_WORKFLOW
+#Reads an HMM from a file and searches input sequences for significantly similar matches, saves found signals to a file. You can specify several input files for both HMM and sequences, the workflow will process Cartesian product of inputs. That is, each sequence will be searched with all specified HMMs in turn. To specify task parameters, select it and edit interesting fields in table "Parameters" of Property Inspector panel. Schedule the workflow for execution by pressing CTRL+R shortcut. You can watch its" progress in Task View of UGENE.
+
+workflow "Search sequences with profile HMM"{
+    read-sequence {
+        type:read-sequence;
+        name:"Read sequence";
+        merge-gap:10;
+        mode:0;
+    }
+    hmm2-read-profile {
+        type:hmm2-read-profile;
+        name:"Read HMM profile";
+    }
+    hmm2-search {
+        type:hmm2-search;
+        name:"HMM search";
+        e-val:-1;
+        result-name:hmm_signal;
+        score:-1000000000;
+        seqs-num:1;
+    }
+    write-genbank {
+        type:write-sequence;
+		document-format:genbank;
+        name:"Write Genbank";
+        accumulate:true;
+        write-mode:2;
+        url-out:output.gb;
+    }
+
+    hmm2-read-profile.hmm2-profile->hmm2-search.in-hmm2.hmm2-profile
+    read-sequence.sequence->hmm2-search.in-sequence.sequence
+    hmm2-search.annotations->write-genbank.in-sequence.annotations
+    read-sequence.annotations->write-genbank.in-sequence.annotations
+    read-sequence.sequence->write-genbank.in-sequence.sequence
+
+    .meta {
+        visual {
+            read-sequence {
+                pos:"-750 -675";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                out-sequence.angle:360;
+            }
+            hmm2-read-profile {
+                pos:"-750 -480";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                out-hmm2.angle:360;
+            }
+            hmm2-search {
+                pos:"-585 -570";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                in-hmm2.angle:230.042;
+                in-sequence.angle:141.911;
+                out-annotations.angle:360;
+            }
+            write-genbank {
+                pos:"-315 -570";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                in-sequence.angle:180;
+            }
+            read-sequence.out-sequence->hmm2-search.in-sequence {
+                text-pos:"-27.5 -24";
+            }
+            hmm2-read-profile.out-hmm2->hmm2-search.in-hmm2 {
+                text-pos:"-32 -24";
+            }
+            hmm2-search.out-annotations->write-genbank.in-sequence {
+                text-pos:"-45 -37";
+            }
+        }
+        wizard {
+            name:"Search sequences with profile HMM Wizard";
+            help-page-id:16122716;
+            page {
+                id:1;
+                next:2;
+                title:"Input sequence(s)";
+                parameters-area {
+                    read-sequence.url-in {
+                        type:datasets;
+                    }
+                }
+            }
+            page {
+                id:2;
+                title:"HMM Search";
+                parameters-area {
+                    group {
+                        title:"Input HMM profile(s)";
+                        label-size:120;
+                        hmm2-read-profile.url-in {
+                            label:"HMM profile(s)";
+                        }
+                    }
+                    group {
+                        title:"HMM Search parameters";
+                        label-size:120;
+                        hmm2-search.result-name {
+                        }
+                        hmm2-search.seqs-num {
+                        }
+                        hmm2-search.e-val {
+                        }
+                        hmm2-search.score {
+                        }
+                    }
+                    group {
+                        title:"Output data";
+                        label-size:120;
+                        write-genbank.url-out {
+                            label:"Result Genbank file";
+                        }
+                        write-genbank.accumulate {
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,85 @@
+#!UGENE_WORKFLOW
+#Fetches sequence from LinkData by specified work ID, filename, subject ID, property ID and writes result in file in FASTA format
+
+include "LinkData Fetch.usa" as "Script-LinkData Fetch"
+
+workflow "LinkData fetch"{
+    script-linkdata-fetch {
+        type:"Script-LinkData Fetch";
+        name:"LinkData Fetch";
+        script {
+out_sequence = sequenceFromText(LinkData.getObjects(workId,filename,subject,property));
+
+        };
+        filename:cox_s70_promoters_8objects;
+        property:"http://linkdata.org/property/rdf1s171i#sequence";
+        subject:"http://linkdata.org/resource/rdf1s171i#A.A1'";
+        workId:rdf1s171i;
+    }
+    write-sequence {
+        type:write-sequence;
+        name:"Write Sequence";
+        url-out:"D:/work/linkdata.fa";
+    }
+
+
+    .actor-bindings {
+        script-linkdata-fetch.out->write-sequence.in-sequence
+    }
+
+    script-linkdata-fetch.sequence->write-sequence.in-sequence.sequence
+
+    .meta {
+        visual {
+            script-linkdata-fetch {
+                pos:"-735 -569";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                out.angle:360;
+            }
+            write-sequence {
+                pos:"-504 -570";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                bounds:"-30 -30 78 90";
+                in-sequence.angle:180;
+            }
+            script-linkdata-fetch.out->write-sequence.in-sequence {
+                text-pos:"-32.5 -24";
+            }
+        }
+        wizard {
+            name:"LinkData fetch Wizard";
+            help-page-id:16122710;
+            page {
+                id:1;
+                title:"LinkData Fetch";
+                parameters-area {
+                    group {
+                        title:"LinkData Fetch";
+                        label-size:120;
+                        script-linkdata-fetch.workId {
+                            label:"Work ID";
+                        }
+                        script-linkdata-fetch.filename {
+                            label:"File name";
+                        }
+                        script-linkdata-fetch.subject {
+                            label:"Subject";
+                        }
+                        script-linkdata-fetch.property {
+                            label:"Property";
+                        }
+                    }
+                    group {
+                        title:"Output data";
+                        label-size:120;
+                        write-sequence.url-out {
+                            label:"Result sequence";
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

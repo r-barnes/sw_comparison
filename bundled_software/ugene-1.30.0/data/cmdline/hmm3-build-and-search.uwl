@@ -1,0 +1,128 @@
+#@UGENE_WORKFLOW
+#Builds a new profile HMM from input alignment, calibrates the HMM and saves to a file. Then runs a test HMM search over sample sequence and saves test results to Genbank file. To run this workflow, you need to specify appropriate locations for input/output files. This is achieved by selecting a task and editing interesting parameters in Property Inspector panel.Optionally, fine tune the build/search parameters as you see fit. Then schedule the workflow for execution by pressing CTRL+R shortcut. You can watch its" progress in a Task View of UGENE.
+
+
+
+workflow "New workflow"{
+
+    hmm3-build {
+        type:hmm3-build;
+        name:"HMM3 Build";
+    }
+    hmm3-search {
+        type:hmm3-search;
+        name:"HMM3 Search";
+    }
+    write-annotations {
+        type:write-annotations;
+        name:"Write Annotations";
+        url-out:"";
+        write-mode:0;
+    }
+    read-sequence {
+        type:read-sequence;
+        name:"Read Sequence";
+        url-in {
+            dataset:"Dataset 1";
+        }
+    }
+    read-msa {
+        type:read-msa;
+        name:"Read Alignment";
+        url-in {
+            dataset:"Dataset 1";
+        }
+    }
+
+    .actor-bindings {
+        read-msa.out-msa->hmm3-build.in-msa
+        hmm3-build.out-hmm3->hmm3-search.in-hmm3
+        hmm3-search.out-annotations->write-annotations.in-annotations
+        read-sequence.out-sequence->hmm3-search.in-sequence
+    }
+
+    read-msa.msa->hmm3-build.in-msa.msa
+    hmm3-build.url->hmm3-search.in-hmm3.url
+    read-sequence.sequence->hmm3-search.in-sequence.sequence
+    hmm3-search.annotations->write-annotations.in-annotations.annotations
+
+    .meta {
+        parameter-aliases {
+            hmm3-search.e-val {
+                alias:domE;
+            }
+            hmm3-search.filter-by {
+                alias:filter_by;
+            }
+            hmm3-search.result-name {
+                alias:annotation-name;
+            }
+            hmm3-search.score {
+                alias:domT;
+            }
+            hmm3-search.seed {
+                alias:seed;
+            }
+            write-annotations.document-format {
+                alias:format;
+            }
+            write-annotations.url-out {
+                alias:out;
+            }
+            read-sequence.url-in {
+                alias:in_sequence;
+            }
+            read-msa.url-in {
+                alias:in_alignment;
+            }
+        }
+        visual {
+            hmm3-build {
+                pos:"-780 -570";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                in-msa.angle:180;
+                out-hmm3.angle:360;
+            }
+            hmm3-search {
+                pos:"-600 -435";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                in-hmm3.angle:150;
+                in-sequence.angle:210;
+                out-annotations.angle:360;
+            }
+            read-msa {
+                pos:"-975 -570";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                out-msa.angle:360;
+            }
+            read-sequence {
+                pos:"-780 -420";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                out-sequence.angle:360;
+            }
+            write-annotations {
+                pos:"-360 -435";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                in-annotations.angle:180;
+            }
+            hmm3-build.out-hmm3->hmm3-search.in-hmm3 {
+                text-pos:"-35 -24";
+            }
+            hmm3-search.out-annotations->write-annotations.in-annotations {
+                text-pos:"-45 -37";
+            }
+            read-msa.out-msa->hmm3-build.in-msa {
+                text-pos:"-45 -50";
+            }
+            read-sequence.out-sequence->hmm3-search.in-sequence {
+                text-pos:"-27.5 -24";
+            }
+        }
+    }
+}
+

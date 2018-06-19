@@ -1,0 +1,356 @@
+#@UGENE_WORKFLOW
+#The workflow takes FASTQ files as input and process this data as follows:
+#    - Filters the input sequencing reads by the CASAVA header (for Illumina platform).
+#    - Cuts of adapter sequences.
+#    - Trims the sequencing reads by quality.
+#    - Merges different FASTQ files.
+#    - Maps the sequencing reads by TopHat.
+#
+#The workflow also performs quality control of the data with FastQC: first, on the input FASTQ files and, second, after the pre-processing step.
+#
+#Besides intermediate files and FastQC reports, the final result is a BAM file with aligned reads and other TopHat output files.
+#
+
+
+
+workflow "Processing of raw RNA-Seq single-end reads with mapping"{
+
+    CASAVAFilter {
+        type:CASAVAFilter;
+        name:"Filter Reads by CASAVA Header";
+        custom-dir:filtered_fastq;
+    }
+    QualityTrim {
+        type:QualityTrim;
+        name:"Trim Reads by Quality";
+        custom-dir:filtered_fastq;
+        len-id:10;
+        out-mode:0;
+        qual-id:20;
+    }
+    get-file-list {
+        type:get-file-list;
+        name:"Read FASTQ Files with Reads";
+        url-in {
+            dataset:"Dataset 1";
+        }
+    }
+    MergeFastq {
+        type:MergeFastq;
+        name:"Merge FASTQ Files";
+        custom-dir:filtered_fastq;
+        out-mode:0;
+        out-name:in_1.fq;
+    }
+    tophat {
+        type:tophat;
+        name:"Align Reads with TopHat";
+        bowtie-version:1;
+        mate-inner-distance:170;
+        no-novel-junctions:true;
+        out-dir:output;
+    }
+    CutAdaptFastq {
+        type:CutAdaptFastq;
+        name:"Cut Adapter";
+        out-mode:0;
+    }
+    fastqc {
+        type:fastqc;
+        name:"FastQC Quality Control";
+    }
+    fastqc-1 {
+        type:fastqc;
+        name:"FastQC Quality Control";
+    }
+    fastqc-1-1 {
+        type:fastqc;
+        name:"FastQC Quality Control";
+    }
+
+    .actor-bindings {
+        CASAVAFilter.out-file->CutAdaptFastq.in-file
+        tophat.out-assembly->fastqc-1-1.in-file
+        MergeFastq.out-file->tophat.in-sequence
+        MergeFastq.out-file->fastqc-1.in-file
+        QualityTrim.out-file->MergeFastq.in-file
+        get-file-list.out-url->CASAVAFilter.in-file
+        get-file-list.out-url->fastqc.in-file
+        CutAdaptFastq.out-file->QualityTrim.in-file
+    }
+
+    get-file-list.url->CASAVAFilter.in-file.url
+    CutAdaptFastq.url->QualityTrim.in-file.url
+    QualityTrim.url->MergeFastq.in-file.url
+    MergeFastq.url->tophat.in-sequence.in-url
+    CASAVAFilter.url->CutAdaptFastq.in-file.url
+    get-file-list.url->fastqc.in-file.url
+    MergeFastq.url->fastqc-1.in-file.url
+    tophat.hits-url->fastqc-1-1.in-file.url
+
+    .meta {
+        parameter-aliases {
+            CASAVAFilter.out-mode {
+                alias:out_mode;
+            }
+            QualityTrim.custom-dir {
+                alias:trim_reads1_out_dir;
+            }
+            QualityTrim.out-mode {
+                alias:trim_reads1_out_dir_type;
+            }
+            get-file-list.url-in {
+                alias:in;
+            }
+            tophat.bowtie-index-basename {
+                alias:idx_name;
+            }
+            tophat.bowtie-index-dir {
+                alias:idx_dir;
+            }
+            tophat.out-dir {
+                alias:out_dir;
+            }
+            fastqc.custom-dir {
+                alias:fasqc2_out_dir;
+            }
+            fastqc.out-mode {
+                alias:fasqc2_out_dir_type;
+            }
+            fastqc-1.custom-dir {
+                alias:fasqc1_out_dir;
+            }
+            fastqc-1.out-mode {
+                alias:fasqc1_out_dir_type;
+            }
+        }
+        visual {
+            CASAVAFilter {
+                pos:"-765 -480";
+                style:ext;
+                bg-color-ext:"194 0 0 64";
+                bounds:"-30 -30 181.875 92";
+                in-file.angle:180;
+                out-file.angle:360;
+            }
+            CutAdaptFastq {
+                pos:"-405 -480";
+                style:ext;
+                bg-color-ext:"236 177 178 64";
+                in-file.angle:180;
+                out-file.angle:360;
+            }
+            MergeFastq {
+                pos:"-60 -240";
+                style:simple;
+                bg-color-simple:"78 151 184 255";
+                in-file.angle:90;
+                out-file.angle:270;
+            }
+            QualityTrim {
+                pos:"-105 -480";
+                style:ext;
+                bg-color-ext:"204 68 102 64";
+                bounds:"-30 -30 106 96";
+                in-file.angle:180;
+                out-file.angle:290.925;
+            }
+            fastqc {
+                pos:"-930 -255";
+                style:simple;
+                bg-color-simple:"0 128 128 255";
+                in-file.angle:90;
+            }
+            fastqc-1 {
+                pos:"-315 -210";
+                style:simple;
+                bg-color-simple:"0 128 128 255";
+                in-file.angle:358.091;
+            }
+            fastqc-1-1 {
+                pos:"-315 -60";
+                style:simple;
+                bg-color-simple:"0 128 128 255";
+                in-file.angle:358.091;
+            }
+            get-file-list {
+                pos:"-1035 -480";
+                style:ext;
+                bg-color-ext:"24 102 175 64";
+                bounds:"-30 -30 102.25 92";
+                out-url.angle:360;
+            }
+            tophat {
+                pos:"-135 -75";
+                style:ext;
+                bg-color-ext:"0 128 0 64";
+                in-sequence.angle:21.9745;
+                out-assembly.angle:207.408;
+            }
+            CASAVAFilter.out-file->CutAdaptFastq.in-file {
+                text-pos:"-38.75 -27";
+            }
+            CutAdaptFastq.out-file->QualityTrim.in-file {
+                text-pos:"-40.75 -27";
+            }
+            MergeFastq.out-file->fastqc-1.in-file {
+                text-pos:"-49.75 -28";
+            }
+            MergeFastq.out-file->tophat.in-sequence {
+                text-pos:"-25.75 -19";
+            }
+            QualityTrim.out-file->MergeFastq.in-file {
+                text-pos:"-48.75 -15";
+            }
+            get-file-list.out-url->CASAVAFilter.in-file {
+                text-pos:"-39.7578 -27";
+            }
+            get-file-list.out-url->fastqc.in-file {
+                text-pos:"-49.7578 25";
+            }
+            tophat.out-assembly->fastqc-1-1.in-file {
+                text-pos:"-44.2266 -24";
+            }
+        }
+        wizard {
+            name:"Raw RNA-Seq Data Processing Wizard";
+            page {
+                id:1;
+                next:2;
+                title:"Input data";
+                parameters-area {
+                    group {
+                        title:"Sequencing reads";
+                        label-size:120;
+                        get-file-list.url-in {
+                            label:"FASTQ files";
+                        }
+                    }
+                }
+            }
+            page {
+                id:2;
+                next:3;
+                title:Pre-processing;
+                parameters-area {
+                    group {
+                        title:"Reads filtration";
+                        label-size:120;
+                        QualityTrim.qual-id {
+                        }
+                        QualityTrim.len-id {
+                            label:"Min length";
+                        }
+                        QualityTrim.both-ends {
+                            label:"Trim both ends";
+                        }
+                        CutAdaptFastq.adapters-url {
+                            label:"3' adapters";
+                        }
+                        CutAdaptFastq.front-url {
+                            label:"5' adapters";
+                        }
+                        CutAdaptFastq.anywhere-url {
+                            label:"5' and 3' adapters";
+                        }
+                    }
+                }
+            }
+            page {
+                id:3;
+                next:4;
+                title:Mapping;
+                parameters-area {
+                    group {
+                        title:"TopHat input";
+                        label-size:180;
+                        bowtie-index {
+                            tophat.bowtie-index-dir {
+                            }
+                            tophat.bowtie-index-basename {
+                            }
+                        }
+                        tophat.bowtie-version {
+                        }
+                    }
+                    group {
+                        title:Parameters;
+                        label-size:170;
+                        tophat.known-transcript {
+                        }
+                        tophat.raw-junctions {
+                        }
+                    }
+                    group {
+                        title:Additional;
+                        label-size:170;
+                        type:hideable;
+                        tophat.mate-inner-distance {
+                        }
+                        tophat.mate-standard-deviation {
+                        }
+                        tophat.library-type {
+                        }
+                        tophat.no-novel-junctions {
+                        }
+                        tophat.max-multihits {
+                        }
+                        tophat.segment-length {
+                        }
+                        tophat.fusion-search {
+                        }
+                        tophat.transcriptome-only {
+                        }
+                        tophat.transcriptome-max-hits {
+                        }
+                        tophat.prefilter-multihits {
+                        }
+                        tophat.min-anchor-length {
+                        }
+                        tophat.splice-mismatches {
+                        }
+                        tophat.read-mismatches {
+                        }
+                        tophat.segment-mismatches {
+                        }
+                        tophat.solexa-1-3-quals {
+                        }
+                        tophat.bowtie-n-mode {
+                        }
+                        tophat.bowtie-tool-path {
+                        }
+                        tophat.samtools-tool-path {
+                        }
+                        tophat.path {
+                        }
+                        tophat.temp-dir {
+                        }
+                    }
+                }
+            }
+            page {
+                id:4;
+                title:"Output data";
+                parameters-area {
+                    group {
+                        title:"TopHat data";
+                        label-size:130;
+                        tophat.out-dir {
+                            label:Tophat;
+                        }
+                    }
+                    group {
+                        title:"Filtered FASTQ";
+                        label-size:130;
+                        type:hideable;
+                        CASAVAFilter.out-mode {
+                        }
+                        CASAVAFilter.custom-dir {
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+

@@ -1,0 +1,165 @@
+#@UGENE_WORKFLOW
+#This schema allows to analyze sequence with Query and save results as alignment of selected features.
+#To execute the workflow do the following:
+#1) Select "Sequence Reader" task and specify source file at "URL" field in the Property Editor.
+#2) Select "Annotate with UQL" task and specify the URL of the UQL schema file.
+#3) Select "Filter annotations by name" task and specify the name of features to be joined into alignment.
+#4) Select "Join sequences into alignment" task and specify the URL of the result file.
+#
+
+workflow "Convert UQL schema results to alignment" {
+    read-sequence {
+        type:read-sequence;
+        name:"Read sequence";
+        merge-gap:10;
+        mode:0;
+    }
+    query {
+        type:query;
+        name:"Annotate with UQL";
+        merge:false;
+        offset:0;
+    }
+    extract-annotated-sequence {
+        type:extract-annotated-sequence;
+        name:"Get sequences by annotations";
+        complement:true;
+        extend-left:0;
+        extend-right:0;
+        merge-gap-length:1;
+        translate:false;
+    }
+    sequences-to-msa {
+        type:sequences-to-msa;
+        name:"Join sequences into alignment";
+    }
+    write-msa {
+        type:write-msa;
+        name:"Write alignment";
+        document-format:clustal;
+        write-mode:2;
+        url-out:output.aln;
+    }
+    filter-annotations {
+        type:filter-annotations;
+        name:"Filter annotations by name";
+        accept-or-filter:true;
+    }
+
+    read-sequence.sequence->query.in-sequence.sequence
+    filter-annotations.annotations->extract-annotated-sequence.in-sequence.annotations
+    read-sequence.sequence->extract-annotated-sequence.in-sequence.sequence
+    extract-annotated-sequence.sequence->sequences-to-msa.in-sequence.sequence
+    sequences-to-msa.msa->write-msa.in-msa.msa
+    query.annotations->filter-annotations.in-annotations.annotations
+
+    .meta {
+        visual {
+            read-sequence {
+                pos:"-765 -795";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                out-sequence.angle:360;
+            }
+            query {
+                pos:"-615 -795";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                bounds:"-30 -30 75 91";
+                in-sequence.angle:180;
+                out-annotations.angle:360;
+            }
+            read-sequence.out-sequence->query.in-sequence {
+                text-pos:"-27.5 -24";
+            }
+            extract-annotated-sequence {
+                pos:"-255 -795";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                bounds:"-30 -30 116 105";
+                in-sequence.angle:183.18;
+                out-sequence.angle:294.642;
+            }
+            sequences-to-msa {
+                pos:"-255 -585";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                in-sequence.angle:45;
+                out-msa.angle:291.49;
+            }
+            extract-annotated-sequence.out-sequence->sequences-to-msa.in-sequence {
+                text-pos:"-45 -37";
+            }
+            write-msa {
+                pos:"-240 -390";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                in-msa.angle:73.0725;
+            }
+            sequences-to-msa.out-msa->write-msa.in-msa {
+                text-pos:"-43.5 -24";
+            }
+            filter-annotations {
+                pos:"-475 -795";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                in-annotations.angle:180;
+                out-annotations.angle:360;
+            }
+            query.out-annotations->filter-annotations.in-annotations {
+                text-pos:"-45 -37";
+            }
+            filter-annotations.out-annotations->extract-annotated-sequence.in-sequence {
+                text-pos:"-45 -37";
+            }
+        }
+        wizard {
+            name:"Convert UQL schema results to alignment Wizard";
+            help-page-id:16122706;
+            page {
+                id:1;
+                next:2;
+                title:"Input sequence(s)";
+                parameters-area {
+                    read-sequence.url-in {
+                        type:datasets;
+                    }
+                }
+            }
+            page {
+                id:2;
+                title:"Annotate with UQL";
+                parameters-area {
+                    group {
+                        title:"UQL parameters";
+                        label-size:120;
+                        query.url-in {
+                            label:"UQL schema file";
+                        }
+                        query.merge {
+                        }
+                        query.offset {
+                        }
+                    }
+                    group {
+                        title:"Filter annotations parameters";
+                        label-size:120;
+                        filter-annotations.annotation-names {
+                        }
+                        filter-annotations.accept-or-filter {
+                        }
+                    }
+                    group {
+                        title:"Output data";
+                        label-size:120;
+                        write-msa.url-out {
+                            label:"Result file";
+                        }
+                        write-msa.document-format {
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,112 @@
+#@UGENE_WORKFLOW
+#This scheme describes how to merge sequences and manipulate its annotations.
+#
+#First, the schema reads sequence(s) from file(s). Then, marks the input sequences with the sequence name marker. After marking the sequences are grouped by the marker. Sequences with equal markers are merged into one sequence. Annotations are shifted using the position of the corresponding sequence at the merged sequence. And finally, the grouped data are written into file, specified by a user.
+#
+#By default, sequence is marked using the sequence name marker. You can configure this value in the Marker element parameters. Also, you can configure the Grouper element parameters.
+#
+#To try out this sample, add the input files to the Read Sequence, select the name and location of the output files in the Write Sequence element and run the schema.
+#
+
+workflow "Merge sequences and shift corresponding annotations"{
+    read-sequence {
+        type:read-sequence;
+        name:"Read Sequence";
+    }
+    mark-sequence {
+        type:mark-sequence;
+        name:"Sequence Marker";
+        markers:m1;
+    }
+    grouper {
+        type:grouper;
+        name:Grouper;
+        group-op:by-value;
+        group-slot:mark-sequence.sequence-name;
+        out-slot {
+            name:merged-sequence;
+            in-slot:read-sequence.sequence;
+            action {
+                type:merge-sequence;
+                gap:10;
+                seq-name:merged;
+            }
+        }
+        out-slot {
+            name:shifted-annotations;
+            in-slot:read-sequence.annotations;
+            action {
+                type:merge-annotations;
+                seq-slot:merged-sequence;
+                unique:false;
+            }
+        }
+    }
+    write-sequence {
+        type:write-sequence;
+        name:"Write Sequence";
+        url-out:merged.fa;
+    }
+
+    @mark-sequence.m1 {
+        type:marker;
+        marker-type:sequence-length;
+        marker-name:sequence-name;
+        "rest":Rest;
+    }
+
+    .actor-bindings {
+        read-sequence.out-sequence->mark-sequence.in-sequence
+        mark-sequence.out-marked-seq->grouper.input-data
+        grouper.output-data->write-sequence.in-sequence
+    }
+
+    read-sequence.annotations->mark-sequence.in-sequence.annotations
+    read-sequence.sequence->mark-sequence.in-sequence.sequence
+    grouper.shifted-annotations->write-sequence.in-sequence.annotations
+    grouper.merged-sequence->write-sequence.in-sequence.sequence
+
+    .meta {
+        visual {
+            read-sequence {
+                pos:"-870 -704";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                bounds:"-30 -30 106.25 85";
+                out-sequence.angle:352.079;
+            }
+            mark-sequence {
+                pos:"-660 -704";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                bounds:"-30 -30 106.25 87";
+                in-sequence.angle:206.565;
+                out-marked-seq.angle:351.733;
+            }
+            grouper {
+                pos:"-417 -703";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                bounds:"-30 -30 103.75 87";
+                input-data.angle:205.907;
+                output-data.angle:352.439;
+            }
+            write-sequence {
+                pos:"-177 -704";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                bounds:"-30 -30 103.25 89";
+                in-sequence.angle:205.866;
+            }
+            mark-sequence.out-marked-seq->grouper.input-data {
+                text-pos:"-46 -27";
+            }
+            grouper.output-data->write-sequence.in-sequence {
+                text-pos:"-45 -40";
+            }
+            read-sequence.out-sequence->mark-sequence.in-sequence {
+                text-pos:"-27.5 -24";
+            }
+        }
+    }
+}

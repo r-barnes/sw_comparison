@@ -1,0 +1,195 @@
+#@UGENE_WORKFLOW
+#This scheme describes how to find substrings in sequences and group these sequences by different parameters.
+#
+#First, the schema reads sequences and text strings (patterns) from files. Then, these data sets are multiplexed using this rule: every sequence is united with every pattern. After multiplexing these united data sets are transported to the find patterns element. The results of patterns searching are grouped by id of a sequence: original and find patterns annotations are united into two new grouped annotations sets. And finally, the grouped data are written into file, specified by a user.
+#
+#By default, sequence multiplexed using the rule “1 to 1”. You can configure this value in the Multiplexer element parameters. Also, you can configure the Pattern element parameters and the Grouper element parameters.
+#
+#To try out this sample, add the input files to the Read Sequence and Read Plain Text elements, select the name and location of the output files in the Write Sequence element and run the schema.
+#
+
+workflow "Find substrings in sequences"{
+    read-sequence {
+        type:read-sequence;
+        name:"Read Sequence";
+    }
+    read-text {
+        type:read-text;
+        name:"Read Plain Text";
+        read-by-lines:true;
+    }
+    multiplexer {
+        type:multiplexer;
+        name:Multiplexer;
+        multiplexing-rule:0;
+    }
+    search {
+        type:search;
+        name:"Find Substrings";
+    }
+    grouper {
+        type:grouper;
+        name:Grouper;
+        group-op:by-id;
+        group-slot:read-sequence.sequence;
+        out-slot {
+            name:origin-annotations;
+            in-slot:read-sequence.annotations;
+            action {
+                type:merge-annotations;
+                unique:false;
+            }
+        }
+        out-slot {
+            name:substring-annotations;
+            in-slot:search.annotations;
+            action {
+                type:merge-annotations;
+                unique:false;
+            }
+        }
+    }
+    write-sequence {
+        type:write-sequence;
+        name:"Write Sequence";
+        document-format:genbank;
+        url-out:substrings.gb;
+    }
+
+
+    .actor-bindings {
+        read-sequence.out-sequence->multiplexer.input-data-1
+        read-text.out-text->multiplexer.input-data-2
+        multiplexer.output-data->search.in-sequence
+        search.out-annotations->grouper.input-data
+        grouper.output-data->write-sequence.in-sequence
+    }
+
+    read-sequence.sequence->search.in-sequence.sequence
+    read-text.text->search.in-sequence.text
+    grouper.origin-annotations->write-sequence.in-sequence.annotations
+    grouper.substring-annotations->write-sequence.in-sequence.annotations
+    read-sequence.sequence->write-sequence.in-sequence.sequence
+
+    .meta {
+        visual {
+            read-sequence {
+                pos:"-732 -809";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                bounds:"-30 -30 103.25 66";
+                out-sequence.angle:295.615;
+            }
+            read-text {
+                pos:"-730 -492";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                bounds:"-30 -30 101 56";
+                out-text.angle:45;
+            }
+            multiplexer {
+                pos:"-733 -700";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                input-data-1.angle:43.2101;
+                input-data-2.angle:287.501;
+                output-data.angle:343.639;
+            }
+            search {
+                pos:"-498 -669";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                bounds:"-30 -30 193 106";
+                in-sequence.angle:226.848;
+                out-annotations.angle:349.448;
+            }
+            grouper {
+                pos:"-172 -672";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                bounds:"-30 -30 102.5 108";
+                input-data.angle:232.883;
+                output-data.angle:290.082;
+            }
+            write-sequence {
+                pos:"-170 -490";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                bounds:"-30 -30 100.25 55";
+                in-sequence.angle:39.5226;
+            }
+            multiplexer.output-data->search.in-sequence {
+                text-pos:"-43 -54";
+            }
+            read-sequence.out-sequence->multiplexer.input-data-1 {
+                text-pos:"-53.5 -11";
+            }
+            read-text.out-text->multiplexer.input-data-2 {
+                text-pos:"-52.5 -12";
+            }
+            search.out-annotations->grouper.input-data {
+                text-pos:"-45 -44";
+            }
+            grouper.output-data->write-sequence.in-sequence {
+                text-pos:"-109 -18";
+            }
+        }
+        wizard {
+            name:"Find substrings in sequences Wizard";
+            help-page-id:16122696;
+            page {
+                id:1;
+                next:2;
+                title:"Input sequence(s)";
+                parameters-area {
+                    read-sequence.url-in {
+                        type:datasets;
+                    }
+                }
+            }
+            page {
+                id:2;
+                next:3;
+                title:"Input pattern(s)";
+                parameters-area {
+                    read-text.url-in {
+                        type:datasets;
+                    }
+                }
+            }
+            page {
+                id:3;
+                title:"Find substrings";
+                parameters-area {
+                    group {
+                        title:"Search parameters";
+                        label-size:150;
+                        search.result-name {
+                        }
+                        search.allow-ins-del {
+                        }
+                        search.amino {
+                        }
+                        search.ambiguous {
+                        }
+                        search.pattern-name-qual {
+                            label:"Qualifier name";
+                        }
+                        search.max-mismatches-num {
+                        }
+                    }
+                    group {
+                        title:"Output data";
+                        label-size:120;
+                        write-sequence.url-out {
+                            label:"Result file";
+                        }
+                        write-sequence.accumulate {
+                            label:"Accumulate results";
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

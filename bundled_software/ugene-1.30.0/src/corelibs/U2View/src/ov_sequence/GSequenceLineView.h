@@ -1,0 +1,235 @@
+/**
+ * UGENE - Integrated Bioinformatics Tools.
+ * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * http://ugene.net
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301, USA.
+ */
+
+#ifndef _U2_GSEQUENCE_LINE_VIEW_H_
+#define _U2_GSEQUENCE_LINE_VIEW_H_
+
+#include <U2Core/U2Region.h>
+
+#include <U2Gui/SelectionModificationHelper.h>
+#include <U2Gui/WidgetWithLocalToolbar.h>
+
+#include <QFlag>
+#include <QHBoxLayout>
+#include <QMenu>
+#include <QWidget>
+#include <QToolButton>
+
+#include <QMouseEvent>
+#include <QWheelEvent>
+#include <QFocusEvent>
+#include <QPainter>
+
+
+namespace U2 {
+
+class DNASequenceSelection;
+class LRegionsSelection;
+class GScrollBar;
+class GSequenceLineViewRenderArea;
+class GObject;
+class GObjectViewOpConstraints;
+class SequenceObjectContext;
+class U2SequenceObject;
+
+enum GSLV_UpdateFlag {
+    GSLV_UF_NeedCompleteRedraw  = 1<<0,
+    GSLV_UF_ViewResized         = 1<<1,
+    GSLV_UF_VisibleRangeChanged = 1<<2,
+    GSLV_UF_SelectionChanged    = 1<<3,
+    GSLV_UF_FocusChanged        = 1<<4,
+    GSLV_UF_FrameChanged        = 1<<5,
+    GSLV_UF_AnnotationsChanged  = 1<<6
+};
+
+enum GSLV_FeatureFlag {
+    GSLV_FF_SupportsCustomRange = 0x1
+};
+
+typedef QFlags<GSLV_UpdateFlag> GSLV_UpdateFlags;
+typedef QFlags<GSLV_FeatureFlag> GSLV_FeatureFlags;
+
+//single-line sequence view
+class U2VIEW_EXPORT GSequenceLineView : public WidgetWithLocalToolbar {
+    Q_OBJECT
+public:
+    GSequenceLineView(QWidget* p, SequenceObjectContext* ctx);
+
+    const U2Region& getVisibleRange() const {return visibleRange;}
+
+    SequenceObjectContext* getSequenceContext() const {return ctx;}
+
+    GSequenceLineViewRenderArea* getRenderArea() const {return renderArea;}
+
+    qint64 getLastPressPos() const { return lastPressPos; }
+
+    virtual void setStartPos(qint64 pos);
+
+    virtual void setCenterPos(qint64 pos);
+
+    qint64 getSequenceLength() const {return seqLen;}
+
+    virtual void addUpdateFlags(GSLV_UpdateFlags newFlags) {lastUpdateFlags|=newFlags;}
+
+    virtual void clearUpdateFlags() {lastUpdateFlags = 0;}
+
+    GSLV_UpdateFlags getUpdateFlags() const {return lastUpdateFlags;}
+
+    virtual void setFrameView(GSequenceLineView* frameView);
+
+    virtual GSequenceLineView* getFrameView() const {return frameView;}
+
+    virtual void setCoherentRangeView(GSequenceLineView* rangeView);
+
+    virtual GSequenceLineView* getConherentRangeView() const {return coherentRangeView;}
+
+    // [0..seqLen)
+    virtual void setVisibleRange(const U2Region& reg, bool signal = true);
+
+    virtual QAction* getZoomInAction() const {return coherentRangeView == NULL ? NULL : coherentRangeView->getZoomInAction();}
+
+    virtual QAction* getZoomOutAction() const {return coherentRangeView == NULL ? NULL : coherentRangeView->getZoomOutAction();}
+
+    virtual QAction* getZoomToSelectionAction() const {return coherentRangeView == NULL ? NULL : coherentRangeView->getZoomToSelectionAction();}
+
+    virtual QAction* getZoomToSequenceAction() const {return coherentRangeView == NULL ? NULL : coherentRangeView->getZoomToSequenceAction();}
+
+    virtual U2SequenceObject* getSequenceObject() const;
+
+    virtual void buildPopupMenu(QMenu& m){ Q_UNUSED(m); }
+
+    virtual bool isWidgetOnlyObject(GObject* o) const { Q_UNUSED(o); return false;}
+
+    virtual bool eventFilter (QObject * watched, QEvent * event);
+
+signals:
+    void si_visibleRangeChanged();
+    void si_centerPosition(qint64 pos);
+
+protected:
+    void resizeEvent(QResizeEvent* e);
+    void mousePressEvent(QMouseEvent* me);
+    void mouseReleaseEvent(QMouseEvent* me);
+    void mouseMoveEvent(QMouseEvent* me);
+    void mouseDoubleClickEvent(QMouseEvent* me);
+    void wheelEvent(QWheelEvent* we);
+    void focusInEvent(QFocusEvent* fe);
+    void focusOutEvent(QFocusEvent* fe);
+    void keyPressEvent(QKeyEvent *e);
+
+    virtual void onVisibleRangeChanged(bool signal = true);
+
+public slots:
+    void sl_centerPosition(int pos) {setCenterPos(pos);}
+
+protected slots:
+    virtual void sl_onScrollBarMoved(int pos);
+    virtual void sl_onDNASelectionChanged(LRegionsSelection* thiz, const QVector<U2Region>& added, const QVector<U2Region>& removed);
+    virtual void sl_sequenceChanged();
+    void sl_onFrameRangeChanged();
+    void sl_onCoherentRangeViewRangeChanged();
+    void sl_onLocalCenteringRequest(qint64 pos);
+    void completeUpdate();
+
+protected:
+    QPoint toRenderAreaPoint(const QPoint& p);
+    virtual void updateScrollBar();
+    void setSelection(const U2Region& r);
+    void addSelection(const U2Region& r);
+    void removeSelection(const U2Region& r);
+    virtual void setBorderCursor(const QPoint &p);
+    virtual void moveBorder(const QPoint& p);
+    virtual void pack();
+    virtual int getSingleStep() const;
+    virtual int getPageStep() const;
+    void autoScrolling(const QPoint& areaPoint);
+    virtual void resizeSelection(const QPoint& areaPoint);
+    void cancelSelectionResizing();
+    void changeSelectionOnScrollbarMoving(const U2Region& newSelection);
+    void changeSelection(QVector<U2Region>& regions, const U2Region& newSelection);
+
+    SequenceObjectContext*          ctx;
+    GSequenceLineViewRenderArea*    renderArea;
+    U2Region                        visibleRange;
+    GScrollBar*                     scrollBar;
+    qint64                          lastPressPos;
+    U2Region                        resizableRegion;
+    QList<U2Region>                 overlappedRegions;
+    qint64                          seqLen;
+    GSLV_UpdateFlags                lastUpdateFlags;
+    GSLV_FeatureFlags               featureFlags;
+    GSequenceLineView*              frameView;
+    GSequenceLineView*              coherentRangeView;
+    double                          coefScrollBarMapping;
+    SelectionModificationHelper::MovableSide movableBorder;
+
+    // special flag setup by child classes that tells to this class do or skip
+    // any changes to selection on mouse ops
+    bool                            ignoreMouseSelectionEvents;
+    bool                            singleBaseSelection;
+    bool                            isSelectionResizing;
+};
+
+class U2VIEW_EXPORT GSequenceLineViewRenderArea : public QWidget  {
+public:
+    GSequenceLineViewRenderArea(GSequenceLineView* p);
+    ~GSequenceLineViewRenderArea();
+
+    virtual qint64 coordToPos(int x) const;
+    virtual qint64 coordToPos(const QPoint& p) const;
+
+    virtual int posToCoord(qint64 p, bool useVirtualSpace = false) const;
+    virtual float posToCoordF(qint64 p, bool useVirtualSpace = false) const;
+    //number of pixels per base
+    virtual double getCurrentScale() const;
+    //char width, derived from current 'font'
+    int getCharWidth() const {return charWidth;}
+
+protected:
+    virtual void paintEvent(QPaintEvent *e);
+
+    virtual void drawAll(QPaintDevice* pd) = 0;
+    void drawFrame(QPainter& p);
+    virtual void drawFocus(QPainter& p);
+
+    void updateFontMetrics();
+
+    GSequenceLineView* view;
+    QPixmap* cachedView;
+
+    //! VIEW_RENDERER_REFACTORING: the following parameters should be stored only in renderer (until they cannot be modifyed in view).
+    //! Currenlty they are doubled in SequenceViewRenderer class.
+    //per char and per line metrics
+    QFont   sequenceFont;
+    QFont   smallSequenceFont;
+    QFont   rulerFont;
+
+    int     charWidth;
+    int     smallCharWidth;
+
+    int     lineHeight;
+    int     yCharOffset;
+    int     xCharOffset;
+};
+
+} //namespace
+
+#endif

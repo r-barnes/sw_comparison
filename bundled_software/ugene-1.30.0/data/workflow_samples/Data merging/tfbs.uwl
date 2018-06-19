@@ -1,0 +1,216 @@
+#@UGENE_WORKFLOW
+#This sample describes how to search for TFBS with different methods and how to write the results into one output file.
+#
+#First, the schema reads sequences input by a user. Then, each sequence goes to searching TFBS elements. At that time two reading elements reads the matrix and model for TFBS searching and transfering this data into TFBS searching elements. After that the TFBS searching elements searches TFBS in the input sequences. After that the two data flows multiplexes into one output data flow. And finally, the multiplexed data are written into file, specified by a user.
+#
+#You can configure the parameters of Search for TFBS with Weight Matrix, Search TFBS with SITECON and Multiplexer elements.
+#
+#To try out this sample, add the input files to the Read Sequence element, select the Read Weight Matrix, Read SITECON model and select name and location of the output file in the Write Sequence element and run the schema.
+#
+
+workflow "Search for tfbs"{
+    read-sequence {
+        type:read-sequence;
+        name:"Read Sequence";
+    }
+    write-sequence {
+        type:write-sequence;
+        name:"Write Sequence";
+        document-format:genbank;
+        url-out:tfbs.gb;
+    }
+    multiplexer {
+        type:multiplexer;
+        name:Multiplexer;
+    }
+    sitecon-search {
+        type:sitecon-search;
+        name:"Search for TFBS with SITECON";
+        result-name:sitecon;
+    }
+    wmatrix-search {
+        type:wmatrix-search;
+        name:"Search for TFBS with Weight Matrix";
+        result-name:weight_matrix;
+    }
+    sitecon-read {
+        type:sitecon-read;
+        name:"Read SITECON Model";
+    }
+    wmatrix-read {
+        type:wmatrix-read;
+        name:"Read Weight Matrix";
+    }
+
+
+    .actor-bindings {
+        multiplexer.output-data->write-sequence.in-sequence
+        sitecon-search.out-annotations->multiplexer.input-data-2
+        wmatrix-search.out-annotations->multiplexer.input-data-1
+        sitecon-read.out-sitecon->sitecon-search.in-sitecon
+        wmatrix-read.out-wmatrix->wmatrix-search.in-wmatrix
+        read-sequence.out-sequence->wmatrix-search.in-sequence
+        read-sequence.out-sequence->sitecon-search.in-sequence
+    }
+
+    read-sequence.annotations->write-sequence.in-sequence.annotations
+    sitecon-search.annotations->write-sequence.in-sequence.annotations
+    wmatrix-search.annotations->write-sequence.in-sequence.annotations
+    read-sequence.sequence->write-sequence.in-sequence.sequence
+    read-sequence.sequence->sitecon-search.in-sequence.sequence
+    sitecon-read.sitecon-model->sitecon-search.in-sitecon.sitecon-model
+    read-sequence.sequence->wmatrix-search.in-sequence.sequence
+    wmatrix-read.wmatrix->wmatrix-search.in-wmatrix.wmatrix
+
+    .meta {
+        visual {
+            read-sequence {
+                description:"<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.0//EN' 'http://www.w3.org/TR/REC-html40/strict.dtd'> <html><head><meta name='qrichtext' content='1' /><style type='text/css'> p, li { white-space: pre-wrap; } </style></head><body style=' font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;'> <p align='center' style=' margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;'><span style=' font-weight:600;'>Read Sequence</span></p> <hr /> <p style=' margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;'>Reads sequence(s) from <a href='param:url-in'><span style=' text-decoration: underline; color:#ff0000;'>unset</span></a>.</p></body></html>";
+                tooltip:"Reads sequences and annotations if any from local or remote files.";
+                pos:"-892 -468";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                bounds:"-30 -30 150.25 44";
+                out-sequence.angle:357.083;
+            }
+            write-sequence {
+                description:"<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.0//EN' 'http://www.w3.org/TR/REC-html40/strict.dtd'> <html><head><meta name='qrichtext' content='1' /><style type='text/css'> p, li { white-space: pre-wrap; } </style></head><body style=' font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;'> <p align='center' style=' margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;'><span style=' font-weight:600;'>Write Sequence</span></p> <hr /> <p style=' margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;'>Save all sequences from <span style=' text-decoration: underline;'>Read Sequence</span> to <a href='param:url-out'><span style=' text-decoration: underline; color:#ff0000;'>unset</span></a>.</p></body></html>";
+                tooltip:"Writes all supplied sequences to file(s) in selected format.";
+                pos:"-159.25 -474";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                bounds:"-30 -30 149.25 50";
+                in-sequence.angle:190.701;
+            }
+            multiplexer {
+                pos:"-408 -524";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                bounds:"-30 -30 150 149";
+                input-data-1.angle:236.31;
+                input-data-2.angle:249.034;
+                output-data.angle:339.809;
+            }
+            sitecon-search {
+                pos:"-646 -418";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                bounds:"-30 -30 150 149";
+                in-sequence.angle:244.622;
+                in-sitecon.angle:290.726;
+                out-annotations.angle:339.044;
+            }
+            wmatrix-search {
+                pos:"-645 -629";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                bounds:"-30 -30 150 150";
+                in-sequence.angle:241.557;
+                in-wmatrix.angle:27.613;
+                out-annotations.angle:338.819;
+            }
+            sitecon-read {
+                pos:"-645 -211";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                bounds:"-30 -30 150 40";
+                out-sitecon.angle:28.0725;
+            }
+            wmatrix-read {
+                pos:"-643 -728";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                bounds:"-30 -30 146 41";
+                out-wmatrix.angle:323.393;
+            }
+            read-sequence.out-sequence->wmatrix-search.in-sequence {
+                text-pos:"-57.5 -26";
+            }
+            read-sequence.out-sequence->sitecon-search.in-sequence {
+                text-pos:"-57.5 4";
+            }
+            multiplexer.output-data->write-sequence.in-sequence {
+                text-pos:"-24 -75";
+            }
+            sitecon-search.out-annotations->multiplexer.input-data-2 {
+                text-pos:"-10 36";
+            }
+            wmatrix-search.out-annotations->multiplexer.input-data-1 {
+                text-pos:"-10 -69";
+            }
+            sitecon-read.out-sitecon->sitecon-search.in-sitecon {
+                text-pos:"78 -10";
+            }
+            wmatrix-read.out-wmatrix->wmatrix-search.in-wmatrix {
+                text-pos:"13.5 -11";
+            }
+        }
+        wizard {
+            name:"Search for tfbs Wizard";
+            help-page-id:16122698;
+            page {
+                id:1;
+                next:2;
+                title:"Input sequence(s)";
+                parameters-area {
+                    read-sequence.url-in {
+                        type:datasets;
+                    }
+                }
+            }
+            page {
+                id:2;
+                next:3;
+                title:"Search for TFBS parameters";
+                parameters-area {
+                    group {
+                        title:"Weight Matrix parameters";
+                        label-size:120;
+                        wmatrix-read.url-in {
+                            label:"Weight Matrix";
+                        }
+                        wmatrix-search.result-name {
+                        }
+                        wmatrix-search.strand {
+                        }
+                        wmatrix-search.min-score {
+                        }
+                    }
+                    group {
+                        title:"SITECON parameters";
+                        label-size:120;
+                        sitecon-read.url-in {
+                            label:"SITECON Model";
+                        }
+                        sitecon-search.result-name {
+                        }
+                        sitecon-search.strand {
+                        }
+                        sitecon-search.min-score {
+                        }
+                        sitecon-search.err1 {
+                        }
+                        sitecon-search.err2 {
+                        }
+                    }
+                }
+            }
+            page {
+                id:3;
+                title:"Output data";
+                parameters-area {
+                    group {
+                        title:"Output data";
+                        label-size:120;
+                        write-sequence.url-out {
+                            label:"Result file";
+                        }
+                        write-sequence.accumulate {
+                            label:"Accumulate results";
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,129 @@
+#@UGENE_WORKFLOW
+#Extract sequences from annotated regions
+
+
+
+workflow {
+
+    filter-annotations {
+        type:filter-annotations;
+        name:"Filter annotations by name";
+    }
+    extract-annotated-sequence {
+        type:extract-annotated-sequence;
+        name:"Get sequences by annotations";
+        complement:true;
+    }
+    read-sequence {
+        type:read-sequence;
+        name:"Read sequence";
+        url-in {
+            dataset:Dataset;
+        }
+    }
+    write-fasta {
+        type:write-fasta;
+        name:"Write FASTA";
+    }
+
+
+    .actor-bindings {
+        filter-annotations.out-annotations->extract-annotated-sequence.in-sequence
+        extract-annotated-sequence.out-sequence->write-fasta.in-sequence
+        read-sequence.out-sequence->filter-annotations.in-annotations
+    }
+
+    read-sequence.annotations->filter-annotations.in-annotations.annotations
+    filter-annotations.annotations->extract-annotated-sequence.in-sequence.annotations
+    read-sequence.sequence->extract-annotated-sequence.in-sequence.sequence
+    extract-annotated-sequence.sequence->write-fasta.in-sequence.sequence
+
+    .meta {
+        parameter-aliases {
+            filter-annotations.accept-or-filter {
+                alias:accept-or-filter;
+                description:"Accept specified names or accept all except specified (using 'True' by default)";
+            }
+            filter-annotations.annotation-names {
+                alias:annotation-names;
+                description:"List of annotation names, separated by spaces, that will be accepted or filtered.";
+            }
+            filter-annotations.annotation-names-file {
+                alias:annotation-names-file;
+                description:"File with annotation names, separated by whitespaces, that will be accepted or filtered.";
+            }
+            extract-annotated-sequence.complement {
+                alias:complement;
+                description:"Complement the annotated regions if the corresponding annotation is located on complement strand (using 'True' by default)";
+            }
+            extract-annotated-sequence.extend-left {
+                alias:extend-left;
+                description:"Extend the resulted regions to left (using '0' by default)";
+            }
+            extract-annotated-sequence.extend-right {
+                alias:extend-right;
+                description:"Extend the resulted regions to right (using '0' by default)";
+            }
+            extract-annotated-sequence.merge-gap-length {
+                alias:gap-length;
+                description:"Insert gap of specified length between merged locations of annotation (using '1' by default)";
+            }
+            extract-annotated-sequence.translate {
+                alias:transl;
+                description:"Translate the annotated regions if the corresponding annotation marks translated subsequence (using 'False' by default)";
+            }
+            read-sequence.url-in {
+                alias:in;
+                description:"Input sequence";
+            }
+            write-fasta.accumulate {
+                alias:accumulate;
+                description:"Accumulate all incoming data in one file or create separate files for each input. In the latter case, an incremental numerical suffix is added to the file name (using 'True' by default)";
+            }
+            write-fasta.url-out {
+                alias:out;
+                description:"Output sequences in FASTA format";
+            }
+        }
+        visual {
+            extract-annotated-sequence {
+                pos:"-450 -690";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                bounds:"-30 -30 135 92";
+                in-sequence.angle:180;
+                out-sequence.angle:360;
+            }
+            filter-annotations {
+                pos:"-615 -690";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                in-annotations.angle:180;
+                out-annotations.angle:360;
+            }
+            read-sequence {
+                pos:"-750 -690";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                out-sequence.angle:360;
+            }
+            write-fasta {
+                pos:"-225 -690";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                bounds:"-30 -30 75 89";
+                in-sequence.angle:180;
+            }
+            extract-annotated-sequence.out-sequence->write-fasta.in-sequence {
+                text-pos:"-45 -37";
+            }
+            filter-annotations.out-annotations->extract-annotated-sequence.in-sequence {
+                text-pos:"-45 -37";
+            }
+            read-sequence.out-sequence->filter-annotations.in-annotations {
+                text-pos:"-27.5 -24";
+            }
+        }
+    }
+}
+

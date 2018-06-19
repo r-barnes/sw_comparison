@@ -1,0 +1,256 @@
+#@UGENE_WORKFLOW
+#Predicts binding sites for number of transcription factors of interest using SITECON algorithm. The present workflow sample is designed for simultaneous recognition of binding sites for 3 different transcription factor types, you can expand it for recognition of any desired number of transription factor types.SITECON - is a program pakage for recognition of potential transcription factor binding sites basing on the data about conservative conformational and physicochemical properties revealed on the basis of the binding sites sets analysis.Citing SITECON        Please cite:Oshchepkov D.Y., Vityaev E.E., Grigorovich D.A., Ignatieva E.V., Khlebodarova T.M.SITECON:a tool for detecting conservative conformational and physicochemicalproperties in transcription factor binding site alignments and for siterecognition. // Nucleic Acids Res. 2004 Jul 1;32(Web Server issue):W208-12.
+
+workflow "Search for transcription factor binding sites (TFBS) in genomic sequences"{
+    read-sequence-1 {
+        type:read-sequence;
+        name:"Read sequence";
+    }
+    sitecon-search-2 {
+        type:sitecon-search;
+        name:"Search for TFBS with SITECON";
+        strand:0;
+    }
+    sitecon-search-3 {
+        type:sitecon-search;
+        name:"Search for TFBS with SITECON 2";
+        strand:0;
+    }
+    sitecon-search-1 {
+        type:sitecon-search;
+        name:"Search for TFBS with SITECON 3";
+        strand:0;
+    }
+    write-sequence-1 {
+        type:write-sequence;
+        name:"Write Genbank";
+        document-format:genbank;
+        url-out:output.gb;
+    }
+    sitecon-read-1 {
+        type:sitecon-read;
+        name:"Read SITECON model";
+    }
+    sitecon-read-2 {
+        type:sitecon-read;
+        name:"Read SITECON model 2";
+    }
+    sitecon-read-3 {
+        type:sitecon-read;
+        name:"Read SITECON model 3";
+    }
+
+
+    .actor-bindings {
+        sitecon-read-2.out-sitecon->sitecon-search-3.in-sitecon
+        sitecon-search-3.out-annotations->sitecon-search-1.in-sequence
+        sitecon-read-1.out-sitecon->sitecon-search-2.in-sitecon
+        sitecon-search-1.out-annotations->write-sequence-1.in-sequence
+        sitecon-search-2.out-annotations->sitecon-search-3.in-sequence
+        sitecon-read-3.out-sitecon->sitecon-search-1.in-sitecon
+        read-sequence-1.out-sequence->sitecon-search-2.in-sequence
+    }
+
+    read-sequence-1.sequence->sitecon-search-2.in-sequence.sequence
+    sitecon-read-1.sitecon-model->sitecon-search-2.in-sitecon.sitecon-model
+    read-sequence-1.sequence->sitecon-search-3.in-sequence.sequence
+    sitecon-read-2.sitecon-model->sitecon-search-3.in-sitecon.sitecon-model
+    read-sequence-1.sequence->sitecon-search-1.in-sequence.sequence
+    sitecon-read-3.sitecon-model->sitecon-search-1.in-sitecon.sitecon-model
+    sitecon-search-1.annotations->write-sequence-1.in-sequence.annotations
+    read-sequence-1.annotations->write-sequence-1.in-sequence.annotations
+    sitecon-search-2.annotations->write-sequence-1.in-sequence.annotations
+    sitecon-search-3.annotations->write-sequence-1.in-sequence.annotations
+    read-sequence-1.sequence->write-sequence-1.in-sequence.sequence
+
+    .meta {
+        visual {
+            read-sequence-1 {
+                pos:"-930 -555";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                out-sequence.angle:360;
+            }
+            sitecon-search-2 {
+                pos:"-765 -555";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                in-sequence.angle:183.18;
+                in-sitecon.angle:273.814;
+                out-annotations.angle:360;
+            }
+            sitecon-search-3 {
+                pos:"-555 -555";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                in-sequence.angle:183.576;
+                in-sitecon.angle:273.576;
+                out-annotations.angle:360;
+            }
+            sitecon-search-1 {
+                pos:"-330 -555";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                in-sequence.angle:178.21;
+                in-sitecon.angle:271.364;
+                out-annotations.angle:360;
+            }
+            write-sequence-1 {
+                pos:"-75 -555";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                in-sequence.angle:180;
+            }
+            sitecon-read-1 {
+                pos:"-750 -200";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                out-sitecon.angle:88.727;
+            }
+            sitecon-read-2 {
+                pos:"-540 -200";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                out-sitecon.angle:85.486;
+            }
+            sitecon-read-3 {
+                pos:"-330 -200";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                out-sitecon.angle:90;
+            }
+            read-sequence-1.out-sequence->sitecon-search-2.in-sequence {
+                text-pos:"-27.5 -24";
+            }
+            sitecon-search-2.out-annotations->sitecon-search-3.in-sequence {
+                text-pos:"-45 -37";
+            }
+            sitecon-search-3.out-annotations->sitecon-search-1.in-sequence {
+                text-pos:"-45 -37";
+            }
+            sitecon-read-1.out-sitecon->sitecon-search-2.in-sitecon {
+                text-pos:"-37 -24";
+            }
+            sitecon-read-2.out-sitecon->sitecon-search-3.in-sitecon {
+                text-pos:"-37 -24";
+            }
+            sitecon-read-3.out-sitecon->sitecon-search-1.in-sitecon {
+                text-pos:"-37 -24";
+            }
+            sitecon-search-1.out-annotations->write-sequence-1.in-sequence {
+                text-pos:"-45 -37";
+            }
+        }
+        wizard {
+            name:"Search for transcription factor binding sites (TFBS) in genomic sequences Wizard";
+            help-page-id:16122701;
+            page {
+                id:1;
+                next:2;
+                title:"Input sequence(s)";
+                parameters-area {
+                    read-sequence-1.url-in {
+                        type:datasets;
+                    }
+                }
+            }
+            page {
+                id:2;
+                next:3;
+                title:"Search for TFBS I";
+                parameters-area {
+                    group {
+                        title:"SITECON model I";
+                        label-size:120;
+                        sitecon-read-1.url-in {
+                        }
+                    }
+                    group {
+                        title:"Search for TFBS with SITECON I";
+                        label-size:120;
+                        sitecon-search-1.result-name {
+                        }
+                        sitecon-search-1.strand {
+                        }
+                        sitecon-search-1.min-score {
+                        }
+                        sitecon-search-1.err1 {
+                        }
+                        sitecon-search-1.err2 {
+                        }
+                    }
+                }
+            }
+            page {
+                id:3;
+                next:4;
+                title:"Search for TFBS II";
+                parameters-area {
+                    group {
+                        title:"SITECON model II";
+                        label-size:120;
+                        sitecon-read-2.url-in {
+                        }
+                    }
+                    group {
+                        title:"Search for TFBS with SITECON II";
+                        label-size:120;
+                        sitecon-search-2.result-name {
+                        }
+                        sitecon-search-2.strand {
+                        }
+                        sitecon-search-2.min-score {
+                        }
+                        sitecon-search-2.err1 {
+                        }
+                        sitecon-search-2.err2 {
+                        }
+                    }
+                }
+            }
+            page {
+                id:4;
+                next:5;
+                title:"Search for TFBS III";
+                parameters-area {
+                    group {
+                        title:"SITECON model III";
+                        label-size:120;
+                        sitecon-read-3.url-in {
+                        }
+                    }
+                    group {
+                        title:"Search for TFBS with SITECON III";
+                        label-size:120;
+                        sitecon-search-3.result-name {
+                        }
+                        sitecon-search-3.strand {
+                        }
+                        sitecon-search-3.min-score {
+                        }
+                        sitecon-search-3.err1 {
+                        }
+                        sitecon-search-3.err2 {
+                        }
+                    }
+                }
+            }
+            page {
+                id:5;
+                title:"Output data";
+                parameters-area {
+                    group {
+                        label-size:120;
+                        title:"Output data";
+                        write-sequence-1.url-out {
+                            label:"Result file";
+                        }
+                        write-sequence-1.accumulate {
+                            label:"Accumulate resuls";
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

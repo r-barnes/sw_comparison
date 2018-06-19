@@ -1,0 +1,102 @@
+#@UGENE_WORKFLOW
+#The workflow does the following things:
+#1) Reads a set of Sanger sequencing reads from ABI files.
+#2) Trims ends of the reads by the quality value.
+#3) Filter the short trimmed reads.
+#4) Aligns the filtered trimmed reads to a reference sequence.
+#
+#You can change the workflow parameters:
+#1) Quality threshold for the trimming.
+#2) Minimum read length. If length of a trimmed read is less than the minimum value than the read is filtered.
+#
+#The output data are:
+#1) Multiple sequence alignment file. The first sequence of the alignment is the reference and other ones are the reads.
+#2) Annotated reference sequence file. The annotations are the aligned reads.
+
+
+
+workflow "Trim and map Sanger reads"{
+
+    SequenceQualityTrim {
+        type:SequenceQualityTrim;
+        name:"Sequence Quality Trimmer";
+    }
+    read-sequence {
+        type:read-sequence;
+        name:"Read Sequence";
+        url-in {
+            dataset:"Dataset 1";
+        }
+    }
+    align-to-reference {
+        type:align-to-reference;
+        name:"Map to Reference";
+        result-url:alignment.ugenedb;
+    }
+
+    .actor-bindings {
+        SequenceQualityTrim.out-sequence->align-to-reference.in-sequence
+        read-sequence.out-sequence->SequenceQualityTrim.in-sequence
+    }
+
+    read-sequence.sequence->SequenceQualityTrim.in-sequence.sequence
+    SequenceQualityTrim.sequence->align-to-reference.in-sequence.sequence
+
+    .meta {
+        parameter-aliases {
+            SequenceQualityTrim.both-ends {
+                alias:trim-both-ends;
+            }
+            SequenceQualityTrim.len-id {
+                alias:min-length;
+            }
+            SequenceQualityTrim.qual-id {
+                alias:threshold;
+            }
+            read-sequence.url-in {
+                alias:reads;
+            }
+            align-to-reference.identity {
+                alias:min-identity;
+            }
+            align-to-reference.reference {
+                alias:reference;
+            }
+            align-to-reference.result-url {
+                alias:result-url;
+            }
+            align-to-reference.row-naming-policy {
+                alias:row-naming-policy;
+            }
+        }
+        visual {
+            SequenceQualityTrim {
+                pos:"-675 -525";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                in-sequence.angle:180;
+                out-sequence.angle:360;
+            }
+            align-to-reference {
+                pos:"-375 -510";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                in-sequence.angle:180;
+                out.angle:360;
+            }
+            read-sequence {
+                pos:"-930 -510";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                out-sequence.angle:360;
+            }
+            SequenceQualityTrim.out-sequence->align-to-reference.in-sequence {
+                text-pos:"-45 -43";
+            }
+            read-sequence.out-sequence->SequenceQualityTrim.in-sequence {
+                text-pos:"-33.8281 -27";
+            }
+        }
+    }
+}
+

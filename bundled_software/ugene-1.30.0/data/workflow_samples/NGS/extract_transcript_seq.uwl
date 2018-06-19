@@ -1,0 +1,120 @@
+#@UGENE_WORKFLOW
+#Uses input transcripts and genomic sequences to generate a FASTA file with the DNA sequences for the transcripts.
+#Please make sure that contig or chromosome names in the transcript file(s) have corresponding entries in the input sequence(s).
+
+
+
+workflow "Extract transcript sequences"{
+
+    get-file-list {
+        type:get-file-list;
+        name:"Read Sequence(s)";
+        url-in {
+            dataset:"Dataset 1";
+        }
+    }
+    get-file-list-1 {
+        type:get-file-list;
+        name:"Read Transcripts";
+        url-in {
+            dataset:"Dataset 1";
+        }
+    }
+    multiplexer-1 {
+        type:multiplexer;
+        name:Multiplexer;
+    }
+    gffread {
+        type:gffread;
+        name:"Extract Transcript Sequences with Gffread";
+        url-out:extracted.fa;
+    }
+    files-conversion {
+        type:files-conversion;
+        name:"To FASTA";
+        document-format:fasta;
+    }
+    files-conversion-1 {
+        type:files-conversion;
+        name:"To GTF";
+        document-format:gtf;
+    }
+
+    .actor-bindings {
+        get-file-list.out-url->files-conversion.in-file
+        get-file-list-1.out-url->files-conversion-1.in-file
+        multiplexer-1.output-data->gffread.in-data
+        files-conversion.out-file->multiplexer-1.input-data-1
+        files-conversion-1.out-file->multiplexer-1.input-data-2
+    }
+
+    files-conversion.url->gffread.in-data.genome
+    files-conversion-1.url->gffread.in-data.transcripts
+    get-file-list.url->files-conversion.in-file.url
+    get-file-list-1.url->files-conversion-1.in-file.url
+
+    .meta {
+        visual {
+            files-conversion {
+                pos:"-734 -673";
+                style:simple;
+                bg-color-simple:"84 84 84 255";
+                in-file.angle:180;
+                out-file.angle:360;
+            }
+            files-conversion-1 {
+                pos:"-737 -506";
+                style:simple;
+                bg-color-simple:"84 84 84 255";
+                in-file.angle:180;
+                out-file.angle:360;
+            }
+            get-file-list {
+                pos:"-940 -672";
+                style:ext;
+                bg-color-ext:"24 102 175 64";
+                bounds:"-30 -30 87 73";
+                out-url.angle:360;
+            }
+            get-file-list-1 {
+                pos:"-940 -507";
+                style:ext;
+                bg-color-ext:"24 102 175 64";
+                bounds:"-30 -30 86 63";
+                out-url.angle:360;
+            }
+            gffread {
+                pos:"-420 -644";
+                style:ext;
+                bg-color-ext:"208 69 0 64";
+                bounds:"-30 -30 153 99";
+                extracted-data.angle:342.973;
+                in-data.angle:237.6;
+            }
+            multiplexer-1 {
+                pos:"-614 -597";
+                style:simple;
+                bg-color-simple:"84 84 84 255";
+                input-data-1.angle:150;
+                input-data-2.angle:210;
+                output-data.angle:360;
+            }
+            files-conversion-1.out-file->multiplexer-1.input-data-2 {
+                text-pos:"-15.3828 -12";
+            }
+            files-conversion.out-file->multiplexer-1.input-data-1 {
+                text-pos:"-16.3828 -28";
+            }
+            get-file-list-1.out-url->files-conversion-1.in-file {
+                text-pos:"-42.3047 -28";
+            }
+            get-file-list.out-url->files-conversion.in-file {
+                text-pos:"-35.3047 -23";
+            }
+            multiplexer-1.output-data->gffread.in-data {
+                text-pos:"-49 -34";
+            }
+        }
+    }
+}
+

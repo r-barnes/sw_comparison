@@ -1,0 +1,208 @@
+#@UGENE_WORKFLOW
+#Prepare ChIP-Seq processed data (with BedTools and bedGraphToBigWig) for visualization in a genome browser. For input BED-file produces BigWig file.
+
+
+
+workflow "ChIP-Seq coverage"{
+
+    slopbed {
+        type:slopbed;
+        name:Slopbed;
+        filter-id:true;
+        r-id:160;
+        s-id:true;
+    }
+    genomecov {
+        type:genomecov;
+        name:"Genome Coverage";
+        out-mode:0;
+        mode-id:3;
+    }
+    bgtbw-bam {
+        type:bgtbw-bam;
+        name:"Convert bedGraph Files to bigWig";
+        out-mode:0;
+    }
+    get-file-list {
+        type:get-file-list;
+        name:"File List";
+        url-in {
+            dataset:"Dataset 1";
+        }
+    }
+
+    .actor-bindings {
+        slopbed.out-file->genomecov.in-file
+        genomecov.out-file->bgtbw-bam.in-file
+        get-file-list.out-url->slopbed.in-file
+    }
+
+    get-file-list.url->slopbed.in-file.url
+    slopbed.url->genomecov.in-file.url
+    genomecov.url->bgtbw-bam.in-file.url
+
+    .meta {
+        parameter-aliases {
+            slopbed.genome-id {
+                alias:sb_genome;
+            }
+            genomecov.genome-id {
+                alias:gc_genome;
+            }
+            bgtbw-bam.genome {
+                alias:bg_genome;
+            }
+        }
+        visual {
+            bgtbw-bam {
+                pos:"-174.25 -585";
+                style:ext;
+                bg-color-ext:"0 170 255 64";
+                bounds:"-30 -30 113.125 81";
+                in-file.angle:180;
+                out-file.angle:360;
+            }
+            genomecov {
+                pos:"-422 -585";
+                style:ext;
+                bg-color-ext:"170 85 255 64";
+                in-file.angle:180;
+                out-file.angle:360;
+            }
+            get-file-list {
+                pos:"-795 -586";
+                style:ext;
+                bg-color-ext:"24 102 175 64";
+                bounds:"-30 -30 54 53";
+                out-url.angle:360;
+            }
+            slopbed {
+                pos:"-621 -586";
+                style:ext;
+                bg-color-ext:"255 85 0 64";
+                in-file.angle:180;
+                out-file.angle:360;
+            }
+            genomecov.out-file->bgtbw-bam.in-file {
+                text-pos:"-30.75 -28";
+            }
+            get-file-list.out-url->slopbed.in-file {
+                text-pos:"-32.7578 -27";
+            }
+            slopbed.out-file->genomecov.in-file {
+                text-pos:"-30.75 -28";
+            }
+        }
+        wizard {
+            name:"ChIP-Seq Coverage Wizard";
+            help-page-id:16122722;
+            page {
+                id:1;
+                next:2;
+                title:"Input data";
+                parameters-area {
+                    group {
+                        title:"ChIP-Seq Tags";
+                        label-size:120;
+                        get-file-list.url-in {
+                            label:"BED File";
+                        }
+                    }
+                }
+            }
+            page {
+                id:2;
+                next:3;
+                title:Parameters;
+                parameters-area {
+                    group {
+                        title:Slopbed;
+                        label-size:120;
+                        slopbed.genome-id {
+                        }
+                    }
+                    group {
+                        title:"Slopbed Advanced";
+                        label-size:130;
+                        type:hideable;
+                        slopbed.b-id {
+                        }
+                        slopbed.l-id {
+                        }
+                        slopbed.r-id {
+                        }
+                        slopbed.s-id {
+                        }
+                        slopbed.pct-id {
+                        }
+                        slopbed.header-id {
+                        }
+                        slopbed.filter-id {
+                        }
+                    }
+                    group {
+                        title:"Genome Coverage";
+                        label-size:120;
+                        genomecov.genome-id {
+                        }
+                        genomecov.mode-id {
+                        }
+                    }
+                    group {
+                        title:"Genome Coverage Advanced";
+                        label-size:130;
+                        type:hideable;
+                        genomecov.split-id {
+                        }
+                        genomecov.strand-id {
+                        }
+                        genomecov.prime5-id {
+                        }
+                        genomecov.prime3-id {
+                        }
+                        genomecov.max-id {
+                        }
+                        genomecov.scale-id {
+                        }
+                        genomecov.trackline-id {
+                        }
+                        genomecov.trackopts-id {
+                        }
+                    }
+                    group {
+                        title:BedGraphToBigWig;
+                        label-size:120;
+                        bgtbw-bam.genome {
+                        }
+                    }
+                    group {
+                        title:"BedGraphToBigWig Advanced";
+                        label-size:130;
+                        type:hideable;
+                        bgtbw-bam.bs {
+                        }
+                        bgtbw-bam.its {
+                        }
+                        bgtbw-bam.unc {
+                        }
+                    }
+                }
+            }
+            page {
+                id:3;
+                title:"Output data";
+                parameters-area {
+                    group {
+                        title:"Output folders";
+                        label-size:130;
+                        slopbed.out-mode {
+                        }
+                        slopbed.custom-dir {
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+

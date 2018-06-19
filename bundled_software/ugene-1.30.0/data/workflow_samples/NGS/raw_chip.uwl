@@ -1,0 +1,58 @@
+#@UGENE_WORKFLOW
+#The workflow takes FASTQ files as input and process this data as follows:
+#  * Pre-processing:
+#    - Filtration of the input sequencing reads by the CASAVA header (for Illumina platform).
+#    - Cutting of adapter sequences.
+#    - Trimming of the sequencing reads by quality.
+#
+#  * Mapping:
+#    - Mapping of the reads to a reference sequence (the BWA-MEM tool is used).
+#
+#  * Post-processing:
+#    - Merging of all data into one file.
+#    - Filtration of aligned reads by SAMtools to remove reads with low mapping quality, unpaired/unaligned reads, etc.
+#    - Removing of PCR duplicates.
+#    - Conversion to BED format.
+#
+#The workflow also performs quality control of the data with FastQC: first, on the input FASTQ files and, second, after the pre-processing step.
+#
+#Besides intermediate files and FastQC reports, the final result of the workflow running is a BED file.
+#
+
+
+workflow "Raw ChIP-Seq data processing" {
+    .meta {
+        wizard {
+            help-page-id:16122725;
+            auto-run: true;
+            has-run-button: false;
+            has-defaults-button: false;
+            name: "Configure Raw ChIP-Seq Data Processing";
+            finish-label: "Setup";
+            result {
+                NGS/raw_ngs/chipseq/chipseq_single.uwl: pipeline.single;
+                NGS/raw_ngs/chipseq/chipseq_paired.uwl: pipeline.paired;
+            }
+            page {
+                id: 1;
+                title: "General settings";
+                parameters-area {
+                    group {
+                        title:"Sequencing reads";
+                        radio {
+                            id: pipeline;
+                            value {
+                                id: single;
+                                label: "Single-end";
+                            }
+                            value {
+                                id: paired;
+                                label: "Paired-end";
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

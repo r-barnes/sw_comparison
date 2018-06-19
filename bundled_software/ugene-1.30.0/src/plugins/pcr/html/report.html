@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style type="text/css">
+    .chapter-content {
+        margin-left: 50px;
+    }
+    .hidden {
+        display: none;
+    }
+    .red {
+        background-color: #FF9999;
+    }
+    .green {
+        background-color: #CCFFCC;
+    }
+    a {
+        text-decoration: none;
+        color: black;
+    }
+</style>
+<script type="text/javascript">
+    function showContent(obj) {
+        var inner = obj.parentNode.getElementsByTagName("div")[0];
+        if (inner.style.display == "block") {
+            inner.style.display = "none";
+        } else {
+            inner.style.display = "block";
+        }
+        var span = obj.parentNode.getElementsByTagName("span")[0];
+        if (span.className == "span-closed") {
+            span.innerHTML = "&#9662;";
+            span.className = "span-opened";
+        } else {
+            span.innerHTML = "&#9656;";
+            span.className = "span-closed";
+        }
+
+    }
+</script></head>
+<body>
+</body>
+</html>
