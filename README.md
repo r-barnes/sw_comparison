@@ -59,6 +59,10 @@ Comparison Matrix
     Liu2013           | CUDASW++ 3.0  | 10.1186/1471-2105-14-117      | GPU-CUDA + CPU-SSE      | TODO               | GPLv2       | liu2013        | http://cudasw.sourceforge.net/homepage.htm#latest
     Warris2018        | pyPaSWAS      | 10.1371/journal.pone.0190279  | GPU-CUDA + CPU + Python | TODO               | MIT         | warris2018     |
 
+Reviews:
+
+    Muhammadzadeh2014
+
 Summary of Algorithmic Tricks/Improvements
 ------------------------------------------
 
