@@ -5,3 +5,5 @@ If Doxygen and graphviz package are installed, documentation can be generated
 with:
 
     make docs
+
+`patch` contains a patch file for the main SourceForge code. It has not been applied to the version-controlled code as of 2018-06-19.

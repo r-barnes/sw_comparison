@@ -1,0 +1,703 @@
+diff -ru swsharp/swsharp/src/align.c swsharp_modified/swsharp/src/align.c
+--- swsharp/swsharp/src/align.c	2014-06-28 06:14:55.000000000 +0900
++++ swsharp_modified/swsharp/src/align.c	2014-11-18 18:47:58.000000000 +0900
+@@ -72,6 +72,7 @@
+     int score;
+     int* cards;
+     int cardsLen;
++    int bound;    //changed
+ } ContextPair;
+ 
+ typedef struct ContextScore {
+@@ -146,11 +147,11 @@
+ // PUBLIC
+ 
+ extern void alignPair(Alignment** alignment, int type, Chain* query, 
+-    Chain* target, Scorer* scorer, int* cards, int cardsLen, Thread* thread);
++    Chain* target, Scorer* scorer, int* cards, int cardsLen, Thread* thread, int bound);    //changed
+ 
+ extern void alignScoredPair(Alignment** alignment, int type, Chain* query, 
+     Chain* target, Scorer* scorer, int score, int* cards, int cardsLen, 
+-    Thread* thread);
++    Thread* thread, int bound);    //changed
+ 
+ extern void alignBest(Alignment** alignment, int type, Chain** queries, 
+     int queriesLen, Chain* target, Scorer* scorer, int* cards, int cardsLen, 
+@@ -171,7 +172,7 @@
+ static void* scorePairThread(void* param);
+ 
+ static int scorePairGpu(AlignData** data, int type, Chain* query, Chain* target, 
+-    Scorer* scorer, int score, int* cards, int cardsLen);
++    Scorer* scorer, int score, int* cards, int cardsLen, int bound);    //changed
+     
+ static void reconstructPairGpu(Alignment** alignment, AlignData* data, int type, 
+     Chain* query, Chain* target, Scorer* scorer, int* cards, int cardsLen);
+@@ -210,13 +211,13 @@
+ 
+ // sw
+ static int swScorePairGpuSingle(AlignData** data, Chain* query, Chain* target, 
+-    Scorer* scorer, int score, int* cards, int cardsLen);
++    Scorer* scorer, int score, int* cards, int cardsLen, int bound);    //changed
+ 
+ static void swReconstructPairGpuSingle(Alignment** alignment, AlignData* data,
+     Chain* query, Chain* target, Scorer* scorer, int* cards, int cardsLen);
+     
+ static int swScorePairGpuDual(AlignData** data, Chain* query, Chain* target, 
+-    Scorer* scorer, int score, int* cards, int cardsLen);
++    Scorer* scorer, int score, int* cards, int cardsLen, int bound);    //changed
+ 
+ static void swReconstructPairGpuDual(Alignment** alignment, AlignData* data, 
+     Chain* query, Chain* target, Scorer* scorer, int* cards, int cardsLen);
+@@ -227,14 +228,14 @@
+ // PUBLIC
+ 
+ extern void alignPair(Alignment** alignment, int type, Chain* query, 
+-    Chain* target, Scorer* scorer, int* cards, int cardsLen, Thread* thread) {
++    Chain* target, Scorer* scorer, int* cards, int cardsLen, Thread* thread, int bound) {    //changed
+     alignScoredPair(alignment, type, query, target, scorer, NO_SCORE, cards, 
+-        cardsLen, thread);
++        cardsLen, thread, bound);    //changed
+ }
+ 
+ extern void alignScoredPair(Alignment** alignment, int type, Chain* query, 
+     Chain* target, Scorer* scorer, int score, int* cards, int cardsLen, 
+-    Thread* thread) {
++    Thread* thread, int bound) {    //changed
+    
+     ContextPair* param = (ContextPair*) malloc(sizeof(ContextPair));
+ 
+@@ -246,6 +247,7 @@
+     param->score = score;
+     param->cards = cards;
+     param->cardsLen = cardsLen;
++    param->bound = bound;    //changed
+ 
+     if (thread == NULL) {
+         alignPairThread(param);
+@@ -261,7 +263,7 @@
+     // reduce problem to simple pair align
+     if (queriesLen == 1) {
+         alignPair(alignment, type, queries[0], target, scorer, cards, 
+-            cardsLen, thread);
++            cardsLen, thread,0);    //changed
+         return;
+     }
+     
+@@ -324,6 +326,7 @@
+     int score = context->score;
+     int* cards = context->cards;
+     int cardsLen = context->cardsLen;
++    int bound = context->bound;    //changed
+     
+     int rows = chainGetLength(query);
+     int cols = chainGetLength(target);
+@@ -338,7 +341,7 @@
+     } else {
+     
+         AlignData* data;
+-        scorePairGpu(&data, type, query, target, scorer, score, cards, cardsLen);
++        scorePairGpu(&data, type, query, target, scorer, score, cards, cardsLen, bound);    //changed
+ 
+         reconstructPairGpu(alignment, data, type, query, target, scorer, 
+             cards, cardsLen);
+@@ -520,20 +523,21 @@
+         if (data != NULL) *data = NULL;
+     } else {
+         *score = scorePairGpu(data, type, query, target, scorer, NO_SCORE, 
+-            cards, cardsLen);
++            cards, cardsLen, 0);    //changed
+     }
+     
+     return NULL;
+ }
+ 
+ static int scorePairGpu(AlignData** data, int type, Chain* query, Chain* target, 
+-    Scorer* scorer, int score, int* cards, int cardsLen) {
++    Scorer* scorer, int score, int* cards, int cardsLen, int bound) {    //changed
+ 
+     int dual = cardsLen >= 2;
+     
+-    int (*function) (AlignData**, Chain*, Chain*, Scorer*, int, int*, int);
++    int (*function) (AlignData**, Chain*, Chain*, Scorer*, int, int*, int, int);    //changed
+     
+     switch (type) {
++/*
+     case HW_ALIGN:
+         function = hwScorePairGpu;
+         break;
+@@ -543,6 +547,7 @@
+     case OV_ALIGN:
+         function = ovScorePairGpu;
+         break;
++*/    //changed
+     case SW_ALIGN:
+         if (dual) {
+             function = swScorePairGpuDual;
+@@ -554,7 +559,7 @@
+         ERROR("invalid align type");
+     }
+     
+-    return function(data, query, target, scorer, score, cards, cardsLen);
++    return function(data, query, target, scorer, score, cards, cardsLen, bound);    //changed
+ }
+     
+ static void reconstructPairGpu(Alignment** alignment, AlignData* data, int type, 
+@@ -963,7 +968,7 @@
+ // SW
+ 
+ static int swScorePairGpuSingle(AlignData** data_, Chain* query, Chain* target, 
+-    Scorer* scorer, int score, int* cards, int cardsLen) {
++    Scorer* scorer, int score, int* cards, int cardsLen, int bound) {    //changed
+     
+     int card = cards[0];
+     
+@@ -972,7 +977,7 @@
+     int outScore;
+ 
+     swEndDataGpu(&queryEnd, &targetEnd, &outScore, NULL, NULL, query, target, 
+-        scorer, score, card, NULL);
++        scorer, score, card, NULL, bound);    //changed
+ 
+     ASSERT(outScore == score || score == NO_SCORE,
+         "invalid alignment input score %d %d | %s %s",
+@@ -1045,7 +1050,7 @@
+ }
+ 
+ static int swScorePairGpuDual(AlignData** data_, Chain* query, Chain* target, 
+-    Scorer* scorer, int score, int* cards, int cardsLen) {
++    Scorer* scorer, int score, int* cards, int cardsLen, int bound) {    //changed
+ 
+     int rows = chainGetLength(query);
+     int cols = chainGetLength(target);
+@@ -1071,20 +1076,20 @@
+     if (cardsLen == 1) {
+     
+         swEndDataGpu(&upQueryEnd, &upTargetEnd, &upScore, &upScores, &upAffines,
+-            upRow, upCol, scorer, NO_SCORE, cards[0], NULL);
++            upRow, upCol, scorer, NO_SCORE, cards[0], NULL,bound);    //changed
+             
+         swEndDataGpu(&downQueryEnd, &downTargetEnd, &downScore, &downScores, 
+-            &downAffines, downRow, downCol, scorer, NO_SCORE, cards[0], NULL);
++            &downAffines, downRow, downCol, scorer, NO_SCORE, cards[0], NULL,bound);    //changed
+             
+     } else {
+     
+         Thread thread;
+         
+         swEndDataGpu(&upQueryEnd, &upTargetEnd, &upScore, &upScores, &upAffines,
+-            upRow, upCol, scorer, NO_SCORE, cards[1], &thread);
++            upRow, upCol, scorer, NO_SCORE, cards[1], &thread,bound);    //changed
+             
+         swEndDataGpu(&downQueryEnd, &downTargetEnd, &downScore, &downScores, 
+-            &downAffines, downRow, downCol, scorer, NO_SCORE, cards[0], NULL);
++            &downAffines, downRow, downCol, scorer, NO_SCORE, cards[0], NULL,bound);    //changed
+             
+         threadJoin(thread); 
+     }
+@@ -1109,7 +1114,19 @@
+     int gapExtend = scorerGetGapExtend(scorer);
+     int gapDiff = gapOpen - gapExtend;
+ 
++//changed
++//    FILE* scoreFile;
++//    scoreFile = fopen("scores.log","w");
++
+     int up, down;
++//    for(up = 0; up < cols - 1; ++up) {
++//        fprintf(scoreFile,"%d ",upScores[up]);
++//    }
++//    fprintf(scoreFile,"\n");
++//    for(up = 0, down = cols - 2; up < cols - 1; ++up, --down) {
++//        fprintf(scoreFile,"%d ",downScores[down]);
++//    }
++//    fprintf(scoreFile,"\n");
+     for(up = 0, down = cols - 2; up < cols - 1; ++up, --down) {
+     
+         int scr = upScores[up] + downScores[down];
+diff -ru swsharp/swsharp/src/align.h swsharp_modified/swsharp/src/align.h
+--- swsharp/swsharp/src/align.h	2014-06-28 06:14:55.000000000 +0900
++++ swsharp_modified/swsharp/src/align.h	2014-10-08 17:50:36.000000000 +0900
+@@ -53,7 +53,7 @@
+     executed on the current thread
+ */
+ extern void alignPair(Alignment** alignment, int type, Chain* query, 
+-    Chain* target, Scorer* scorer, int* cards, int cardsLen, Thread* thread);
++    Chain* target, Scorer* scorer, int* cards, int cardsLen, Thread* thread, int bound);    //changed
+ 
+ /*!
+ @brief Pairwise alignment function.
+@@ -76,7 +76,7 @@
+ */
+ extern void alignScoredPair(Alignment** alignment, int type, Chain* query, 
+     Chain* target, Scorer* scorer, int score, int* cards, int cardsLen, 
+-    Thread* thread);
++    Thread* thread, int bound);    //changed
+ 
+ /*!
+ @brief Best scored pair alignment function.
+diff -ru swsharp/swsharp/src/database.c swsharp_modified/swsharp/src/database.c
+--- swsharp/swsharp/src/database.c	2014-06-28 06:14:55.000000000 +0900
++++ swsharp_modified/swsharp/src/database.c	2014-10-08 17:50:36.000000000 +0900
+@@ -761,7 +761,7 @@
+ 
+     // align
+     Alignment* alignment;
+-    alignScoredPair(&alignment, type, query, target, scorer, score, cards, cardsLen, NULL);
++    alignScoredPair(&alignment, type, query, target, scorer, score, cards, cardsLen, NULL, 0);    //changed
+ 
+     // check scores
+     int s1 = alignmentGetScore(alignment);
+diff -ru swsharp/swsharp/src/gpu_module.cu swsharp_modified/swsharp/src/gpu_module.cu
+--- swsharp/swsharp/src/gpu_module.cu	2014-06-28 06:14:55.000000000 +0900
++++ swsharp_modified/swsharp/src/gpu_module.cu	2014-10-08 17:50:36.000000000 +0900
+@@ -64,7 +64,7 @@
+ 
+ extern void swEndDataGpu(int* queryEnd, int* targetEnd, int* outScore, 
+     int** scores, int** affines, Chain* query, Chain* target, Scorer* scorer, 
+-    int score, int card, Thread* thread) {
++    int score, int card, Thread* thread, int bound) {
+     ERROR("%s", errorMessage);
+ }
+ 
+diff -ru swsharp/swsharp/src/gpu_module.h swsharp_modified/swsharp/src/gpu_module.h
+--- swsharp/swsharp/src/gpu_module.h	2014-06-28 06:14:55.000000000 +0900
++++ swsharp_modified/swsharp/src/gpu_module.h	2014-10-08 17:50:36.000000000 +0900
+@@ -181,7 +181,7 @@
+ */
+ extern void swEndDataGpu(int* queryEnd, int* targetEnd, int* outScore, 
+     int** scores, int** affines, Chain* query, Chain* target, Scorer* scorer, 
+-    int score, int card, Thread* thread);
++    int score, int card, Thread* thread, int bound);
+ 
+ //******************************************************************************
+ 
+diff -ru swsharp/swsharp/src/post_proc.c swsharp_modified/swsharp/src/post_proc.c
+--- swsharp/swsharp/src/post_proc.c	2014-06-28 06:14:55.000000000 +0900
++++ swsharp_modified/swsharp/src/post_proc.c	2015-01-26 17:56:54.000000000 +0900
+@@ -525,7 +525,7 @@
+     
+     Scorer* scorer = alignmentGetScorer(alignment);
+     
+-    fprintf(file, "\n");
++    fprintf(stdout, "\n");
+     
+     int i;
+     for (i = 0; i < pathLen; ++i) {
+@@ -548,7 +548,7 @@
+ 
+         if ((i + 1) % 50 == 0 || i == pathLen - 1) {
+         
+-            fprintf(file, 
++            fprintf(stdout, 
+                 "%-9.*s %9d %-50.50s %9d\n"
+                 "%19s %-50.50s %9s\n"
+                 "%-9.*s %9d %-50.50s %9d\n\n", 
+@@ -696,17 +696,17 @@
+     float simPct = ((float) similarity) / pathLen * 100;
+     float gapsPct = ((float) gaps) / pathLen * 100;
+         
+-    fprintf(file, "########################################\n");
+-    fprintf(file, "#\n");
+-    fprintf(file, "# Aligned: \n");
++    fprintf(stdout, "########################################\n");
++    fprintf(stdout, "#\n");
++    fprintf(stdout, "# Aligned: \n");
+ 
+     // print query name in parts of 80
+     const char* queryName = chainGetName(query);
+     const int queryLen = strlen(queryName);
+     int queryCur = 75;
+-    fprintf(file, "# 1: %.75s\n", queryName);
++    fprintf(stdout, "# 1: %.75s\n", queryName);
+     while (queryCur < queryLen) {
+-        fprintf(file, "# %.78s\n", queryName + queryCur);
++        fprintf(stdout, "# %.78s\n", queryName + queryCur);
+         queryCur += 78;
+     }
+ 
+@@ -714,28 +714,35 @@
+     const char* targetName = chainGetName(target);
+     const int targetLen = strlen(targetName);
+     int targetCur = 75;
+-    fprintf(file, "# 2: %.75s\n", targetName);
++    fprintf(stdout, "# 2: %.75s\n", targetName);
+     while (targetCur < targetLen) {
+-        fprintf(file, "# %.78s\n", targetName + targetCur);
++        fprintf(stdout, "# %.78s\n", targetName + targetCur);
+         targetCur += 78;
+     }
+ 
+-    fprintf(file, "# Scorer: %s\n", scorerGetName(scorer));
+-    fprintf(file, "# Gap open: %d\n", scorerGetGapOpen(scorer));
+-    fprintf(file, "# Gap extend: %d\n", scorerGetGapExtend(scorer));
+-    fprintf(file, "#\n");
+-    fprintf(file, "# Query length: %d\n", chainGetLength(query));
+-    fprintf(file, "# Target length: %d\n", chainGetLength(target));
+-    fprintf(file, "#\n");
+-    fprintf(file, "# Length: %d\n", pathLen);
+-    fprintf(file, "# Identity:   %9d/%d (%.2f%%)\n", identity, pathLen, idnPct);
+-    fprintf(file, "# Similarity: %9d/%d (%.2f%%)\n", similarity, pathLen, simPct);
+-    fprintf(file, "# Gaps:       %9d/%d (%.2f%%)\n", gaps, pathLen, gapsPct);
+-    fprintf(file, "# Score: %d\n", score);
+-    fprintf(file, "# Query: (%d, %d)\n", queryStart + 1, queryEnd + 1);
+-    fprintf(file, "# Target: (%d, %d)\n", targetStart + 1, targetEnd + 1);
+-    fprintf(file, "#\n");
+-    fprintf(file, "########################################\n");
++    fprintf(file, "%d\n", similarity - identity);    //mismatch
++    fprintf(file, "%d\n", gaps);    //gap
++    fprintf(file, "%d\n", queryStart + 1);    //queryStart
++    fprintf(file, "%d\n", queryEnd + 1);    //quertEnd
++    fprintf(file, "%d\n", targetStart + 1);    //targetStart
++    fprintf(file, "%d\n", targetEnd + 1);    //targetEnd
++
++    fprintf(stdout, "# Scorer: %s\n", scorerGetName(scorer));
++    fprintf(stdout, "# Gap open: %d\n", scorerGetGapOpen(scorer));
++    fprintf(stdout, "# Gap extend: %d\n", scorerGetGapExtend(scorer));
++    fprintf(stdout, "#\n");
++    fprintf(stdout, "# Query length: %d\n", chainGetLength(query));
++    fprintf(stdout, "# Target length: %d\n", chainGetLength(target));
++    fprintf(stdout, "#\n");
++    fprintf(stdout, "# Length: %d\n", pathLen);
++    fprintf(stdout, "# Identity:   %9d/%d (%.2f%%)\n", identity, pathLen, idnPct);
++    fprintf(stdout, "# Similarity: %9d/%d (%.2f%%)\n", similarity, pathLen, simPct);
++    fprintf(stdout, "# Gaps:       %9d/%d (%.2f%%)\n", gaps, pathLen, gapsPct);
++    fprintf(stdout, "# Score: %d\n", score);
++    fprintf(stdout, "# Query: (%d, %d)\n", queryStart + 1, queryEnd + 1);
++    fprintf(stdout, "# Target: (%d, %d)\n", targetStart + 1, targetEnd + 1);
++    fprintf(stdout, "#\n");
++    fprintf(stdout, "########################################\n");
+ }
+ 
+ static void outputStatPair(Alignment* alignment, FILE* file) {
+diff -ru swsharp/swsharp/src/sw_end_data_gpu.cu swsharp_modified/swsharp/src/sw_end_data_gpu.cu
+--- swsharp/swsharp/src/sw_end_data_gpu.cu	2014-06-28 06:14:55.000000000 +0900
++++ swsharp_modified/swsharp/src/sw_end_data_gpu.cu	2015-07-31 15:16:13.000000000 +0900
+@@ -23,6 +23,7 @@
+ 
+ #include <stdlib.h>
+ #include <stdio.h>
++#include <sys/time.h>
+ 
+ #include "chain.h"
+ #include "constants.h"
+@@ -44,6 +45,8 @@
+ 
+ #define INT4_ZERO make_int4(0, 0, 0, 0)
+ 
++#define BANDED
++
+ typedef struct Atom {
+     int mch;
+     int2 up;
+@@ -70,6 +73,7 @@
+     Scorer* scorer;
+     int score;
+     int card;
++    int bound;    //changed
+ } Context;
+ 
+ static __constant__ int gapOpen_;
+@@ -80,6 +84,11 @@
+ 
+ static __constant__ int cellWidth_;
+ 
++#ifdef BANDED
++static __constant__ int pLeft_;
++static __constant__ int pRight_;
++#endif
++
+ static __constant__ int pruneLow_;
+ static __constant__ int pruneHigh_;
+ 
+@@ -138,7 +147,7 @@
+ 
+ extern void swEndDataGpu(int* queryEnd, int* targetEnd, int* outScore, 
+     int** scores, int** affines, Chain* query, Chain* target, Scorer* scorer, 
+-    int score, int card, Thread* thread) {
++    int score, int card, Thread* thread, int bound) {    //changed
+     
+     Context* param = (Context*) malloc(sizeof(Context));
+ 
+@@ -152,6 +161,7 @@
+     param->scorer = scorer;
+     param->score = score;
+     param->card = card;
++    param->bound = bound;
+     
+     if (thread == NULL) {
+         kernel(param);
+@@ -213,6 +223,21 @@
+     row -= (col < 0) * (gridDim.x * blockDim.x * 4);
+     col += (col < 0) * cols_;
+     
++#ifdef BANDED
++    int x1 = cellWidth_ * (gridDim.x - blockIdx.x - 1) + blockDim.x;
++    int y1 = (d + blockIdx.x - gridDim.x + 1) * (blockDim.x * 4);
++
++    int x2 = cellWidth_ * (gridDim.x - blockIdx.x - 1) - blockDim.x;
++    int y2 = (d + blockIdx.x - gridDim.x + 2) * (blockDim.x * 4);
++
++    y2 -= (x2 < 0) * (gridDim.x * blockDim.x * 4);
++    x2 += (x2 < 0) * cols_;
++
++    if (y1 - x1 > pLeft_ && (x2 - y2 > pRight_ || y2 < 0)) {
++        return;
++    }
++#endif
++
+     Atom atom;
+     
+     if (0 <= row && row < rows_ && col > 0) {
+@@ -340,6 +365,22 @@
+ 
+     if (row < 0 || row >= rows_) return;
+     
++#if BANDED
++    int x1 = cellWidth_ * (gridDim.x - blockIdx.x - 1) + blockDim.x;
++    int y1 = (d + blockIdx.x - gridDim.x + 1) * (blockDim.x * 4);
++
++    if (y1 - x1 > pLeft_) {
++        return;
++    }
++
++    int x2 = cellWidth_ * (gridDim.x - blockIdx.x - 1) - blockDim.x;
++    int y2 = (d + blockIdx.x - gridDim.x + 2) * (blockDim.x * 4);
++
++    if (x2 - y2 > pRight_) {
++        return;
++    }
++#endif
++
+     Atom atom;
+     atom.mch = vBus.mch[(row >> 2) % (gridDim.x * blockDim.x)];
+     VEC4_ASSIGN(atom.lScr, vBus.scr[(row >> 2) % (gridDim.x * blockDim.x)]);
+@@ -463,6 +504,22 @@
+         
+         return;
+     }
++
++#if BANDED
++    int x1 = cellWidth_ * (gridDim.x - blockIdx.x - 1) + cellWidth_;
++    int y1 = (d + blockIdx.x - gridDim.x + 1) * (blockDim.x * 4);
++
++    if (y1 - x1 > pLeft_) {
++        return;
++    }
++
++    int x2 = cellWidth_ * (gridDim.x - blockIdx.x - 1);
++    int y2 = (d + blockIdx.x - gridDim.x + 2) * (blockDim.x * 4);
++
++    if (x2 - y2 > pRight_) {
++        return;
++    }
++#endif
+     
+     Atom atom;
+     atom.mch = vBus.mch[(row >> 2) % (gridDim.x * blockDim.x)];
+@@ -586,6 +643,7 @@
+     Scorer* scorer = context->scorer;
+     int score = context->score;
+     int card = context->card;
++    int bound = context->bound;    //changed
+ 
+     // if negative matrix, no need for SW, score will not be found
+     if (scorerGetMaxScore(scorer) <= 0) {
+@@ -648,15 +706,24 @@
+     int pruneHigh = blocks;
+     int pruneFactor = scorerGetMaxScore(scorer);
+ 
++#if BANDED
++    int maxScore = scorerGetMaxScore(scorer);
++    int minMatch = maxScore ? bound / maxScore : 0;
++    int pLeft = rows - minMatch;
++//    int pLeft = rows - minMatch / 2;
++    int pRight = cols - minMatch;
++#endif
++
+     int memoryUsedGpu = 0;
+     int memoryUsedCpu = 0;
+     
+-    /*
+     LOG("Rows cpu: %d, gpu: %d", rows, rowsGpu);
+     LOG("Columns cpu: %d, gpu: %d", cols, colsGpu);
+     LOG("Cell h: %d, w: %d", cellHeight, cellWidth);
+     LOG("Diagonals: %d", diagonals);
+-    */
++#if BANDED
++    LOG("Deformation: %d %d", pRight, pLeft);
++#endif
+ 
+     //**************************************************************************
+     // PADD CHAINS
+@@ -751,6 +818,10 @@
+     CUDA_SAFE_CALL(cudaMemcpyToSymbol(cellWidth_, &cellWidth, sizeof(int)));
+     CUDA_SAFE_CALL(cudaMemcpyToSymbol(pruneLow_, &pruneLow, sizeof(int)));
+     CUDA_SAFE_CALL(cudaMemcpyToSymbol(pruneHigh_, &pruneHigh, sizeof(int)));
++#if BANDED
++    CUDA_SAFE_CALL(cudaMemcpyToSymbol(pLeft_, &pLeft, sizeof(int)));
++    CUDA_SAFE_CALL(cudaMemcpyToSymbol(pRight_, &pRight, sizeof(int)));
++#endif
+     
+     // LOG("Memory used CPU: %fMB", memoryUsedCpu / 1024. / 1024.);
+     LOG("Memory used GPU: %fMB", memoryUsedGpu / 1024. / 1024.);
+@@ -760,14 +831,23 @@
+     //**************************************************************************
+     // KERNEL RUN
+     
+-    int best = MAX(0, score);
++    int best = MAX(bound, score);    //changed
+     int pruning = 1;
+     int pruned = 0;
+     int pruneHighOld = pruneHigh;
+     int halfPruning = scores != NULL || affines != NULL;
+-    
++    struct timeval s, e;
++/*
++    FILE* outputPrune1;
++    FILE* outputPrune2;
++    if (card == 0) {
++        outputPrune1 = fopen("prunedBlocks1.csv","w");
++    }else if (card == 1){
++        outputPrune2 = fopen("prunedBlocks2.csv","w");
++    }
++*/
+     // TIMER_START("Kernel");
+-    
++    gettimeofday(&s,NULL);
+     for (int diagonal = 0; diagonal < diagonals; ++diagonal) {
+     
+         if (scalar) {
+@@ -788,7 +868,7 @@
+         
+             size_t bSize = pruneHigh * sizeof(int);
+             CUDA_SAFE_CALL(cudaMemcpy(bCpu, bGpu, bSize, FROM_GPU));
+-            
++
+             if (score == NO_SCORE) {
+                 for (int i = 0; i < pruneHigh; ++i) {
+                     best = max(best, bCpu[i]);
+@@ -804,7 +884,9 @@
+                 if (rowsGpu * (halfPruning ? 2 : 1) - row < cols - col) break;
+                 int d = cols - col;
+                 int scr = i == blocks - 1 ? bCpu[i] : max(bCpu[i], bCpu[i + 1]);
+-                if ((scr + d * pruneFactor) < best) pruneLow = i;
++                if ((scr + d * pruneFactor) < best)  { 
++                    pruneLow = i;
++                }
+                 else break;
+             }
+ 
+@@ -820,13 +902,37 @@
+                     int d = rowsGpu - row;
+                     int scr1 = d * pruneFactor + (i == blocks - 1 ? 0 : bCpu[i + 1]);
+                     int scr2 = (d + threads * 2) * pruneFactor + bCpu[i];
+-                    if (scr1 < best && scr2 < best) pruneHigh = i; 
++                    if (scr1 < best && scr2 < best) { 
++                        pruneHigh = i;
++                    } 
+                     else break;
+                 }
+             }
+ 
+             pruned += blocks - (pruneHigh - pruneLow - 1);
+-            
++/*
++            for (int i=0;i<blocks;i++) {
++                 if ( (i>pruneLow) && (i<pruneHigh)) {
++                     if(card == 0){
++                         fprintf(outputPrune1,"0,");
++                     }else if(card ==1){
++                         fprintf(outputPrune2,"0,");
++                     }
++                 }
++                 else {
++                     if (card==0){
++                         fprintf(outputPrune1,"1,");
++                     }else if (card ==1){
++                         fprintf(outputPrune2,"1,");
++                     }
++                }
++            }
++            if (card==0){
++                fprintf(outputPrune1,"\n");
++            }else if(card==1){
++                fprintf(outputPrune2,"\n");
++            }
++*/
+             if (pruneLow >= pruneHigh) {
+                 break;
+             }
+@@ -843,9 +949,19 @@
+     }
+     
+     // TIMER_STOP;
+-    
+-    LOG("Pruned percentage %.2f%%", 100.0 * pruned / (diagonals * blocks));
+-    
++    gettimeofday(&e,NULL);
++/*
++    if(card==0){
++        fclose(outputPrune1);
++    }else if(card==1){
++        fclose(outputPrune2);
++    }
++*/
++    printf("Phase1 = %lf\n", (e.tv_sec - s.tv_sec) + (e.tv_usec - s.tv_usec)*1.0E-6);  
++    printf("Pruned percentage %.2f%%\n", 100.0 * pruned / (diagonals * blocks));
++    printf("pruned %d, diagonals %d, blocks %d, threads %d\n",pruned,diagonals, blocks,threads);
++    printf("block size %d x %d\n",cellHeight, cellWidth);
++ 
+     //**************************************************************************
+ 
+     //**************************************************************************
+diff -ru swsharp/swsharpn/src/main.c swsharp_modified/swsharpn/src/main.c
+--- swsharp/swsharpn/src/main.c	2014-06-28 06:14:55.000000000 +0900
++++ swsharp_modified/swsharpn/src/main.c	2014-10-08 17:50:42.000000000 +0900
+@@ -34,6 +34,7 @@
+     {"algorithm", required_argument, 0, 'A'},
+     {"cpu", no_argument, 0, 'P'},
+     {"help", no_argument, 0, 'h'},
++    {"lower-bound", required_argument, 0, 'L'},    //changed
+     {0, 0, 0, 0}
+ };
+ 
+@@ -82,6 +83,8 @@
+ 
+     int forceCpu = 0;
+ 
++    int bound = 0;    //changed
++
+     while (1) {
+ 
+         char argument = getopt_long(argc, argv, "i:j:g:e:h", options, NULL);
+@@ -127,6 +130,9 @@
+         case 'P':
+             forceCpu = 1;
+             break;
++        case 'L':
++            bound = atoi(optarg);    //changed
++            break;
+         case 'h':
+         default:
+             help();
+@@ -172,7 +178,7 @@
+     
+         Alignment* alignment;
+         alignPair(&alignment, algorithm, query, target, scorer, cards, 
+-            cardsLen, NULL);
++            cardsLen, NULL, bound);    //changed
+          
+         ASSERT(checkAlignment(alignment), "invalid align");
+         
+diff -ru swsharp/swsharpp/src/main.c swsharp_modified/swsharpp/src/main.c
+--- swsharp/swsharpp/src/main.c	2014-06-28 06:14:55.000000000 +0900
++++ swsharp_modified/swsharpp/src/main.c	2014-10-08 17:50:42.000000000 +0900
+@@ -150,7 +150,7 @@
+     threadPoolInitialize(cardsLen + 8);
+     
+     Alignment* alignment;
+-    alignPair(&alignment, algorithm, query, target, scorer, cards, cardsLen, NULL);
++    alignPair(&alignment, algorithm, query, target, scorer, cards, cardsLen, NULL, 0);    //changed
+      
+     ASSERT(checkAlignment(alignment), "invalid align");
+     
