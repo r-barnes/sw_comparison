@@ -32,6 +32,8 @@ Comparison Matrix
     -------------------
     Farrar2007        |               | 10.1093/bioinformatics/btl582 | CPU-SSE2                | TODO               | TODO        | --             |
     Szalkowski2008    | SWPS3         | 10.1186/1756-0500-1-107       | CPU-SSE2                | TODO               | MIT         | szalkowski2008 | https://lab.dessimoz.org/swps3/
+    Rumble2009        | SHRIMP        | 10.1371/journal.pcbi.1000386  | CPU-SIMD                | TODO               | MIT?        | shrimp         | http://compbio.cs.toronto.edu/shrimp/
+    David2011         | SHRIMP2       | 10.1093/bioinformatics/btr046 | CPU-SIMD                | TODO               | MIT?        | shrimp         | http://compbio.cs.toronto.edu/shrimp/
     Rognes2011        | SWIPE         | 10.1186/1471-2105-12-221      | CPU-SSSE3               | Farrar2007         | AGPL-3.0    | rogness2011    |
     Rucci2014         | SWIMM         | 10.1109/CLUSTER.2014.6968784  | CPU-Xeon Phi            | TODO               | Unspecified | rucci2015      |
     Zhao2013          | SSW           | 10.1371/journal.pone.0082138  | CPU-SIMD                | TODO               | MIT         | zhao2013       |
@@ -60,6 +62,7 @@ Comparison Matrix
     -------------------    
     Liu2013           | CUDASW++ 3.0  | 10.1186/1471-2105-14-117      | GPU-CUDA + CPU-SSE      | TODO               | GPLv2       | liu2013        | http://cudasw.sourceforge.net/homepage.htm#latest
     Warris2018        | pyPaSWAS      | 10.1371/journal.pone.0190279  | GPU-CUDA + CPU + Python | TODO               | MIT         | warris2018     |
+
 
 Reviews:
 

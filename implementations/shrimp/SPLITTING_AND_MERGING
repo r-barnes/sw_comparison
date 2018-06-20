@@ -1,0 +1,148 @@
+Splitting and Merging the Mapping
+---------------------------------
+
+Mapping a set of donor reads to a reference genome can be parallelized in two
+ways: splitting the genome into several chunks and splitting the reads into
+several chunks. The former of the two (splitting the genome) might be required
+in order to fit the jobs into the available RAM. The latter (splitting the
+reads) is optional, but it provides a way to fully utilize a computing
+cluster. This how-to briefly describes how to split and merge the mapping.
+
+
+Initial setup
+-------------
+
+db.fa - contains all contigs of the reference genome
+qr.fa - the reads, say in color space
+
+Suppose we have a cluster of 4 nodes of 16GB each.
+
+
+Splitting the Genome
+--------------------
+
+On each 16GB node, we decide to give the gmapper process 15GB of RAM, keeping
+the rest for the operating system. To split the genome into several pieces that
+fit in 15GB of RAM, we run:
+
+$ split-db db.fa --ram-size 15
+
+This creates several files of the form db-15gb-12,12,12,12seeds-XofY.fa, where X
+ranges from 1..Y. For simplicity, we assume Y=2, and we refer to the resulting
+files as db-1of2.fa and db-2of2.fa.
+
+
+Projecting the Genome
+---------------------
+
+This step is  optional but recommended.  This provides significant savings if we
+ever run gmapper against the individual pieces db-[12]of2.fa more than once. For
+instance, this will be the case if we decide to split the reads. If the reads we
+have are in color space, we project the genome pieces with:
+
+$ project-db db-*of2.fa --shrimp-mode cs
+
+This creates files of the form db-[12]of2-cs.genome and
+db-[12]of2-cs.seed.[0-3]. We refer to them by their prefix, as db-1of2-cs and
+db-2of2-cs.
+
+Note: If the reads are in letter space, use "ls".
+
+Note: Splitting and projecting the genome can be accomplished at the same time
+by running:
+
+$ split-project-db db.fa --ram-size 15 --shrimp-mode cs
+
+
+Splitting the Reads
+-------------------
+
+This is optional, but it provides for a way to fully utilize a computing
+cluster. If we have a cluster of N nodes and the genome was split into Y pieces,
+we would want to split the reads into N/Y pieces. In our example, say N=4 and
+Y=2, so we split the reads into 2 pieces, qr-1of2.fa and qr-2of2.fa.
+
+To split reads, use the splitreads.py script.
+
+
+Run the Mapping Jobs
+--------------------
+
+We run the following 4 jobs on different nodes of the cluster:
+
+$ gmapper-cs qr-${A}of2.fa db-${B}of2.fa [options...] >map-qr-${A}of2-db-${B}of2.sam
+
+If we projected the genome, the command lines are:
+
+$ gmapper-cs qr-${A}of2.fa -L db-${B}of2-cs.fa [options...] >map-qr-${A}of2-db-${B}of2.sam
+
+
+Merging Hits
+------------
+
+At this point, we have 4 output files. We merge them in two steps.
+
+First, we merge hits of the *same* reads across *different* pieces of the genome:
+
+$ mergesam qr-1of2.fa map-qr1of2-db*of2.sam >map-qr1of2.sam
+$ mergesam qr-2of2.fa map-qr2of2-db*of2.sam >map-qr2of2.sam
+
+Finally, merge hits of *different* reads across the *same* genome (now, all of
+it):
+
+$ mergesam <(cat qr-1of2.fa qr-2of2.fa) map-qr*of2.sam >map.sam
+
+Alternatively, we can combine all merging in a single step as follows:
+
+$ mergesam <(cat qr-1of2.fa qr-2of2.fa) map-qr*of2-db*of2.sam >map.sam
+
+
+Merging and Mapping Qualities
+-----------------------------
+
+As of v2.2.0, gmapper supports mapping qualities. These statistics need to be
+updated in nontrivial ways during merging. Particularly, merging mappings of the
+same read to different reference chunks must be accompanied by mapping quality
+recalculation. For this reason, gmapper by default includes in the SAM output
+several special fields which are used to perform MQ recalculation during
+merging. To inhibit the inclusion of these fields in the output, the final
+merging step for every read should include the option --all-contigs (to either
+gmapper itself or mergesam). However, the only negative effect of those extra
+fields is wasted space: their presence or absence does not affect the actual
+mappings in any other way.
+
+Assume we have 2 read chunks and 2 reference chunks as in the example before,
+and we want the single best mapping for every read (pair). By default, gmapper
+includes the extra SAM fields in the 4 original runs. Moreover, since we are
+only interested in the single best mapping, we can additionally give
+--single-best-mapping to each of the 4 gmapper runs. We can merge the results as
+follows:
+
+(i) All together in one step:
+
+$ mergesam --single-best-mapping --all-contigs <(cat qr-1of2.fa qr-2of2.fa) map-qr*of2-db*of2.sam >map.sam
+
+Depending on the size of the mapping and the number of files involved, one might
+prefer to split this work into several parts.
+
+(ii) Across reference chunks, then across reads:
+
+$ mergesam --single-best-mapping --all-contigs qr-1of2.fa map-qr1of2-db*of2.sam >map-qr1of2.sam
+$ mergesam --single-best-mapping --all-contigs qr-2of2.fa map-qr2of2-db*of2.sam >map-qr2of2.sam
+$ mergesam --no-mapping-qualities --leave-mapq <(cat qr-1of2.fa qr-2of2.fa) map-qr*of2.sam >map.sam
+
+Above, in each of the first two runs all mappings for the reads in those runs
+are inspected, hence it is correct to include --all-contigs at that early
+point. In the last merge step, the existing mapping qualities are left alone.
+
+(iii) Across reads, then across reference chunks:
+
+$ mergesam <(cat qr-1of2.fa qr-2of2.fa) map-qr*of2-db1of2.sam >map-db1of2.sam
+$ mergesam <(cat qr-1of2.fa qr-2of2.fa) map-qr*of2-db2of2.sam >map-db2of2.sam
+$ mergesam --single-best-mapping --all-contigs <(cat qr-1of2.fa qr-2of2.fa) map-db*of2.sam >map.sam
+
+Above, one could include --single-best-mapping in the first 2 merge jobs, but
+that would have no effect. However, it would be an error to give --all-contigs
+to either of those: in that case, the third merge job would need to recompute
+mapping qualities of a read across different reference chunks, but the extra SAM
+fields that are needed would be missing.
