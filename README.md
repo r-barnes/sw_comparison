@@ -51,6 +51,7 @@ Comparison Matrix
     Liu2010           | CUDASW++ 2.0  | 10.1186/1756-0500-3-93        | GPU-CUDA                | TODO               | GPLv2       | liu2010        | http://cudasw.sourceforge.net/homepage.htm#latest
     Khajeh-Saeed2010  |               | 10.1016/j.jcp.2010.02.009     | GPU-CUDA                | TODO               | Unknown     |                |
     Sandes2010        |               | 10.1145/1693453.1693473       | GPU-CUDA                | TODO               |             |                |                                                       | Emailed for source code on 2018-06-19. edans address is dead.
+    Sandes2011        |               | 10.1109/IPDPS.2011.114        | GPU-CUDA                | TODO               |             |                |                                                       | Emailed for source code on 2018-06-19. edans address is dead.
     Hains2011         |               |                               | GPU-CUDA                |                    |             |                |
     Klus2012          | BarraCUDA     | 10.1186/1756-0500-5-27        | GPU-CUDA                | TODO               | MIT/GPLv3   | klus2012       | http://seqbarracuda.sourceforge.net/
     Pankaj2012        | SWIFT         |                               | GPU-CUDA                | TODO               | GPL-2.0     | pankaj2012     |
