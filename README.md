@@ -51,22 +51,25 @@ Comparison Matrix
     Ling2009          |               | 10.1109/SASP.2009.5226343     | GPU-CUDA                | TODO               |             |                |                                                       |
     Liu2010           | CUDASW++ 2.0  | 10.1186/1756-0500-3-93        | GPU-CUDA                | TODO               | GPLv2       | liu2010        | http://cudasw.sourceforge.net/homepage.htm#latest
     Khajeh-Saeed2010  |               | 10.1016/j.jcp.2010.02.009     | GPU-CUDA                | TODO               | Unknown     |                |
-    Sandes2010        |               | 10.1145/1693453.1693473       | GPU-CUDA                | TODO               |             |                |                                                       | Emailed for source code on 2018-06-19. edans address is dead.
-    Sandes2011        |               | 10.1109/IPDPS.2011.114        | GPU-CUDA                | TODO               |             |                |                                                       | Emailed for source code on 2018-06-19. edans address is dead.
+    Sandes2010        | MASA          | 10.1145/1693453.1693473       | GPU-CUDA                | TODO               |             |                | https://github.com/edanssandes/MASA-Core/wiki         | There are *many* papers from this group.
+    Sandes2011        | MASA          | 10.1109/IPDPS.2011.114        | GPU-CUDA                | TODO               |             |                | https://github.com/edanssandes/MASA-Core/wiki         | There are *many* papers from this group.
     Hains2011         |               |                               | GPU-CUDA                |                    |             |                |
     Klus2012          | BarraCUDA     | 10.1186/1756-0500-5-27        | GPU-CUDA                | TODO               | MIT/GPLv3   | klus2012       | http://seqbarracuda.sourceforge.net/
     Pankaj2012        | SWIFT         |                               | GPU-CUDA                | TODO               | GPL-2.0     | pankaj2012     |
     Venkatachalam2012 |               |                               | GPU-CUDA                |                    |             |                |
+    Sandes2014_hetero | MASA          | 10.1145/2555243.2555280       | GPU-CUDA                |                    | GPLv3       |                |                                                       |
+    Sandes2014        | MASA          | 10.1109/CCGrid.2014.18        | GPU-CUDA                |                    | GPLv3       |                |                                                       |
     Okada2015         | SW#           | 10.1186/s12859-015-0744-4     | GPU-CUDA                | TODO               |             | okada2015      | http://www-hagi.ist.osaka-u.ac.jp/research/code/
     Warris2015        | PaSWAS        | 10.1371/journal.pone.0122524  | GPU-CUDA                | TODO               | MIT         | warris2015     |
     Huang2015         |               | 10.1155/2015/185179           | GPU-CUDA                | TODO               |             |                |                                                       | TODO: Should contact
+    Sandes2016_masa   | MASA          | 10.1145/2858656               | GPU-CUDA                |                    | GPLv3       |                |                                                       |
+    Sandes2016        | MASA          | 10.1109/TPDS.2016.2515597     | GPU-CUDA                |                    | GPLv3       |                |                                                       |
     nvbio_sw          | nvbio         | github.com/NVlabs/nvbio       | GPU-CUDA                | TODO               | BSD-3       | nvbio_sw       | https://nvlabs.github.io/nvbio/
     ugene             | ugene         |                               | GPU-CUDA                | TODO               | GPLv2       | ugene          | http://ugene.net/download.html
     -------------------    
     Liu2013           | CUDASW++ 3.0  | 10.1186/1471-2105-14-117      | GPU-CUDA + CPU-SSE      | TODO               | GPLv2       | liu2013        | http://cudasw.sourceforge.net/homepage.htm#latest
     Marcos2014        |               |                               | GPU-CUDA + CPU          | TODO               |             |                |                                                       |
     Warris2018        | pyPaSWAS      | 10.1371/journal.pone.0190279  | GPU-CUDA + CPU + Python | TODO               | MIT         | warris2018     |
-
 
 Reviews:
 
