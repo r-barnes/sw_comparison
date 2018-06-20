@@ -52,6 +52,7 @@ Comparison Matrix
     Klus2012          | BarraCUDA     | 10.1186/1756-0500-5-27        | GPU-CUDA                | TODO               | MIT/GPLv3   | klus2012       | http://seqbarracuda.sourceforge.net/
     Pankaj2012        | SWIFT         |                               | GPU-CUDA                | TODO               | GPL-2.0     | pankaj2012     |
     Venkatachalam2012 |               |                               | GPU-CUDA                |                    |             |                |
+    Okada2015         | SW#           | 10.1186/s12859-015-0744-4     | GPU-CUDA                | TODO               |             | okada2015      | http://www-hagi.ist.osaka-u.ac.jp/research/code/
     Warris2015        | PaSWAS        | 10.1371/journal.pone.0122524  | GPU-CUDA                | TODO               | MIT         | warris2015     |
     nvbio_sw          | nvbio         | github.com/NVlabs/nvbio       | GPU-CUDA                | TODO               | BSD-3       | nvbio_sw       | https://nvlabs.github.io/nvbio/
     ugene             | ugene         |                               | GPU-CUDA                | TODO               | GPLv2       | ugene          | http://ugene.net/download.html
@@ -62,6 +63,7 @@ Comparison Matrix
 Reviews:
 
     Muhammadzadeh2014
+    Pandey2015
 
 Summary of Algorithmic Tricks/Improvements
 ------------------------------------------
