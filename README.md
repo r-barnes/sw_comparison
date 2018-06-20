@@ -17,6 +17,7 @@ possess the following properties.
   1. Able to run on a GPU
   2. TODO
 
+Possible performance metrics: GCUPS, PPW (Performance per Watt)
 
 
 Candidate Implementations
