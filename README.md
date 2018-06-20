@@ -14,10 +14,15 @@ Selection Criteria
 A "good" implementation of the Smith-Waterman algorithm for our purposes must
 possess the following properties.
 
-  1. Able to run on a GPU
-  2. TODO
+  1. Able to run on a GPU.
+  2. Suitable for reads of our lengths.
+  3. Utilizes the CPU as well (discuss this)
+  4. Separable. Not so deeply integrated with another codebase as to require
+     excessive dependencies or so as to operate like a blackbox.
+  X. TODO
 
 Possible performance metrics: GCUPS, PPW (Performance per Watt)
+
 
 
 Candidate Implementations
@@ -76,6 +81,8 @@ Reviews:
     Muhammadzadeh2014 | 
     Pandey2015        | 10.9790/0661-17264852
     Liu2013_review    | 10.5220/0004191202680271
+
+
 
 Summary of Algorithmic Tricks/Improvements
 ------------------------------------------
