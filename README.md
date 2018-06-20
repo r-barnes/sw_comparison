@@ -62,8 +62,9 @@ Comparison Matrix
 
 Reviews:
 
-    Muhammadzadeh2014
-    Pandey2015
+    Muhammadzadeh2014 | 
+    Pandey2015        | 10.9790/0661-17264852
+    Liu2013_review    | 10.5220/0004191202680271
 
 Summary of Algorithmic Tricks/Improvements
 ------------------------------------------
