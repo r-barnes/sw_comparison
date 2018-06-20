@@ -64,6 +64,7 @@ Comparison Matrix
     ugene             | ugene         |                               | GPU-CUDA                | TODO               | GPLv2       | ugene          | http://ugene.net/download.html
     -------------------    
     Liu2013           | CUDASW++ 3.0  | 10.1186/1471-2105-14-117      | GPU-CUDA + CPU-SSE      | TODO               | GPLv2       | liu2013        | http://cudasw.sourceforge.net/homepage.htm#latest
+    Marcos2014        |               |                               | GPU-CUDA + CPU          | TODO               |             |                |                                                       |
     Warris2018        | pyPaSWAS      | 10.1371/journal.pone.0190279  | GPU-CUDA + CPU + Python | TODO               | MIT         | warris2018     |
 
 
@@ -97,6 +98,12 @@ All material on these sites has been examined and linked references downloaded.
 
  * http://www.nvidia.com/object/cuda_showcase_html.html
  * http://www.nvidia.com/object/bio_info_life_sciences.html
+
+Recordings of talks:
+
+ * https://www.youtube.com/watch?v=dTjvJmOpbM4
+ * http://on-demand.gputechconf.com/gtc/2012/video/S0083-Swift-GPU-Based-Smith-Waterman-Sequence-Alignment-Program.flv
+
 
 
 Misc
