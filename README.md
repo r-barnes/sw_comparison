@@ -43,7 +43,7 @@ Comparison Matrix
     Rucci2014         | SWIMM         | 10.1109/CLUSTER.2014.6968784  | CPU-Xeon Phi            | TODO               | Unspecified | rucci2015      |
     Zhao2013          | SSW           | 10.1371/journal.pone.0082138  | CPU-SIMD                | TODO               | MIT         | zhao2013       |
     Rucci2015         | SWIMM         | 10.1002/cpe.3598              | CPU-Xeon Phi            | TODO               | Unspecified | rucci2015      |
-    Sjolund2016       | DiagonalSW    |                               | CPU-SSE4/AltiVec        | TODO               | MIT         | sjolund2016    | http://diagonalsw.sourceforge.net/
+    Sjolund2016       | DiagonalSW    | software-no-paper             | CPU-SSE4/AltiVec        | TODO               | MIT         | sjolund2016    | http://diagonalsw.sourceforge.net/
     -------------------    
     Liu2006           |               | 10.1007/11758549_29           | GPU-OpenGL              | TODO               | TODO        | --             |
     -------------------     
