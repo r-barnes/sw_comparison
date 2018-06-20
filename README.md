@@ -37,8 +37,9 @@ Comparison Matrix
     Liu2006           |               | 10.1007/11758549_29           | GPU              | TODO               | TODO        | --             |
     Manavski2008      | SWCUDA        | 10.1186/1471-2105-9-S2-S10    | GPU              | TODO               | TODO        | manavski2008   | http://bioinformatics.cribi.unipd.it/cuda/swcuda.html
     Munekawa2008      |               | 10.1109/BIBE.2008.4696721     | GPU              |                    |             |                |                                                       | Emailed for source code on 2018-06-19. y-munekw address is dead.
+    Liu2009           |               | 10.1186/1756-0500-2-73        |                  | TODO               |             |                | http://cudasw.sourceforge.net/homepage.htm#latest     | CUDASW++2 and CUDASW++3 likely obviate the need to track down this code.
     Akoglu2009        |               | 10.1007/s10586-009-0089-8     | GPU              | TODO               |             | striemer2009   |                                                       | Code likely the same as striemer2009
-    Ligowski2009      |               | 10.1109/IPDPS.2009.5160931    | GPU              | TODO               |             |                |                                                       | Emailed for source code on 2018-06-19.
+    Ligowski2009      |               | 10.1109/IPDPS.2009.5160931    | GPU              | TODO               |             |                |                                                       | Emailed for source code on 2018-06-19. Witold replied 2018-06-19. Sent further request back on 2018-06-19.
     Steinfadt2009     | SWAMP         | 10.1109/OCCBIO.2009.12        | GPU              | TODO               |             |                |                                                       | Uncontacted
     Striemer2009      | GSW           | 10.1109/IPDPS.2009.5161066    | GPU              | TODO               | Custom      | striemer2009   | http://www2.engr.arizona.edu/~rcl/SmithWaterman.html
     Liu2010           | CUDASW++ 2.0  | 10.1186/1756-0500-3-93        | GPU              | TODO               | GPLv2       | liu2010        | http://cudasw.sourceforge.net/homepage.htm#latest
@@ -52,7 +53,7 @@ Comparison Matrix
     Warris2015        | PaSWAS        | 10.1371/journal.pone.0122524  | GPU              | TODO               | MIT         | warris2015     |
     Warris2018        | pyPaSWAS      | 10.1371/journal.pone.0190279  | Python+GPU       | TODO               | MIT         | warris2018     |
     nvbio_sw          | nvbio         |                               | GPU              | TODO               | BSD-3       | nvbio_sw       | https://nvlabs.github.io/nvbio/
-
+    ugene             | ugene         |                               | GPU              | TODO               | GPLv2       | ugene          | http://ugene.net/download.html
 
 Summary of Algorithmic Tricks/Improvements
 ------------------------------------------
