@@ -116,6 +116,47 @@ Recordings of talks:
 
 
 
+Test Data
+==========================================
+
+Bulk Download
+------------------------------------------
+
+All the test files can be acquired quickly using the following commands:
+
+    wget https://svwh.dl.sourceforge.net/project/cudasw/data/simdb.fasta.gz -P data/
+    wget https://iweb.dl.sourceforge.net/project/cudasw/data/Queries.zip    -P data/
+
+Downloads
+------------------------------------------
+
+The test data comes from the following sources:
+
+ * http://cudasw.sourceforge.net/homepage.htm#installation : CUDASW++ search for
+   "Example query sequences". Download the files `simdb.fasta.gz` and
+   `Queries.zip`.
+ * http://sourceforge.net/projects/cudasw/files/data : Same as above, but a more
+   direct link.
+
+Using the Test Data
+------------------------------------------
+
+### CUDASW++ (2.0)
+
+An example of running CUDASW++ (2.0) with an arbitrary query from Queries/
+against the simdb.fasta database with all the default parameter values:
+
+    ./cudasw -query Queries/P01008.fasta -db simdb.fasta 
+
+The example assumes CUDASW++ (2.0) is compiled as the executable "cudasw",
+cudasw is in $PATH, and Queries/ and simdb.fasta are in the current working
+directory (simply provide the absolute path if not).
+
+See [here](http://cudasw.sourceforge.net/homepage.htm#installation) for
+additional instructions and options for CUDASW++.
+
+
+
 Misc
 ==========================================
 
@@ -126,3 +167,4 @@ Omitted repos:
 Reading sequence data:
 
  * https://bitbucket.org/aydozz/longreads/src/master/kmercode/fq_reader.c
+
