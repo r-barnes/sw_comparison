@@ -113,7 +113,7 @@ Recordings of talks:
 
  * https://www.youtube.com/watch?v=dTjvJmOpbM4
  * http://on-demand.gputechconf.com/gtc/2012/video/S0083-Swift-GPU-Based-Smith-Waterman-Sequence-Alignment-Program.flv
-
+ * https://www.youtube.com/watch?v=CmNyCa_bRaI
 
 
 Test Data
