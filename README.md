@@ -28,8 +28,8 @@ Possible performance metrics: GCUPS, PPW (Performance per Watt), an analog of ar
 Candidate Implementations
 ==========================================
 
-Comparison Matrix
------------------
+Smith-Waterman Comparison Matrix
+--------------------------------
 
     ID                | Software Name | doi                           | Architecture            | Claims Faster Than | License     | Source dir     | Homepage
     Steinfadt2009     | SWAMP         | 10.1109/OCCBIO.2009.12        | ASC                     | TODO               |             |                |                                                       | Uncontacted
@@ -83,6 +83,9 @@ Reviews:
     Pandey2015        | 10.9790/0661-17264852
     Liu2013_review    | 10.5220/0004191202680271
 
+Other methods:
+
+    Myers1986
 
 
 Summary of Algorithmic Tricks/Improvements
@@ -99,6 +102,12 @@ Summary of Algorithmic Tricks/Improvements
 ### Pankaj2012 **Swift: A GPU-based Smith-Waterman Sequence Alignment Program**
 
   Video: http://on-demand.gputechconf.com/gtc/2012/video/S0083-Swift-GPU-Based-Smith-Waterman-Sequence-Alignment-Program.flv
+
+### Warris2015
+
+Doesn't compile on Titan. Error `../smithwaterman.h:12:25: error: helper_cuda.h: No such file or directory`.
+
+Probably a result of wanting CUDA 6.0 and using non-standard header includes.
 
 
 
