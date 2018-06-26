@@ -73,6 +73,7 @@ Comparison Matrix
     ugene             | ugene         |                               | GPU-CUDA                | TODO               | GPLv2       | ugene          | http://ugene.net/download.html
     -------------------    
     Liu2013           | CUDASW++ 3.0  | 10.1186/1471-2105-14-117      | GPU-CUDA + CPU-SSE      | TODO               | GPLv2       | liu2013        | http://cudasw.sourceforge.net/homepage.htm#latest
+    Luo2013           | SOAP3         | 10.1371/journal.pone.0065632  | GPU-CUDA + CPU          |                    | GPLv2+      | luo2013        | http://www.cs.hku.hk/2bwt-tools/soap3-dp/             |
     Marcos2014        |               |                               | GPU-CUDA + CPU          | TODO               |             |                |                                                       |
     Warris2018        | pyPaSWAS      | 10.1371/journal.pone.0190279  | GPU-CUDA + CPU + Python | TODO               | MIT         | warris2018     |
 
