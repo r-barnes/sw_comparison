@@ -60,7 +60,7 @@ Smith-Waterman Comparison Matrix
     Sandes2011        |   | MASA             | 10.1109/IPDPS.2011.114        | GPU-CUDA                |          |               |         | TODO               |             |                | https://github.com/edanssandes/MASA-Core/wiki         | There are *many* papers from this group.
     Hains2011         |   |                  |                               | GPU-CUDA                |          |               |         |                    |             |                |
     Klus2012          |   | BarraCUDA        | 10.1186/1756-0500-5-27        | GPU-CUDA                |          |               |         | TODO               | MIT/GPLv3   | klus2012       | http://seqbarracuda.sourceforge.net/
-    Pankaj2012        |   | SWIFT            |                               | GPU-CUDA                |          |               |         | TODO               | GPL-2.0     | pankaj2012     |
+    Pankaj2012        |   | SWIFT            |                               | GPU-CUDA                | Yes      |               |         | TODO               | GPL-2.0     | pankaj2012     |
     Venkatachalam2012 |   |                  |                               | GPU-CUDA                |          |               |         |                    |             |                |
     Dicker2014        | 6 |                  |                               | GPU-CUDA                |          |               |         | TODO               |             |                |                                                       |
     Sandes2014_hetero |   | MASA             | 10.1145/2555243.2555280       | GPU-CUDA                |          |               |         |                    | GPLv3       |                |                                                       |
@@ -105,6 +105,11 @@ Summary of Algorithmic Tricks/Improvements
 ### Pankaj2012 **Swift: A GPU-based Smith-Waterman Sequence Alignment Program**
 
   Video: http://on-demand.gputechconf.com/gtc/2012/video/S0083-Swift-GPU-Based-Smith-Waterman-Sequence-Alignment-Program.flv
+
+Compilation successful.
+
+    module load cudatoolkit/7.0.28-1.0502.10280.4.1
+    make
 
 ### Sandes2014
 
