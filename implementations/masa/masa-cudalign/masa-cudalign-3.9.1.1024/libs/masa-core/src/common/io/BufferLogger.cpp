@@ -25,6 +25,8 @@
 #include "../Timer.hpp"
 #include "../../libmasa/libmasa.hpp"
 
+#include <cmath>
+
 BufferLogger::BufferLogger(string file)
 {
 	prev_stats.time = 0;
@@ -65,10 +67,10 @@ void BufferLogger::logBuffer(buffer2_statistics_t &curr_stats) {
 	if (delta_stats.time >= 0.001) {
 		delta = ((float)delta_stats.bufferUsage/size)/delta_stats.time;
 	}
-	if (abs(delta_stats.time - delta_stats.blockingReadTime) > 0.000001) {
+	if (std::abs(delta_stats.time - delta_stats.blockingReadTime) > 0.000001) {
 		psi_in = ((float)delta_stats.totalReadBytes/size)/delta_stats.time*delta_stats.blockingReadTime/(delta_stats.time-delta_stats.blockingReadTime);
 	}
-	if (abs(delta_stats.time - delta_stats.blockingWriteTime) > 0.000001) {
+	if (std::abs(delta_stats.time - delta_stats.blockingWriteTime) > 0.000001) {
 		psi_out = ((float)delta_stats.totalWriteBytes/size)/delta_stats.time*delta_stats.blockingWriteTime/(delta_stats.time-delta_stats.blockingWriteTime);
 	}
 

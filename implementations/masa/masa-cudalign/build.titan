@@ -1,0 +1,10 @@
+#!/bin/bash
+mkdir $HOME/os
+cd masa-cudalign-3.9.1.1024/
+module unload cudatoolkit
+module load cudatoolkit/7.5.18-1.0502.10743.2.1
+module unload gcc
+module load gcc/4.9.3
+export LIBRARY_PATH="/opt/cray/nvidia/default/lib64:$LIBRARY_PATH"
+./configure --prefix=$HOME/os --with-cuda=/opt/nvidia/cudatoolkit7.5/7.5.18-1.0502.10743.2.1 --with-cuda-arch=sm_30
+make -j 8
