@@ -32,10 +32,10 @@
 
 
 CC = g++
-NVCC = /usr/local/cuda/bin/nvcc
-CUDAFLAG = -cuda -arch=sm_20 --ptxas-options=-v
-LIBFLAG = -L/usr/local/cuda/lib64/ -lcuda -lcudart
-CFLAGS = -O3 -funroll-loops -fomit-frame-pointer -Wno-unused-result -lm -mpopcnt -lz -fopenmp
+NVCC = nvcc
+CUDAFLAG = -cuda -arch=sm_30 --ptxas-options=-v
+LIBFLAG = -L/opt/nvidia/cudatoolkit9.1/9.1.85_3.10-1.0502.df1cc54.3.1/lib64 -lcudart -L/opt/cray/nvidia/default/lib64 -lcuda 
+CFLAGS = -O3 -funroll-loops -fomit-frame-pointer -lm -mpopcnt -lz -fopenmp -std=c++98
 
 BWTLIB = 2bwt-lib
 BWTOBJLIBS = $(BWTLIB)/BWT.o $(BWTLIB)/dictionary.o $(BWTLIB)/DNACount.o $(BWTLIB)/HSP.o $(BWTLIB)/HSPstatistic.o $(BWTLIB)/iniparser.o $(BWTLIB)/inistrlib.o $(BWTLIB)/karlin.o $(BWTLIB)/MemManager.o $(BWTLIB)/MiscUtilities.o $(BWTLIB)/QSufSort.o $(BWTLIB)/r250.o $(BWTLIB)/TextConverter.o $(BWTLIB)/Timing.o $(BWTLIB)/Socket.o
