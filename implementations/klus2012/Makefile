@@ -29,7 +29,7 @@ endif
 # Default configuration (Autodetected)
 #######################################################
 #Cuda installation path (default)
-CUDA_INSTALL_PATH := /usr/local/cuda
+CUDA_INSTALL_PATH := /opt/nvidia/cudatoolkit9.1/9.1.85_3.10-1.0502.df1cc54.3.1
 NV_ROOT_PATH := $(HOME)/NVIDIA_CUDA_SDK
 
 # Basic Auto variable setup for SDK
