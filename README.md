@@ -88,6 +88,7 @@ Other methods:
 
     Myers1986
     Aluru2002
+    Rajko2004
 
 
 Summary of Algorithmic Tricks/Improvements
