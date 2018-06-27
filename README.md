@@ -54,7 +54,7 @@ Smith-Waterman Comparison Matrix
     Ligowski2009      |   |                  | 10.1109/IPDPS.2009.5160931    | GPU-CUDA                |          |               |         | TODO               |             |                |                                                       | Emailed for source code on 2018-06-19. Witold replied 2018-06-19. Sent further request back on 2018-06-19.
     Striemer2009      |   | GSW              | 10.1109/IPDPS.2009.5161066    | GPU-CUDA                |          |               |         | TODO               | Custom      | striemer2009   | http://www2.engr.arizona.edu/~rcl/SmithWaterman.html
     Ling2009          |   |                  | 10.1109/SASP.2009.5226343     | GPU-CUDA                |          |               |         | TODO               |             |                |                                                       |
-    Liu2010           |   | CUDASW++ 2.0     | 10.1186/1756-0500-3-93        | GPU-CUDA                |          |               |         | TODO               | GPLv2       | liu2010        | http://cudasw.sourceforge.net/homepage.htm#latest
+    Liu2010           |   | CUDASW++ 2.0     | 10.1186/1756-0500-3-93        | GPU-CUDA                | Yes      |               |         | TODO               | GPLv2       | liu2010        | http://cudasw.sourceforge.net/homepage.htm#latest
     Khajeh-Saeed2010  |   |                  | 10.1016/j.jcp.2010.02.009     | GPU-CUDA                |          |               |         | TODO               | Unknown     |                |
     Sandes2010        |   | MASA             | 10.1145/1693453.1693473       | GPU-CUDA                |          |               |         | TODO               |             |                | https://github.com/edanssandes/MASA-Core/wiki         | There are *many* papers from this group.
     Sandes2011        |   | MASA             | 10.1109/IPDPS.2011.114        | GPU-CUDA                |          |               |         | TODO               |             |                | https://github.com/edanssandes/MASA-Core/wiki         | There are *many* papers from this group.
@@ -99,6 +99,13 @@ Summary of Algorithmic Tricks/Improvements
 ### Farrar2007 **Striped Smith–Waterman speeds database searches six times over other SIMD implementations**
 
 ### Manavski2008 **CUDA compatible GPU cards as efficient hardware accelerators for Smith-Waterman sequence alignment**
+
+### Liu2010
+
+Compilation succeeded with
+
+    module load cudatoolkit/9.1.85_3.10-1.0502.df1cc54.3.1
+    make
 
 ### Rognes2011 **Faster Smith-Waterman database searches with inter-sequence SIMD parallelisation**
 
