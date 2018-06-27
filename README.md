@@ -64,17 +64,17 @@ Smith-Waterman Comparison Matrix
     Venkatachalam2012 |   |                  |                               | GPU-CUDA                |          |               |         |                    |             |                |
     Dicker2014        | 6 |                  |                               | GPU-CUDA                |          |               |         | TODO               |             |                |                                                       |
     Sandes2014_hetero |   | MASA             | 10.1145/2555243.2555280       | GPU-CUDA                |          |               |         |                    | GPLv3       |                |                                                       |
-    Sandes2014        |   | MASA-CUDAlign3.0 | 10.1109/CCGrid.2014.18        | GPU-CUDA                | Yes      |        228MBP |         |                    | GPLv3       |                |                                                       |
+    Sandes2014        |   | MASA-CUDAlign3.0 | 10.1109/CCGrid.2014.18        | GPU-CUDA                | Yes (3.9)|        228MBP |         |                    | GPLv3       |                |                                                       |
     Okada2015         |   | SW#              | 10.1186/s12859-015-0744-4     | GPU-CUDA                |          |               |         | TODO               |             | okada2015      | http://www-hagi.ist.osaka-u.ac.jp/research/code/
     Warris2015        |   | PaSWAS           | 10.1371/journal.pone.0122524  | GPU-CUDA                | Error    |               |         | TODO               | MIT         | warris2015     |
     Huang2015         |   |                  | 10.1155/2015/185179           | GPU-CUDA                |          |               |         | TODO               |             |                |                                                       | TODO: Should contact
     Sandes2016_masa   |   | MASA             | 10.1145/2858656               | GPU-CUDA                |          |               |         |                    | GPLv3       |                |                                                       |
     Sandes2016        | 9 | MASA-CUDAlign4.0 | 10.1109/TPDS.2016.2515597     | GPU-CUDA                | NoSource |        249MBP |  10.37T |                    | GPLv3       |                |                                                       |
     nvbio_sw          |   | nvbio            | github.com/NVlabs/nvbio       | GPU-CUDA                | Error    |               |         | TODO               | BSD-3       | nvbio_sw       | https://nvlabs.github.io/nvbio/
-    ugene             |   | ugene            |                               | GPU-CUDA                |          |               |         | TODO               | GPLv2       | ugene          | http://ugene.net/download.html
+    ugene             |   | ugene            |                               | GPU-CUDA                | Error    |               |         | TODO               | GPLv2       | ugene          | http://ugene.net/download.html
     --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------    
     Liu2013           |   | CUDASW++ 3.0     | 10.1186/1471-2105-14-117      | GPU-CUDA + CPU-SSE      | Yes      |               |         | TODO               | GPLv2       | liu2013        | http://cudasw.sourceforge.net/homepage.htm#latest
-    Luo2013           |   | SOAP3            | 10.1371/journal.pone.0065632  | GPU-CUDA + CPU          |          |               |         |                    | GPLv2+      | luo2013        | http://www.cs.hku.hk/2bwt-tools/soap3-dp/             |
+    Luo2013           |   | SOAP3            | 10.1371/journal.pone.0065632  | GPU-CUDA + CPU          | Yes      |               |         |                    | GPLv2+      | luo2013        | http://www.cs.hku.hk/2bwt-tools/soap3-dp/             |
     Marcos2014        |   |                  |                               | GPU-CUDA + CPU          |          |               |         | TODO               |             |                |                                                       |
     Warris2018        |   | pyPaSWAS         | 10.1371/journal.pone.0190279  | GPU-CUDA + CPU + Python |          |               |         | TODO               | MIT         | warris2018     |
    
@@ -120,6 +120,14 @@ Doesn't compile on Titan. Error `../smithwaterman.h:12:25: error: helper_cuda.h:
 
 Probably a result of wanting CUDA 6.0 and using non-standard header includes.
 
+### Luo2013
+
+Compilation succeeded with
+
+    module load cudatoolkit
+    #Several fixes to the code and makefile
+    make
+
 ### Liu2013
 
 Compilation succeeded. Straight-forward.
@@ -133,6 +141,10 @@ nvbio repo says that support is for GCC 4.8 with CUDA 6.5 ([Link](https://github
 Neither original nvlabs repo nor vmiheer repo compile on Titan. Error `nvcc fatal   : Host compiler targets unsupported OS.`
 
 An alternative repo at https://github.com/ngstools/nvbio doesn't exist any more.
+
+### ugene
+
+Seems to require Ubuntu or Fedora. Complicated build process, but a cool idea (generating a deb package on the fly).
 
 
 
