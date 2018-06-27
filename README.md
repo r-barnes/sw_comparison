@@ -65,7 +65,7 @@ Smith-Waterman Comparison Matrix
     Dicker2014        | 6 |                  |                               | GPU-CUDA                |          |               |         | TODO               |             |                |                                                       |
     Sandes2014_hetero |   | MASA             | 10.1145/2555243.2555280       | GPU-CUDA                |          |               |         |                    | GPLv3       |                |                                                       |
     Sandes2014        |   | MASA-CUDAlign3.0 | 10.1109/CCGrid.2014.18        | GPU-CUDA                | Yes (3.9)|        228MBP |         |                    | GPLv3       |                |                                                       |
-    Okada2015         |   | SW#              | 10.1186/s12859-015-0744-4     | GPU-CUDA                |          |               |         | TODO               |             | okada2015      | http://www-hagi.ist.osaka-u.ac.jp/research/code/
+    Okada2015         |   | SW#              | 10.1186/s12859-015-0744-4     | GPU-CUDA                | Yes      |               |         | TODO               |             | okada2015      | http://www-hagi.ist.osaka-u.ac.jp/research/code/
     Warris2015        |   | PaSWAS           | 10.1371/journal.pone.0122524  | GPU-CUDA                | Error    |               |         | TODO               | MIT         | warris2015     |
     Huang2015         |   |                  | 10.1155/2015/185179           | GPU-CUDA                |          |               |         | TODO               |             |                |                                                       | TODO: Should contact
     Sandes2016_masa   |   | MASA             | 10.1145/2858656               | GPU-CUDA                |          |               |         |                    | GPLv3       |                |                                                       |
@@ -124,13 +124,20 @@ Probably a result of wanting CUDA 6.0 and using non-standard header includes.
 
 Compilation succeeded with
 
-    module load cudatoolkit
+    module load cudatoolkit/9.1.85_3.10-1.0502.df1cc54.3.1
     #Several fixes to the code and makefile
     make
 
 ### Liu2013
 
 Compilation succeeded. Straight-forward.
+
+### Okada2015
+
+Compilation successful. Minor alterations of makefile required.
+
+    module load cudatoolkit/7.0.28-1.0502.10280.4.1
+    make
 
 ### nvbio
 
