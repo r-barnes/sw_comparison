@@ -136,6 +136,7 @@ All the test files can be acquired quickly using the following commands:
 
     wget https://svwh.dl.sourceforge.net/project/cudasw/data/simdb.fasta.gz -P data/
     wget https://iweb.dl.sourceforge.net/project/cudasw/data/Queries.zip    -P data/
+    cat data/pacbio_human54x_files | xargs -n 1 -P 4 wget --continue -P data/
 
 Downloads
 ------------------------------------------
@@ -147,6 +148,9 @@ The test data comes from the following sources:
    `Queries.zip`.
  * http://sourceforge.net/projects/cudasw/files/data : Same as above, but a more
    direct link.
+ * The PacBIO Human54x files are drawn from
+   [here](http://datasets.pacb.com/2014/Human54x/fast.html) and linked to from
+   [here](https://github.com/PacificBiosciences/DevNet/wiki/H_sapiens_54x_release).
 
 Using the Test Data
 ------------------------------------------
