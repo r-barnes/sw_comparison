@@ -355,7 +355,7 @@ deflate_block(BGZF* fp, int block_length)
             return -1;
         }
         memcpy(fp->uncompressed_block,
-               fp->uncompressed_block + input_length,
+               (char *)fp->uncompressed_block + input_length,
                remaining);
     }
     fp->block_offset = remaining;
