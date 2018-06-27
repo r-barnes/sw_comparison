@@ -59,7 +59,7 @@ Smith-Waterman Comparison Matrix
     Sandes2010        |   | MASA             | 10.1145/1693453.1693473       | GPU-CUDA                |          |               |         | TODO               |             |                | https://github.com/edanssandes/MASA-Core/wiki         | There are *many* papers from this group.
     Sandes2011        |   | MASA             | 10.1109/IPDPS.2011.114        | GPU-CUDA                |          |               |         | TODO               |             |                | https://github.com/edanssandes/MASA-Core/wiki         | There are *many* papers from this group.
     Hains2011         |   |                  |                               | GPU-CUDA                |          |               |         |                    |             |                |
-    Klus2012          |   | BarraCUDA        | 10.1186/1756-0500-5-27        | GPU-CUDA                |          |               |         | TODO               | MIT/GPLv3   | klus2012       | http://seqbarracuda.sourceforge.net/
+    Klus2012          |   | BarraCUDA        | 10.1186/1756-0500-5-27        | GPU-CUDA                | Yes      |               |         | TODO               | MIT/GPLv3   | klus2012       | http://seqbarracuda.sourceforge.net/
     Pankaj2012        |   | SWIFT            |                               | GPU-CUDA                | Yes      |               |         | TODO               | GPL-2.0     | pankaj2012     |
     Venkatachalam2012 |   |                  |                               | GPU-CUDA                |          |               |         |                    |             |                |
     Dicker2014        | 6 |                  |                               | GPU-CUDA                |          |               |         | TODO               |             |                |                                                       |
@@ -101,6 +101,14 @@ Summary of Algorithmic Tricks/Improvements
 ### Manavski2008 **CUDA compatible GPU cards as efficient hardware accelerators for Smith-Waterman sequence alignment**
 
 ### Rognes2011 **Faster Smith-Waterman database searches with inter-sequence SIMD parallelisation**
+
+### Klus2012
+
+Compilation succeeded with
+
+    module load cudatoolkit/9.1.85_3.10-1.0502.df1cc54.3.1
+    #Minor makefile adjustment to NVCC path
+    make
 
 ### Pankaj2012 **Swift: A GPU-based Smith-Waterman Sequence Alignment Program**
 
