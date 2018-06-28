@@ -34,7 +34,7 @@ private:
 	unsigned char buf[MAX_SEQ_LENGTH + 1];
 	int pos;
 
-	FILE* file;
+	FILE* file=nullptr;
 
 };
 #endif

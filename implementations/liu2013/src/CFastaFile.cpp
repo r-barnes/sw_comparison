@@ -29,7 +29,7 @@ const int CFastaFile::amino_acids_trans[256] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 CFastaFile::CFastaFile() {
-	file = 0;
+	file = nullptr;
 	pos = 0;
 }
 CFastaFile::~CFastaFile() {
@@ -39,15 +39,14 @@ CFastaFile::~CFastaFile() {
 }
 int CFastaFile::open(char *fileName) {
 	file = fopen(fileName, "rb");
-	if (!file) {
+	if (file!=nullptr) {
 		fprintf(stderr, "Opening file (%s) failed\n", fileName);
-		goto out;
+		return 0;
 	}
 
 	pos = 0;
 	fseek(file, 0, SEEK_SET);
 	return 1;
-	out: return 0;
 }
 void CFastaFile::close() {
 	if (file) {
