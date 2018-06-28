@@ -77,7 +77,7 @@ unsigned char * CFastaFile::nextSeq(int *length, int* alignedLength, int pad) {
 
 	//check the sequence name mark '>'
 	if (buf[0] != '>') {
-		fprintf(stderr, "invalid fasta file format (line: %d)\n", __LINE__);
+		fprintf(stderr, "Error: Sequence information must begin with a '>'");
 		goto err;
 	}
 	//read the sequence name
