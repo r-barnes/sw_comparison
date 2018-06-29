@@ -31,7 +31,12 @@ Candidate Implementations
 Smith-Waterman Comparison Matrix
 --------------------------------
 
-    ID                | R | Software Name    | doi                           | Architecture            | Compiles |     |argetLength BP|             CUPS | Architectural Notes | Claims Faster Than | License     | Source dir     | Homepage
+Key:
+
+ * R   = Paper rating. 0=very, very bad. 9=Quite good, actually.
+ * ?:? = Problem being solved. 1:1, 1:Many, Many:1, Many:Many 
+
+    ID                | R | Software Name    | doi                           | Architecture            | Compiles | ?:? |argetLength BP|             CUPS | Architectural Notes | Claims Faster Than | License     | Source dir     | Homepage
     Steinfadt2009     |   | SWAMP            | 10.1109/OCCBIO.2009.12        | ASC                     |          |     |              |                  |                     | TODO               |             |                |                                                       | Uncontacted
     Steinfadt2013     |   | SWAMP            | 10.1016/j.parco.2013.08.008   | ASC                     |          |     |              |                  |                     | TODO               |             |                |                                                       | Uncontacted
     --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
