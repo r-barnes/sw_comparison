@@ -17,7 +17,7 @@ OBJS += \
 %.o: ../%.cu
 	@echo 'Building file: $<'
 	@echo 'Invoking: GCC C Compiler'
-	nvcc --ptxas-options=-v -keep -arch=compute_30 -I/usr/local/cuda-6.0/samples/common/inc/ -c -o "$@" "$<"
+	nvcc --ptxas-options=-v -keep -arch=compute_30 -I. -c -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 

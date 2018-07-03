@@ -16,6 +16,8 @@ ifneq ($(strip $(C_DEPS)),)
 endif
 endif
 
+CUDA_HOME=/opt/nvidia/cudatoolkit9.1/9.1.85_3.10-1.0502.df1cc54.3.1/
+
 -include ../makefile.defs
 
 # Add inputs and outputs from these tool invocations to the build variables 
@@ -27,7 +29,7 @@ all: paswas
 paswas: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: GCC C Linker'
-	gcc -L/usr/local/cuda-6.0/lib64 -o"paswas" $(OBJS) $(USER_OBJS) $(LIBS)
+	gcc -L${CUDA_HOME}/lib64 -o"paswas" $(OBJS) $(USER_OBJS) $(LIBS) -lstdc++
 	@echo 'Finished building target: $@'
 	@echo ' '
 
