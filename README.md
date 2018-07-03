@@ -63,14 +63,15 @@ Key:
     Khajeh-Saeed2010  |   |                  | 10.1016/j.jcp.2010.02.009     | GPU-CUDA                |          |     |              |                  |                     | TODO               | Unknown     |                |
     Sandes2010        |   | MASA             | 10.1145/1693453.1693473       | GPU-CUDA                |          |     |              |                  |                     | TODO               |             |                | https://github.com/edanssandes/MASA-Core/wiki         | There are *many* papers from this group.
     Sandes2011        |   | MASA             | 10.1109/IPDPS.2011.114        | GPU-CUDA                |          |     |              |                  |                     | TODO               |             |                | https://github.com/edanssandes/MASA-Core/wiki         | There are *many* papers from this group.
-    Hains2011         |   |                  |                               | GPU-CUDA                |          |     |              |                  |                     |                    |             |                |
+    Hains2011         | 6 |                  |                               | GPU-CUDA                |          |     |              |                  |                     |                    |             |                |
     Klus2012          |   | BarraCUDA        | 10.1186/1756-0500-5-27        | GPU-CUDA                | Yes      | M:1 |70 v 102M     | Unlisted         | Tesla M2050,M2090   | TODO               | MIT/GPLv3   | klus2012       | http://seqbarracuda.sourceforge.net/
     Pankaj2012        |   | SWIFT            |                               | GPU-CUDA                | Yes      |     |              |                  |                     | TODO               | GPL-2.0     | pankaj2012     |
     Venkatachalam2012 |   |                  |                               | GPU-CUDA                |          |     |              |                  |                     |                    |             |                |
+    Sandes2013        |   | CUDAlign2.1      | 10.1109/TPDS.2012.194         | GPU-CUDA                | Yes (3.9)|     | 162kBP-59MBP |                  |                     |                    | GPLv3       |                |                                                       |    
     Dicker2014        | 6 |                  |                               | GPU-CUDA                |          |     |              |                  | GTX 460             | TODO               |             |                |                                                       |
     Sandes2014_hetero |   | MASA             | 10.1145/2555243.2555280       | GPU-CUDA                |          |     |              |                  |                     |                    | GPLv3       |                |                                                       |
     Sandes2014        |   | MASA-CUDAlign3.0 | 10.1109/CCGrid.2014.18        | GPU-CUDA                | Yes (3.9)|     |       228MBP |                  |                     |                    | GPLv3       |                |                                                       |
-    Okada2015         |   | SW#              | 10.1186/s12859-015-0744-4     | GPU-CUDA                | Yes      | M:M |5M v 5M       |  66G (1) 202G (2)|      ????           | TODO               |             | okada2015      | http://www-hagi.ist.osaka-u.ac.jp/research/code/
+    Okada2015         | 9 | SW#              | 10.1186/s12859-015-0744-4     | GPU-CUDA                | Yes      | M:M |5M v 5M       |  66G (1) 202G (2)|      ????           | TODO               |             | okada2015      | http://www-hagi.ist.osaka-u.ac.jp/research/code/
     Warris2015        |   | PaSWAS           | 10.1371/journal.pone.0122524  | GPU-CUDA                | Error    |     |              |                  |                     | TODO               | MIT         | warris2015     |
     Huang2015         | 9 |                  | 10.1155/2015/185179           | GPU-CUDA                |          |     |              |                  | Tesla C1060, K20    | TODO               |             |                |                                                       | TODO: Should contact
     Sandes2016_masa   |   | MASA             | 10.1145/2858656               | GPU-CUDA                |          |     |              |                  |                     |                    | GPLv3       |                |                                                       |
@@ -92,12 +93,62 @@ Reviews:
 Other methods:
 
     Myers1986
-    Aluru2002
-    Rajko2004
+    Aluru2002: parallel prefix computation
+    Rajko2004: Improves on the techniques from Aluru2002
+    Boukerche2007: MPI-based method
+    Zhang2000: Greedy algorithm
+
+Background:
+
+    Gotoh1982
+    Hirschberg1975
+
 
 
 Summary of Algorithmic Tricks/Improvements
 ------------------------------------------
+
+ * Search space reduction
+   * Zhang2000: Greedy algorithm for sequences with low error rates
+   * Boukerche2007: Block pruning
+   * Sandes2013: block pruning
+   * Okada2015: Banded
+   * Okada2015: "interpair pruning"
+ * Query profile (uses texture cache):
+   * Farrar2007: Variant-striped
+   * Liu2010: (discusses sequential vs striped)
+   * Hains2011
+   * Rognes2011: Variant-sequential
+ * Data layouts:
+   * Liu2010:   Packed data format to better leverage query profile
+   * Liu2013:   Sorting the database and queries by length
+   * Huang2015: Interleaving sequences in memory for coalesced access
+ * Input-size dependent choice of algorithms:
+   * Hains2011:  Switching between interthread and intrathread parallelism as sequence size changes
+   * Dicker2014: Parallel prefix versus diagonal wavefront
+ * Speculation:
+   * Speculative calculation of H scores before F dependencies available (CUDASW++2.0)
+ * Storage reduction:
+   * Sandes2013: Using Myers-Miller for linear space
+   * Huang2015:  Saving only the most recent rows/columns/diagonals rather than the whole dynamic programming matrix
+ * Processing order:
+   * Guan1994: Divide-and-conquer for Myers-Miller
+   * Hains2011: Filling matrix in columns to increase utilization and decrease global memory accesses
+ * Fine-tuning block/thread counts:
+   * Sandes2013
+
+ * Parallel (prefix?) scan
+ * Tiling
+ * Blazewicz boolean matrices
+ * Block pruning
+ * Burrow-Wheeler Transformer? (Klus2012)
+
+
+
+
+
+Summaries of papers and implementation notes
+--------------------------------------------
 
 ### Liu2006 **GPU Accelerated Smith-Waterman**
 
@@ -237,6 +288,10 @@ directory (simply provide the absolute path if not).
 See [here](http://cudasw.sourceforge.net/homepage.htm#installation) for
 additional instructions and options for CUDASW++.
 
+Generating synthetic data
+------------------------------------------
+
+* Might be possible to use: https://github.com/seqan/seqan/tree/master/apps/mason2
 
 
 Misc
