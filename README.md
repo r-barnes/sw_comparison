@@ -192,6 +192,26 @@ Summaries of papers and implementation notes
     cmake ..
     make
 
+### Manavski2008
+
+    #Acquire CUDA 6.5
+
+        wget http://developer.download.nvidia.com/compute/cuda/6_5/rel/installers/cuda_6.5.14_linux_64.run
+
+    #Install it to (you may need to `mkdir -p` this directory)
+
+        $HOME/os/cuda-6.5/
+
+    #Try compiling:
+
+        module unload pgi
+        module remove cudatoolkit
+        module load cmake
+        module load gcc/4.8.2
+        export PATH="$HOME/os/cuda-6.5/bin:$PATH"
+        export LIBRARY_PATH="$HOME/os/cuda-6.5/lib64"
+        ./comp_cu.sh
+
 ### Liu2006 **GPU Accelerated Smith-Waterman**
 
 ### Farrar2007 **Striped Smith–Waterman speeds database searches six times over other SIMD implementations**
