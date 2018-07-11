@@ -28,7 +28,7 @@
 #include <memory.h>
 
 // includes, project
-#include <cutil.h>
+#include "cutil.h"
 
 
 __constant__ int blosum50_6[1024];
