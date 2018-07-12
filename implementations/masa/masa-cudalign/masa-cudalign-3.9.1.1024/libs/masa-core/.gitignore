@@ -1,0 +1,5 @@
+libmasa.a
+config.log
+config.status
+src/common/configs/default.h
+Makefile
