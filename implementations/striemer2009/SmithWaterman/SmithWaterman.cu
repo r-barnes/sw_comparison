@@ -309,23 +309,23 @@ printf( "\nAllocating memory on host for results... \n");
 /*___________________________________Setup Execution Parameters on Kernel______________________________________*/
 
 
-//Number of Threads per block
-int numThreads = 64;
-int numBlocks;
+  //Number of Threads per block
+  int numThreads = 64;
+  int numBlocks;
 
-if (numSeq[0]%64 == 0)
-numBlocks = (numSeq[0]/64);
-else
-numBlocks = (numSeq[0]/64 + 1);
+  if (numSeq[0]%64 == 0)
+    numBlocks = (numSeq[0]/64);
+  else
+    numBlocks = (numSeq[0]/64 + 1);
 
 
 
-// setup execution parameters
-dim3 threads(numThreads);
-dim3 grid(numBlocks);
+  // setup execution parameters
+  dim3 threads(numThreads);
+  dim3 grid(numBlocks);
 
-printf("\nnum threads is %d\n", numThreads);
-printf("\nnum blocks is %d\n", numBlocks);
+  printf("\nnum threads is %d\n", numThreads);
+  printf("\nnum blocks is %d\n", numBlocks);
 
 
 
@@ -334,35 +334,35 @@ printf("\nnum blocks is %d\n", numBlocks);
 /*______________________________________________Start timer__________________________________________________*/
 
 
-//Start Timer
-unsigned int timer = 0;                                //Create a variable timer and set it to zero
-CUT_SAFE_CALL( cutCreateTimer( &timer));               //Creates a timer and sends result to variable timer
-CUT_SAFE_CALL( cutStartTimer( timer));                 //Starts the execution of the timer
+  //Start Timer
+  unsigned int timer = 0;                                //Create a variable timer and set it to zero
+  CUT_SAFE_CALL( cutCreateTimer( &timer));               //Creates a timer and sends result to variable timer
+  CUT_SAFE_CALL( cutStartTimer( timer));                 //Starts the execution of the timer
 
 
 
-printf( "\nLaunching Kernel... \n");
+  printf( "\nLaunching Kernel... \n");
 
 
 
 /*_____________________________________________Execute Kernel__________________________________________________*/
 
 
-// execute the kernel
-SmithWaterman_Kernel<<< grid, threads>>>(device_DatabaseArray, device_SW_Results, device_offset, device_protein_length, device_temp_1);
+  // execute the kernel
+  SmithWaterman_Kernel<<< grid, threads>>>(device_DatabaseArray, device_SW_Results, device_offset, device_protein_length, device_temp_1);
 
-// check if kernel execution generated an error
-CUT_CHECK_ERROR("Kernel execution failed");                        //Report error if kernel did not launch
+  // check if kernel execution generated an error
+  CUT_CHECK_ERROR("Kernel execution failed");                        //Report error if kernel did not launch
 
 
 
 
 /*_______________________________________Copy Results from GPU to Host_________________________________________*/
 
-printf( "\nCopying Results from GPU to host... \n");
+  printf( "\nCopying Results from GPU to host... \n");
 
-//Copy Results from GPU
-CUDA_SAFE_CALL(cudaMemcpy(host_scores, device_SW_Results, (numSeq[0] * sizeof(int)), cudaMemcpyDeviceToHost));
+  //Copy Results from GPU
+  CUDA_SAFE_CALL(cudaMemcpy(host_scores, device_SW_Results, (numSeq[0] * sizeof(int)), cudaMemcpyDeviceToHost));
 
 
 
@@ -372,10 +372,10 @@ CUDA_SAFE_CALL(cudaMemcpy(host_scores, device_SW_Results, (numSeq[0] * sizeof(in
 /*_______________________________________________Check Results_________________________________________________*/
 
 
-//Stop Timer
-CUT_SAFE_CALL( cutStopTimer( timer));
-printf( "\nGPU database scan time: %f (ms)\n", cutGetTimerValue( timer));
-CUT_SAFE_CALL( cutDeleteTimer( timer));
+  //Stop Timer
+  CUT_SAFE_CALL( cutStopTimer( timer));
+  printf( "\nGPU database scan time: %f (ms)\n", cutGetTimerValue( timer));
+  CUT_SAFE_CALL( cutDeleteTimer( timer));
 
 
 
@@ -393,11 +393,11 @@ printf("It's length is %d\n", protein_length[i]);
 /*________________________________________Write Results to File________________________________________________*/
 
 
-//Allocate memory for File path to Result Location, path is limited to 200 characters
-char* Results_Path = (char*) malloc(sizeof(char) * 200);
+  //Allocate memory for File path to Result Location, path is limited to 200 characters
+  char* Results_Path = (char*) malloc(sizeof(char) * 200);
 
-//Write Results to File
-write_Results(proteinLengths, databaseArray, Results_Path, numSeq, host_scores);
+  //Write Results to File
+  write_Results(proteinLengths, databaseArray, Results_Path, numSeq, host_scores);
 
 
 
@@ -406,34 +406,24 @@ write_Results(proteinLengths, databaseArray, Results_Path, numSeq, host_scores);
 /*______________________________________________Clean Up Data__________________________________________________*/
 
 
-    //Free Host Memory
-    free( numSeq);
-    free( maxLen);
-    free( database_Path);
-    free( databaseArray);
-    free( total_Characters);
-    free( proteinLengths);
-    free( protein_Offset);
-    free( protein_length);
-    free( host_scores);
-    free( host_temp_array);
-    free( Results_Path);
-    free( host_1D_Array);
+  //Free Host Memory
+  free( numSeq);
+  free( maxLen);
+  free( database_Path);
+  free( databaseArray);
+  free( total_Characters);
+  free( proteinLengths);
+  free( protein_Offset);
+  free( protein_length);
+  free( host_scores);
+  free( host_temp_array);
+  free( Results_Path);
+  free( host_1D_Array);
 
-    //Free Device Memory
-    CUDA_SAFE_CALL(cudaFree(device_DatabaseArray));
-    CUDA_SAFE_CALL(cudaFree(device_SW_Results));
-    CUDA_SAFE_CALL(cudaFree(device_protein_length));
-    CUDA_SAFE_CALL(cudaFree(device_offset));
-    CUDA_SAFE_CALL(cudaFree(device_temp_1));
-
-
-
-
+  //Free Device Memory
+  CUDA_SAFE_CALL(cudaFree(device_DatabaseArray));
+  CUDA_SAFE_CALL(cudaFree(device_SW_Results));
+  CUDA_SAFE_CALL(cudaFree(device_protein_length));
+  CUDA_SAFE_CALL(cudaFree(device_offset));
+  CUDA_SAFE_CALL(cudaFree(device_temp_1));
 }
-
-
-
-
-
-
