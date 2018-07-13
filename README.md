@@ -54,9 +54,9 @@ Key:
     -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------       |        |          |        | --------------------------------------------------------------------------------------------------------------------------------------     
     Munekawa2008      | 9 |                  | 10.1109/BIBE.2008.4696721     | GPU-CUDA                |          | 1:M |63-511v362 90M| 5.65G            |                     |       |        |          |        |                    |             |                |                                                       | Emailed for source code on 2018-06-19. y-munekw address is dead.
     Liu2009           |   |                  | 10.1186/1756-0500-2-73        | GPU-CUDA                |          |     |              |                  |                     |       |        |          |        | TODO               |             |                | http://cudasw.sourceforge.net/homepage.htm#latest     | CUDASW++2 and CUDASW++3 likely obviate the need to track down this code.
-    Akoglu2009        | 9 |                  | 10.1007/s10586-009-0089-8     | GPU-CUDA                | No: MSVC |     |              |                  |                     | 3     | 488    | 171      | 445    | TODO               |             | striemer2009   |                                                       | Code likely the same as striemer2009
+    Akoglu2009        | 9 |                  | 10.1007/s10586-009-0089-8     | GPU-CUDA                |RuntimeErr|     |              |                  |                     | 3     | 488    | 171      | 445    | TODO               |             | striemer2009   |                                                       | Code likely the same as striemer2009
     Ligowski2009      |   |                  | 10.1109/IPDPS.2009.5160931    | GPU-CUDA                |          |     |              |                  |                     |       |        |          |        | Manavski2008       |             |                |                                                       | Emailed for source code on 2018-06-19. Witold replied 2018-06-19. Sent further request back on 2018-06-19.
-    Striemer2009      |   | GSW              | 10.1109/IPDPS.2009.5161066    | GPU-CUDA                | No: MSVC |     |              |                  |                     | 3     | 488    | 171      | 445    | TODO               | Custom      | striemer2009   | http://www2.engr.arizona.edu/~rcl/SmithWaterman.html
+    Striemer2009      |   | GSW              | 10.1109/IPDPS.2009.5161066    | GPU-CUDA                |RuntimeErr|     |              |                  |                     | 3     | 488    | 171      | 445    | TODO               | Custom      | striemer2009   | http://www2.engr.arizona.edu/~rcl/SmithWaterman.html
     Ling2009          |   |                  | 10.1109/SASP.2009.5226343     | GPU-CUDA                |          |     |              |                  |                     |       |        |          |        | TODO               |             |                |                                                       |
     Liu2010           |   | CUDASW++ 2.0     | 10.1186/1756-0500-3-93        | GPU-CUDA                | Yes      |     |              |                  |                     | 23    | 1821   | 2356     | 9174   | TODO               | GPLv2       | liu2010        | http://cudasw.sourceforge.net/homepage.htm#latest
     Khajeh-Saeed2010  |   |                  | 10.1016/j.jcp.2010.02.009     | GPU-CUDA                |          |     |              |                  |                     | 28    | 776    | 553      | 3459   | TODO               | Unknown     |                |
@@ -78,7 +78,7 @@ Key:
     nvbio_sw          |   | nvbio            | github.com/NVlabs/nvbio       | GPU-CUDA                | Yes      |     |              |                  |                     |       |        |          |        | TODO               | BSD-3       | nvbio_sw       | https://nvlabs.github.io/nvbio/
     ugene             |   | ugene            |                               | GPU-CUDA                | Error    |     |              |                  |                     |       |        |          |        | TODO               | GPLv2       | ugene          | http://ugene.net/download.html
     -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------       |        |          |        | -----------------------------------------------------------------------------------------------------------------------------    
-    Manavski2008      | 7 | SWCUDA           | 10.1186/1471-2105-9-S2-S10    | GPU-CUDA + CPU-SSE      |NoMakeFile|     |              |                  |                     | 68    | 3974   | 2861     | 8715   | TODO               | TODO        | manavski2008   | http://bioinformatics.cribi.unipd.it/cuda/swcuda.html | 
+    Manavski2008      | 7 | SWCUDA           | 10.1186/1471-2105-9-S2-S10    | GPU-CUDA + CPU-SSE      |RequiresQt|     |              |                  |                     | 68    | 3974   | 2861     | 8715   | TODO               | TODO        | manavski2008   | http://bioinformatics.cribi.unipd.it/cuda/swcuda.html | 
     Liu2013           | 9 | CUDASW++ 3.0     | 10.1186/1471-2105-14-117      | GPU-CUDA + CPU-SSE      | Yes      |     |5k v 35k: 190M|  119G (1) 186G(2)| GeForce GTX 680, 690| 21    | 642    | 568      | 4476   | TODO               | GPLv2       | liu2013        | http://cudasw.sourceforge.net/homepage.htm#latest
     Luo2013           |   | SOAP3            | 10.1371/journal.pone.0065632  | GPU-CUDA + CPU          | Yes      |     |              |                  |TesC2070,M2050;GTX680| 215   | 14057  | 16852    | 74183  | GPLv2+      | luo2013        | http://www.cs.hku.hk/2bwt-tools/soap3-dp/             |
     Marcos2014        |   |                  |                               | GPU-CUDA + CPU          |          |     |              |                  |                     |       |        |          |        | TODO               |             |                |                                                       |
@@ -192,6 +192,13 @@ Summaries of papers and implementation notes
     mkdir build
     cmake ..
     make
+
+### Striemer2009
+
+    module load cudatoolkit
+    qsub -I -A CSC261 -l nodes=1,walltime=30:00
+    nvcc -gencode arch=compute_35,code=sm_35 -I. -Iinc *cu *cpp inc/*cpp
+
 
 ### Manavski2008
 
