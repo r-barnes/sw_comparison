@@ -69,11 +69,12 @@ __device__ __constant__ int gap = 8;
 
 __global__ void
 SmithWaterman_Kernel(
-  char* device_DatabaseArray,
-  int* device_SW_Results,
-  int* device_offset,
-  int* device_protein_length,
-  short int* device_temp_1){
+  char*      device_DatabaseArray,
+  int*       device_SW_Results,
+  int*       device_offset,
+  int*       device_protein_length,
+  short int* device_temp_1
+){
 
   /*_________________________________________Shared Memory Allocation____________________________________________*/
 
