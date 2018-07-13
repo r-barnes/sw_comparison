@@ -7,11 +7,9 @@
 /* contact: Gregory Striemer at gmstrie@email.ece.arizona.edu                  */
 /*******************************************************************************/
 
-#ifndef _SmithWaterman_KERNEL_H_
-#define _SmithWaterman_KERNEL_H_
-
 #include <stdio.h>
 #include <ctype.h>
+#include <SmithWaterman_kernel.cuh>
 
 #ifndef max
 #define max( a, b ) ( ((a) > (b)) ? (a) : (b) )
@@ -295,4 +293,3 @@ SmithWaterman_Kernel(
   }
 } //end of kernel
 
-#endif // #ifndef _SmithWaterman_KERNEL_H_

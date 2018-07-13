@@ -25,7 +25,7 @@
 #include <cutil.h>
 
 // includes kernel
-#include <SmithWaterman_kernel.cu>
+#include <SmithWaterman_kernel.cuh>
 
 
 
