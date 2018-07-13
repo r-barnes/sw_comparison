@@ -90,10 +90,10 @@ void computeNumSeq( int* numSeq, char *database_Path) {
 
 
 void get_protein_lengths(
-  int* proteinLengths,
-  int* maxLen, 
-  char* database_Path,
-  int* numSeq,
+  int*          proteinLengths,
+  int*          maxLen, 
+  char*         database_Path,
+  int*          numSeq,
   unsigned int* total_Characters
 ){
   int fileChar = 0;   //Contains ascii value of current character value
@@ -173,8 +173,7 @@ void get_protein_lengths(
 
 void create_Host_Array(char* database_Path, char** databaseArray){
   int fileChar = 0;   //Contains ascii value of current character value
-  FILE* dataBaseFile;                             //Create a pointer to the file
-  dataBaseFile = fopen(database_Path, "r");       //Open the file for reading
+  FILE* dataBaseFile = fopen(database_Path, "r");       //Open the file for reading
 
   int i = 0;
   int j = 0;
@@ -271,7 +270,7 @@ void zeros_to_array(int* host_temp_array, int* numSeq){
 void write_Results(int* proteinLengths, char** databaseArray, char* Results_Path, int* numSeq, int* host_scores){
   int i;
   int j;
-  int k= 0;
+  int k = 0;
 
   // Open the database file for reading
   printf("\nPlease enter the path to the Location for Results Storage:\n");
@@ -279,8 +278,7 @@ void write_Results(int* proteinLengths, char** databaseArray, char* Results_Path
 
 
 
-  FILE* resultsFile;                              //Create a pointer to the file
-  resultsFile = fopen(Results_Path, "w");         //Open the file for reading
+  FILE* resultsFile = fopen(Results_Path, "w");         //Open the file for reading
 
   if(resultsFile == NULL){                        //Print error message if file cannot be opened
     do{

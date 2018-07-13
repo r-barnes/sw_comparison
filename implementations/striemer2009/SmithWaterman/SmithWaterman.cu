@@ -230,12 +230,12 @@ void runSW( int argc, char** argv){
 
   /*______________________________________________Start timer__________________________________________________*/
 
-    //Start Timer
-    unsigned int timer = 0;                                //Create a variable timer and set it to zero
-    CUT_SAFE_CALL( cutCreateTimer( &timer));               //Creates a timer and sends result to variable timer
-    CUT_SAFE_CALL( cutStartTimer( timer));                 //Starts the execution of the timer
+  //Start Timer
+  unsigned int timer = 0;                                //Create a variable timer and set it to zero
+  CUT_SAFE_CALL( cutCreateTimer( &timer));               //Creates a timer and sends result to variable timer
+  CUT_SAFE_CALL( cutStartTimer( timer));                 //Starts the execution of the timer
 
-    printf( "\nLaunching Kernel... \n");
+  printf( "\nLaunching Kernel... \n");
 
   /*_____________________________________________Execute Kernel__________________________________________________*/
 
@@ -279,23 +279,23 @@ void runSW( int argc, char** argv){
   /*______________________________________________Clean Up Data__________________________________________________*/
 
   //Free Host Memory
-  free( numSeq);
-  free( maxLen);
-  free( database_Path);
-  free( databaseArray);
-  free( total_Characters);
-  free( proteinLengths);
-  free( protein_Offset);
-  free( protein_length);
-  free( host_scores);
-  free( host_temp_array);
-  free( Results_Path);
-  free( host_1D_Array);
+  free(numSeq          );
+  free(maxLen          );
+  free(database_Path   );
+  free(databaseArray   );
+  free(total_Characters);
+  free(proteinLengths  );
+  free(protein_Offset  );
+  free(protein_length  );
+  free(host_scores     );
+  free(host_temp_array );
+  free(Results_Path    );
+  free(host_1D_Array   );
 
   //Free Device Memory
-  CUDA_SAFE_CALL(cudaFree(device_DatabaseArray));
-  CUDA_SAFE_CALL(cudaFree(device_SW_Results));
+  CUDA_SAFE_CALL(cudaFree(device_DatabaseArray ));
+  CUDA_SAFE_CALL(cudaFree(device_SW_Results    ));
   CUDA_SAFE_CALL(cudaFree(device_protein_length));
-  CUDA_SAFE_CALL(cudaFree(device_offset));
-  CUDA_SAFE_CALL(cudaFree(device_temp_1));
+  CUDA_SAFE_CALL(cudaFree(device_offset        ));
+  CUDA_SAFE_CALL(cudaFree(device_temp_1        ));
 }
