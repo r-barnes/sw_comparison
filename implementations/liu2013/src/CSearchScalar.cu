@@ -277,7 +277,9 @@ int CSearchScalar::dbsearch(char*queryFile) {
 		gcups /= diff;
 
 		fprintf(stderr, "query:%s\n", queryLib->getSeqName());
-		fprintf(stderr, "Length: %d --- time: %g (s) and GCUPS: %g\n",
+		fprintf(stderr, "STATOUT Length: %d --- time: %g (s) and GCUPS: %g\n",
+				qlen, diff, gcups);
+		fprintf(stdout, "STATOUT Length: %d --- time: %g (s) and GCUPS: %g\n",
 				qlen, diff, gcups);
 
 		//display results

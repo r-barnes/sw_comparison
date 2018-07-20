@@ -12,34 +12,37 @@ aligner_base = "implementations/"
 
 def ParseOutput(output):
   data_out = {}
-  output   = output.split("\n")
+  output = output.split("\n")
   for line in output:
-    datum = re.match("^STATOUT [a-zA-Z] ([A-Za-z -]) = ([0-9.]+)", line)
-    if not datum:
-      continue
-    data_out[datum.groups(1)] = float(datum.groups(2))
-  return output
+    datum = re.match("^STATOUT.*time: ([\d\.]+).*GCUPS: ([\d\.]+)", line)
+    if datum:
+      data_out['time'] = float(datum.groups(1)[0])
+      data_out['GCUPS'] = float(datum.groups(1)[1])
+  return data_out
 
-def AlignerCudaSWpp3(queryfile, databasefile, device):
+def AlignerCUDASWpp3(queryfile, databasefile, device):
   #NOTE: Left out `mat` argument for substitution matrix
   #NOTE: Left out `gapo` gap open penalty
   #NOTE: Left out `gape` gap extension penalty
   #NOTE: Left out other arguments...
-  aligner = local[os.join(aligner_base,"liu2013/src/cudasw")]
-  retcode, stdout, stderr = aligner['-query ',queryfile,'-db',databasefile,'-use_single',device] & TEE
-  if retcode!=0:
+  aligner = local[os.path.join(aligner_base, "liu2013/cudasw")]
+  retcode, stdout, stderr = aligner['-query', queryfile, '-db', databasefile, '-use_single', device] & TEE
+  if retcode != 0:
     raise Exception("Crashed...")
-  return ParseOutput(output)
+  return ParseOutput(stdout)
 
 
 
-
-aligners = [AlignerCudaSWpp3]
-
+aligners = [AlignerCUDASWpp3]
+queryfile = ""
+databasefile = ""
 
 df = pd.DataFrame()
 
 for aligner in aligners:
-  df.append(aligner(queryfile,databasefile,device=0))
+  aligner_out = aligner(queryfile, databasefile, device=0)
+  aligner_out["name"] = aligner.__name__
+  df = df.append(aligner_out, ignore_index = True)
 
+df = df.set_index("name")
 df.save_csv("output.csv")
