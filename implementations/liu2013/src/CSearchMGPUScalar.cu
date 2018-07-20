@@ -549,10 +549,10 @@ int CSearchMGPUScalar::dbsearch(char* queryFile) {
 		gcups /= dif;
 
 		fprintf(stderr, "query:%s\n", queryLib->getSeqName());
-		fprintf(stderr, "STATOUT Length: %d --- time: %g (s) and GCUPS: %g\n",
+		fprintf(stderr, "Length: %d --- time: %g (s) and GCUPS: %g\n",
 				qlen, dif, gcups);
-		fprintf(stdout, "STATOUT Length: %d --- time: %g (s) and GCUPS: %g\n",
-				qlen, dif, gcups);
+		fprintf(stdout, "STATOUT time: %g\n", dif);
+		fprintf(stdout, "STATOUT GCUPS: %g\n", gcups);
 
 		//display results
 		int top =
