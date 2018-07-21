@@ -14,10 +14,9 @@ def ParseOutput(output):
   data_out = {}
   output = output.split("\n")
   for line in output:
-    datum = re.match("^STATOUT.*time: ([\d\.]+).*GCUPS: ([\d\.]+)", line)
+    datum = re.match("^STATOUT ([a-zA-Z]*): ([\d\.]*)", line)
     if datum:
-      data_out['time'] = float(datum.groups(1)[0])
-      data_out['GCUPS'] = float(datum.groups(1)[1])
+      data_out[datum.groups(1)[0]] = float(datum.groups(1)[1])
   return data_out
 
 def AlignerCUDASWpp3(queryfile, databasefile, device):
