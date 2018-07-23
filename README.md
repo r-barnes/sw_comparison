@@ -44,7 +44,7 @@ Key:
     Szalkowski2008    |   | SWPS3            | 10.1186/1756-0500-1-107       | CPU-SSE2                | Yes      |     |              |                  |                     | 23    | 581    | 1360     | 2696   | TODO               | MIT         | szalkowski2008 | https://lab.dessimoz.org/swps3/
     Rumble2009        |   | SHRIMP           | 10.1371/journal.pcbi.1000386  | CPU-SIMD                | Yes      |     |              |                  |                     |       |        |          |        | TODO               | MIT?        | shrimp         | http://compbio.cs.toronto.edu/shrimp/
     David2011         |   | SHRIMP2          | 10.1093/bioinformatics/btr046 | CPU-SIMD                | Yes      |     |              |                  |                     | 108   | 4347   | 3854     | 24752  | TODO               | MIT?        | shrimp         | http://compbio.cs.toronto.edu/shrimp/
-    Rognes2011        |   | SWIPE            | 10.1186/1471-2105-12-221      | CPU-SSSE3               | Fixable  |     |              |                  |                     | 15    | 1889   | 808      | 9899   | Farrar2007         | AGPL-3.0    | rogness2011    |
+    Rognes2011        |   | SWIPE            | 10.1186/1471-2105-12-221      | CPU-SSSE3               | Fixable  |     |              |                  |                     | 15    | 1889   | 808      | 9899   | Farrar2007         | AGPL-3.0    | rogness2011    |                                                       | Emailed ORNL help staff about getting MPIC++ on Titan.
     Rucci2014         |   | SWIMM            | 10.1109/CLUSTER.2014.6968784  | CPU-Xeon Phi            | Error    |     |              |                  |                     | 16    | 789    | 774      | 3542   | TODO               | Unspecified | rucci2015      |
     Zhao2013          |   | SSW              | 10.1371/journal.pone.0082138  | CPU-SIMD                | Yes      |     |              |                  |                     | 11    | 380    | 694      | 2356   | TODO               | MIT         | zhao2013       |
     Rucci2015         |   | SWIMM            | 10.1002/cpe.3598              | CPU-Xeon Phi            | Fixable  |     |              |                  |                     |       |        |          |        | TODO               | Unspecified | rucci2015      |
@@ -93,10 +93,10 @@ Reviews:
 Other methods:
 
     Myers1986
-    Aluru2002: parallel prefix computation
-    Rajko2004: Improves on the techniques from Aluru2002
+    Aluru2002:     parallel prefix computation
+    Rajko2004:     Improves on the techniques from Aluru2002
     Boukerche2007: MPI-based method
-    Zhang2000: Greedy algorithm
+    Zhang2000:     Greedy algorithm
 
 Background:
 
@@ -109,11 +109,11 @@ Summary of Algorithmic Tricks/Improvements
 ------------------------------------------
 
  * Search space reduction
-   * Zhang2000: Greedy algorithm for sequences with low error rates
+   * Zhang2000:     Greedy algorithm for sequences with low error rates
    * Boukerche2007: Block pruning
-   * Sandes2013: block pruning
-   * Okada2015: Banded
-   * Okada2015: "interpair pruning"
+   * Sandes2013:    block pruning
+   * Okada2015:     Banded
+   * Okada2015:     "interpair pruning"
  * Query profile (uses texture cache):
    * Farrar2007:   Variant-striped
    * Manavski2008: Uses it in a standard way. Has a decent diagram.
@@ -134,6 +134,7 @@ Summary of Algorithmic Tricks/Improvements
    * Liu2010:      Packed data format to better leverage query profile
    * Liu2013:      Sorting the database and queries by length
    * Huang2015:    Interleaving sequences in memory for coalesced access
+   * Ligowski2009: Storing scores and backtracking data both in 4-byte integers
  * Input-size dependent choice of algorithms:
    * Hains2011:  Switching between interthread and intrathread parallelism as sequence size changes
    * Dicker2014: Parallel prefix versus diagonal wavefront
@@ -157,7 +158,7 @@ Summary of Algorithmic Tricks/Improvements
  * Available as a library:
    * Okada2015: Example code included
  * SIMD instructions
-   * Liu2013: Four adjacent subject sequences from pre-sorted list are assigned to a single thread, each vector lane corresponds to a sequence. Two-dimensional sequence profile is created.
+   * Liu2013:           Four adjacent subject sequences from pre-sorted list are assigned to a single thread, each vector lane corresponds to a sequence. Two-dimensional sequence profile is created.
    * Venkatachalam2012: Short vectors can be used to read and manipulate four values at once, rather than using one thread per cell
  * Use of CPU and GPU:
    * Liu2013
