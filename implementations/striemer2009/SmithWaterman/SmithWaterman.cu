@@ -67,19 +67,25 @@ void runSW( int argc, char** argv){
   //Searches for first available CUDA device
   CUT_DEVICE_INIT(argc, argv);
 
+  if(arc!=2){
+    printf("Syntax: %s <Query> <Database>\n", argv[0]);
+    printf("Each query string will be run, one at a time, against the database.\n");
+    return -1;
+  }
+
   /*________________________Allocate memory on host for file name and number of sequences________________________*/
 
   //Allocate memory to contain the number of sequences in the file
   int* numSeq = (int*) malloc(sizeof(int));
 
   //Allocate memory for the database path entered by the user. Path must be less than 200 characters
-  char* database_Path = (char*) malloc(sizeof(char) * 200);
+  char* database_Path = argv[2];
 
   /*_____________________________________Compute number of sequences in file_____________________________________*/
 
 
   //Find the number of sequences contained in the database
-  computeNumSeq( numSeq, database_Path);
+  computeNumSeq(argc, argv, numSeq, database_Path);
 
   /*________________Allocate memory on host for protein lengths, max length, and total characters________________*/
 

@@ -42,17 +42,17 @@ void write_Results(int*, char**, char*, int*, int*);
 
 /*_______________________________________________computeNumSeq_________________________________________________*/
 
-void computeNumSeq( int* numSeq, char *database_Path) {
+void computeNumSeq(int* numSeq, char *database_Path) {
 
 /*_____________________________________Open Database File for Reading__________________________________________*/
 
 
 // Open the database file for reading. Path example: H:\Users\Desktop\swissprot.txt
-  printf("\nPlease enter the path to the database you wish to search:\n");
-  scanf("%s",database_Path);
+  // printf("\nPlease enter the path to the database you wish to search:\n");
+  // scanf("%s",database_Path);
 
-  FILE* dataBaseFile;                            //Create a pointer to the file
-  dataBaseFile = fopen(database_Path, "r");       //Open the file for reading
+  FILE* dataBaseFile;                                  //Create a pointer to the file
+  dataBaseFile = fopen(database_Path, "r");            //Open the file for reading
 
   if(dataBaseFile == NULL)                       //Print error message if file cannot be opened
     do {
