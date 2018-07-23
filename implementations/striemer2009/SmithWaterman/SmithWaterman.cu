@@ -26,8 +26,8 @@
 
 // includes kernel
 #include <SmithWaterman_kernel.cuh>
-
-
+#include <cuda.h>
+#include <cuda_runtime.h>
 
 void runSW( int argc, char** argv);                                  //Function called from main
 
@@ -65,7 +65,27 @@ int main( int argc, char** argv){
 
 void runSW( int argc, char** argv){
   //Searches for first available CUDA device
-  CUT_DEVICE_INIT(argc, argv);
+
+    int deviceCount;                                                         
+    cuDeviceGetCount(&deviceCount); 
+    if (deviceCount == 0) {                                                  
+        fprintf(stderr, "cutil error: no devices supporting CUDA.\n");       
+        exit(EXIT_FAILURE);                                                  
+    }                                                                        
+    int dev = 0;                                                             
+    cutGetCmdLineArgumenti(argc, (const char **) argv, "device", &dev);      
+	if (dev < 0) dev = 0;                                                    
+    if (dev > deviceCount-1) dev = deviceCount - 1;                          
+    cudaDeviceProp deviceProp;                                               
+    CUDA_SAFE_CALL_NO_SYNC(cudaGetDeviceProperties(&deviceProp, dev));       
+    if (deviceProp.major < 1) {                                              
+        fprintf(stderr, "cutil error: device does not support CUDA.\n");     
+        exit(EXIT_FAILURE);                                                  
+    }                                                                        
+    if (cutCheckCmdLineFlag(argc, (const char **) argv, "quiet") == CUTFalse) 
+        fprintf(stderr, "Using device %d: %s\n", dev, deviceProp.name);       
+    CUDA_SAFE_CALL(cudaSetDevice(dev));   
+
 
   /*________________________Allocate memory on host for file name and number of sequences________________________*/
 
