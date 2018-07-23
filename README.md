@@ -54,9 +54,9 @@ Key:
     -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------       |        |          |        | --------------------------------------------------------------------------------------------------------------------------------------     
     Munekawa2008      | 9 |                  | 10.1109/BIBE.2008.4696721     | GPU-CUDA                |          | 1:M |63-511v362 90M| 5.65G            |                     |       |        |          |        |                    |             |                |                                                       | Emailed for source code on 2018-06-19. y-munekw address is dead.
     Liu2009           |   |                  | 10.1186/1756-0500-2-73        | GPU-CUDA                |          |     |              |                  |                     |       |        |          |        | TODO               |             |                | http://cudasw.sourceforge.net/homepage.htm#latest     | CUDASW++2 and CUDASW++3 likely obviate the need to track down this code.
-    Akoglu2009        | 9 |                  | 10.1007/s10586-009-0089-8     | GPU-CUDA                |RuntimeErr|     |              |                  |                     | 3     | 488    | 171      | 445    | TODO               |             | striemer2009   |                                                       | Code likely the same as striemer2009
+    Akoglu2009        | 9 |                  | 10.1007/s10586-009-0089-8     | GPU-CUDA                | Yes      |     |              |                  |                     | 3     | 488    | 171      | 445    | TODO               |             | striemer2009   |                                                       | Code likely the same as striemer2009
     Ligowski2009      |   |                  | 10.1109/IPDPS.2009.5160931    | GPU-CUDA                |          |     |              |                  |                     |       |        |          |        | Manavski2008       |             |                |                                                       | Emailed for source code on 2018-06-19. Witold replied 2018-06-19. Sent further request back on 2018-06-19.
-    Striemer2009      |   | GSW              | 10.1109/IPDPS.2009.5161066    | GPU-CUDA                |RuntimeErr|     |              |                  |                     | 3     | 488    | 171      | 445    | TODO               | Custom      | striemer2009   | http://www2.engr.arizona.edu/~rcl/SmithWaterman.html
+    Striemer2009      |   | GSW              | 10.1109/IPDPS.2009.5161066    | GPU-CUDA                | Yes      |     |              |                  |                     | 3     | 488    | 171      | 445    | TODO               | Custom      | striemer2009   | http://www2.engr.arizona.edu/~rcl/SmithWaterman.html
     Ling2009          |   |                  | 10.1109/SASP.2009.5226343     | GPU-CUDA                |          |     |              |                  |                     |       |        |          |        | TODO               |             |                |                                                       |
     Liu2010           |   | CUDASW++ 2.0     | 10.1186/1756-0500-3-93        | GPU-CUDA                | Yes      |     |              |                  |                     | 23    | 1821   | 2356     | 9174   | TODO               | GPLv2       | liu2010        | http://cudasw.sourceforge.net/homepage.htm#latest
     Khajeh-Saeed2010  |   |                  | 10.1016/j.jcp.2010.02.009     | GPU-CUDA                |          |     |              |                  |                     | 28    | 776    | 553      | 3459   | TODO               | Unknown     |                |
@@ -198,8 +198,7 @@ Summaries of papers and implementation notes
 
     module load cudatoolkit
     qsub -I -A CSC261 -l nodes=1,walltime=30:00
-    nvcc -gencode arch=compute_35,code=sm_35 -I. -Iinc *cu *cpp inc/*cpp
-
+    nvcc   -I. -Iinc *cu *cpp inc/*cpp -L${CRAY_LD_LIBRARY_PATH}  -lcudart
 
 ### Manavski2008
 
