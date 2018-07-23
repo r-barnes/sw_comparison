@@ -80,7 +80,7 @@ Key:
     -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------       |        |          |        | -----------------------------------------------------------------------------------------------------------------------------    
     Manavski2008      | 7 | SWCUDA           | 10.1186/1471-2105-9-S2-S10    | GPU-CUDA + CPU-SSE      |RequiresQt|     |              |                  |                     | 68    | 3974   | 2861     | 8715   | TODO               | TODO        | manavski2008   | http://bioinformatics.cribi.unipd.it/cuda/swcuda.html | 
     Liu2013           | 9 | CUDASW++ 3.0     | 10.1186/1471-2105-14-117      | GPU-CUDA + CPU-SSE      | Yes      |     |5k v 35k: 190M|  119G (1) 186G(2)| GeForce GTX 680, 690| 21    | 642    | 568      | 4476   | TODO               | GPLv2       | liu2013        | http://cudasw.sourceforge.net/homepage.htm#latest
-    Luo2013           |   | SOAP3            | 10.1371/journal.pone.0065632  | GPU-CUDA + CPU          | Yes      |     |              |                  |TesC2070,M2050;GTX680| 215   | 14057  | 16852    | 74183  | GPLv2+      | luo2013        | http://www.cs.hku.hk/2bwt-tools/soap3-dp/             |
+    Luo2013           |   | SOAP3            | 10.1371/journal.pone.0065632  | GPU-CUDA + CPU          | Yes      |     |              |                  |TesC2070,M2050;GTX680| 215   | 14057  | 16852    | 74183  | TODO               | GPLv2+      | luo2013        | http://www.cs.hku.hk/2bwt-tools/soap3-dp/             |
     Marcos2014        |   |                  |                               | GPU-CUDA + CPU          |          |     |              |                  |                     |       |        |          |        | TODO               |             |                |                                                       |
     Warris2018        |   | pyPaSWAS         | 10.1371/journal.pone.0190279  | GPU-CUDA + CPU + Python |          |     |              |                  |                     | 39    | 1120   | 1437     | 4766   | TODO               | MIT         | warris2018     |
    
@@ -435,3 +435,29 @@ Reading sequence data:
 
  * https://bitbucket.org/aydozz/longreads/src/master/kmercode/fq_reader.c
 
+
+
+Running on Titan
+==========================================
+
+To run on Titan, you'll need to first compile your code. The following, for
+example, shows how to compile Striemer2009.
+
+    module load cudatoolkit
+    nvcc   -I. -Iinc *cu *cpp inc/*cpp -L${CRAY_LD_LIBRARY_PATH}  -lcudart
+
+You'll then need to either make a batch script or start an interactive batch
+job:
+
+    qsub -I -X -A CSC261 -q debug -l nodes=1,walltime=30:00
+
+The only way to access compute nodes if via the `aprun` command. But this
+command can only be run from somewhere on the lustre file system. Get there
+using (for example):
+
+    cd $MEMBERWORK/csc261
+    cd /lustre/atlas/scratch/spinyfan/csc261/
+
+Finally, use `aprun` to run the program:
+
+    aprun ~/crd-swgpu/implementations/striemer2009/SmithWaterman/a.out 
