@@ -62,7 +62,7 @@ void computeNumSeq( int* numSeq, char *database_Path) {
       dataBaseFile = fopen(database_Path, "r");       //Open the file for reading
   } while (dataBaseFile == NULL);
 
-  printf("\nFile Opened Successfully:\n");
+  printf("\nFile Opened Successfully.\n");
 
   /*_________________________________Get number of Sequences Contained in File___________________________________*/
 
@@ -289,7 +289,7 @@ void write_Results(int* proteinLengths, char** databaseArray, char* Results_Path
     } while(resultsFile == NULL);
   }
 
-  printf("\nFile Opened Successfully for writing:\n");
+  printf("\nFile Opened Successfully for writing.\n");
 
   for(i = 0; i < numSeq[0]; i++){
     for(j = 0; j < proteinLengths[k] - 1; j++)
