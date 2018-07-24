@@ -44,18 +44,18 @@ int main(int argc, char *argv[])
 	char *queryFileName;
 	char *queryFileName2 = NULL;
 	char *refFileName;
-	int querySeqLength = -1;
-	int refSeqLength = -1;
-	int numQueries = -1;
-	int numReferences = -1;
-	float match = DEFAULT_MATCH;
-	float mismatch = DEFAULT_MISMATCH;
+	int querySeqLength   = -1;
+	int refSeqLength     = -1;
+	int numQueries       = -1;
+	int numReferences    = -1;
+	float match          = DEFAULT_MATCH;
+	float mismatch       = DEFAULT_MISMATCH;
 	float gapOpenPenalty = DEFAULT_GAP_OPEN_PENALTY;
-	float gapExtPenalty = DEFAULT_GAP_EXT_PENALTY;
-	int outputFormat = DEFAULT_OUTPUT_FORMAT;
-	char *outputFile = NULL;
-	int minFragSize = MIN_FRAG_SIZE, maxFragSize = MAX_FRAG_SIZE;
-	int useCpuOnly = 0;
+	float gapExtPenalty  = DEFAULT_GAP_EXT_PENALTY;
+	int outputFormat     = DEFAULT_OUTPUT_FORMAT;
+	char *outputFile     = NULL;
+	int minFragSize      = MIN_FRAG_SIZE, maxFragSize = MAX_FRAG_SIZE;
+	int useCpuOnly       = 0;
 	time_t startTime, endTime;
 	double diffTime1, diffTime2;
 	int tupleIgnoreThres = TUPLE_IGNORE_THRES;
@@ -166,6 +166,7 @@ int main(int argc, char *argv[])
 
 			fprintf(stderr, "Phase 1 time = %.2lf secs\n", diffTime1);
 			fprintf(stderr, "Phase 2 time = %.2lf secs\n", diffTime2);
+			fprintf(stderr, "STATOUT time: %.4lf secs\n",diffTime1+diffTime2);
 		}
 	}
 	/* Paired-end read alignment. */

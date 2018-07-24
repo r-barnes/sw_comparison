@@ -550,17 +550,17 @@ __device__ void computeMaxScore(int querySeqLength, int refSeqLength,
 	int numIterations = refSeqLength + querySeqLength + 1;
 	int currentHOffset, prevHOffset, prevPrevHOffset;
 	float topLeftCellScore, topCellScore, leftCellScore, currentCellScore;
-	int hLength = 3 * querySeqLength2;
+	int hLength     = 3 * querySeqLength2;
 	prevPrevHOffset = 0 * querySeqLength2;
-	prevHOffset = 1 * querySeqLength2;
-	currentHOffset = 2 * querySeqLength2;
+	prevHOffset     = 1 * querySeqLength2;
+	currentHOffset  = 2 * querySeqLength2;
 	int refIndex, queryIndex, i, currentCellIndex, topCellIndex, leftCellIndex;
 	int byte = 0, bit = 0;
 	int charSize = (int) (sizeof(char) * NUM_BITS_IN_A_BYTE);
 
 	for (i = 2; i < numIterations; ++i)
 	{
-		refIndex = i - tx;
+		refIndex   = i - tx;
 		queryIndex = tx;
 		if (refIndex > 0 && refIndex <= refSeqLength && queryIndex > 0
 				&& queryIndex <= querySeqLength)
@@ -573,56 +573,56 @@ __device__ void computeMaxScore(int querySeqLength, int refSeqLength,
 				topLeftCellScore = HShared[prevPrevHOffset + tx - 1] + mismatch;
 
 			currentCellIndex = ((refSeqLength + 1) * tx) + refIndex;
-			topCellIndex = currentCellIndex - refSeqLength2;
-			byte = topCellIndex / charSize;
-			bit = charSize - 1 - (topCellIndex % charSize);
+			topCellIndex     = currentCellIndex - refSeqLength2;
+			byte             = topCellIndex / charSize;
+			bit              = charSize - 1 - (topCellIndex % charSize);
 			if ((top[byte] & (1 << bit)) > 0)
 				topCellScore = HShared[prevHOffset + tx - 1] + gapExtPenalty;
 			else
 				topCellScore = HShared[prevHOffset + tx - 1] + gapOpenPenalty;
 
 			leftCellIndex = currentCellIndex - 1;
-			byte = leftCellIndex / charSize;
-			bit = charSize - 1 - (leftCellIndex % charSize);
+			byte          = leftCellIndex / charSize;
+			bit           = charSize - 1 - (leftCellIndex % charSize);
 			if ((left[byte] & (1 << bit)) > 0)
 				leftCellScore = HShared[prevHOffset + tx] + gapExtPenalty;
 			else
 				leftCellScore = HShared[prevHOffset + tx] + gapOpenPenalty;
 
 			currentCellScore = 0.0f;
-			byte = currentCellIndex / charSize;
-			bit = charSize - 1 - (currentCellIndex % charSize);
+			byte             = currentCellIndex / charSize;
+			bit              = charSize - 1 - (currentCellIndex % charSize);
 			if (currentCellScore < topLeftCellScore)
 			{
 				currentCellScore = topLeftCellScore;
-				topLeft[byte] |= (1 << bit); /* Set the bit in 'topLeft'. */
+				topLeft[byte]   |= (1 << bit); /* Set the bit in 'topLeft'. */
 			}
 			if (currentCellScore < topCellScore)
 			{
 				currentCellScore = topCellScore;
-				top[byte] |= (1 << bit); /* Set the bit in 'top'. */
-				topLeft[byte] &= ~(1 << bit); /* Clear the bit in 'topLeft'. */
+				top[byte]       |= (1 << bit); /* Set the bit in 'top'. */
+				topLeft[byte]   &= ~(1 << bit); /* Clear the bit in 'topLeft'. */
 			}
 			if (currentCellScore < leftCellScore)
 			{
 				currentCellScore = leftCellScore;
-				left[byte] |= (1 << bit); /* Set the bit in 'left'. */
-				topLeft[byte] &= ~(1 << bit); /* Clear the bit in 'topLeft'. */
-				top[byte] &= ~(1 << bit); /* Clear the bit in 'top'. */
+				left[byte]      |= (1 << bit); /* Set the bit in 'left'. */
+				topLeft[byte]   &= ~(1 << bit); /* Clear the bit in 'topLeft'. */
+				top[byte]       &= ~(1 << bit); /* Clear the bit in 'top'. */
 			}
 			HShared[currentHOffset + tx] = currentCellScore;
 
 			if (scores[tx] < currentCellScore)
 			{
 				scores[tx] = currentCellScore;
-				cell[tx] = currentCellIndex;
+				cell[tx]   = currentCellIndex;
 			}
 		}
 		__syncthreads();
 
 		prevPrevHOffset = prevHOffset;
-		prevHOffset = currentHOffset;
-		currentHOffset = currentHOffset + querySeqLength2;
+		prevHOffset     = currentHOffset;
+		currentHOffset  = currentHOffset + querySeqLength2;
 		if (currentHOffset >= hLength)
 			currentHOffset = 0;
 	}
@@ -709,10 +709,10 @@ __device__ void computeMaxScore2(int maxQryLen, int refSeqLength,
 	int numIterations = refSeqLength + maxQryLen + 1;
 	int currentHOffset, prevHOffset, prevPrevHOffset;
 	float topLeftCellScore, topCellScore, leftCellScore, currentCellScore;
-	int hLength = 3 * maxQryLen2;
+	int hLength     = 3 * maxQryLen2;
 	prevPrevHOffset = 0 * maxQryLen2;
-	prevHOffset = 1 * maxQryLen2;
-	currentHOffset = 2 * maxQryLen2;
+	prevHOffset     = 1 * maxQryLen2;
+	currentHOffset  = 2 * maxQryLen2;
 	int refIndex, queryIndex, i, currentCellIndex, topCellIndex, leftCellIndex;
 	int byte = 0, bit = 0;
 	int charSize = (int) (sizeof(char) * NUM_BITS_IN_A_BYTE);
@@ -1071,15 +1071,15 @@ __device__ void backtrack2(char *queryConsensus, char *refConsensus,
 		nextCell = currentCellIndex - 1;
 	else if ((topLeft[byte] & (1 << bit)) > 0)
 		nextCell = currentCellIndex - refSeqLength - 2;
-	int nextRow = nextCell / (refSeqLength + 1);
-	int nextCol = nextCell % (refSeqLength + 1);
-	int tick = -1;
+	int nextRow        = nextCell / (refSeqLength + 1);
+	int nextCol        = nextCell % (refSeqLength + 1);
+	int tick           = -1;
 	int colIncrementer = -1;
-	int numRefBases = -1;
+	int numRefBases    = -1;
 
-	refSeq += (blockIdx.x * (refSeqLength + 1));
-	querySeq += (blockIdx.x * (maxQryLen + 1));
-	refConsensus += (blockIdx.x * (refSeqLength + maxQryLen + 2));
+	refSeq         += (blockIdx.x * (refSeqLength + 1));
+	querySeq       += (blockIdx.x * (maxQryLen + 1));
+	refConsensus   += (blockIdx.x * (refSeqLength + maxQryLen + 2));
 	queryConsensus += (blockIdx.x * (refSeqLength + maxQryLen + 2));
 
 	while ((currentRow != nextRow || currentCol != nextCol)
