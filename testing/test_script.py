@@ -8,7 +8,8 @@ import re
 
 #Where the implementations are stored with respect to the working directory of
 #this script
-aligner_base = "implementations/"
+aligner_base  = "implementations/"
+
 
 def ParseOutput(output):
   data_out = {}
@@ -20,6 +21,20 @@ def ParseOutput(output):
       stat_val           = float(datum.groups(1)[1])
       data_out[stat_key] = stat_val
   return data_out
+
+
+
+def ParsedCombiner(*args):
+  stat_combiner = {"time:": sum, "gcups": min}
+  baseline      = {"time": 0, "gcups": 0}
+  for arg in args:
+    for k, v in arg.items():
+      if not k in baseline:
+        raise Exception("No baseline for '{0}'!".format(k))
+      baseline[k] = stat_combiner[k](baseline[k],v)
+  return baseline
+
+
 
 def AlignerCUDASWpp3(queryfile, databasefile, device):
   #NOTE: Left out `mat` argument for substitution matrix
@@ -40,12 +55,25 @@ def AlignerOkada2015(queryfile, databasefile, device):
   return ParseOutput(stdout)
 
 #NOTE: All query strings must be the same length. They may be padded with `N`.
-def AlignerGupta2012(queryfile, databasefile, device, query_length=0):
+def AlignerGupta2012(queryfile, databasefile, device):
   aligner = local[os.path.join(aligner_base, "pankaj2012/bin/swift")]
   retcode, stdout, stderr = aligner['-q', queryfile, '-r', databasefile,'-n','-1','-s','-1','-o','zout']
   if retcode!=0:
     raise Exception("Crashed...")
   return ParseOutput(stdout)
+
+def AlignerKlus2012(queryfile, databasefile, device):
+  barracuda = local[os.path.join(aligner_base, "klus2012/bin/barracuda")]
+  i_retcode, i_stdout, i_stderr = barracuda['index',databasefile]
+  if retcode!=0:
+    raise Exception("Crashed...")
+  a_retcode, a_stdout, a_stderr = barracuda['aln',databasefile,queryfile]
+  if retcode!=0:
+    raise Exception("Crashed...")  
+  i_parsed = ParseOutput(i_stdout)
+  a_parsed = ParseOutput(a_stdout)
+  return ParsedCombiner(i_parsed,a_parsed)
+
 
 
 
