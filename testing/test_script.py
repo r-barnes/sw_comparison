@@ -32,10 +32,18 @@ def AlignerCUDASWpp3(queryfile, databasefile, device):
     raise Exception("Crashed...")
   return ParseOutput(stdout)
 
+def AlignerOkada2015(queryfile, databasefile, device):
+  aligner = local[os.path.join(aligner_base, "okada2015/bin/swsharpdb")]
+  retcode, stdout, stderr = aligner['-i', queryfile, '-j', databasefile,'--nocache','--outfmt','light','--cards',device]
+  if retcode!=0:
+    raise Exception("Crashed...")
+  return ParseOutput(stdout)
 
 
-aligners = [AlignerCUDASWpp3]
-queryfile = ""
+
+
+aligners     = [AlignerCUDASWpp3,AlignerOkada2015]
+queryfile    = ""
 databasefile = ""
 
 df = pd.DataFrame()
