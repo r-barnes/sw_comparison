@@ -236,7 +236,7 @@ int main(int argc, char* argv[]) {
         DbAlignment*** dbAlignmentsPart = NULL;
         int* dbAlignmentsPartLens = NULL;
 
-        time_t start = time(NULL);
+        const clock_t start_t = clock();
 
         shotgunDatabase(&dbAlignmentsPart, &dbAlignmentsPartLens, algorithm, 
             queries, queriesLen, chainDatabase, scorer, maxAlignments, valueFunction, 
@@ -251,9 +251,9 @@ int main(int argc, char* argv[]) {
             deleteShotgunDatabase(dbAlignmentsPart, dbAlignmentsPartLens, queriesLen);
         }
 
-        time_t done = time(NULL);
+        const clock_t end_t = clock();
 
-        printf("STATOUT time: %.10f seconds\n", (double)(done - start));
+        printf("STATOUT time: %.10f seconds\n", (double)(end_t - start_t) / CLOCKS_PER_SEC );
 
         chainDatabaseDelete(chainDatabase);
 
