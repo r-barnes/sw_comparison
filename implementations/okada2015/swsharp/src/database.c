@@ -278,21 +278,21 @@ static void databaseSearch(DbAlignment*** dbAlignments, int* dbAlignmentsLen,
     
     Context* param = (Context*) malloc(sizeof(Context));
     
-    param->dbAlignments = dbAlignments;
-    param->dbAlignmentsLen = dbAlignmentsLen;
-    param->type = type;
-    param->queries = queries;
-    param->queriesLen = queriesLen;
-    param->chainDatabase = chainDatabase;
-    param->scorer = scorer;
-    param->maxAlignments = maxAlignments;
-    param->valueFunction = valueFunction;
+    param->dbAlignments       = dbAlignments;
+    param->dbAlignmentsLen    = dbAlignmentsLen;
+    param->type               = type;
+    param->queries            = queries;
+    param->queriesLen         = queriesLen;
+    param->chainDatabase      = chainDatabase;
+    param->scorer             = scorer;
+    param->maxAlignments      = maxAlignments;
+    param->valueFunction      = valueFunction;
     param->valueFunctionParam = valueFunctionParam;
-    param->valueThreshold = valueThreshold;
-    param->indexes = indexes;
-    param->indexesLen = indexesLen;
-    param->cards = cards;
-    param->cardsLen = cardsLen;
+    param->valueThreshold     = valueThreshold;
+    param->indexes            = indexes;
+    param->indexesLen         = indexesLen;
+    param->cards              = cards;
+    param->cardsLen           = cardsLen;
     
     if (thread == NULL) {
         databaseSearchThread(param);
@@ -305,19 +305,19 @@ static void* databaseSearchThread(void* param) {
 
     Context* context = (Context*) param;
     
-    DbAlignment*** dbAlignments = context->dbAlignments;
-    int* dbAlignmentsLen = context->dbAlignmentsLen;
-    int type = context->type;
-    Chain** queries = context->queries;
-    int queriesLen = context->queriesLen;
+    DbAlignment*** dbAlignments  = context->dbAlignments;
+    int* dbAlignmentsLen         = context->dbAlignmentsLen;
+    int type                     = context->type;
+    Chain** queries              = context->queries;
+    int queriesLen               = context->queriesLen;
     ChainDatabase* chainDatabase = context->chainDatabase;
-    Scorer* scorer = context->scorer;
-    int maxAlignments = context->maxAlignments;
-    ValueFunction valueFunction = context->valueFunction;
-    void* valueFunctionParam = context->valueFunctionParam;
-    double valueThreshold = context->valueThreshold;
-    int* cards = context->cards;
-    int cardsLen = context->cardsLen;
+    Scorer* scorer               = context->scorer;
+    int maxAlignments            = context->maxAlignments;
+    ValueFunction valueFunction  = context->valueFunction;
+    void* valueFunctionParam     = context->valueFunctionParam;
+    double valueThreshold        = context->valueThreshold;
+    int* cards                   = context->cards;
+    int cardsLen                 = context->cardsLen;
     
     int databaseStart = chainDatabase->databaseStart;
     int databaseLen = chainDatabase->databaseLen;
@@ -358,13 +358,13 @@ static void* databaseSearchThread(void* param) {
     // DO THE ALIGN
      
     double memory = (double) databaseLen * queriesLen * sizeof(int); // scores
-    memory = (memory * 1.15) / 1024.0 / 1024.0; // 15% offset and to MB
+    memory        = (memory * 1.15) / 1024.0 / 1024.0; // 15% offset and to MB
     
     // chop in pieces
-    int steps = MIN(queriesLen, (int) ceil(memory / (1 * 1024.0)));
+    int steps        = MIN(queriesLen, (int) ceil(memory / (1 * 1024.0)));
     int queriesChunk = queriesLen / steps;
-    int queriesAdd = queriesLen % steps;
-    int offset = 0;
+    int queriesAdd   = queriesLen % steps;
+    int offset       = 0;
 
     LOG("need %.2lfMB total, %d queries, solving in %d steps", memory, 
         queriesLen, steps);

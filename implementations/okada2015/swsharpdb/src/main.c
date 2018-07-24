@@ -5,6 +5,7 @@
 
 #include "swsharp/evalue.h"
 #include "swsharp/swsharp.h"
+#include <sys/time.h>
 
 #define ASSERT(expr, fmt, ...)\
     do {\
@@ -27,22 +28,22 @@ typedef struct ValueFunctionParam {
 } ValueFunctionParam;
 
 static struct option options[] = {
-    {"cards", required_argument, 0, 'c'},
+    {"cards",      required_argument, 0, 'c'},
     {"gap-extend", required_argument, 0, 'e'},
-    {"gap-open", required_argument, 0, 'g'},
-    {"query", required_argument, 0, 'i'},
-    {"target", required_argument, 0, 'j'},
-    {"matrix", required_argument, 0, 'm'},
-    {"out", required_argument, 0, 'o'},
-    {"outfmt", required_argument, 0, 't'},
-    {"evalue", required_argument, 0, 'E'},
+    {"gap-open",   required_argument, 0, 'g'},
+    {"query",      required_argument, 0, 'i'},
+    {"target",     required_argument, 0, 'j'},
+    {"matrix",     required_argument, 0, 'm'},
+    {"out",        required_argument, 0, 'o'},
+    {"outfmt",     required_argument, 0, 't'},
+    {"evalue",     required_argument, 0, 'E'},
     {"max-aligns", required_argument, 0, 'M'},
-    {"algorithm", required_argument, 0, 'A'},
-    {"nocache", no_argument, 0, 'C'},
-    {"cpu", no_argument, 0, 'P'},
-    {"threads", required_argument, 0, 'T'},
-    {"help", no_argument, 0, 'h'},
-    {0, 0, 0, 0}
+    {"algorithm",  required_argument, 0, 'A'},
+    {"nocache",    no_argument,       0, 'C'},
+    {"cpu",        no_argument,       0, 'P'},
+    {"threads",    required_argument, 0, 'T'},
+    {"help",       no_argument,       0, 'h'},
+    {0,            0,                 0,  0 }
 };
 
 static CharInt outFormats[] = {
@@ -71,22 +72,22 @@ static void valueFunction(double* values, int* scores, Chain* query,
 
 int main(int argc, char* argv[]) {
 
-    char* queryPath = NULL;
+    char* queryPath    = NULL;
     char* databasePath = NULL;
 
-    int gapOpen = 10;
+    int gapOpen   = 10;
     int gapExtend = 1;
     
     char* matrix = "BLOSUM_62";
         
-    int maxAlignments = 10;
-    float maxEValue = 10;
+    int   maxAlignments = 10;
+    float maxEValue     = 10;
     
-    int cardsLen = -1;
-    int* cards = NULL;
+    int  cardsLen = -1;
+    int* cards    = NULL;
     
-    char* out = NULL;
-    int outFormat = SW_OUT_DB_BLASTM9;
+    char* out       = NULL;
+    int   outFormat = SW_OUT_DB_BLASTM9;
 
     int algorithm = SW_ALIGN;
     
@@ -100,57 +101,28 @@ int main(int argc, char* argv[]) {
 
         char argument = getopt_long(argc, argv, "i:j:g:e:hT:", options, NULL);
 
-        if (argument == -1) {
+        if (argument == -1)
             break;
-        }
 
         switch (argument) {
-        case 'i':
-            queryPath = optarg;
-            break;
-        case 'j':
-            databasePath = optarg;
-            break;
-        case 'g':
-            gapOpen = atoi(optarg);
-            break;
-        case 'e':
-            gapExtend = atoi(optarg);
-            break;
-        case 'c':
-            getCudaCards(&cards, &cardsLen, optarg);
-            break;
-        case 'o':
-            out = optarg;
-            break;
-        case 't':
-            outFormat = getOutFormat(optarg);
-            break;
-        case 'M':
-            maxAlignments = atoi(optarg);
-            break;
-        case 'E':
-            maxEValue = atof(optarg);
-            break;
-        case 'm':
-            matrix = optarg;
-            break;
-        case 'A':
-            algorithm = getAlgorithm(optarg);
-            break;
-        case 'C':
-            cache = 0;
-            break;
-        case 'P':
-            forceCpu = 1;
-            break;
-        case 'T':
-            threads = atoi(optarg);
-            break;
-        case 'h':
-        default:
-            help();
-            return -1;
+            case 'i': queryPath     = optarg;                  break;
+            case 'j': databasePath  = optarg;                  break;
+            case 'g': gapOpen       = atoi(optarg);            break;
+            case 'e': gapExtend     = atoi(optarg);            break;
+            case 'c': getCudaCards(&cards, &cardsLen, optarg); break;
+            case 'o': out           = optarg;                  break;
+            case 't': outFormat     = getOutFormat(optarg);    break;
+            case 'M': maxAlignments = atoi(optarg);            break;
+            case 'E': maxEValue     = atof(optarg);            break;
+            case 'm': matrix        = optarg;                  break;
+            case 'A': algorithm     = getAlgorithm(optarg);    break;
+            case 'C': cache         = 0;                       break;
+            case 'P': forceCpu      = 1;                       break;
+            case 'T': threads       = atoi(optarg);            break;
+            case 'h':
+            default:
+                help();
+                return -1;
         }
     }
     
@@ -192,20 +164,20 @@ int main(int argc, char* argv[]) {
     EValueParams* eValueParams = createEValueParams(cells, scorer);
 
     DbAlignment*** dbAlignments = NULL;
-    int* dbAlignmentsLens = NULL;
+    int* dbAlignmentsLens       = NULL;
 
-    Chain** database = NULL; 
-    int databaseLen = 0;
+    Chain** database  = NULL; 
+    int databaseLen   = 0;
     int databaseStart = 0;
-    int databaseEnd = 0;
+    int databaseEnd   = 0;
 
     FILE* handle;
     int serialized;
 
     readFastaChainsPartInit(&database, &databaseLen, &handle, &serialized, databasePath);
 
-    size_t cudaMemory = cudaMinimalGlobalMemory(cards, cardsLen);
-    size_t cudaMemoryMax = cudaMemory - 200000000; // ~200MB breathing space
+    size_t cudaMemory     = cudaMinimalGlobalMemory(cards, cardsLen);
+    size_t cudaMemoryMax  = cudaMemory - 200000000; // ~200MB breathing space
     size_t cudaMemoryStep = cudaMemoryMax * 0.075;
 
     int i, j;
@@ -264,6 +236,8 @@ int main(int argc, char* argv[]) {
         DbAlignment*** dbAlignmentsPart = NULL;
         int* dbAlignmentsPartLens = NULL;
 
+        time_t start = time(NULL);
+
         shotgunDatabase(&dbAlignmentsPart, &dbAlignmentsPartLens, algorithm, 
             queries, queriesLen, chainDatabase, scorer, maxAlignments, valueFunction, 
             (void*) eValueParams, maxEValue, NULL, 0, cards, cardsLen, NULL);
@@ -277,6 +251,10 @@ int main(int argc, char* argv[]) {
             deleteShotgunDatabase(dbAlignmentsPart, dbAlignmentsPartLens, queriesLen);
         }
 
+        time_t done = time(NULL);
+
+        printf("STATOUT time: %.10f seconds\n", (double)(done - start));
+
         chainDatabaseDelete(chainDatabase);
 
         if (status == 0) {
@@ -286,14 +264,12 @@ int main(int argc, char* argv[]) {
         // delete all unused chains
         char* usedMask = (char*) calloc(databaseLen, sizeof(char));
 
-        for (i = 0; i < queriesLen; ++i) {
-            for (j = 0; j < dbAlignmentsLens[i]; ++j) {
+        for (i = 0; i < queriesLen; ++i)
+        for (j = 0; j < dbAlignmentsLens[i]; ++j) {
+            DbAlignment* dbAlignment = dbAlignments[i][j];
+            int targetIdx = dbAlignmentGetTargetIdx(dbAlignment);
 
-                DbAlignment* dbAlignment = dbAlignments[i][j];
-                int targetIdx = dbAlignmentGetTargetIdx(dbAlignment);
-
-                usedMask[targetIdx] = 1;
-            }
+            usedMask[targetIdx] = 1;
         }
 
         for (i = 0; i < databaseLen; ++i) {
