@@ -47,6 +47,17 @@ def AlignerCUDASWpp3(queryfile, databasefile, device):
     raise Exception("Crashed...")
   return ParseOutput(stdout)
 
+def AlignerLiu2010(queryfile, databasefile, device):
+  #NOTE: Left out `mat` argument for substitution matrix
+  #NOTE: Left out `gapo` gap open penalty
+  #NOTE: Left out `gape` gap extension penalty
+  #NOTE: Left out other arguments...
+  aligner = local[os.path.join(aligner_base, "liu2010/cudasw")]
+  retcode, stdout, stderr = aligner['-query', queryfile, '-db', databasefile, '-use_single', device] & TEE
+  if retcode != 0:
+    raise Exception("Crashed...")
+  return ParseOutput(stdout)
+
 def AlignerOkada2015(queryfile, databasefile, device):
   aligner = local[os.path.join(aligner_base, "okada2015/bin/swsharpdb")]
   retcode, stdout, stderr = aligner['-i', queryfile, '-j', databasefile,'--nocache','--outfmt','light','--cards',device]
