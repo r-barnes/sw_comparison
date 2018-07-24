@@ -39,10 +39,18 @@ def AlignerOkada2015(queryfile, databasefile, device):
     raise Exception("Crashed...")
   return ParseOutput(stdout)
 
+#NOTE: All query strings must be the same length. They may be padded with `N`.
+def AlignerGupta2012(queryfile, databasefile, device, query_length=0):
+  aligner = local[os.path.join(aligner_base, "pankaj2012/bin/swift")]
+  retcode, stdout, stderr = aligner['-q', queryfile, '-r', databasefile,'-n','-1','-s','-1','-o','zout']
+  if retcode!=0:
+    raise Exception("Crashed...")
+  return ParseOutput(stdout)
 
 
 
-aligners     = [AlignerCUDASWpp3,AlignerOkada2015]
+
+aligners     = [AlignerCUDASWpp3,AlignerOkada2015,AlignerGupta2012]
 queryfile    = ""
 databasefile = ""
 
