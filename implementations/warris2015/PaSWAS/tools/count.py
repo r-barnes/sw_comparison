@@ -4,13 +4,13 @@ import math
 from Bio import  SeqIO
 from Bio.Seq import Seq
 
-mem_size_matrix = 32*8
-mem_fill_factor = 0.9
-mem_size_gpu    = int(sys.argv[3])*1024*1024
-
 if len(sys.argv)!=4:
   print("{0} [sequences.fasta] [targets.fasta] [mem on gpu]".format(sys.argv[0]))
   sys.exit(-1)
+
+mem_size_matrix = 32*8
+mem_fill_factor = 0.9
+mem_size_gpu    = int(sys.argv[3])*1024*1024
 
 seqList1 = list(SeqIO.parse(open(sys.argv[1],"r"), "fasta"))
 seqList2 = list(SeqIO.parse(open(sys.argv[2],"r"), "fasta"))
