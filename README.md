@@ -39,7 +39,7 @@ Key:
     ID                | R | Software Name    | doi                           | Architecture            | Compiles | ?:? |argetLength BP|             CUPS | Architectural Notes | Files | Blanks | Comments | Code   | Claims Faster Than | License     | Source dir     | Homepage
     Steinfadt2009     |   | SWAMP            | 10.1109/OCCBIO.2009.12        | ASC                     |          |     |              |                  |                     |       |        |          |        | TODO               |             |                |                                                       | Uncontacted
     Steinfadt2013     |   | SWAMP            | 10.1016/j.parco.2013.08.008   | ASC                     |          |     |              |                  |                     |       |        |          |        | TODO               |             |                |                                                       | Uncontacted
-    -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------       |        |          |        | --------------------------------------------------------------------------------------------------------------------------------------
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     Farrar2007        |   |                  | 10.1093/bioinformatics/btl582 | CPU-SSE2                |          |     |              | 3.0G             |                     |       |        |          |        | TODO               | TODO        | --             |
     Szalkowski2008    |   | SWPS3            | 10.1186/1756-0500-1-107       | CPU-SSE2                | Yes      |     |              |                  |                     | 23    | 581    | 1360     | 2696   | TODO               | MIT         | szalkowski2008 | https://lab.dessimoz.org/swps3/
     Rumble2009        |   | SHRIMP           | 10.1371/journal.pcbi.1000386  | CPU-SIMD                | Yes      |     |              |                  |                     |       |        |          |        | TODO               | MIT?        | shrimp         | http://compbio.cs.toronto.edu/shrimp/
@@ -49,20 +49,21 @@ Key:
     Zhao2013          |   | SSW              | 10.1371/journal.pone.0082138  | CPU-SIMD                | Yes      |     |              |                  |                     | 11    | 380    | 694      | 2356   | TODO               | MIT         | zhao2013       |
     Rucci2015         |   | SWIMM            | 10.1002/cpe.3598              | CPU-Xeon Phi            | Fixable  |     |              |                  |                     |       |        |          |        | TODO               | Unspecified | rucci2015      |
     Sjolund2016       |   | DiagonalSW       | software-no-paper             | CPU-SSE4/AltiVec        | Yes      |     |              |                  |                     | 19    | 321    | 72       | 1322   | TODO               | MIT         | sjolund2016    | http://diagonalsw.sourceforge.net/
-    -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------       |        |          |        | --------------------------------------------------------------------------------------------------------------------------------------    
+    bowtie2           |   |                  |                               |                         |          |                    |                  |                     |       |                   |        |                    |             | bowtie2        | http://bowtie-bio.sourceforge.net/bowtie2/faq.shtml
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------    
     Liu2006           |   |                  | 10.1007/11758549_29           | GPU-OpenGL              |          |     |              |                  |                     |       |        |          |        | TODO               | TODO        | --             |
-    -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------       |        |          |        | --------------------------------------------------------------------------------------------------------------------------------------     
+    ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------     
     Munekawa2008      | 9 |                  | 10.1109/BIBE.2008.4696721     | GPU-CUDA                |          | 1:M |63-511v362 90M| 5.65G            |                     |       |        |          |        |                    |             |                |                                                       | Emailed for source code on 2018-06-19. y-munekw address is dead.
     Liu2009           |   |                  | 10.1186/1756-0500-2-73        | GPU-CUDA                |          |     |              |                  |                     |       |        |          |        | TODO               |             |                | http://cudasw.sourceforge.net/homepage.htm#latest     | CUDASW++2 and CUDASW++3 likely obviate the need to track down this code.
     Akoglu2009        | 9 |                  | 10.1007/s10586-009-0089-8     | GPU-CUDA                | Yes      | 1:M | 64 v 1024    |                  |                     | 3     | 488    | 171      | 445    | TODO               |             | striemer2009   |                                                       | Code likely the same as striemer2009
     Ligowski2009      |   |                  | 10.1109/IPDPS.2009.5160931    | GPU-CUDA                |          |     |              |                  |                     |       |        |          |        | Manavski2008       |             |                |                                                       | Emailed for source code on 2018-06-19. Witold replied 2018-06-19. Sent further request back on 2018-06-19.
     Striemer2009      |   | GSW              | 10.1109/IPDPS.2009.5161066    | GPU-CUDA                | Yes      | 1:M | 64 v 1024    |                  |                     | 3     | 488    | 171      | 445    | TODO               | Custom      | striemer2009   | http://www2.engr.arizona.edu/~rcl/SmithWaterman.html
     Ling2009          |   |                  | 10.1109/SASP.2009.5226343     | GPU-CUDA                |          |     |              |                  |                     |       |        |          |        | TODO               |             |                |                                                       |
-    Liu2010           |   | CUDASW++ 2.0     | 10.1186/1756-0500-3-93        | GPU-CUDA                | Yes      |     |              |                  |                     | 23    | 1821   | 2356     | 9174   | TODO               | GPLv2       | liu2010        | http://cudasw.sourceforge.net/homepage.htm#latest
+    Liu2010           |  T| CUDASW++ 2.0     | 10.1186/1756-0500-3-93        | GPU-CUDA                | Yes      |     |              |                  |                     | 23    | 1821   | 2356     | 9174   | TODO               | GPLv2       | liu2010        | http://cudasw.sourceforge.net/homepage.htm#latest
     Khajeh-Saeed2010  |   |                  | 10.1016/j.jcp.2010.02.009     | GPU-CUDA                |          |     |              |                  |                     | 28    | 776    | 553      | 3459   | TODO               | Unknown     |                |
     Hains2011         | 6 |                  |                               | GPU-CUDA                |          |     |              |                  |                     |       |        |          |        |                    |             |                |
-    Klus2012          |   | BarraCUDA        | 10.1186/1756-0500-5-27        | GPU-CUDA                | Yes      | M:1 |70 v 102M     | Unlisted         | Tesla M2050,M2090   | 54    | 1953   | 2772     | 12653  | TODO               | MIT/GPLv3   | klus2012       | http://seqbarracuda.sourceforge.net/
-    Pankaj2012        |   | SWIFT            |                               | GPU-CUDA                | Yes      |     |              |                  |                     | 121   | 5087   | 9662     | 32724  | TODO               | GPL-2.0     | pankaj2012     |
+    Klus2012          |  T| BarraCUDA        | 10.1186/1756-0500-5-27        | GPU-CUDA                | Yes      | M:1 |70 v 102M     | Unlisted         | Tesla M2050,M2090   | 54    | 1953   | 2772     | 12653  | TODO               | MIT/GPLv3   | klus2012       | http://seqbarracuda.sourceforge.net/
+    Pankaj2012        |  T| SWIFT            |                               | GPU-CUDA                | Yes      |     |              |                  |                     | 121   | 5087   | 9662     | 32724  | TODO               | GPL-2.0     | pankaj2012     |
     Venkatachalam2012 | 9 |                  |                               | GPU-CUDA                |          |     |              |                  |                     |       |        |          |        |                    |             |                |
     Dicker2014        | 6 |                  |                               | GPU-CUDA                |          |     |              |                  | GTX 460             |       |        |          |        | TODO               |             |                |                                                       |
     Okada2015         | 9T| SW#              | 10.1186/s12859-015-0744-4     | GPU-CUDA                | Yes      | M:M |5M v 5M       |  66G (1) 202G (2)|      ????           | 65    | 6537   | 3914     | 17665  | TODO               |             | okada2015      | http://www-hagi.ist.osaka-u.ac.jp/research/code/
@@ -70,7 +71,7 @@ Key:
     Huang2015         | 9 |                  | 10.1155/2015/185179           | GPU-CUDA                |          |     |              |                  | Tesla C1060, K20    |       |        |          |        | TODO               |             |                |                                                       | TODO: Should contact
     nvbio_sw          |   | nvbio            | github.com/NVlabs/nvbio       | GPU-CUDA                | Yes      |     |              |                  |                     |       |        |          |        | TODO               | BSD-3       | nvbio_sw       | https://nvlabs.github.io/nvbio/
     ugene             |   | ugene            |                               | GPU-CUDA                | Error    |     |              |                  |                     |       |        |          |        | TODO               | GPLv2       | ugene          | http://ugene.net/download.html
-    -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------       |        |          |        | -----------------------------------------------------------------------------------------------------------------------------    
+    ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------    
     Manavski2008      | 7 | SWCUDA           | 10.1186/1471-2105-9-S2-S10    | GPU-CUDA + CPU-SSE      |RequiresQt|     |              |                  |                     | 68    | 3974   | 2861     | 8715   | TODO               | TODO        | manavski2008   | http://bioinformatics.cribi.unipd.it/cuda/swcuda.html | 
     Liu2013           | 9T| CUDASW++ 3.0     | 10.1186/1471-2105-14-117      | GPU-CUDA + CPU-SSE      | Yes      |     |5k v 35k: 190M|  119G (1) 186G(2)| GeForce GTX 680, 690| 21    | 642    | 568      | 4476   | TODO               | GPLv2       | liu2013        | http://cudasw.sourceforge.net/homepage.htm#latest
     Luo2013           |   | SOAP3            | 10.1371/journal.pone.0065632  | GPU-CUDA + CPU          | Yes      |     |              |                  |TesC2070,M2050;GTX680| 215   | 14057  | 16852    | 74183  | TODO               | GPLv2+      | luo2013        | http://www.cs.hku.hk/2bwt-tools/soap3-dp/             |
@@ -81,7 +82,7 @@ Ruled out:
 
     Sandes2010        |   | MASA             | 10.1145/1693453.1693473       | GPU-CUDA                |          |     |              |                  |                     |       |        |          |        | TODO               |             |                | https://github.com/edanssandes/MASA-Core/wiki         | There are *many* papers from this group.
     Sandes2011        |   | MASA             | 10.1109/IPDPS.2011.114        | GPU-CUDA                |          |     |              |                  |                     |       |        |          |        | TODO               |             |                | https://github.com/edanssandes/MASA-Core/wiki         | There are *many* papers from this group.
-    Sandes2013        |   | CUDAlign2.1      | 10.1109/TPDS.2012.194         | GPU-CUDA                | Yes (3.9)|     | 162kBP-59MBP |                  |                     |       |        |          |        |                    | GPLv3       |                |                                                       |    
+    Sandes2013        |   | CUDAlign2.1      | 10.1109/TPDS.2012.194         | GPU-CUDA                | Yes (3.9)|     | 162kBP-59MBP |                  |                     |       |        |          |        |                    | GPLv3       |                |                                                       | edans@cic.unb.br email is dead.
     Sandes2014_hetero |   | MASA             | 10.1145/2555243.2555280       | GPU-CUDA                |          |     |              |                  |                     |       |        |          |        |                    | GPLv3       |                |                                                       |
     Sandes2014        |   | MASA-CUDAlign3.0 | 10.1109/CCGrid.2014.18        | GPU-CUDA                | Yes (3.9)|     |       228MBP |                  |                     |       |        |          |        |                    | GPLv3       |                |                                                       |
     Sandes2016_masa   |   | MASA             | 10.1145/2858656               | GPU-CUDA                |          |     |              |                  |                     |       |        |          |        |                    | GPLv3       |                |                                                       |
@@ -194,6 +195,12 @@ Summary of Algorithmic Tricks/Improvements
 Summaries of papers and implementation notes
 --------------------------------------------
 
+### bowtie2
+
+    module load tbb
+    export CPATH=/lustre/atlas/sw/tbb/43/sles11.3_gnu4.8.2/source/include
+    make -j 8
+
 ### Szalkowski2008 **SWPS3 – fast multi-threaded vectorized Smith-Waterman for IBM Cell/B.E. and ×86/SSE2**
 
     mkdir build
@@ -249,7 +256,11 @@ Compilation succeeded with
     module load cudatoolkit/9.1.85_3.10-1.0502.df1cc54.3.1
     make
 
+
+
 ### Rognes2011 **Faster Smith-Waterman database searches with inter-sequence SIMD parallelisation**
+
+
 
 ### Klus2012
 
@@ -258,6 +269,12 @@ Compilation succeeded with
     module load cudatoolkit/9.1.85_3.10-1.0502.df1cc54.3.1
     #Minor makefile adjustment to NVCC path
     make
+
+Set `MAX_SEQUENCE_LENGTH` in `barracuda.h`
+
+Requires preprocessing the reference sequence using a Burrow-Wheeler transform.
+
+
 
 ### Pankaj2012 **Swift: A GPU-based Smith-Waterman Sequence Alignment Program**
 
@@ -270,9 +287,13 @@ Compilation successful.
 
 All query sequences must be the same length, but they can be padded with `N`.
 
+
+
 ### Rucci2014
 
     make
+
+
 
 ### Sandes2014
 
@@ -280,11 +301,15 @@ Code compiles on Titan using the following per the `build.titan` script in `impl
 
 Only aligns two very long sequences.
 
+
+
 ### Sandes2016
 
 Code for 4.0 doesn't seem to be available. TODO: email authors.
 
 Only aligns two very long sequences.
+
+
 
 ### Warris2015
 
@@ -292,6 +317,8 @@ Compiled with modifications to Makefile and inclusion of CUDA-deprecated header 
 
     cd PaSWAS/onGPU
     module load cudatoolkit
+
+
 
 ### Luo2013
 
@@ -301,11 +328,14 @@ Compilation succeeded with
     #Several fixes to the code and makefile
     make
 
+Requires preprocessing the reference sequence with a Burrows-Wheeler transform
 
 
 ### Liu2013
 
-Compilation succeeded. Straight-forward.
+    module load cudatoolkit/9.1.85_3.10-1.0502.df1cc54.3.1
+    module load gcc/6.3.0
+    module unload pgi
 
 
 
@@ -370,6 +400,7 @@ An alternative repo at https://github.com/ngstools/nvbio doesn't exist any more.
 
     #Try compiling:
 
+        module loda cmake
         module unload pgi
         module remove cudatoolkit
         module load cmake
@@ -378,6 +409,10 @@ An alternative repo at https://github.com/ngstools/nvbio doesn't exist any more.
         export LIBRARY_PATH="$HOME/os/cuda-6.5/lib64"
         CXX=g++ CC=gcc cmake .. -DGPU_ARCHITECTURE=sm_50 -DCMAKE_INSTALL_PREFIX:PATH=$HOME/os
         make -j 10
+
+**nvBotwie**
+
+
 
 ### ugene
 
