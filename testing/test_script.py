@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 
+import argparse
 import os
 import pandas as pd
 from plumbum import local
 from plumbum import FG, BG, TEE
 import re
+import sys
 
 #Where the implementations are stored with respect to the working directory of
 #this script
@@ -36,7 +38,7 @@ def ParsedCombiner(*args):
 
 
 
-def AlignerCUDASWpp3(queryfile, databasefile, device):
+def AlignerLiu2013(queryfile, databasefile, device):
   #NOTE: Left out `mat` argument for substitution matrix
   #NOTE: Left out `gapo` gap open penalty
   #NOTE: Left out `gape` gap extension penalty
@@ -88,15 +90,24 @@ def AlignerKlus2012(queryfile, databasefile, device):
 
 
 
+all_aligners = [AlignerLiu2013,AlignerOkada2015,AlignerGupta2012]
 
-aligners     = [AlignerCUDASWpp3,AlignerOkada2015,AlignerGupta2012]
-queryfile    = ""
-databasefile = ""
+parser = argparse.ArgumentParser(description='Process some integers.')
+parser.add_argument('--list',          action='store_true',                      help='List available aligners')
+parser.add_argument('queryfile',       nargs='?' if '--list' in sys.argv else 1, help='an integer for the accumulator')
+parser.add_argument('databasefile',    nargs='?' if '--list' in sys.argv else 1, help='an integer for the accumulator')
+parser.add_argument('-a','--aligners', action='store', default=all_aligners,     help='Comma delimited list of aligners to use. If not specified, all aligners are used.')
+args = parser.parse_args()
+
+if args.list:
+  for aligner in args.aligners:
+    print(aligner.__name__)
+  sys.exit(0)
 
 df = pd.DataFrame()
 
-for aligner in aligners:
-  aligner_out = aligner(queryfile, databasefile, device=0)
+for aligner in args.aligners:
+  aligner_out = aligner(args.queryfile, args.databasefile, device=0)
   aligner_out["name"] = aligner.__name__
   df = df.append(aligner_out, ignore_index = True)
 
