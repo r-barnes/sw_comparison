@@ -39,7 +39,7 @@ CFastaFile::~CFastaFile() {
 }
 int CFastaFile::open(char *fileName) {
 	file = fopen(fileName, "rb");
-	if (file!=nullptr) {
+	if (file==nullptr) {
 		fprintf(stderr, "Opening file (%s) failed\n", fileName);
 		return 0;
 	}
