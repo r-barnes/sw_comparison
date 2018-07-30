@@ -333,6 +333,9 @@ Requires preprocessing the reference sequence with a Burrows-Wheeler transform
 
 ### Liu2013
 
+For 50 sequences, it runs. For 100 sequences it fails, and keeps failing
+(presumably), until I load 2,698 sequences, and then everything's fine again.
+
     module load cudatoolkit/9.1.85_3.10-1.0502.df1cc54.3.1
     module load gcc/6.3.0
     module unload pgi
