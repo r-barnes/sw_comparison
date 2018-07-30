@@ -7,8 +7,8 @@ CSearchScalar::CSearchScalar(CParams* params) :
 		CSearch(params) {
 }
 
-CSearchScalar::~CSearchScalar() {
-}
+CSearchScalar::~CSearchScalar() {}
+
 int CSearchScalar::loaddb(char* dbFile) {
 	int i;
 	CFastaFile *dbLib;
@@ -16,8 +16,7 @@ int CSearchScalar::loaddb(char* dbFile) {
 	int seqAlignedLen;
 	uint8_t* seq;
 
-	fprintf(stderr,
-			"Loading database sequences from file into host memory...\n");
+	fprintf(stderr, "Loading database sequences from file into host memory (dbSeqsSize=%d)...\n",dbSeqsSize);
 
 #define INIT_SIZE 		819200
 	numSeqs          = 0;
@@ -26,9 +25,9 @@ int CSearchScalar::loaddb(char* dbFile) {
 	totalAminoAcids  = 0;
 	dbSeqsSize       = INIT_SIZE;
 	dbSeqs           = (uint8_t**) malloc(sizeof(uint8_t*) * dbSeqsSize);
-	dbSeqsLen        = (int*) malloc(sizeof(int) * dbSeqsSize);
-	dbSeqsAlignedLen = (int*) malloc(sizeof(int) * dbSeqsSize);
-	dbSeqsName       = (char**) malloc(sizeof(char*) * dbSeqsSize);
+	dbSeqsLen        = (int*)      malloc(sizeof(int)      * dbSeqsSize);
+	dbSeqsAlignedLen = (int*)      malloc(sizeof(int)      * dbSeqsSize);
+	dbSeqsName       = (char**)    malloc(sizeof(char*)    * dbSeqsSize);
 
 	//open the database
 	dbLib = new CFastaFile;
@@ -341,9 +340,9 @@ Database<uint4>* CSearchScalar::createInterDBQuad(CFastaSW* cudasw,
 	int n = 0;
 	bool done;
 	do {
-		n = 0;
+		n          = 0;
 		heightQuad = 0;
-		done = true;
+		done       = true;
 		while (n < numThreshold) {
 			if (n + widthQuad * 4 < numThreshold) {
 				/*a new row*/
@@ -367,7 +366,9 @@ Database<uint4>* CSearchScalar::createInterDBQuad(CFastaSW* cudasw,
 			done = false;
 		}
 	} while (!done);
-	if(heightQuad == 0) heightQuad = 1;
+	
+	if(heightQuad == 0)
+		heightQuad = 1;
 	/*fprintf(stderr,
 			"Loading inter-task quad-lane SIMD computing database: width:%d height:%d size:%ld (MB)\n",
 			widthQuad, heightQuad,
@@ -375,8 +376,7 @@ Database<uint4>* CSearchScalar::createInterDBQuad(CFastaSW* cudasw,
 
 	//fill the array with the sorted sequences
 	int cx = 0, cy = 0;
-	uint4* arrayQuad = (uint4*) pMallocHost(
-			widthQuad * heightQuad * sizeof(uint4));
+	uint4 *const arrayQuad = (uint4*) pMallocHost(widthQuad * heightQuad * sizeof(uint4));
 	uint4 *ptr, bases;
 	int4 lengths, indices;
 	uint8_t *seq, *seq2, *seq3, *seq4;
@@ -399,7 +399,7 @@ Database<uint4>* CSearchScalar::createInterDBQuad(CFastaSW* cudasw,
 				+ (lengths.z - lengths2.z) + (lengths.w - lengths2.w);
 
 		/*get the sequence pointers*/
-		seq = dbSeqs[indices.x];
+		seq  = dbSeqs[indices.x];
 		seq2 = dbSeqs[indices.y];
 		seq3 = dbSeqs[indices.z];
 		seq4 = dbSeqs[indices.w];
@@ -408,29 +408,29 @@ Database<uint4>* CSearchScalar::createInterDBQuad(CFastaSW* cudasw,
 		ptr = arrayQuad + cy * widthQuad + cx;
 		for (int j = 0; j < lengths.w; j += 4) {
 			/*get the bases for the 1-th sequence*/
-			bases.x = (j + 3 < lengths.x) ? seq[j + 3] : DUMMY_AMINO_ACID;
+			bases.x  = (j + 3 < lengths.x) ? seq[j + 3] : DUMMY_AMINO_ACID;
 			bases.x <<= 8;
 			bases.x |= (j + 2 < lengths.x) ? seq[j + 2] : DUMMY_AMINO_ACID;
 			bases.x <<= 8;
 			bases.x |= (j + 1 < lengths.x) ? seq[j + 1] : DUMMY_AMINO_ACID;
 			bases.x <<= 8;
-			bases.x |= (j < lengths.x) ? seq[j] : DUMMY_AMINO_ACID;
+			bases.x |= (j     < lengths.x) ? seq[j    ] : DUMMY_AMINO_ACID;
 			/*get the bases for the 2-th sequence*/
-			bases.y = (j + 3 < lengths.y) ? seq2[j + 3] : DUMMY_AMINO_ACID;
+			bases.y  = (j + 3 < lengths.y) ? seq2[j + 3] : DUMMY_AMINO_ACID;
 			bases.y <<= 8;
 			bases.y |= (j + 2 < lengths.y) ? seq2[j + 2] : DUMMY_AMINO_ACID;
 			bases.y <<= 8;
 			bases.y |= (j + 1 < lengths.y) ? seq2[j + 1] : DUMMY_AMINO_ACID;
 			bases.y <<= 8;
-			bases.y |= (j < lengths.y) ? seq2[j] : DUMMY_AMINO_ACID;
+			bases.y |= (j     < lengths.y) ? seq2[j    ] : DUMMY_AMINO_ACID;
 			/*get the bases for the 3-th sequence*/
-			bases.z = (j + 3 < lengths.z) ? seq3[j + 3] : DUMMY_AMINO_ACID;
+			bases.z  = (j + 3 < lengths.z) ? seq3[j + 3] : DUMMY_AMINO_ACID;
 			bases.z <<= 8;
 			bases.z |= (j + 2 < lengths.z) ? seq3[j + 2] : DUMMY_AMINO_ACID;
 			bases.z <<= 8;
 			bases.z |= (j + 1 < lengths.z) ? seq3[j + 1] : DUMMY_AMINO_ACID;
 			bases.z <<= 8;
-			bases.z |= (j < lengths.z) ? seq3[j] : DUMMY_AMINO_ACID;
+			bases.z |= (j     < lengths.z) ? seq3[j    ] : DUMMY_AMINO_ACID;
 			/*get the bases for the 4-th sequence*/
 			bases.w = seq4[j + 3];
 			bases.w <<= 8;
