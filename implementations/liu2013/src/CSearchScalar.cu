@@ -20,15 +20,15 @@ int CSearchScalar::loaddb(char* dbFile) {
 			"Loading database sequences from file into host memory...\n");
 
 #define INIT_SIZE 		819200
-	numSeqs = 0;
-	numThreshold = 0;
-	maxSeqLength = 0;
-	totalAminoAcids = 0;
-	dbSeqsSize = INIT_SIZE;
-	dbSeqs = (uint8_t**) malloc(sizeof(uint8_t*) * dbSeqsSize);
-	dbSeqsLen = (int*) malloc(sizeof(int) * dbSeqsSize);
+	numSeqs          = 0;
+	numThreshold     = 0;
+	maxSeqLength     = 0;
+	totalAminoAcids  = 0;
+	dbSeqsSize       = INIT_SIZE;
+	dbSeqs           = (uint8_t**) malloc(sizeof(uint8_t*) * dbSeqsSize);
+	dbSeqsLen        = (int*) malloc(sizeof(int) * dbSeqsSize);
 	dbSeqsAlignedLen = (int*) malloc(sizeof(int) * dbSeqsSize);
-	dbSeqsName = (char**) malloc(sizeof(char*) * dbSeqsSize);
+	dbSeqsName       = (char**) malloc(sizeof(char*) * dbSeqsSize);
 
 	//open the database
 	dbLib = new CFastaFile;
@@ -39,15 +39,12 @@ int CSearchScalar::loaddb(char* dbFile) {
 	while (seqLen > 0) {
 
 		if (numSeqs >= dbSeqsSize) {
-			dbSeqsSize *= 2;
-			dbSeqs = (uint8_t**) realloc(dbSeqs, sizeof(uint8_t*) * dbSeqsSize);
-			dbSeqsName = (char**) realloc(dbSeqsName,
-					sizeof(char*) * dbSeqsSize);
-			dbSeqsLen = (int*) realloc(dbSeqsLen, sizeof(int) * dbSeqsSize);
-			dbSeqsAlignedLen = (int*) realloc(dbSeqsAlignedLen,
-					sizeof(int) * dbSeqsSize);
-			if (dbSeqs == NULL || dbSeqsLen == NULL || dbSeqsName == NULL
-					|| dbSeqsAlignedLen == NULL) {
+			dbSeqsSize      *= 2;
+			dbSeqs           = (uint8_t**) realloc(dbSeqs,           sizeof(uint8_t*) * dbSeqsSize);
+			dbSeqsName       = (char**)    realloc(dbSeqsName,       sizeof(char*)    * dbSeqsSize);
+			dbSeqsLen        = (int*)      realloc(dbSeqsLen,        sizeof(int)      * dbSeqsSize);
+			dbSeqsAlignedLen = (int*)      realloc(dbSeqsAlignedLen, sizeof(int)      * dbSeqsSize);
+			if (dbSeqs == NULL || dbSeqsLen == NULL || dbSeqsName == NULL || dbSeqsAlignedLen == NULL) {
 				fprintf(stderr, "no memory space for database sequences\n");
 				return 0;
 			}
