@@ -582,16 +582,16 @@
 		 "        xorq      r11, r11            \n"
 
 #define ONESTEP16(H, N, F, V)	         		    \
-                 "        paddsw    "V"(rax), "H"       \n" \
-                 "        pmaxsw    "F", "H"            \n" \
-                 "        pmaxsw    xmm12, "H"          \n" \
-                 "        pmaxsw    "H", xmm13          \n" \
-		 "        psubsw    xmm15, "F"          \n" \
+                 "        paddsw    " V "(rax), " H "       \n" \
+                 "        pmaxsw    " F ", " H "            \n" \
+                 "        pmaxsw    xmm12, " H "          \n" \
+                 "        pmaxsw    " H ", xmm13          \n" \
+		 "        psubsw    xmm15, " F "          \n" \
 		 "        psubsw    xmm15, xmm12        \n" \
-		 "        movdqa    "H", "N"            \n" \
-		 "        psubsw    xmm14, "H"          \n" \
-		 "        pmaxsw    "H", xmm12          \n" \
-		 "        pmaxsw    "H", "F"            \n" \
+		 "        movdqa    " H ", " N "            \n" \
+		 "        psubsw    xmm14, " H "          \n" \
+		 "        pmaxsw    " H ", xmm12          \n" \
+		 "        pmaxsw    " H ", " F "            \n" \
 
 	inline void donormal16(__m128i * Sm, /* r9  */
 	__m128i * hep, /* rdi */
