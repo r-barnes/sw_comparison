@@ -67,19 +67,19 @@ Key:
     Venkatachalam2012 | 9 |                  |                               | GPU-CUDA                |          |     |              |                  |                     |       |        |          |        |                    |             |                |
     Dicker2014        | 6 |                  |                               | GPU-CUDA                |          |     |              |                  | GTX 460             |       |        |          |        | TODO               |             |                |                                                       |
     Okada2015         | 9T| SW#              | 10.1186/s12859-015-0744-4     | GPU-CUDA                | Yes      | M:M |5M v 5M       |  66G (1) 202G (2)|      ????           | 65    | 6537   | 3914     | 17665  | TODO               |             | okada2015      | http://www-hagi.ist.osaka-u.ac.jp/research/code/
-    Warris2015        |   | PaSWAS           | 10.1371/journal.pone.0122524  | GPU-CUDA                | Yes      | M:M |              |                  |                     | 19    | 1239   | 652      | 5128   | TODO               | MIT         | warris2015     |
     Huang2015         | 9 |                  | 10.1155/2015/185179           | GPU-CUDA                |          |     |              |                  | Tesla C1060, K20    |       |        |          |        | TODO               |             |                |                                                       | TODO: Should contact
     nvbio_sw          |   | nvbio            | github.com/NVlabs/nvbio       | GPU-CUDA                | Yes      |     |              |                  |                     |       |        |          |        | TODO               | BSD-3       | nvbio_sw       | https://nvlabs.github.io/nvbio/
     ugene             |   | ugene            |                               | GPU-CUDA                | Error    |     |              |                  |                     |       |        |          |        | TODO               | GPLv2       | ugene          | http://ugene.net/download.html
     ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------    
     Manavski2008      | 7 | SWCUDA           | 10.1186/1471-2105-9-S2-S10    | GPU-CUDA + CPU-SSE      |RequiresQt|     |              |                  |                     | 68    | 3974   | 2861     | 8715   | TODO               | TODO        | manavski2008   | http://bioinformatics.cribi.unipd.it/cuda/swcuda.html | 
-    Liu2013           | 9T| CUDASW++ 3.0     | 10.1186/1471-2105-14-117      | GPU-CUDA + CPU-SSE      | Yes      |     |5k v 35k: 190M|  119G (1) 186G(2)| GeForce GTX 680, 690| 21    | 642    | 568      | 4476   | TODO               | GPLv2       | liu2013        | http://cudasw.sourceforge.net/homepage.htm#latest
+    Liu2013           | 9T| CUDASW++ 3.0     | 10.1186/1471-2105-14-117      | GPU-CUDA + CPU-SSE      | Yes      | M:M |5k v 35k: 190M|  119G (1) 186G(2)| GeForce GTX 680, 690| 21    | 642    | 568      | 4476   | TODO               | GPLv2       | liu2013        | http://cudasw.sourceforge.net/homepage.htm#latest
     Luo2013           |   | SOAP3            | 10.1371/journal.pone.0065632  | GPU-CUDA + CPU          | Yes      |     |              |                  |TesC2070,M2050;GTX680| 215   | 14057  | 16852    | 74183  | TODO               | GPLv2+      | luo2013        | http://www.cs.hku.hk/2bwt-tools/soap3-dp/             |
     Marcos2014        |   |                  |                               | GPU-CUDA + CPU          |          |     |              |                  |                     |       |        |          |        | TODO               |             |                |                                                       |
     Warris2018        |   | pyPaSWAS         | 10.1371/journal.pone.0190279  | GPU-CUDA + CPU + Python |          |     |              |                  |                     | 39    | 1120   | 1437     | 4766   | TODO               | MIT         | warris2018     |
 
 Ruled out:
 
+    Warris2015        |   | PaSWAS           | 10.1371/journal.pone.0122524  | GPU-CUDA                | Yes      | M:M |              |                  |                     | 19    | 1239   | 652      | 5128   | TODO               | MIT         | warris2015     |
     Sandes2010        |   | MASA             | 10.1145/1693453.1693473       | GPU-CUDA                |          |     |              |                  |                     |       |        |          |        | TODO               |             |                | https://github.com/edanssandes/MASA-Core/wiki         | There are *many* papers from this group.
     Sandes2011        |   | MASA             | 10.1109/IPDPS.2011.114        | GPU-CUDA                |          |     |              |                  |                     |       |        |          |        | TODO               |             |                | https://github.com/edanssandes/MASA-Core/wiki         | There are *many* papers from this group.
     Sandes2013        |   | CUDAlign2.1      | 10.1109/TPDS.2012.194         | GPU-CUDA                | Yes (3.9)|     | 162kBP-59MBP |                  |                     |       |        |          |        |                    | GPLv3       |                |                                                       | edans@cic.unb.br email is dead.
@@ -181,6 +181,8 @@ Summary of Algorithmic Tricks/Improvements
    * Venkatachalam2012: Data can be loaded to GPU while other alignments are happening
  * Tricks:
    * Using the modulus operator is extremely inefficient on CUDA
+ * Recompile GPU code on the fly:
+   * Warris2018
 
  * Parallel (prefix?) scan
  * Tiling
@@ -313,6 +315,12 @@ Only aligns two very long sequences.
 
 ### Warris2015
 
+PaSWAS, from Warris2015, needs to be compiled from source with the parameters of
+the input sequences. If the sequences are of different lengths, it would need to
+be compiled with the length of the longest one. Since the Antarctic data
+contains a sequence of length 5,279 this means that only a single sequence can
+fit on the GPU at a time.
+
 Compiled with modifications to Makefile and inclusion of CUDA-deprecated header files.
 
     cd PaSWAS/onGPU
@@ -352,9 +360,13 @@ Compilation succeeded. Straight-forward.
 
 ### Okada2015
 
+Seems to just work.
+
 Compilation successful. Minor alterations of makefile required.
 
-    module load cudatoolkit
+    module load cudatoolkit/91.85_3.10-1.0502.df1cc54.3.1
+    module unload pgi
+    module load gcc/6.3.0
     make
 
 Available as a library.
@@ -385,6 +397,13 @@ Have to use the protein alignment thing to get a M:M, otherwise it is single
 
     #Executable is in: build/src/c
 
+### Warris2018
+
+    pip3 install pycuda --user
+    pip3 install BioPython --user
+
+    Build process seems to require Spack. Might be easier to use Docker. That is, this is likely to be forever a troublesome dependency.
+
 ### nvbio
 
 Fork says to use flag `-DGPU_ARCHITECTURE=sm_XX` with cmake. ([Link](https://github.com/vmiheer/nvbio/))
@@ -403,19 +422,21 @@ An alternative repo at https://github.com/ngstools/nvbio doesn't exist any more.
 
     #Try compiling:
 
-        module loda cmake
         module unload pgi
         module remove cudatoolkit
         module load cmake
         module load gcc/4.8.2
         export PATH="$HOME/os/cuda-6.5/bin:$PATH"
         export LIBRARY_PATH="$HOME/os/cuda-6.5/lib64"
-        CXX=g++ CC=gcc cmake .. -DGPU_ARCHITECTURE=sm_50 -DCMAKE_INSTALL_PREFIX:PATH=$HOME/os
+        mkdir build
+        cd build
+        CXX=g++ CC=gcc cmake .. -DGPU_ARCHITECTURE=sm_35 -DCMAKE_INSTALL_PREFIX:PATH=$HOME/os
         make -j 10
-
-**nvBotwie**
-
-
+        cd ..
+        mkdir debug
+        cd debug
+        CXX=g++ CC=gcc cmake .. -DGPU_ARCHITECTURE=sm_35 -DCMAKE_INSTALL_PREFIX:PATH=$HOME/os -DCMAKE_BUILD_TYPE=Debug
+        make -j 10
 
 ### ugene
 
