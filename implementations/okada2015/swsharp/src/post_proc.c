@@ -776,7 +776,7 @@ static void outputDatabaseLight(DbAlignment** dbAlignments,
     const char* name = chainGetName(query);
     int length = chainGetLength(query);
     
-    fprintf(file, "query: %s | lenght: %d\n", name, length);
+    fprintf(file, "query: %s | length: %d\n", name, length);
     
     int i;
     for (i = 0; i < dbAlignmentsLen; ++i) {
