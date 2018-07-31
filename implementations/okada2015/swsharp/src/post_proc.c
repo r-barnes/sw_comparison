@@ -67,6 +67,8 @@ static void outputStat(Alignment* alignment, FILE* file);
 
 static void outputStatPair(Alignment* alignment, FILE* file);
 
+static void outputNone(Alignment* alignment, FILE* file);
+
 // database output 
 static OutputDatabaseFunction outputDatabaseFunction(int type);
 
@@ -91,16 +93,16 @@ extern int checkAlignment(Alignment* alignment) {
 
     Scorer* scorer = alignmentGetScorer(alignment);
     
-    Chain* query = alignmentGetQuery(alignment);
+    Chain* query  = alignmentGetQuery(alignment);
     Chain* target = alignmentGetTarget(alignment);
 
-    int queryLen = chainGetLength(query);
+    int queryLen  = chainGetLength(query);
     int targetLen = chainGetLength(target);
     
-    int queryStart = alignmentGetQueryStart(alignment);
-    int queryEnd = alignmentGetQueryEnd(alignment);
+    int queryStart  = alignmentGetQueryStart(alignment);
+    int queryEnd    = alignmentGetQueryEnd(alignment);
     int targetStart = alignmentGetTargetStart(alignment);
-    int targetEnd = alignmentGetTargetEnd(alignment);
+    int targetEnd   = alignmentGetTargetEnd(alignment);
     
     if (queryStart == 0 && queryEnd == 0 && targetStart == 0 && targetEnd == 0 &&
         alignmentGetPathLen(alignment) == 0 && alignmentGetScore(alignment) == 0) {
@@ -114,14 +116,14 @@ extern int checkAlignment(Alignment* alignment) {
         return 0;
     }
       
-    int isQueryGap = 0;
+    int isQueryGap  = 0;
     int isTargetGap = 0;
-    int score = 0;
+    int score       = 0;
     
-    int gapOpen = scorerGetGapOpen(scorer);
+    int gapOpen   = scorerGetGapOpen(scorer);
     int gapExtend = scorerGetGapExtend(scorer);
     
-    int queryIdx = queryEnd;
+    int queryIdx  = queryEnd;
     int targetIdx = targetEnd;
     
     int i;
@@ -195,12 +197,12 @@ extern Alignment* readAlignment(char* path) {
 
 extern void outputAlignment(Alignment* alignment, char* path, int type) {
 
-    int queryStart = alignmentGetQueryStart(alignment);
-    int queryEnd = alignmentGetQueryEnd(alignment);
+    int queryStart  = alignmentGetQueryStart(alignment);
+    int queryEnd    = alignmentGetQueryEnd(alignment);
     int targetStart = alignmentGetTargetStart(alignment);
-    int targetEnd = alignmentGetTargetEnd(alignment);
-    int pathLen = alignmentGetPathLen(alignment);
-    int score = alignmentGetScore(alignment);
+    int targetEnd   = alignmentGetTargetEnd(alignment);
+    int pathLen     = alignmentGetPathLen(alignment);
+    int score       = alignmentGetScore(alignment);
 
     FILE* file = path == NULL ? stdout : fileSafeOpen(path, "w");
 
@@ -255,12 +257,10 @@ extern void outputShotgunDatabase(DbAlignment*** dbAlignments,
     
     FILE* file = path == NULL ? stdout : fileSafeOpen(path, "w");
 
-    OutputDatabaseFunction function = outputDatabaseFunction(type);
+    const OutputDatabaseFunction function = outputDatabaseFunction(type);
 
-    int i;
-    for (i = 0; i < dbAlignmentsLen; ++i) {
+    for (int i = 0; i < dbAlignmentsLen; ++i)
         function(dbAlignments[i], dbAlignmentsLens[i], file);
-    }
     
     if (file != stdout) fclose(file);
 }
@@ -472,6 +472,8 @@ static OutputFunction outputFunction(int type) {
         return outputStat;
     case SW_OUT_DUMP:
         return outputDump;
+    case SW_OUT_NONE:
+        return outputNone;
     default:
         ERROR("Wrong output type");
     }
@@ -741,6 +743,10 @@ static void outputStat(Alignment* alignment, FILE* file) {
 static void outputStatPair(Alignment* alignment, FILE* file) {
     outputStat(alignment, file);
     outputPair(alignment, file);
+}
+
+static void outputNone(Alignment* alignment, FILE* file){
+    return;
 }
 
 //------------------------------------------------------------------------------

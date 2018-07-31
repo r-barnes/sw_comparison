@@ -47,10 +47,11 @@ static struct option options[] = {
 };
 
 static CharInt outFormats[] = {
-    { "bm0", SW_OUT_DB_BLASTM0 },
-    { "bm8", SW_OUT_DB_BLASTM8 },
-    { "bm9", SW_OUT_DB_BLASTM9 },
-    { "light", SW_OUT_DB_LIGHT }
+    { "bm0",   SW_OUT_DB_BLASTM0 },
+    { "bm8",   SW_OUT_DB_BLASTM8 },
+    { "bm9",   SW_OUT_DB_BLASTM9 },
+    { "light", SW_OUT_DB_LIGHT   },
+    { "none",  SW_OUT_NONE       }
 };
 
 static CharInt algorithms[] = {
@@ -383,6 +384,7 @@ static void help() {
     "            bm8      - blast m8 tabular output format\n"
     "            bm9      - blast m9 commented tabular output format\n"
     "            light    - score-name tabbed output\n"
+    "            none     - no output at all\n"
     "    --nocache\n"
     "        serialized database is stored to speed up future runs with the\n"
     "        same database, option disables this behaviour\n"

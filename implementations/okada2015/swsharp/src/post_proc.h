@@ -74,6 +74,8 @@ This output can be read with the readAlignment().
 */
 #define SW_OUT_DUMP         4
 
+#define SW_OUT_NONE         5
+
 /*!
 @brief Database alignment blast m1-like output format.
 
