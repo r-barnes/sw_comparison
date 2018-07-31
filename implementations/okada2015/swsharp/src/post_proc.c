@@ -84,6 +84,9 @@ static void outputDatabaseBlastM8(DbAlignment** dbAlignments,
 static void outputDatabaseBlastM9(DbAlignment** dbAlignments, 
     int dbAlignmentsLen, FILE* file);
 
+static void outputDatabaseNone(DbAlignment** dbAlignments, 
+    int dbAlignmentsLen, FILE* file);
+
 //******************************************************************************
 
 //******************************************************************************
@@ -764,6 +767,8 @@ static OutputDatabaseFunction outputDatabaseFunction(int type) {
         return outputDatabaseBlastM8;
     case SW_OUT_DB_BLASTM9:
         return outputDatabaseBlastM9;
+    case SW_OUT_NONE:
+        return outputDatabaseNone;
     default:
         ERROR("Wrong output type");
     }
@@ -1052,6 +1057,10 @@ static void outputDatabaseBlastM9(DbAlignment** dbAlignments,
                   "gap openings,q. start,q. end,s. start,s. end,e-value,score\n");
               
     outputDatabaseBlastM8(dbAlignments, dbAlignmentsLen, file);
+}
+
+static void outputDatabaseNone(DbAlignment** dbAlignments, int dbAlignmentsLen, FILE* file) {
+    return;
 }
 
 //------------------------------------------------------------------------------
