@@ -183,9 +183,11 @@ int main(int argc, char* argv[]) {
   while (1) {
     int status = 1;
     if (cardsLen == 0) {
+      printf("p readFastaChainsPart...\n");
       status &= readFastaChainsPart(&database, &databaseLen, handle, serialized, 1000000000); // ~1GB
     } else {
       while (1) {
+        printf("p readFastaChainsPart...\n");
         databaseLen = databaseEnd;
         status     &= readFastaChainsPart(&database, &databaseLen, handle, serialized, cudaMemoryStep);
 
@@ -215,6 +217,7 @@ int main(int argc, char* argv[]) {
       }
     }
 
+    printf("p chainDatabaseCreate...\n");
     ChainDatabase* chainDatabase = chainDatabaseCreate(database, 
       databaseStart, databaseLen - databaseStart, cards, cardsLen);
 
@@ -223,6 +226,7 @@ int main(int argc, char* argv[]) {
 
     const clock_t start_t = clock();
 
+    printf("p shotgunDatabase...\n");
     shotgunDatabase(&dbAlignmentsPart, &dbAlignmentsPartLens, algorithm, 
         queries, queriesLen, chainDatabase, scorer, maxAlignments, valueFunction, 
         (void*) eValueParams, maxEValue, NULL, 0, cards, cardsLen, NULL);
@@ -231,6 +235,7 @@ int main(int argc, char* argv[]) {
       dbAlignments = dbAlignmentsPart;
       dbAlignmentsLens = dbAlignmentsPartLens;
     } else {
+      printf("p dbAlignmentsMerge...\n");
       dbAlignmentsMerge(dbAlignments, dbAlignmentsLens, dbAlignmentsPart, 
           dbAlignmentsPartLens, queriesLen, maxAlignments);
       deleteShotgunDatabase(dbAlignmentsPart, dbAlignmentsPartLens, queriesLen);
