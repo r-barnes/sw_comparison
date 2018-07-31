@@ -50,7 +50,7 @@ EXEC = cudasw
 
 all: dir $(objs)
 	$(NVCC) $(NVCCFLAGS) -o $(EXEC) $(objs) $(NVCCLIBS)
-	strip $(EXEC)
+	#strip $(EXEC)
 
 dir:
 	mkdir -p $(objs_dir)
