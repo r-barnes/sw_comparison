@@ -1,0 +1,43 @@
+#!/bin/bash
+
+#Update executables
+cd $HOME/crd-swgpu
+find implementations/ -executable -type f | cpio -pdm $MEMBERWORK/csc261/rbarnes
+rsync -razvhP $HOME/crd-swgpu/implementations/warris2018 ./implementations/
+cd /lustre/atlas/scratch/spinyfan/csc261/rbarnes/
+
+export queryfile=ant-short.fasta
+export databasefile=ant-short.fasta
+
+export queryfile=ant-500.fasta
+export databasefile=ant-500.fasta
+export device=0
+
+module load cudatoolkit/9.1.85_3.10-1.0502.df1cc54.3.1
+module unload pgi
+module load gcc/6.3.0
+aprun ./implementations/liu2013/cudasw -query $queryfile -db $databasefile -use_single $device
+
+./implementations/liu2010/cudasw -query queryfile -db databasefile -use_single device
+
+module load cudatoolkit/9.1.85_3.10-1.0502.df1cc54.3.1
+module unload pgi
+module load gcc/6.3.0
+aprun ./implementations/okada2015/bin/swsharpdb -i $queryfile -j $databasefile --nocache --outfmt none --cards $device
+
+./implementations/pankaj2012/bin/swift -q queryfile -r databasefile -n -1 -s -1 -o zout
+
+./implementations/klus2012/bin/barracuda index databasefile
+./implementations/klus2012/bin/barracuda aln databasefile queryfile
+
+module load cudatoolkit/9.1.85_3.10-1.0502.df1cc54.3.1
+module unload pgi
+module load gcc/6.3.0
+python3 ./implementations/warris2018/pypaswas.py -o zout --loglevel=info --outputformat=TXT -p aligner --filetype1=fasta --filetype2=fasta -O OVERRIDE_OUTPUT -M DNA-RNA --device=$device --recompile=T --short_sequences=F --framework=CUDA $queryfile $databasefile
+
+aprun ./implementations/bundled_software/nvbio/build/sw-benchmark/sw-benchmark $queryfile $databasefile
+aprun ./implementations/bundled_software/nvbio/debug/sw-benchmark/sw-benchmark $queryfile $databasefile
+
+
+aprun cuda-gdb ./implementations/liu2013/cudasw 
+run -query ant-500.fasta -db ant-500.fasta -use_single 0
