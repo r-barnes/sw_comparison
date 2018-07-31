@@ -71,277 +71,253 @@ static void valueFunction(double* values, int* scores, Chain* query,
     Chain** database, int databaseLen, int* cards, int cardsLen, void* param);
 
 int main(int argc, char* argv[]) {
+  char* queryPath    = NULL;
+  char* databasePath = NULL;
 
-    char* queryPath    = NULL;
-    char* databasePath = NULL;
+  int gapOpen   = 10;
+  int gapExtend = 1;
+  
+  char* matrix = "BLOSUM_62";
+      
+  int   maxAlignments = 10;
+  float maxEValue     = 10;
+  
+  int  cardsLen = -1;
+  int* cards    = NULL;
+  
+  char* out       = NULL;
+  int   outFormat = SW_OUT_DB_BLASTM9;
 
-    int gapOpen   = 10;
-    int gapExtend = 1;
-    
-    char* matrix = "BLOSUM_62";
-        
-    int   maxAlignments = 10;
-    float maxEValue     = 10;
-    
-    int  cardsLen = -1;
-    int* cards    = NULL;
-    
-    char* out       = NULL;
-    int   outFormat = SW_OUT_DB_BLASTM9;
+  int algorithm = SW_ALIGN;
+  
+  int cache = 1;
 
-    int algorithm = SW_ALIGN;
-    
-    int cache = 1;
+  int forceCpu = 0;
 
-    int forceCpu = 0;
+  int threads = 8;
 
-    int threads = 8;
+  while (1) {
+    char argument = getopt_long(argc, argv, "i:j:g:e:hT:", options, NULL);
 
-    while (1) {
+    if (argument == -1)
+        break;
 
-        char argument = getopt_long(argc, argv, "i:j:g:e:hT:", options, NULL);
-
-        if (argument == -1)
-            break;
-
-        switch (argument) {
-            case 'i': queryPath     = optarg;                  break;
-            case 'j': databasePath  = optarg;                  break;
-            case 'g': gapOpen       = atoi(optarg);            break;
-            case 'e': gapExtend     = atoi(optarg);            break;
-            case 'c': getCudaCards(&cards, &cardsLen, optarg); break;
-            case 'o': out           = optarg;                  break;
-            case 't': outFormat     = getOutFormat(optarg);    break;
-            case 'M': maxAlignments = atoi(optarg);            break;
-            case 'E': maxEValue     = atof(optarg);            break;
-            case 'm': matrix        = optarg;                  break;
-            case 'A': algorithm     = getAlgorithm(optarg);    break;
-            case 'C': cache         = 0;                       break;
-            case 'P': forceCpu      = 1;                       break;
-            case 'T': threads       = atoi(optarg);            break;
-            case 'h':
-            default:
-                help();
-                return -1;
-        }
+    switch (argument) {
+      case 'i': queryPath     = optarg;                  break;
+      case 'j': databasePath  = optarg;                  break;
+      case 'g': gapOpen       = atoi(optarg);            break;
+      case 'e': gapExtend     = atoi(optarg);            break;
+      case 'c': getCudaCards(&cards, &cardsLen, optarg); break;
+      case 'o': out           = optarg;                  break;
+      case 't': outFormat     = getOutFormat(optarg);    break;
+      case 'M': maxAlignments = atoi(optarg);            break;
+      case 'E': maxEValue     = atof(optarg);            break;
+      case 'm': matrix        = optarg;                  break;
+      case 'A': algorithm     = getAlgorithm(optarg);    break;
+      case 'C': cache         = 0;                       break;
+      case 'P': forceCpu      = 1;                       break;
+      case 'T': threads       = atoi(optarg);            break;
+      case 'h':
+      default:
+          help();
+          return -1;
     }
-    
-    ASSERT(queryPath != NULL, "missing option -i (query file)");
-    ASSERT(databasePath != NULL, "missing option -j (database file)");
+  }
+  
+  ASSERT(queryPath != NULL, "missing option -i (query file)");
+  ASSERT(databasePath != NULL, "missing option -j (database file)");
 
-    if (forceCpu) {
-        cards = NULL;
-        cardsLen = 0;
+  if (forceCpu) {
+      cards = NULL;
+      cardsLen = 0;
+  } else {
+
+      if (cardsLen == -1) {
+          cudaGetCards(&cards, &cardsLen);
+      }
+
+      ASSERT(cudaCheckCards(cards, cardsLen), "invalid cuda cards");
+  }
+
+  ASSERT(maxEValue > 0, "invalid evalue");
+  
+  ASSERT(threads >= 0, "invalid thread number");
+  threadPoolInitialize(threads);
+
+  Scorer* scorer;
+  scorerCreateMatrix(&scorer, matrix, gapOpen, gapExtend);
+  
+  Chain** queries = NULL;
+  int queriesLen = 0;
+  readFastaChains(&queries, &queriesLen, queryPath);
+  
+  if (cache) {
+      dumpFastaChains(databasePath);
+  }
+
+  int chains;
+  long long cells;
+  statFastaChains(&chains, &cells, databasePath);
+
+  EValueParams* eValueParams = createEValueParams(cells, scorer);
+
+  DbAlignment*** dbAlignments = NULL;
+  int* dbAlignmentsLens       = NULL;
+
+  Chain** database  = NULL; 
+  int databaseLen   = 0;
+  int databaseStart = 0;
+  int databaseEnd   = 0;
+
+  FILE* handle;
+  int serialized;
+
+  readFastaChainsPartInit(&database, &databaseLen, &handle, &serialized, databasePath);
+
+  size_t cudaMemory     = cudaMinimalGlobalMemory(cards, cardsLen);
+  size_t cudaMemoryMax  = cudaMemory - 200000000; // ~200MB breathing space
+  size_t cudaMemoryStep = cudaMemoryMax * 0.075;
+
+  int i, j;
+
+  while (1) {
+    int status = 1;
+    if (cardsLen == 0) {
+      status &= readFastaChainsPart(&database, &databaseLen, handle, serialized, 1000000000); // ~1GB
     } else {
+      while (1) {
+        databaseLen = databaseEnd;
+        status     &= readFastaChainsPart(&database, &databaseLen, handle, serialized, cudaMemoryStep);
 
-        if (cardsLen == -1) {
-            cudaGetCards(&cards, &cardsLen);
-        }
+        size_t cudaMemoryMin = chainDatabaseGpuMemoryConsumption(database + databaseStart, databaseLen - databaseStart);
 
-        ASSERT(cudaCheckCards(cards, cardsLen), "invalid cuda cards");
-    }
+        // evalue
+        cudaMemoryMin += 16 * (databaseLen - databaseStart);
 
-    ASSERT(maxEValue > 0, "invalid evalue");
-    
-    ASSERT(threads >= 0, "invalid thread number");
-    threadPoolInitialize(threads);
+        if (cudaMemoryMin > cudaMemoryMax || 
+            (status == 1 && databaseEnd > databaseStart && cudaMemoryMin > 500000000)
+        ){
+          int holder  = databaseLen;
+          databaseLen = databaseEnd;
+          databaseEnd = holder;
 
-    Scorer* scorer;
-    scorerCreateMatrix(&scorer, matrix, gapOpen, gapExtend);
-    
-    Chain** queries = NULL;
-    int queriesLen = 0;
-    readFastaChains(&queries, &queriesLen, queryPath);
-    
-    if (cache) {
-        dumpFastaChains(databasePath);
-    }
+          if (databaseLen <= databaseStart)
+            ASSERT(0, "cannot read database into CUDA memory");
 
-    int chains;
-    long long cells;
-    statFastaChains(&chains, &cells, databasePath);
-
-    EValueParams* eValueParams = createEValueParams(cells, scorer);
-
-    DbAlignment*** dbAlignments = NULL;
-    int* dbAlignmentsLens       = NULL;
-
-    Chain** database  = NULL; 
-    int databaseLen   = 0;
-    int databaseStart = 0;
-    int databaseEnd   = 0;
-
-    FILE* handle;
-    int serialized;
-
-    readFastaChainsPartInit(&database, &databaseLen, &handle, &serialized, databasePath);
-
-    size_t cudaMemory     = cudaMinimalGlobalMemory(cards, cardsLen);
-    size_t cudaMemoryMax  = cudaMemory - 200000000; // ~200MB breathing space
-    size_t cudaMemoryStep = cudaMemoryMax * 0.075;
-
-    int i, j;
-
-    while (1) {
-
-        int status = 1;
-
-        if (cardsLen == 0) {
-
-            status &= readFastaChainsPart(&database, &databaseLen, handle,
-                serialized, 1000000000); // ~1GB
-
+          status = 1;
+          break;
         } else {
-
-            while (1) {
-
-                databaseLen = databaseEnd;
-
-                status &= readFastaChainsPart(&database, &databaseLen, handle,
-                    serialized, cudaMemoryStep);
-
-                size_t cudaMemoryMin = chainDatabaseGpuMemoryConsumption(
-                    database + databaseStart, databaseLen - databaseStart);
-
-                // evalue
-                cudaMemoryMin += 16 * (databaseLen - databaseStart);
-
-                if (cudaMemoryMin > cudaMemoryMax || 
-                    (status == 1 && databaseEnd > databaseStart && cudaMemoryMin > 500000000)) {
-
-                    int holder = databaseLen;
-                    databaseLen = databaseEnd;
-                    databaseEnd = holder;
-
-                    if (databaseLen <= databaseStart) {
-                        ASSERT(0, "cannot read database into CUDA memory");
-                    }
-
-                    status = 1;
-
-                    break;
-                } else {
-                    databaseEnd = databaseLen;
-                }
-
-                if (status == 0) {
-                    break;
-                }
-            }
+          databaseEnd = databaseLen;
         }
 
-        ChainDatabase* chainDatabase = chainDatabaseCreate(database, 
-            databaseStart, databaseLen - databaseStart, cards, cardsLen);
-
-        DbAlignment*** dbAlignmentsPart = NULL;
-        int* dbAlignmentsPartLens = NULL;
-
-        const clock_t start_t = clock();
-
-        shotgunDatabase(&dbAlignmentsPart, &dbAlignmentsPartLens, algorithm, 
-            queries, queriesLen, chainDatabase, scorer, maxAlignments, valueFunction, 
-            (void*) eValueParams, maxEValue, NULL, 0, cards, cardsLen, NULL);
-
-        if (dbAlignments == NULL) {
-            dbAlignments = dbAlignmentsPart;
-            dbAlignmentsLens = dbAlignmentsPartLens;
-         } else {
-            dbAlignmentsMerge(dbAlignments, dbAlignmentsLens, dbAlignmentsPart, 
-                dbAlignmentsPartLens, queriesLen, maxAlignments);
-            deleteShotgunDatabase(dbAlignmentsPart, dbAlignmentsPartLens, queriesLen);
-        }
-
-        const clock_t end_t = clock();
-
-        printf("STATOUT time: %.10f seconds\n", (double)(end_t - start_t) / CLOCKS_PER_SEC );
-
-        chainDatabaseDelete(chainDatabase);
-
-        if (status == 0) {
-            break;
-        }
-
-        // delete all unused chains
-        char* usedMask = (char*) calloc(databaseLen, sizeof(char));
-
-        for (i = 0; i < queriesLen; ++i)
-        for (j = 0; j < dbAlignmentsLens[i]; ++j) {
-            DbAlignment* dbAlignment = dbAlignments[i][j];
-            int targetIdx = dbAlignmentGetTargetIdx(dbAlignment);
-
-            usedMask[targetIdx] = 1;
-        }
-
-        for (i = 0; i < databaseLen; ++i) {
-            if (!usedMask[i] && database[i] != NULL) {
-                chainDelete(database[i]);
-                database[i] = NULL;
-            }
-        }
-
-        free(usedMask);
-
-        databaseStart = databaseLen;
+        if (status == 0)
+          break;
+      }
     }
 
-    fclose(handle);
+    ChainDatabase* chainDatabase = chainDatabaseCreate(database, 
+      databaseStart, databaseLen - databaseStart, cards, cardsLen);
 
-    outputShotgunDatabase(dbAlignments, dbAlignmentsLens, queriesLen, out, outFormat);
-    deleteShotgunDatabase(dbAlignments, dbAlignmentsLens, queriesLen);
+    DbAlignment*** dbAlignmentsPart     = NULL;
+    int*           dbAlignmentsPartLens = NULL;
 
-    deleteEValueParams(eValueParams);
+    const clock_t start_t = clock();
 
-    deleteFastaChains(queries, queriesLen);
-    deleteFastaChains(database, databaseLen);
+    shotgunDatabase(&dbAlignmentsPart, &dbAlignmentsPartLens, algorithm, 
+        queries, queriesLen, chainDatabase, scorer, maxAlignments, valueFunction, 
+        (void*) eValueParams, maxEValue, NULL, 0, cards, cardsLen, NULL);
 
-    scorerDelete(scorer);
+    if (dbAlignments == NULL) {
+      dbAlignments = dbAlignmentsPart;
+      dbAlignmentsLens = dbAlignmentsPartLens;
+    } else {
+      dbAlignmentsMerge(dbAlignments, dbAlignmentsLens, dbAlignmentsPart, 
+          dbAlignmentsPartLens, queriesLen, maxAlignments);
+      deleteShotgunDatabase(dbAlignmentsPart, dbAlignmentsPartLens, queriesLen);
+    }
 
-    threadPoolTerminate();
-    free(cards);
-    
-    return 0;
+    const clock_t end_t = clock();
+
+    printf("STATOUT time: %.10f seconds\n", (double)(end_t - start_t) / CLOCKS_PER_SEC );
+
+    chainDatabaseDelete(chainDatabase);
+
+    if (status == 0) {
+      break;
+    }
+
+    // delete all unused chains
+    char* usedMask = (char*) calloc(databaseLen, sizeof(char));
+
+    for (i = 0; i < queriesLen; ++i)
+    for (j = 0; j < dbAlignmentsLens[i]; ++j) {
+      DbAlignment* dbAlignment = dbAlignments[i][j];
+      int targetIdx = dbAlignmentGetTargetIdx(dbAlignment);
+
+      usedMask[targetIdx] = 1;
+    }
+
+    for (i = 0; i < databaseLen; ++i) {
+      if (!usedMask[i] && database[i] != NULL) {
+        chainDelete(database[i]);
+        database[i] = NULL;
+      }
+    }
+
+    free(usedMask);
+
+    databaseStart = databaseLen;
+  }
+
+  fclose(handle);
+
+  outputShotgunDatabase(dbAlignments, dbAlignmentsLens, queriesLen, out, outFormat);
+  deleteShotgunDatabase(dbAlignments, dbAlignmentsLens, queriesLen);
+
+  deleteEValueParams(eValueParams);
+
+  deleteFastaChains(queries, queriesLen);
+  deleteFastaChains(database, databaseLen);
+
+  scorerDelete(scorer);
+
+  threadPoolTerminate();
+  free(cards);
+  
+  return 0;
 }
 
 static void getCudaCards(int** cards, int* cardsLen, char* optarg) {
-
-    *cardsLen = strlen(optarg);
-    *cards = (int*) malloc(*cardsLen * sizeof(int));
-    
-    int i;
-    for (i = 0; i < *cardsLen; ++i) {
-        (*cards)[i] = optarg[i] - '0';
-    }
+  *cardsLen = strlen(optarg);
+  *cards    = (int*) malloc(*cardsLen * sizeof(int));
+  
+  for (int i = 0; i < *cardsLen; ++i) 
+    (*cards)[i] = optarg[i] - '0';
 }
 
 static int getOutFormat(char* optarg) {
+  for (int i = 0; i < CHAR_INT_LEN(outFormats); ++i) {
+    if (strcmp(outFormats[i].format, optarg) == 0)
+      return outFormats[i].code;
+  }
 
-    int i;
-    for (i = 0; i < CHAR_INT_LEN(outFormats); ++i) {
-        if (strcmp(outFormats[i].format, optarg) == 0) {
-            return outFormats[i].code;
-        }
-    }
-
-    ASSERT(0, "unknown out format %s", optarg);
+  ASSERT(0, "unknown out format %s", optarg);
 }
 
 static int getAlgorithm(char* optarg) {
+  for (int i = 0; i < CHAR_INT_LEN(algorithms); ++i) {
+    if (strcmp(algorithms[i].format, optarg) == 0)
+      return algorithms[i].code;
+  }
 
-    int i;
-    for (i = 0; i < CHAR_INT_LEN(algorithms); ++i) {
-        if (strcmp(algorithms[i].format, optarg) == 0) {
-            return algorithms[i].code;
-        }
-    }
-
-    ASSERT(0, "unknown algorithm %s", optarg);
+  ASSERT(0, "unknown algorithm %s", optarg);
 }
 
 static void valueFunction(double* values, int* scores, Chain* query, 
-    Chain** database, int databaseLen, int* cards, int cardsLen, void* param_ ) {
-    
-    EValueParams* eValueParams = (EValueParams*) param_;
-    eValues(values, scores, query, database, databaseLen, cards, cardsLen, eValueParams);
+  Chain** database, int databaseLen, int* cards, int cardsLen, void* param_ ) {
+  
+  EValueParams* eValueParams = (EValueParams*) param_;
+  eValues(values, scores, query, database, databaseLen, cards, cardsLen, eValueParams);
 }
 
 static void help() {
