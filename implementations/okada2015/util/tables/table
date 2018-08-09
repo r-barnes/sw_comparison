@@ -2,6 +2,7 @@
 import sys
 
 if len(sys.argv) != 2:
+    print "Generates the C/C++ source code for a scoring table."
     print "usage: " + sys.argv[0] + " <ncbi matrix file>"
     sys.exit(-1)
  
