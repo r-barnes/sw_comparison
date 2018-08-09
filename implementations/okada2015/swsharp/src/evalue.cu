@@ -196,22 +196,22 @@ extern EValueParams* createEValueParams(long long length, Scorer* scorer) {
 
     EValueParams* params = (EValueParams*) malloc(sizeof(struct EValueParams));
     
-    params->G = G;
-    params->aUn = aUn;
+    params->G       = G;
+    params->aUn     = aUn;
     params->alphaUn = alphaUn;
-    params->lambda = scorerConstants[index].lambda;
-    params->K = scorerConstants[index].K;
-    params->logK = log(params->K);
-    params->H = scorerConstants[index].H;
-    params->a = scorerConstants[index].a;
-    params->C = scorerConstants[index].C;
-    params->alpha = scorerConstants[index].alpha;
-    params->sigma = scorerConstants[index].sigma;
-    params->b = 2.0 * G * (params->aUn - params->a);
-    params->beta = 2.0 * G * (params->alphaUn - params->alpha);
-    params->tau = 2.0 * G * (params->alphaUn - params->sigma);
-    params->length = length;
-    params->isDna = scorerConstants[index].isDna;
+    params->lambda  = scorerConstants[index].lambda;
+    params->K       = scorerConstants[index].K;
+    params->logK    = log(params->K);
+    params->H       = scorerConstants[index].H;
+    params->a       = scorerConstants[index].a;
+    params->C       = scorerConstants[index].C;
+    params->alpha   = scorerConstants[index].alpha;
+    params->sigma   = scorerConstants[index].sigma;
+    params->b       = 2.0 * G * (params->aUn - params->a);
+    params->beta    = 2.0 * G * (params->alphaUn - params->alpha);
+    params->tau     = 2.0 * G * (params->alphaUn - params->sigma);
+    params->length  = length;
+    params->isDna   = scorerConstants[index].isDna;
 
     printf("Using: lambda = %.3lf, K = %.3lf, H = %.3lf\n",
         params->lambda, params->K, params->H);
