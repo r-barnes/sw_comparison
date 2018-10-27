@@ -8,15 +8,15 @@ class Code(object):
     templates located in Core/cuda
     '''
     def __init__(self, logger):
-        self.logger = logger
-        self.shared_xy_code = ''
-        self.directions = ''
-        self.score_part = ''
-        self.variable_part = ''
-        self.variable_source = ''
+        self.logger           = logger
+        self.shared_xy_code   = ''
+        self.directions       = ''
+        self.score_part       = ''
+        self.variable_part    = ''
+        self.variable_source  = ''
         self.direction_source = ''
-        self.score_source = ''
-        self.main_source = ''
+        self.score_source     = ''
+        self.main_source      = ''
     
     def read_source(self, filename):
         '''Read source code from the specified file and prefix it
@@ -98,10 +98,10 @@ class Cudacode(Code):
     '''
     def __init__(self, logger):
         Code.__init__(self, logger)
-        self.variable_source = resource_filename(__name__, 'cuda/default_variable.cu')
+        self.variable_source  = resource_filename(__name__, 'cuda/default_variable.cu')
         self.direction_source = resource_filename(__name__, 'cuda/default_direction.cu')
-        self.score_source = resource_filename(__name__, 'cuda/default_score.cu')
-        self.main_source = resource_filename(__name__, 'cuda/default_main.cu')
+        self.score_source     = resource_filename(__name__, 'cuda/default_score.cu')
+        self.main_source      = resource_filename(__name__, 'cuda/default_main.cu')
 
 class OCLcode(Code):
     '''
@@ -111,7 +111,7 @@ class OCLcode(Code):
     def __init__(self, logger):
         Code.__init__(self, logger)
         self.direction_source = resource_filename(__name__, 'ocl/default_direction.cl')
-        self.score_source = resource_filename(__name__, 'ocl/default_score.cl')
+        self.score_source     = resource_filename(__name__, 'ocl/default_score.cl')
         
 class GPUcode(OCLcode):
     '''
@@ -120,7 +120,7 @@ class GPUcode(OCLcode):
     '''
     def __init__(self, logger):
         OCLcode.__init__(self, logger)
-        self.main_source = resource_filename(__name__, 'ocl/default_main_gpu.cl')
+        self.main_source     = resource_filename(__name__, 'ocl/default_main_gpu.cl')
         self.variable_source = resource_filename(__name__, 'ocl/default_variable_gpu.cl')
         
 class CPUcode(OCLcode):
@@ -130,7 +130,7 @@ class CPUcode(OCLcode):
     '''
     def __init__(self, logger):
         OCLcode.__init__(self, logger)
-        self.main_source = resource_filename(__name__, 'ocl/default_main_cpu.cl')
+        self.main_source     = resource_filename(__name__, 'ocl/default_main_cpu.cl')
         self.variable_source = resource_filename(__name__, 'ocl/default_variable_cpu.cl')
         
     def set_shared_xy_code(self, sharedx=8, sharedy=8, workloadx=4, workloady=4):

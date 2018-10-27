@@ -191,7 +191,7 @@ class SmithWatermanCuda(SmithWaterman):
     def _execute_calculate_score_kernel(self, number_of_blocks, idx, idy):
         ''' Executes a single run of the calculate score kernel'''
         dim_grid_sw = (self.number_of_sequences, self.number_targets * number_of_blocks)
-        dim_block = (self.shared_x, self.shared_y, 1)
+        dim_block   = (self.shared_x, self.shared_y, 1)
 
         try:
             if self.gap_extension:
