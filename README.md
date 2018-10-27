@@ -418,7 +418,11 @@ Have to use the protein alignment thing to get a M:M, otherwise it is single
 ### Warris2018
 
     pip3 install pycuda --user
-    pip3 install BioPython --user
+    pip3 install BioPython=1.71 --user
+    pip3 install numpy=1.14.3
+    pip3 install pyopencl= --user
+    #Anaconda Python 3.5.5
+    #Cuda 9.0.69
 
     Build process seems to require Spack. Might be easier to use Docker. That is, this is likely to be forever a troublesome dependency.
 
