@@ -13,31 +13,86 @@ export queryfile=ant-500.fasta
 export databasefile=ant-500.fasta
 export device=0
 
+export queryfile=data/seq-20-200.fasta
+export databasefile=data/seq-20-200.fasta
+export device=0
+
+
+#BUGS FOR SOME INPUT SIZES
 module load cudatoolkit/9.1.85_3.10-1.0502.df1cc54.3.1
 module unload pgi
 module load gcc/6.3.0
+export queryfile=data/gen-100-1000.fasta
+export databasefile=data/gen-10-20000.fasta
 aprun ./implementations/liu2013/cudasw -query $queryfile -db $databasefile -use_single $device
 
-./implementations/liu2010/cudasw -query queryfile -db databasefile -use_single device
 
-module load cudatoolkit/9.1.85_3.10-1.0502.df1cc54.3.1
-module unload pgi
-module load gcc/6.3.0
-aprun ./implementations/okada2015/bin/swsharpdb -i $queryfile -j $databasefile --nocache --outfmt none --cards $device
 
-./implementations/pankaj2012/bin/swift -q queryfile -r databasefile -n -1 -s -1 -o zout
-
-./implementations/klus2012/bin/barracuda index databasefile
-./implementations/klus2012/bin/barracuda aln databasefile queryfile
-
-module load cudatoolkit/9.1.85_3.10-1.0502.df1cc54.3.1
-module unload pgi
-module load gcc/6.3.0
-python3 ./implementations/warris2018/pypaswas.py -o zout --loglevel=info --outputformat=TXT -p aligner --filetype1=fasta --filetype2=fasta -O OVERRIDE_OUTPUT -M DNA-RNA --device=$device --recompile=T --short_sequences=F --framework=CUDA $queryfile $databasefile
-
-aprun ./implementations/bundled_software/nvbio/build/sw-benchmark/sw-benchmark $queryfile $databasefile
-aprun ./implementations/bundled_software/nvbio/debug/sw-benchmark/sw-benchmark $queryfile $databasefile
 
 
 aprun cuda-gdb ./implementations/liu2013/cudasw 
 run -query ant-500.fasta -db ant-500.fasta -use_single 0
+
+
+
+./implementations/liu2010/cudasw -query queryfile -db databasefile -use_single device
+
+
+
+#WORKS!
+module load cudatoolkit/9.1.85_3.10-1.0502.df1cc54.3.1
+module unload pgi
+module load gcc/6.3.0
+export queryfile=uni-4000.fasta
+export databasefile=uni-4000.fasta
+export device=0
+
+export device=0
+#export queryfile=data/gen-10-1000.fasta
+export queryfile=data/gen-100-1000.fasta
+#export databasefile=data/gen-10-10000.fasta
+export databasefile=data/gen-10-20000.fasta
+aprun ./implementations/okada2015/bin/swsharpdb -i $queryfile -j $databasefile --nocache --outfmt none --cards $device
+
+
+
+
+
+export queryfile=data/gen-100-1000.fasta
+export databasefile=data/gen-10-20000.fasta
+#Requires query sequence size and such
+aprun ./implementations/pankaj2012/bin/swift -q $queryfile -r $databasefile -n -1 -s -1 -o zout
+
+
+
+#Truncates longer reads
+export queryfile=data/gen-100-1000.fasta
+export databasefile=data/gen-10-20000.fasta
+aprun ./implementations/klus2012/linux/release/barracuda index $databasefile
+aprun ./implementations/klus2012/linux/release/barracuda aln $databasefile $queryfile
+
+
+
+
+module load cudatoolkit/9.1.85_3.10-1.0502.df1cc54.3.1
+module unload pgi
+module load gcc/6.3.0
+
+
+export queryfile=data/ant-500.fasta
+export databasefile=data/ant-500.fasta
+export device=0
+module load cuda #SummitDev
+
+python3 ./implementations/warris2018/pypaswas.py -o zout --loglevel=DEBUG --outputformat=TXT -p aligner --filetype1=fasta --filetype2=fasta -O OVERRIDE_OUTPUT -M DNA-RNA --device=$device --recompile=T --short_sequences=F --framework=CUDA $queryfile $databasefile
+
+
+
+#WORKS!
+export queryfile=data/gen-100-1000.fastq
+export databasefile=data/gen-10-20000.fastq
+export device=0
+aprun ./implementations/bundled_software/nvbio/build/sw-benchmark/sw-benchmark $queryfile $databasefile
+
+
+srun --partition=gpu-shared --pty --nodes=1 --gres=gpu:p100:1 --ntasks-per-node=24 -t 00:05:00 --wait=0 --export=ALL /bin/bash
