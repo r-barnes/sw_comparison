@@ -129,9 +129,15 @@ Summary of Algorithmic Tricks/Improvements
    * Hains2011
    * Rognes2011:        Variant-sequential
    * Venkatachalam2012: Query profile reduces random access to substitution matrix with sequential profile access
+   * Ling2009
+   * Striemer2009
  * Data layouts:
    * Munekawa2008: Notes that local memory cannot be used in a coalesced manner, but that it is the fallback if there are too few registers available, so it is better to explicitly use GM than to implicitly allow LM to be used.
    * Munekawa2008: Sort sequences by length
+   * Liu2009:      Sort sequences by length
+   * Liu2009:      Achieves coalesced memory access by arranging subject sequences so their elements are vertical in a matrix and the subjects are ordered from left to right in order of length
+   * Liu2009:      Coalesced global memory access
+   * Liu2009:      Divides matrix into cell blocks which reduces load/store counts. Not too well explained
    * Munekawa2008: Stores (k-1) antidiagonal in shared memory (multiple threads access it) and (k-2) and current antidiagonal in registers (only accessed by a single thread)
    * Munekawa2008: Stores query sequence in constant memory, since all threads refer to it
    * Munekawa2008: Stores database seqeuences in texture memory, possibly only because they take a lot of memory. Not a clear rationale.
@@ -142,12 +148,15 @@ Summary of Algorithmic Tricks/Improvements
    * Liu2013:      Sorting the database and queries by length
    * Huang2015:    Interleaving sequences in memory for coalesced access
    * Ligowski2009: Storing scores and backtracking data both in 4-byte integers
+   * Khajeh2010:   Reformulates the antidiagonal as a row, allowing for coalesced memory access. Gaps are implemented using a parallel prefix scan.
+   * Ling2009:     Improves over Munekawa and Manavski by separting computation of alignment matrix into multiple parts if number of threads and size of local memory are not sufficient, allocating resources to each submatrix in turn
  * Input-size dependent choice of algorithms:
    * Hains2011:  Switching between interthread and intrathread parallelism as sequence size changes
    * Dicker2014: Parallel prefix versus diagonal wavefront
    * Luo2013:    If all sequences are within 1% of each other's lengths, sequences are allocated statically. Otherwise an atomic increment is used to reallocate sequences to processors as processing completes.
+   * Liu2009:    Switches between interthread and intrathread parallelism
  * Speculation:
-   * TODO:         Speculative calculation of H scores before F dependencies available (CUDASW++2.0)
+   * Liu2010:      Speculative calculation of H scores before F dependencies available (CUDASW++2.0)
    * Farrar2007:   For most cells in alignment matrix, F remains at zero and does not contribute to H. Only when H is greater than Ginit+Gext will F start to influence the value of H. So F is not considered initially. If required, a second step tries to correct the introduced errors. Manavski2008 claim their solution, which doesn't use this optimization, runs faster than Farrar2007.
    * Ligowski2009: Only store score information and only as a single byte. Reprocess those sequences which were sufficiently high-scoring using a full algorithm.
  * Storage reduction:
@@ -171,6 +180,7 @@ Summary of Algorithmic Tricks/Improvements
    * Liu2013
    * Luo2013
    * Warris2018
+   * Marcos2014
  * Use of local memory:
    * Luo2013: 512kB per-thread local memory is used to store one row for matrices H and E.
  * Multi-GPU:
@@ -183,6 +193,14 @@ Summary of Algorithmic Tricks/Improvements
    * Using the modulus operator is extremely inefficient on CUDA
  * Recompile GPU code on the fly:
    * Warris2018
+ * Use of BWT:
+   * Klus2012: 
+ * IGNORED
+   * Liu2006:    Because it is in OpenGL so the techniques are no longer really relevant
+   * Pankaj2012: Only have a power point.
+   * Sandes2014: Such long sequences
+ * Misc:
+   * Sandes2013: Myers-Miller used to find midpoint of LCS
 
  * Parallel (prefix?) scan
  * Tiling
