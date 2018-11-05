@@ -80,8 +80,10 @@ In: Ibrahim S., Choo KK., Yan Z., Pedrycz W. (eds) Algorithms and Architectures 
 DOI: https://doi.org/10.1007/978-3-319-65482-9_42
 
 ## Changelog
+* November 05, 2018 (v2.1.0)
+Source code released. 
 * November 30, 2017 (v2.0.0-BETA)
-Binary code released. *Source code will be released soon*
+Binary code released. 
 
 ## Contact
 If you have any question or suggestion, please contact Enzo Rucci (erucci [at] lidi.info.unlp.edu.ar)
