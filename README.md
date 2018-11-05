@@ -71,7 +71,8 @@ SWIMM2.0 execution
 ## Reference
 *SWIMM 2.0: enhanced Smith-Waterman on Intel's Multicore and Manycore architectures based on AVX-512 vector extensions*
 Enzo Rucci, Carlos García, Guillermo Botella, Armando De Giusti, Marcelo Naiouf and Manuel Prieto-Matías.
-*Under evaluation*
+International Journal of Parallel Programming, Springer US, 2018.
+DOI: https://doi.org/10.1007/s10766-018-0585-7
 
 *First Experiences Accelerating Smith-Waterman on Intel’s Knights Landing Processor.*
 Enzo Rucci, Carlos Garcia, Guillermo Botella, Armando De Giusti, Marcelo Naiouf and Manuel Prieto-Matias
