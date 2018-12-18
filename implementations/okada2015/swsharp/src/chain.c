@@ -66,8 +66,10 @@ static void createReverse(Chain* chain);
 
 extern Chain* chainCreate(char* name, int nameLen, const char* string, int stringLen) {
 
-    ASSERT(name != NULL && nameLen > 0 && string != NULL && stringLen > 0, 
-        "Invalid chain data: name was either NULL or name was of length 0 or chain was NULL or was of length 0");
+    ASSERT(name      != NULL, "chainCreate: A name must be specified!");
+    ASSERT(nameLen   >0,      "chainCreate: A name must be longer than 0!");
+    ASSERT(string    != NULL, "chainCreate: Chain data must be specified!");
+    ASSERT(stringLen != NULL, "chainCreate: Chain data must be longer than 0!");
 
     Chain* chain = (Chain*) malloc(sizeof(struct Chain));
 
