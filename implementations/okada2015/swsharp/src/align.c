@@ -58,7 +58,7 @@ typedef struct ContextBest {
     Chain** queries;
     int queriesLen;
     Chain* target;
-    Score* scorer;
+    Scorer* scorer;
     int* cards;
     int cardsLen;
 } ContextBest;
@@ -267,14 +267,14 @@ extern void alignBest(Alignment** alignment, int type, Chain** queries,
     
     ContextBest* param = (ContextBest*) malloc(sizeof(ContextBest));
 
-    param->alignment = alignment;
-    param->type = type;
-    param->queries = queries;
+    param->alignment  = alignment;
+    param->type       = type;
+    param->queries    = queries;
     param->queriesLen = queriesLen;
-    param->target = target;
-    param->scorer = scorer;
-    param->cards = cards;
-    param->cardsLen = cardsLen;
+    param->target     = target;
+    param->scorer     = scorer;
+    param->cards      = cards;
+    param->cardsLen   = cardsLen;
     
     if (thread == NULL) {
         alignBestThread(param);
