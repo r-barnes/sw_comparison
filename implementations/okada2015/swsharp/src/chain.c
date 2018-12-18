@@ -69,7 +69,7 @@ extern Chain* chainCreate(char* name, int nameLen, const char* string, int strin
     ASSERT(name      != NULL, "chainCreate: A name must be specified!");
     ASSERT(nameLen   >0,      "chainCreate: A name must be longer than 0!");
     ASSERT(string    != NULL, "chainCreate: Chain data must be specified!");
-    ASSERT(stringLen != NULL, "chainCreate: Chain data must be longer than 0!");
+    ASSERT(stringLen >0,      "chainCreate: Chain data must be longer than 0!");
 
     Chain* chain = (Chain*) malloc(sizeof(struct Chain));
 
