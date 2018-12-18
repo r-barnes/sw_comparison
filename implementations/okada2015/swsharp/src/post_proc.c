@@ -410,8 +410,8 @@ static void aligmentStr(char** queryStr, char** targetStr,
 
 static void printFastaName(const char* name, FILE* file) {
 
-    char* pp = (char*) name;
-    char* p = strchr(name, ' ');
+    const char* pp = (char*) name;
+    const char* p = strchr(name, ' ');
     int len = 0;
     
     while (p != NULL) {
@@ -507,24 +507,24 @@ static void outputPair(Alignment* alignment, FILE* file) {
     
     aligmentStr(&queryStr, &targetStr, alignment, gapItem);
 
-    const char* queryName = chainGetName(query);
-    char* querySpace = strchr(queryName, ' ');
+    const char* queryName  = chainGetName(query);
+    const char* querySpace = strchr(queryName, ' ');
     const int queryNameLen = MIN(9, querySpace ? querySpace - queryName: 9);
 
-    const char* targetName = chainGetName(target);
-    char* targetSpace = strchr(targetName, ' ');
+    const char* targetName  = chainGetName(target);
+    const char* targetSpace = strchr(targetName, ' ');
     const int targetNameLen = MIN(9, targetSpace ? targetSpace - targetName: 9);
 
-    int queryStart = alignmentGetQueryStart(alignment);
+    int queryStart  = alignmentGetQueryStart(alignment);
     int targetStart = alignmentGetTargetStart(alignment);
-    int queryEnd = queryStart;
-    int targetEnd = targetStart;
+    int queryEnd    = queryStart;
+    int targetEnd   = targetStart;
         
-    char queryLine[50];
+    char queryLine [50];
     char targetLine[50];
     char markupLine[50];
     
-    memset(queryLine, 32, 50);
+    memset(queryLine,  32, 50);
     memset(targetLine, 32, 50);
     memset(markupLine, 32, 50);
     
@@ -535,7 +535,7 @@ static void outputPair(Alignment* alignment, FILE* file) {
     int i;
     for (i = 0; i < pathLen; ++i) {
     
-        queryLine[i % 50] = queryStr[i];
+        queryLine [i % 50] = queryStr[i];
         targetLine[i % 50] = targetStr[i];
         
         if (queryStr[i] == targetStr[i]) {
@@ -565,7 +565,7 @@ static void outputPair(Alignment* alignment, FILE* file) {
             queryStart = queryEnd + (queryStr[i] != gapItem);
             targetStart = targetEnd + (targetStr[i] != gapItem);
             
-            memset(queryLine, 32, 50 * sizeof(char));
+            memset(queryLine,  32, 50 * sizeof(char));
             memset(markupLine, 32, 50 * sizeof(char));
             memset(targetLine, 32, 50 * sizeof(char));
         }

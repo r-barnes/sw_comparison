@@ -64,7 +64,7 @@ static void createReverse(Chain* chain);
 //------------------------------------------------------------------------------
 // CONSTRUCTOR, DESTRUCTOR
 
-extern Chain* chainCreate(char* name, int nameLen, char* string, int stringLen) {
+extern Chain* chainCreate(char* name, int nameLen, const char* string, int stringLen) {
 
     ASSERT(name != NULL && nameLen > 0 && string != NULL && stringLen > 0, 
         "invalid chain data");
