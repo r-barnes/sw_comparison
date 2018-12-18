@@ -67,7 +67,7 @@ static void createReverse(Chain* chain);
 extern Chain* chainCreate(char* name, int nameLen, const char* string, int stringLen) {
 
     ASSERT(name != NULL && nameLen > 0 && string != NULL && stringLen > 0, 
-        "invalid chain data");
+        "Invalid chain data: name was either NULL or name was of length 0 or chain was NULL or was of length 0");
 
     Chain* chain = (Chain*) malloc(sizeof(struct Chain));
 
