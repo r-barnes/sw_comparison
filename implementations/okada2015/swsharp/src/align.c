@@ -58,7 +58,7 @@ typedef struct ContextBest {
     Chain** queries;
     int queriesLen;
     Chain* target;
-    Scorer *const scorer;
+    Score* scorer;
     int* cards;
     int cardsLen;
 } ContextBest;
@@ -68,7 +68,7 @@ typedef struct ContextPair {
     int type;
     Chain* query;
     Chain* target;
-    Scorer *const scorer;
+    Scorer* scorer;
     int score;
     int* cards;
     int cardsLen;
@@ -80,7 +80,7 @@ typedef struct ContextScore {
     int type;
     Chain* query;
     Chain* target;
-    Scorer *const scorer;
+    Scorer* scorer;
     int* cards;
     int cardsLen;
 } ContextScore;
@@ -128,7 +128,7 @@ typedef struct OvFindScoreSpecificContext {
     int* targetStart;
     Chain* query;
     Chain* target;
-    Scorer *const scorer;
+    Scorer* scorer;
     int score;
 } OvFindScoreSpecificContext;
 
@@ -138,7 +138,7 @@ typedef struct NwFindScoreSpecificContext {
     Chain* query;
     int queryFrontGap;
     Chain* target;
-    Scorer *const scorer;
+    Scorer* scorer;
     int score;
 } NwFindScoreSpecificContext;
 
@@ -239,13 +239,13 @@ extern void alignScoredPair(Alignment** alignment, int type, Chain* query,
     ContextPair* param = (ContextPair*) malloc(sizeof(ContextPair));
 
     param->alignment = alignment;
-    param->type = type;
-    param->query = query;
-    param->target = target;
-    param->scorer = scorer;
-    param->score = score;
-    param->cards = cards;
-    param->cardsLen = cardsLen;
+    param->type      = type;
+    param->query     = query;
+    param->target    = target;
+    param->scorer    = scorer;
+    param->score     = score;
+    param->cards     = cards;
+    param->cardsLen  = cardsLen;
 
     if (thread == NULL) {
         alignPairThread(param);
@@ -778,13 +778,13 @@ static void nwFindScoreSpecific(int* queryStart, int* targetStart, Chain* query,
             NwFindScoreSpecificContext* context = 
                 (NwFindScoreSpecificContext*) malloc(sizeof(NwFindScoreSpecificContext));
 
-            context->queryStart = queryStart;
-            context->targetStart = targetStart;
-            context->query = query;
+            context->queryStart    = queryStart;
+            context->targetStart   = targetStart;
+            context->query         = query;
             context->queryFrontGap = queryFrontGap;
-            context->target = target;
-            context->scorer = scorer;
-            context->score = score;
+            context->target        = target;
+            context->scorer        = scorer;
+            context->score         = score;
 
             threadCreate(thread, nwFindScoreSpecificThread, (void*) context);
         }
