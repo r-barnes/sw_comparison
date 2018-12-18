@@ -1,5 +1,5 @@
-#include "swsharp/swsharp.h"
-#include "ssw/ssw.h"
+#include <swsharp/swsharp.h>
+#include <ssw.h>
 #include <cstdlib>
 #include <string>
 #include <vector>
