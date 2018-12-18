@@ -93,7 +93,6 @@ class Okada2015 {
 
   //TODO: has a mulitple-align option called `alignBest()`
   void align(const std::string &query, const std::string &target){
-    //extern Chain* chainCreate(char* name, int nameLen, char* string, int stringLen);
     Chain *const queryc  = chainCreate(NULL, 0,  query.data(),  query.size());
     Chain *const targetc = chainCreate(NULL, 0, target.data(), target.size());
     
@@ -154,5 +153,4 @@ int main(int argc, char **argv){
   MakeComparison(100,  1000);
   MakeComparison(10,  10000); 
   MakeComparison(10,  20000); 
-
 }
