@@ -56,7 +56,7 @@ ignored. All characters in the sequence are changed to uppercase.
 
 @return chain object 
 */
-extern Chain* chainCreate(char* name, int nameLen, const char* string, int stringLen);
+extern Chain* chainCreate(const char* name, int nameLen, const char* string, int stringLen);
 
 /*!
 @brief Chain destructor.

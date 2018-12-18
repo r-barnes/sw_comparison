@@ -64,7 +64,7 @@ static void createReverse(Chain* chain);
 //------------------------------------------------------------------------------
 // CONSTRUCTOR, DESTRUCTOR
 
-extern Chain* chainCreate(char* name, int nameLen, const char* string, int stringLen) {
+extern Chain* chainCreate(const char* name, int nameLen, const char* string, int stringLen) {
 
     ASSERT(name      != NULL, "chainCreate: A name must be specified!");
     ASSERT(nameLen   >0,      "chainCreate: A name must be longer than 0!");
