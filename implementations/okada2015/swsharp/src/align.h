@@ -53,7 +53,7 @@ If needed function utilzes provided CUDA cards.
     executed on the current thread
 */
 extern void alignPair(Alignment** alignment, int type, Chain* query, 
-    Chain* target, Scorer* scorer, int* cards, int cardsLen, Thread* thread);
+    Chain* target, Scorer *const scorer, int* cards, int cardsLen, Thread* thread);
 
 /*!
 @brief Pairwise alignment function.
@@ -75,7 +75,7 @@ function. If needed function utilzes provided CUDA cards.
     executed on the current thread
 */
 extern void alignScoredPair(Alignment** alignment, int type, Chain* query, 
-    Chain* target, Scorer* scorer, int score, int* cards, int cardsLen, 
+    Chain* target, Scorer *const scorer, int score, int* cards, int cardsLen, 
     Thread* thread);
 
 /*!
@@ -97,7 +97,7 @@ If needed function utilzes provided CUDA cards.
     executed on the current thread
 */
 extern void alignBest(Alignment** alignment, int type, Chain** queries, 
-    int queriesLen, Chain* target, Scorer* scorer, int* cards, int cardsLen, 
+    int queriesLen, Chain* target, Scorer *const scorer, int* cards, int cardsLen, 
     Thread* thread);
     
 /*!
@@ -117,7 +117,7 @@ If needed function utilzes provided CUDA cards.
     executed on the current thread
 */
 extern void scorePair(int* score, int type, Chain* query, Chain* target, 
-    Scorer* scorer, int* cards, int cardsLen, Thread* thread);
+    Scorer *const scorer, int* cards, int cardsLen, Thread* thread);
 
 #ifdef __cplusplus 
 }
