@@ -93,8 +93,11 @@ class Okada2015 {
 
   //TODO: has a mulitple-align option called `alignBest()`
   void align(const std::string &query, const std::string &target){
-    Chain *const queryc  = chainCreate(NULL, 0,  query.data(),  query.size());
-    Chain *const targetc = chainCreate(NULL, 0, target.data(), target.size());
+    const std::string query_name  = "query";
+    const std::string target_name = "target";
+
+    Chain *const queryc  = chainCreate(query_name.data(),  query_name.size(),  query.data(),  query.size() );
+    Chain *const targetc = chainCreate(target_name.data(), target_name.size(), target.data(), target.size());
     
     // do the pairwise alignment, use Smith-Waterman algorithm
     Alignment* alignment;
