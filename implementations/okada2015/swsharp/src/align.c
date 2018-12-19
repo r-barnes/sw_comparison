@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 Contact the author by mkorpar@gmail.com.
 */
 
+#include <assert.h>
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -228,6 +229,9 @@ static void swReconstructPairGpuDual(Alignment** alignment, AlignData* data,
 
 extern void alignPair(Alignment** alignment, int type, Chain* query, 
     Chain* target, Scorer *const scorer, int* cards, int cardsLen, Thread* thread) {
+
+    assert(scorer!=NULL);
+
     alignScoredPair(alignment, type, query, target, scorer, NO_SCORE, cards, 
         cardsLen, thread);
 }
@@ -246,6 +250,8 @@ extern void alignScoredPair(Alignment** alignment, int type, Chain* query,
     param->score     = score;
     param->cards     = cards;
     param->cardsLen  = cardsLen;
+
+    assert(scorer!=NULL);
 
     if (thread == NULL) {
         alignPairThread(param);
@@ -338,6 +344,9 @@ static void* alignPairThread(void* param) {
     } else {
     
         AlignData* data;
+
+        assert(scorer!=NULL);
+
         scorePairGpu(&data, type, query, target, scorer, score, cards, cardsLen);
 
         reconstructPairGpu(alignment, data, type, query, target, scorer, 
@@ -553,6 +562,8 @@ static int scorePairGpu(AlignData** data, int type, Chain* query, Chain* target,
     default:
         ERROR("invalid align type");
     }
+
+    assert(scorer!=NULL);
     
     return function(data, query, target, scorer, score, cards, cardsLen);
 }

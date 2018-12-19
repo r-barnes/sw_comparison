@@ -145,13 +145,13 @@ __global__ static void kernelDna(double* values, int2* data);
 //******************************************************************************
 // PUBLIC
 
-extern EValueParams* createEValueParams(long long length, Scorer* scorer) {
+extern EValueParams* createEValueParams(const long long length, Scorer *const scorer) {
 
     const char* matrix = scorerGetName(scorer);
-    int gapOpen = scorerGetGapOpen(scorer);
-    int gapExtend = scorerGetGapExtend(scorer);
+    int gapOpen        = scorerGetGapOpen(scorer);
+    int gapExtend      = scorerGetGapExtend(scorer);
     
-    int index = -1;
+    int index   = -1;
     int indexUn = -1;
 
     for (int i = 0; i < (int) SCORER_CONSTANTS_LEN; ++i) {
@@ -191,8 +191,8 @@ extern EValueParams* createEValueParams(long long length, Scorer* scorer) {
     }
 
     double alphaUn = scorerConstants[indexUn].alpha;
-    double aUn = scorerConstants[indexUn].a;
-    double G = gapOpen + gapExtend;
+    double aUn     = scorerConstants[indexUn].a;
+    double G       = gapOpen + gapExtend;
 
     EValueParams* params = (EValueParams*) malloc(sizeof(struct EValueParams));
     
@@ -298,28 +298,28 @@ static void eValuesGpu(double* values, int* scores, Chain* query,
     int queryLen = chainGetLength(query);
     double length = params->length;
 
-    CUDA_SAFE_CALL(cudaMemcpyToSymbol(length_, &databaseLen, sizeof(int)));
-    CUDA_SAFE_CALL(cudaMemcpyToSymbol(queryLen_, &queryLen, sizeof(int)));
+    CUDA_SAFE_CALL(cudaMemcpyToSymbol(length_,   &databaseLen, sizeof(int)));
+    CUDA_SAFE_CALL(cudaMemcpyToSymbol(queryLen_, &queryLen,    sizeof(int)));
 
     if (params->isDna) {
 
-        CUDA_SAFE_CALL(cudaMemcpyToSymbol(paramsLength_, &length, sizeof(double)));
+        CUDA_SAFE_CALL(cudaMemcpyToSymbol(paramsLength_, &length,           sizeof(double)));
         CUDA_SAFE_CALL(cudaMemcpyToSymbol(paramsLambda_, &(params->lambda), sizeof(double)));
-        CUDA_SAFE_CALL(cudaMemcpyToSymbol(paramsLogK_, &(params->logK), sizeof(double)));
+        CUDA_SAFE_CALL(cudaMemcpyToSymbol(paramsLogK_,   &(params->logK),   sizeof(double)));
 
         kernelDna<<<120, 128>>>(valuesGpu, dataGpu);
 
     } else {
 
-        CUDA_SAFE_CALL(cudaMemcpyToSymbol(paramsLength_, &length, sizeof(double)));
+        CUDA_SAFE_CALL(cudaMemcpyToSymbol(paramsLength_, &length,           sizeof(double)));
         CUDA_SAFE_CALL(cudaMemcpyToSymbol(paramsLambda_, &(params->lambda), sizeof(double)));
-        CUDA_SAFE_CALL(cudaMemcpyToSymbol(paramsK_, &(params->K), sizeof(double)));
-        CUDA_SAFE_CALL(cudaMemcpyToSymbol(paramsA_, &(params->a), sizeof(double)));
-        CUDA_SAFE_CALL(cudaMemcpyToSymbol(paramsB_, &(params->b), sizeof(double)));
-        CUDA_SAFE_CALL(cudaMemcpyToSymbol(paramsAlpha_, &(params->alpha), sizeof(double)));
-        CUDA_SAFE_CALL(cudaMemcpyToSymbol(paramsBeta_, &(params->beta), sizeof(double)));
-        CUDA_SAFE_CALL(cudaMemcpyToSymbol(paramsSigma_, &(params->sigma), sizeof(double)));
-        CUDA_SAFE_CALL(cudaMemcpyToSymbol(paramsTau_, &(params->tau), sizeof(double)));
+        CUDA_SAFE_CALL(cudaMemcpyToSymbol(paramsK_,      &(params->K),      sizeof(double)));
+        CUDA_SAFE_CALL(cudaMemcpyToSymbol(paramsA_,      &(params->a),      sizeof(double)));
+        CUDA_SAFE_CALL(cudaMemcpyToSymbol(paramsB_,      &(params->b),      sizeof(double)));
+        CUDA_SAFE_CALL(cudaMemcpyToSymbol(paramsAlpha_,  &(params->alpha),  sizeof(double)));
+        CUDA_SAFE_CALL(cudaMemcpyToSymbol(paramsBeta_,   &(params->beta),   sizeof(double)));
+        CUDA_SAFE_CALL(cudaMemcpyToSymbol(paramsSigma_,  &(params->sigma),  sizeof(double)));
+        CUDA_SAFE_CALL(cudaMemcpyToSymbol(paramsTau_,    &(params->tau),    sizeof(double)));
 
         // solve
         kernelProt<<<120, 128>>>(valuesGpu, dataGpu);
@@ -380,21 +380,21 @@ __global__ static void kernelProt(double* values, int2* data) {
             double c_y, p1, p2;
             double area;
 
-            m_li_y = m_ - (ai_hat_*y_ + bi_hat_);
-            vi_y = MAX(2.0*alphai_hat_/lambda_, alphai_hat_*y_+betai_hat_);
+            m_li_y    = m_ - (ai_hat_*y_ + bi_hat_);
+            vi_y      = MAX(2.0*alphai_hat_/lambda_, alphai_hat_*y_+betai_hat_);
             sqrt_vi_y = sqrt(vi_y);
-            m_F = m_li_y/sqrt_vi_y;
-            P_m_F = 0.5 + 0.5 * erf(m_F);
-            p1 = m_li_y * P_m_F + sqrt_vi_y * const_val * exp(-0.5*m_F*m_F);
+            m_F       = m_li_y/sqrt_vi_y;
+            P_m_F     = 0.5 + 0.5 * erf(m_F);
+            p1        = m_li_y * P_m_F + sqrt_vi_y * const_val * exp(-0.5*m_F*m_F);
 
-            n_lj_y = n_ - (aj_hat_*y_ + bj_hat_);
-            vj_y = MAX(2.0*alphaj_hat_/lambda_, alphaj_hat_*y_+betaj_hat_);
+            n_lj_y    = n_ - (aj_hat_*y_ + bj_hat_);
+            vj_y      = MAX(2.0*alphaj_hat_/lambda_, alphaj_hat_*y_+betaj_hat_);
             sqrt_vj_y = sqrt(vj_y);
-            n_F = n_lj_y/sqrt_vj_y;
-            P_n_F = 0.5 + 0.5 * erf(n_F);
-            p2 = n_lj_y * P_n_F + sqrt_vj_y * const_val * exp(-0.5*n_F*n_F);
+            n_F       = n_lj_y/sqrt_vj_y;
+            P_n_F     = 0.5 + 0.5 * erf(n_F);
+            p2        = n_lj_y * P_n_F + sqrt_vj_y * const_val * exp(-0.5*n_F*n_F);
 
-            c_y = MAX(2.0*sigma_hat_/lambda_, sigma_hat_*y_+tau_hat_);
+            c_y  = MAX(2.0*sigma_hat_/lambda_, sigma_hat_*y_+tau_hat_);
             area = p1 * p2 + c_y * P_m_F * P_n_F;
 
             values[idx] = area * k_ * exp(-lambda_ * y_) * db_scale_factor;
@@ -468,21 +468,21 @@ static double calculateEValueProt(int score, int queryLen, int targetLen,
     double c_y, p1, p2;
     double area;
 
-    m_li_y = m_ - (ai_hat_*y_ + bi_hat_);
-    vi_y = MAX(2.0*alphai_hat_/lambda_, alphai_hat_*y_+betai_hat_);
+    m_li_y    = m_ - (ai_hat_*y_ + bi_hat_);
+    vi_y      = MAX(2.0*alphai_hat_/lambda_, alphai_hat_*y_+betai_hat_);
     sqrt_vi_y = sqrt(vi_y);
-    m_F = m_li_y/sqrt_vi_y;
-    P_m_F = 0.5 + 0.5 * erf(m_F);
-    p1 = m_li_y * P_m_F + sqrt_vi_y * const_val * exp(-0.5*m_F*m_F);
+    m_F       = m_li_y/sqrt_vi_y;
+    P_m_F     = 0.5 + 0.5 * erf(m_F);
+    p1        = m_li_y * P_m_F + sqrt_vi_y * const_val * exp(-0.5*m_F*m_F);
 
-    n_lj_y = n_ - (aj_hat_*y_ + bj_hat_);
-    vj_y = MAX(2.0*alphaj_hat_/lambda_, alphaj_hat_*y_+betaj_hat_);
+    n_lj_y    = n_ - (aj_hat_*y_ + bj_hat_);
+    vj_y      = MAX(2.0*alphaj_hat_/lambda_, alphaj_hat_*y_+betaj_hat_);
     sqrt_vj_y = sqrt(vj_y);
-    n_F = n_lj_y/sqrt_vj_y;
-    P_n_F = 0.5 + 0.5 * erf(n_F);
-    p2 = n_lj_y * P_n_F + sqrt_vj_y * const_val * exp(-0.5*n_F*n_F);
+    n_F       = n_lj_y/sqrt_vj_y;
+    P_n_F     = 0.5 + 0.5 * erf(n_F);
+    p2        = n_lj_y * P_n_F + sqrt_vj_y * const_val * exp(-0.5*n_F*n_F);
 
-    c_y = MAX(2.0*sigma_hat_/lambda_, sigma_hat_*y_+tau_hat_);
+    c_y  = MAX(2.0*sigma_hat_/lambda_, sigma_hat_*y_+tau_hat_);
     area = p1 * p2 + c_y * P_m_F * P_n_F;
 
     return area * k_ * exp(-lambda_ * y_) * db_scale_factor;

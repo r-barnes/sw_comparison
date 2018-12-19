@@ -203,11 +203,11 @@ extern ChainDatabaseGpu* chainDatabaseGpuCreate(Chain** database, int databaseLe
     ChainDatabaseGpu* chainDatabaseGpu = 
         (ChainDatabaseGpu*) malloc(sizeof(struct ChainDatabaseGpu));
     
-    chainDatabaseGpu->database = database;
-    chainDatabaseGpu->databaseLen = databaseLen;
-    chainDatabaseGpu->shortDatabase = shortDatabase;
-    chainDatabaseGpu->longDatabase = longDatabase;
-    chainDatabaseGpu->longIndexes = longIndexes;
+    chainDatabaseGpu->database       = database;
+    chainDatabaseGpu->databaseLen    = databaseLen;
+    chainDatabaseGpu->shortDatabase  = shortDatabase;
+    chainDatabaseGpu->longDatabase   = longDatabase;
+    chainDatabaseGpu->longIndexes    = longIndexes;
     chainDatabaseGpu->longIndexesLen = longIndexesLen;
 
     //**************************************************************************

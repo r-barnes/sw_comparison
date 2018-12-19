@@ -127,7 +127,7 @@ with the most common standard similarity matrices.
 @param gapOpen affine gap open penalty, defined as positive integer
 @param gapExtend affine gap extend penalty, defined as positive integer
 */   
-extern void scorerCreateMatrix(Scorer** scorer, char* name, int gapOpen, 
+extern void scorerCreateMatrix(Scorer** scorer, const char* name, int gapOpen, 
     int gapExtend);
 
 #ifdef __cplusplus 

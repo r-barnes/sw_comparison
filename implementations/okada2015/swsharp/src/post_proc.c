@@ -269,11 +269,8 @@ extern void outputShotgunDatabase(DbAlignment*** dbAlignments,
 }
 
 extern void deleteFastaChains(Chain** chains, int chainsLen) {
-
-    int i;
-    for (i = 0; i < chainsLen; ++i) {
+    for (int i = 0; i < chainsLen; ++i)
         chainDelete(chains[i]);
-    }
     
     free(chains);
     chains = NULL;
@@ -291,10 +288,8 @@ extern void deleteDatabase(DbAlignment** dbAlignments, int dbAlignmentsLen) {
 extern void deleteShotgunDatabase(DbAlignment*** dbAlignments, 
     int* dbAlignmentsLens, int dbAlignmentsLen) {
     
-    int i;
-    for (i = 0; i < dbAlignmentsLen; ++i) {
+    for (int i = 0; i < dbAlignmentsLen; ++i)
         deleteDatabase(dbAlignments[i], dbAlignmentsLens[i]);
-    }
     free(dbAlignments);
     free(dbAlignmentsLens);
 }

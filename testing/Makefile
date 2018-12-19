@@ -1,4 +1,4 @@
-CXXFLAGS=-O3 -std=c++11
+CXXFLAGS=-O3 -std=c++11 -g
 LIBS=-lpthread -Lokada2015/lib -lswsharp
 CU=nvcc
 

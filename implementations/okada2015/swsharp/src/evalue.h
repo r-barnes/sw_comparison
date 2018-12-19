@@ -31,7 +31,7 @@ extern "C" {
 
 typedef struct EValueParams EValueParams;
 
-extern EValueParams* createEValueParams(long long length, Scorer* scorer);
+extern EValueParams* createEValueParams(const long long length, Scorer *const scorer);
 
 extern void deleteEValueParams(EValueParams* eValueParams);
 

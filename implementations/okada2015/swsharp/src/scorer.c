@@ -21,6 +21,7 @@ Contact the author by mkorpar@gmail.com.
 
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 
 #include "error.h"
 #include "utils.h"
@@ -123,33 +124,32 @@ static int maxScore(Scorer* scorer);
 extern Scorer* scorerCreate(const char* name, int* scores, char maxCode, 
     int gapOpen, int gapExtend) {
 
-    ASSERT(maxCode > 0, "scorer table must have at least one element");
-    ASSERT(gapOpen > 0, "gap open is defined as positive integer");
-    ASSERT(gapExtend > 0, "gap extend is defined as positive integer");
+    ASSERT(maxCode   > 0,        "scorer table must have at least one element" );
+    ASSERT(gapOpen   > 0,        "gap open is defined as positive integer"     );
+    ASSERT(gapExtend > 0,        "gap extend is defined as positive integer"   );
     ASSERT(gapOpen >= gapExtend, "gap extend must be equal or less to gap open");
     
-    int i;
-    int j;
-    for (i = 0; i < maxCode; ++i) {
-        for (j = i + 1; j < maxCode; ++j) {
-            int a = scores[i * maxCode + j];
-            int b = scores[j * maxCode + i];
-            ASSERT(a == b, "scorer table must be symmetrical");
-        }
+    for (int i = 0;     i < maxCode; ++i) 
+    for (int j = i + 1; j < maxCode; ++j) {
+        const int a = scores[i * maxCode + j];
+        const int b = scores[j * maxCode + i];
+        ASSERT(a == b, "scorer table must be symmetrical");
     }
     
     Scorer* scorer = (Scorer*) malloc(sizeof(struct Scorer));
 
+    ASSERT(scorer!=NULL, "Failed to malloc space for scorer!");
+
     scorer->nameLen = strlen(name) + 1;
-    scorer->name = (char*) malloc(scorer->nameLen * sizeof(char));
+    scorer->name    = (char*) malloc(scorer->nameLen * sizeof(char));
     scorer->name[scorer->nameLen - 1] = '\0';
     memcpy(scorer->name, name, (scorer->nameLen - 1) * sizeof(char));
 
-    scorer->gapOpen = gapOpen;
+    scorer->gapOpen   = gapOpen;
     scorer->gapExtend = gapExtend;
     
     size_t tableSize = maxCode * maxCode * sizeof(int);    
-    scorer->table = (int*) malloc(tableSize);
+    scorer->table    = (int*) malloc(tableSize);
     memcpy(scorer->table, scores, tableSize);
 
     scorer->maxCode = maxCode;
@@ -183,6 +183,7 @@ extern char scorerGetMaxCode(Scorer* scorer) {
 }
 
 extern int scorerGetMaxScore(Scorer* scorer) {
+    assert(scorer!=NULL);
     return scorer->maxScore;
 }
 

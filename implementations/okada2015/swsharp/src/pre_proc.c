@@ -378,25 +378,28 @@ extern void dumpFastaChains(char* path_) {
 //------------------------------------------------------------------------------
 // SCORES UTILS
 
-extern void scorerCreateScalar(Scorer** scorer, int match, int mismatch, 
-    int gapOpen, int gapExtend) {
+extern void scorerCreateScalar(
+    Scorer** scorer, 
+    int match, 
+    int mismatch, 
+    int gapOpen, 
+    int gapExtend
+){
     
     int scores[26 * 26];
     
-    int i, j;
-    for (i = 0; i < 26; ++i) {
-        for (j = 0; j < 26; ++j) {
-            scores[i * 26 + j] = i == j ? match : mismatch;
-        }
-    }
+    for (int i = 0; i < 26; ++i)
+    for (int j = 0; j < 26; ++j)
+        scores[i * 26 + j] = i == j ? match : mismatch;
     
     char name[100];
     sprintf(name, "match/mismatch +%d/%d", match, mismatch);
     
     *scorer = scorerCreate(name, scores, 26, gapOpen, gapExtend);
+    ASSERT(scorer!=NULL, "scorerCreateScalar: Failed to create scorer!");
 }
 
-extern void scorerCreateMatrix(Scorer** scorer, char* name, int gapOpen, 
+extern void scorerCreateMatrix(Scorer** scorer, const char* name, int gapOpen, 
     int gapExtend) {
     
     int index = -1;
