@@ -260,28 +260,28 @@ void MakeComparison(const int num_a, const int len_a, const int num_b, const int
   std::chrono::steady_clock::time_point ssw_begin = std::chrono::steady_clock::now();
   {
     SSWAlign  ssw;
-//    for(unsigned int i=0;i<seqs_a.size();i++)
-//    for(unsigned int j=0;j<seqs_b.size();j++)
-//      ssw.align(seqs_a[i], seqs_b[j]);
+   for(unsigned int i=0;i<seqs_a.size();i++)
+   for(unsigned int j=0;j<seqs_b.size();j++)
+     ssw.align(seqs_a[i], seqs_b[j]);
   }
   std::chrono::steady_clock::time_point ssw_end= std::chrono::steady_clock::now();
 
   std::chrono::steady_clock::time_point okada2015_begin = std::chrono::steady_clock::now();
   {
     Okada2015 okada2015;
-//    for(unsigned int i=0;i<seqs_a.size();i++)
-//    for(unsigned int j=0;j<seqs_b.size();j++)
-//      okada2015.align(seqs_a[i], seqs_b[j]);  
+   for(unsigned int i=0;i<seqs_a.size();i++)
+   for(unsigned int j=0;j<seqs_b.size();j++)
+     okada2015.align(seqs_a[i], seqs_b[j]);  
   }
   std::chrono::steady_clock::time_point okada2015_end= std::chrono::steady_clock::now();
 
-  std::chrono::steady_clock::time_point okada2015_bulk_begin = std::chrono::steady_clock::now();
-  {
-    Okada2015Bulk okada2015_bulk;
-    okada2015_bulk.createDatabase(seqs_b);
-    okada2015_bulk.align(seqs_a);
-  }
-  std::chrono::steady_clock::time_point okada2015_bulk_end= std::chrono::steady_clock::now();
+  // std::chrono::steady_clock::time_point okada2015_bulk_begin = std::chrono::steady_clock::now();
+  // {
+  //   Okada2015Bulk okada2015_bulk;
+  //   okada2015_bulk.createDatabase(seqs_b);
+  //   okada2015_bulk.align(seqs_a);
+  // }
+  // std::chrono::steady_clock::time_point okada2015_bulk_end= std::chrono::steady_clock::now();
 
 
 
