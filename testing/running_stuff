@@ -54,6 +54,14 @@ export queryfile=data/gen-100-1000.fasta
 export databasefile=data/gen-10-20000.fasta
 aprun ./implementations/okada2015/bin/swsharpdb -i $queryfile -j $databasefile --nocache --outfmt none --cards $device
 
+#TITAN
+qsub -I -A CSC261 -q debug -l nodes=1,walltime=60:00
+cd /lustre/atlas/scratch/spinyfan/csc261/rbarnes
+export databasefile=~/crd-swgpu/data/10_1000_10_1000_a.fasta
+export queryfile=~/crd-swgpu/data/10_1000_10_1000_a.fasta
+export device=0
+aprun ~/crd-swgpu/implementations/okada2015/bin/swsharpdb -i $queryfile -j $databasefile --nocache --outfmt none --cards $device
+
 
 
 
