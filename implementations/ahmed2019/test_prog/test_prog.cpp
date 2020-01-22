@@ -1,6 +1,6 @@
 
 
-#include "../include/gasal_header.h"
+#include <gasal_header.h>
 
 
 #include <vector>
