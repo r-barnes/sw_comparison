@@ -81,6 +81,7 @@ TODO:
 
     Liu2014           |   | GSWABE
     Liu2014b          |   | CUSHAW2-GPU
+    Ren2019           |   |
 
 Ruled out:
 
