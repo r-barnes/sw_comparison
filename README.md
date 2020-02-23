@@ -80,6 +80,7 @@ Key:
 TODO:
 
     Liu2014           |   | GSWABE
+    Liu2014b          |   | CUSHAW2-GPU
 
 Ruled out:
 
