@@ -77,6 +77,10 @@ Key:
     Marcos2014        |   |                  |                               | GPU-CUDA + CPU          |          | ??  |              |                  |                     |       |        |          |        | TODO               |             |                |                                                       |
     Warris2018        |   | pyPaSWAS         | 10.1371/journal.pone.0190279  | GPU-CUDA + CPU + Python |          | M:M |              |                  |                     | 39    | 1120   | 1437     | 4766   | TODO               | MIT         | warris2018     |
 
+TODO:
+
+    Liu2014           |   | GSWABE
+
 Ruled out:
 
     Warris2015        |   | PaSWAS           | 10.1371/journal.pone.0122524  | GPU-CUDA                | Yes      | M:M |              |                  |                     | 19    | 1239   | 652      | 5128   | TODO               | MIT         | warris2015     |
