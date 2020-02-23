@@ -82,6 +82,7 @@ TODO:
     Liu2014           |   | GSWABE
     Liu2014b          |   | CUSHAW2-GPU
     Ren2019           |   |
+    Muller2019        |   | AnySeq
 
 Ruled out:
 
