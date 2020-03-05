@@ -39,16 +39,12 @@
 #define MAX_SEQ_NAME_LENGTH			MAX_QRY_NAME_LENGTH
 #define MAX_QRY_SEQ_LENGTH			200 /* Do not change this. */
 #define	MAX_LINE_LENGTH				100000
-#define SELECTED_DEVICE_INDEX		2
 #define	GLOBAL_MEM_MARGIN			100000000
 #define NUM_REGS_USED				48
 #define	DEFAULT_MATCH				2
 #define	DEFAULT_MISMATCH			-1
 #define DEFAULT_GAP_OPEN_PENALTY	-10
 #define	DEFAULT_GAP_EXT_PENALTY		-1
-#define TMP_DIR						"/home/pgupta/data/gpusw" /**< Path to the directory
-where files will be stored temporarily. Make sure this directory already
-exists. */
 #define PATH_SEPARATOR				"/" /**< File path separator. */
 #define FILTERED_RESULTS_FILE_NAME	"matchFile.txt"
 #define	TEMP_REF_FILE				"tmpRefFile.txt"
