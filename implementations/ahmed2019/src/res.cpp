@@ -154,7 +154,7 @@ void gasal_res_destroy_host(gasal_res_t *res)
 	if (res->target_batch_start != NULL) CHECKCUDAERROR(cudaFreeHost(res->target_batch_start));
 	if (res->query_batch_end != NULL) CHECKCUDAERROR(cudaFreeHost(res->query_batch_end));
 	if (res->target_batch_end != NULL) CHECKCUDAERROR(cudaFreeHost(res->target_batch_end));
-	if (res->n_cigar_ops != NULL) CHECKCUDAERROR(cudaFreeHost(res->n_cigar_ops));
+	// if (res->n_cigar_ops != NULL) CHECKCUDAERROR(cudaFreeHost(res->n_cigar_ops)); //TODO: Enabling this causes a CUDA error
 	
 	free(res);
 }
@@ -170,7 +170,7 @@ void gasal_res_destroy_device(gasal_res_t *device_res, gasal_res_t *device_cpy)
 	if (device_cpy->target_batch_start != NULL) CHECKCUDAERROR(cudaFree(device_cpy->target_batch_start));
 	if (device_cpy->query_batch_end != NULL) CHECKCUDAERROR(cudaFree(device_cpy->query_batch_end));
 	if (device_cpy->target_batch_end != NULL) CHECKCUDAERROR(cudaFree(device_cpy->target_batch_end));
-	if (device_cpy->cigar != NULL) CHECKCUDAERROR(cudaFree(device_cpy->cigar));
+	// if (device_cpy->cigar != NULL) CHECKCUDAERROR(cudaFree(device_cpy->cigar)); //TODO: Enabling this causes a CUDA error
 	
 
 	CHECKCUDAERROR(cudaFree(device_res));
