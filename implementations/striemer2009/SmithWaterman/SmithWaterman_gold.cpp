@@ -272,12 +272,6 @@ void write_Results(int* proteinLengths, char** databaseArray, char* Results_Path
   int j;
   int k = 0;
 
-  // Open the database file for reading
-  printf("\nPlease enter the path to the Location for Results Storage:\n");
-  scanf("%s",Results_Path);
-
-
-
   FILE* resultsFile = fopen(Results_Path, "w");         //Open the file for reading
 
   if(resultsFile == NULL){                        //Print error message if file cannot be opened

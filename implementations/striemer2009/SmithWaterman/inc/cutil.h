@@ -915,16 +915,6 @@ extern "C" {
         fprintf(stderr, "Using device %d: %s\n", dev, name);                  \
 }
 
-#define CUT_EXIT(argc, argv)                                                 \
-    if (!cutCheckCmdLineFlag(argc, (const char**)argv, "noprompt")) {        \
-        printf("\nPress ENTER to exit...\n");                                \
-        fflush( stdout);                                                     \
-        fflush( stderr);                                                     \
-        getchar();                                                           \
-    }                                                                        \
-    exit(EXIT_SUCCESS);
-
-
 #ifdef __cplusplus
 }
 #endif  // #ifdef _DEBUG (else branch)

@@ -55,7 +55,7 @@ void write_Results(int*, char**, char*, int*, int*);
 
 int main( int argc, char** argv){
   runSW( argc, argv);
-  CUT_EXIT(argc, argv);
+  return 0;
 }
 
 
@@ -67,10 +67,10 @@ void runSW( int argc, char** argv){
   //Searches for first available CUDA device
   CUT_DEVICE_INIT(argc, argv);
 
-  if(arc!=2){
-    printf("Syntax: %s <Query> <Database>\n", argv[0]);
+  if(argc!=4){
+    printf("Syntax: %s <Query> <Database> <Results>\n", argv[0]);
     printf("Each query string will be run, one at a time, against the database.\n");
-    return -1;
+    return;
   }
 
   /*________________________Allocate memory on host for file name and number of sequences________________________*/
@@ -85,7 +85,7 @@ void runSW( int argc, char** argv){
 
 
   //Find the number of sequences contained in the database
-  computeNumSeq(argc, argv, numSeq, database_Path);
+  computeNumSeq(numSeq, database_Path);
 
   /*________________Allocate memory on host for protein lengths, max length, and total characters________________*/
 
@@ -276,18 +276,14 @@ void runSW( int argc, char** argv){
 
   /*________________________________________Write Results to File________________________________________________*/
 
-  //Allocate memory for File path to Result Location, path is limited to 200 characters
-  char* Results_Path = (char*) malloc(sizeof(char) * 200);
-
   //Write Results to File
-  write_Results(proteinLengths, databaseArray, Results_Path, numSeq, host_scores);
+  write_Results(proteinLengths, databaseArray, argv[3], numSeq, host_scores);
 
   /*______________________________________________Clean Up Data__________________________________________________*/
 
   //Free Host Memory
   free(numSeq          );
   free(maxLen          );
-  free(database_Path   );
   free(databaseArray   );
   free(total_Characters);
   free(proteinLengths  );
@@ -295,7 +291,6 @@ void runSW( int argc, char** argv){
   free(protein_length  );
   free(host_scores     );
   free(host_temp_array );
-  free(Results_Path    );
   free(host_1D_Array   );
 
   //Free Device Memory
