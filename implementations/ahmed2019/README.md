@@ -25,11 +25,18 @@ It is an extension of GASAL (https://github.com/nahmedraja/GASAL) and allows ful
 A Linux platform with CUDA toolkit 8 or higher is required, along with usual build environment for C and C++ code. GASAL2 has been tested over NVIDIA GPUs with compute capabilities of 2.0, 3.5 and 5.0. Although lower versions of the CUDA framework might work, they have not been tested.
 
 ## Compiling GASAL2
-The library can be compiled with the following two commands:
+The library can be compiled with the following commands:
 
 ```bash
-$ ./configure.sh <path to cuda installation directory>
-$ make GPU_SM_ARCH=<GPU SM architecture> MAX_QUERY_LEN=<maximum query length> N_CODE=<code for "N", e.g. 0x4E if the bases are represented by ASCII characters> [N_PENALTY=<penalty for aligning "N" against any other base>]
+mkdir build
+cd build/
+cmake -DMAX_QUERY_LEN=<maximum query length> \
+      -DN_CODE=<code for "N", e.g. 0x4E if the bases are represented by ASCII characters> \
+			-DGPU_SM_ARCH=<GPU SM architecture, optional> \
+      -DGPU_COMPUTE_ARCH=<GPU compute architecture, optional> \
+      -DN_PENALTY=<penalty for aligning "N" against any other base, optional> \
+      -DCMAKE_BUILD_TYPE=Release ..
+make
 ```
 
 `N_PENALTY` is optional and if it is not specified then GASAL2 considers "N" as an ordinary base having the same match/mismatch scores as for A, C, G or T. As a result of these commands, *include* and *lib* directories will be created containing various `.h` files and `libgasal.a`, respectively. The user needs to include `gasal_header.h` in the code and link it with `libgasal.a` during compilation. Also, the CUDA runtime library has to be linked by adding `-lcudart` flag. The path to the CUDA runtime library must also be specfied while linking as *-L <path to CUDA lib64 directory>*.

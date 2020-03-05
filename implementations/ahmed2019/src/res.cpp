@@ -4,6 +4,8 @@
 
 #include "res.h"
 
+#include <iostream>
+
 
 gasal_res_t *gasal_res_new_host(uint32_t max_n_alns, Parameters *params)
 {
