@@ -6,6 +6,14 @@ implementations of the [Smith-Waterman
 algorithm](https://en.wikipedia.org/wiki/Smith%E2%80%93Waterman_algorithm),
 widely used as a step in genome assembly.
 
+Installation
+==========================================
+
+    sudo apt install xsltproc gengetopt libtbb-dev
+
+Compilation
+
+    cmake -GNinja -DCMAKE_MODULE_PATH=/usr/share/cmake/Modules -DCMAKE_BUILD_TYPE=Release ..
 
 
 Selection Criteria

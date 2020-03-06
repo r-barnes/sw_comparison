@@ -1,10 +1,9 @@
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/FindTBB/")
+cmake_minimum_required(VERSION 3.9)
+
 find_package(TBB REQUIRED)
+
 include_directories(${TBB_INCLUDE_DIRS})
 link_directories(${TBB_LIBRARY_DIRS})
-
-
-
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
