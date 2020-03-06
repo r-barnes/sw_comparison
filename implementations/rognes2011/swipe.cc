@@ -1429,30 +1429,17 @@ void search_chunk(struct search_data * sdp)
 	    
 	// fprintf(out, "Searching seqnos %ld to %ld\n", sdp->in_list[0], sdp->in_list[sdp->in_count-1]);
 	    
-	if (cpu_feature_ssse3)
-	  search7_ssse3(qtable,
-			gapopenextend,
-			gapextend,
-			(BYTE*) score_matrix_7t,
-			sdp->dprofile,
-			sdp->hearray,
-			sdp->dbt,
-			sdp->in_count,
-			sdp->in_list,
-			sdp->scores,
-			qlen);
-	else
-	  search7(qtable,
-		  gapopenextend,
-		  gapextend,
-		  (BYTE*) score_matrix_7,
-		  sdp->dprofile,
-		  sdp->hearray,
-		  sdp->dbt,
-		  sdp->in_count,
-		  sdp->in_list,
-		  sdp->scores,
-		  qlen);
+  search7(qtable,
+	  gapopenextend,
+	  gapextend,
+	  (BYTE*) score_matrix_7,
+	  sdp->dprofile,
+	  sdp->hearray,
+	  sdp->dbt,
+	  sdp->in_count,
+	  sdp->in_list,
+	  sdp->scores,
+	  qlen);
 	
 	sdp->out_count = 0;
     

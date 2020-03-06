@@ -209,18 +209,6 @@ void search7(BYTE * * q_start,
 	     long * scores,
 	     long qlen);
 
-void search7_ssse3(BYTE * * q_start,
-		   BYTE gap_open_penalty,
-		   BYTE gap_extend_penalty,
-		   BYTE * score_matrix,
-		   BYTE * dprofile,
-		   BYTE * hearray,
-		   struct db_thread_s * dbt,
-		   long sequences,
-		   long * seqnos,
-		   long * scores,
-		   long qlen);
-
 void search16(WORD * * q_start,
 	      WORD gap_open_penalty,
 	      WORD gap_extend_penalty,

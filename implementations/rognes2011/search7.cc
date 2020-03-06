@@ -753,12 +753,7 @@ inline void domasked7(__m128i * Sm,
 }
 
 void
-#ifdef SWIPE_SSSE3
-search7_ssse3
-#else
-search7
-#endif
-       (BYTE * * q_start,
+search7(BYTE * * q_start,
 	BYTE gap_open_penalty,
 	BYTE gap_extend_penalty,
 	BYTE * score_matrix,
