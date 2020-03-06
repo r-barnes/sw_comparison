@@ -1,4 +1,5 @@
 #include "utils.h"
+#include <string.h>
 
 void merge_scores(int * scores, char ** titles, unsigned long int size) {
 	unsigned long int i1 = 0;

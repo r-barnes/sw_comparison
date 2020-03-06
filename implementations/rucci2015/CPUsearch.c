@@ -7,7 +7,6 @@ void cpu_search_sse_sp (char * query_sequences, unsigned short int * query_seque
 	char * vect_sequences_db, unsigned short int * vect_sequences_db_lengths, unsigned short int * vect_sequences_db_blocks, unsigned long int vect_sequences_db_count, unsigned long int * vect_sequences_db_disp,
 	char * submat, int open_gap, int extend_gap, int n_threads, int cpu_block_size, int * scores, double * workTime){
 
-	long int i, j, k;
 	double tick;
 
 	char *a, * b;
@@ -36,14 +35,14 @@ void cpu_search_sse_sp (char * query_sequences, unsigned short int * query_seque
 		char * ptr_a, * ptr_b, * scoreProfile;
 
 		__declspec(align(32)) __m128i score, current, auxBlosum[2], auxLastCol, b_values;
-		__declspec(align(32)) __m128i aux0, aux1, aux2, aux3, aux4, aux5, aux6, aux7, aux8;
+		__declspec(align(32)) __m128i aux0, aux1, aux2, aux3, aux4, aux5, aux6, aux7;
 		__declspec(align(32)) __m128i vextend_gap_epi8 = _mm_set1_epi8(extend_gap), vopen_extend_gap_epi8 = _mm_set1_epi8(open_gap+extend_gap), vzero_epi8 = _mm_set1_epi8(0);
 		__declspec(align(32)) __m128i vextend_gap_epi16 = _mm_set1_epi16(extend_gap), vopen_extend_gap_epi16 = _mm_set1_epi16(open_gap+extend_gap), vzero_epi16 = _mm_set1_epi16(0);
 		__declspec(align(32)) __m128i vextend_gap_epi32 = _mm_set1_epi32(extend_gap), vopen_extend_gap_epi32 = _mm_set1_epi32(open_gap+extend_gap), vzero_epi32 = _mm_set1_epi32(0);
 		__declspec(align(32)) __m128i v127 = _mm_set1_epi8(127), v32767 = _mm_set1_epi16(32767);
 		__declspec(align(32)) __m128i v15 = _mm_set1_epi8(15), v16 = _mm_set1_epi8(16), vneg32 = _mm_set1_epi8(-32);
 
-		unsigned int i, j, ii, jj, k, disp_1, disp_2, disp_3, disp_4, disp_5, dim1, dim2, nbb;
+		unsigned int i, j, ii, jj, k, disp_1, disp_2, disp_3, disp_4, dim1, dim2, nbb;
 		unsigned long int t, s, q; 
 		int overflow_flag, bb1, bb1_start, bb1_end, bb2, bb2_start, bb2_end;
 
@@ -483,7 +482,6 @@ void cpu_search_avx2_sp (char * query_sequences, unsigned short int * query_sequ
 	char * vect_sequences_db, unsigned short int * vect_sequences_db_lengths, unsigned short int * vect_sequences_db_blocks, unsigned long int vect_sequences_db_count, unsigned long int * vect_sequences_db_disp,
 	char * submat, int open_gap, int extend_gap, int n_threads, int cpu_block_size, int * scores, double * workTime){
 
-	long int i, j, k;
 	double tick;
 
 	char *a, * b;
@@ -514,7 +512,7 @@ void cpu_search_avx2_sp (char * query_sequences, unsigned short int * query_sequ
 
 
 		__declspec(align(32)) __m256i score, current, auxLastCol, b_values, blosum_lo, blosum_hi;
-		__declspec(align(32)) __m256i aux0, aux1, aux2, aux3, aux4, aux5, aux6, aux7, aux8;
+		__declspec(align(32)) __m256i aux0, aux1, aux2, aux3, aux4, aux5, aux6;
 		__declspec(align(32)) __m256i vextend_gap_epi8 = _mm256_set1_epi8(extend_gap), vopen_extend_gap_epi8 = _mm256_set1_epi8(open_gap+extend_gap);
 		__declspec(align(32)) __m256i vextend_gap_epi16 = _mm256_set1_epi16(extend_gap), vopen_extend_gap_epi16 = _mm256_set1_epi16(open_gap+extend_gap);
 		__declspec(align(32)) __m256i vextend_gap_epi32 = _mm256_set1_epi32(extend_gap), vopen_extend_gap_epi32 = _mm256_set1_epi32(open_gap+extend_gap);

@@ -10,7 +10,7 @@ static char doc[] =
 
 void program_arguments_processing (int argc, char * argv[]) {
 
-	int i, result, arg_count=4;
+	int result, arg_count=4;
 
 	struct argp_option options[] =	{
 		{ 0, 0, 0, 0, "SWIMM execution", 1},
@@ -86,12 +86,12 @@ static int parse_opt (int key, char *arg, struct argp_state *state) {
 		case 'g':
 			open_gap = atoi(arg);
 			if ((open_gap < 0) || (open_gap > 127))
-				argp_failure (state, 1, 0, "%s is not a valid option for gap open penalty.",open_gap);
+				argp_failure (state, 1, 0, "%d is not a valid option for gap open penalty.",open_gap);
 			break;
 		case 'e':
 			extend_gap = atoi(arg);
 			if ((extend_gap < 0) || (extend_gap > 127))
-				argp_failure (state, 1, 0, "%s is not a valid option for gap extend penalty.",extend_gap);
+				argp_failure (state, 1, 0, "%d is not a valid option for gap extend penalty.",extend_gap);
 			break;
 		case 'c':
 			cpu_threads = atoi(arg);
@@ -117,7 +117,7 @@ static int parse_opt (int key, char *arg, struct argp_state *state) {
 		case 'u':
 			query_length_threshold = atoi(arg);
 			if ((query_length_threshold < 0) || (query_length_threshold > 65535))
-				argp_failure (state, 1, 0, "%s is not a valid option for query length threshold.",query_length_threshold);
+				argp_failure (state, 1, 0, "%d is not a valid option for query length threshold.",query_length_threshold);
 			break;
 		case 'v':
 			vector_length = atoi(arg);

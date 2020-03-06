@@ -1,11 +1,13 @@
 #include "sequences.h"
 
+#define CHECK_FSCANF(x) if(!x) { fprintf(stderr, "fscanf failed on %s:%d\n", __FILE__,__LINE__); }
+
 /* preprocess_db function preprocess the database sequences named input_filename. The preprocessed database filenames start with out_filename. */
 void preprocess_db (char * input_filename, char * out_filename, int n_procs) {
 
-	unsigned long int sequences_count=0, D=0, disp, accum, chunk_size, i, j, k;
-	unsigned short int *sequences_lengths=NULL, * title_lengths=NULL, length=0, tmp_length, ok;
-	char ** sequences=NULL, **titles=NULL, buffer[BUFFER_SIZE], filename[BUFFER_SIZE], * bin_filename, * res, *tmp_seq, *b=NULL, diff, new_line='\n';
+	unsigned long int sequences_count=0, D=0, disp, i;
+	unsigned short int *sequences_lengths=NULL, * title_lengths=NULL, length=0;
+	char ** sequences=NULL, **titles=NULL, buffer[BUFFER_SIZE], filename[BUFFER_SIZE], * res, *b=NULL, diff, new_line='\n';
 	FILE * sequences_file, *titles_file, *info_file, * bin_file;
 	int max_title_length;
 	double tick= dwalltime();
@@ -223,11 +225,11 @@ void preprocess_db (char * input_filename, char * out_filename, int n_procs) {
 void load_query_sequences(char * queries_filename, int execution_mode, char ** ptr_query_sequences, char *** ptr_query_headers, unsigned short int **ptr_query_sequences_lengths,
 						unsigned short int **ptr_m, unsigned long int * query_sequences_count, unsigned long int * ptr_Q, unsigned int ** ptr_query_sequences_disp, int n_procs) {
 
-	long int i, j, k;
-	unsigned long int sequences_count=0, Q=0, disp, accum, chunk_size;
+	long int i;
+	unsigned long int sequences_count=0, Q=0, disp;
 	unsigned int * sequences_disp;
-	unsigned short int *sequences_lengths, *m, * title_lengths, *tmp, length=0, tmp_length, ok;
-	char ** sequences=NULL, **titles, buffer[BUFFER_SIZE], filename[BUFFER_SIZE], * bin_filename, * res, *tmp_seq, *a, diff, new_line='\n';
+	unsigned short int *sequences_lengths, *m, * title_lengths, *tmp, length=0;
+	char ** sequences=NULL, **titles, buffer[BUFFER_SIZE], * res, *a, diff, new_line='\n';
 	FILE * sequences_file;
 
 	// open query sequence filename 
@@ -428,10 +430,10 @@ void assemble_multiple_chunks_db (char * sequences_filename, int vector_length, 
 				unsigned long int ** ptr_chunk_vD, unsigned short int *** ptr_chunk_vect_sequences_db_lengths, unsigned int *** ptr_chunk_vect_sequences_db_disp,
 				int n_procs) {
 
-	char ** sequences, *s, **chunk_vect_sequences_db, filename[200], * header, *b;
-	unsigned short int ** chunk_vect_sequences_db_lengths, ** chunk_n, * sequences_lengths, * vect_sequences_lengths;
+	char ** sequences, *s, **chunk_vect_sequences_db, filename[200], *b;
+	unsigned short int ** chunk_vect_sequences_db_lengths, * sequences_lengths, * vect_sequences_lengths;
 	unsigned long int i, ii, j, jj, k, * chunk_vD, accum, aux_vD=0, offset, chunk_size, * vect_sequences_disp;
-	unsigned int * chunk_vect_sequences_count, **chunk_vect_sequences_disp, * tmp_chunk_vect_sequences_disp, c;
+	unsigned int * chunk_vect_sequences_count, **chunk_vect_sequences_disp, c;
 	FILE * sequences_file, * info_file;
 
 	// Open info file
@@ -443,7 +445,7 @@ void assemble_multiple_chunks_db (char * sequences_filename, int vector_length, 
 		exit(2);
 	}
 
-	fscanf(info_file,"%ld %ld %d",sequences_count,D,max_title_length);
+	CHECK_FSCANF(fscanf(info_file,"%ld %ld %d",sequences_count,D,max_title_length));
 
 	fclose(info_file);
 
@@ -620,9 +622,9 @@ void assemble_single_chunk_db (char * sequences_filename, int vector_length, uns
 				unsigned long int * vD, char **ptr_vect_sequences_db, unsigned short int ** ptr_vect_sequences_db_lengths, unsigned short int ** ptr_vect_sequences_db_blocks, 
 				unsigned long int ** ptr_vect_sequences_db_disp, int n_procs, int block_size) {
 
-	char ** sequences, *s, filename[200], ** sequences_db_headers, *header, *b;
+	char ** sequences, *s, filename[200], *b;
 	unsigned short int * vect_sequences_lengths, * vect_sequences_blocks, * sequences_lengths;
-	unsigned long int i, j, k, accum, aux_vD=0, *vect_sequences_disp;
+	unsigned long int i, j, k, aux_vD=0, *vect_sequences_disp;
 	FILE * sequences_file, * info_file;
 
 	// Open info file

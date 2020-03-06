@@ -1,4 +1,5 @@
 #include "swimm.h"
+#include <time.h>
 
 // Global options
 char *sequences_filename=NULL, * queries_filename=NULL, *input_filename=NULL, * output_filename=NULL, *op=NULL, * submat=blosum62, submat_name[]="BLOSUM62", profile=0;
@@ -14,7 +15,7 @@ int main(int argc, char *argv[]) {
 	unsigned short int ** chunk_vect_sequences_db_lengths, * vect_sequences_db_lengths, * vect_sequences_db_blocks, sequences_db_max_length, * query_sequences_lengths, *m;
 	char ** chunk_vect_sequences_db, * vect_sequences_db, *query_sequences, ** query_headers, ** sequence_db_headers, ** tmp_sequence_db_headers;
     time_t current_time = time(NULL);
-	double workTime, tick;
+	double workTime;
 	
 	/* Process program arguments */
 	program_arguments_processing(argc,argv);
@@ -151,7 +152,7 @@ int main(int argc, char *argv[]) {
 		for (i=0; i<query_sequences_count ; i++ ) {
 			memcpy(tmp_sequence_db_headers,sequence_db_headers,sequences_count*sizeof(char *));
 			sort_scores(scores+i*vect_sequences_db_count*vector_length,tmp_sequence_db_headers,sequences_count,cpu_threads);
-			printf("\nQuery no.\t\t\t%d\n",i+1);
+			printf("\nQuery no.\t\t\t%ld\n",i+1);
 			printf("Query description: \t\t%s\n",query_headers[i]+1);
 			printf("Query length:\t\t\t%d residues\n",query_sequences_lengths[i]);
 			printf("\nScore\tSequence description\n");
@@ -174,7 +175,7 @@ int main(int argc, char *argv[]) {
 					printf(" (threshold = %d)",query_length_threshold);
 				printf("\nInstruction set:\t\tKNC (vector length = %d)\n",vector_length);
 				printf("Max. chunk size:\t\t%ld bytes\n",max_chunk_size);
-				printf("Chunk count:\t\t\t%ld \n",chunk_count);
+				printf("Chunk count:\t\t\t%ud \n",chunk_count);
 			} else {
 				printf("Execution mode:\t\t\tHybrid (%d CPU threads (block width = %d) and %d Xeon Phis with %d threads each)\n",cpu_threads,cpu_block_size,num_mics,mic_threads);
 				printf("Profile technique:\t\tScore Profile in Xeon, %s in Xeon Phi",(profile == QUERY_PROFILE ? "Query Profile" : (profile == SCORE_PROFILE ? "Score Profile" : "Adaptive Profile")));
@@ -184,7 +185,7 @@ int main(int argc, char *argv[]) {
 					printf("\nInstruction set:\t\tSSE+KNC (vector length = 16)\n");
 				else
 					printf("\nInstruction set:\t\tAVX2 (vector length = 32) + KNC (vector length = 16)\n");
-				printf("Chunk count:\t\t\t%ld \n",chunk_count);
+				printf("Chunk count:\t\t\t%ud \n",chunk_count);
 				printf("Max. chunk size:\t\t%ld bytes\n",max_chunk_size);
 			}
 		}

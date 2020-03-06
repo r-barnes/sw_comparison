@@ -8,11 +8,10 @@ void het_search_sse_sp_knc_ap (char * query_sequences, unsigned short int * quer
 	int cpu_threads, int cpu_block_size, int num_mics, int mic_threads, int * scores, double * workTime, unsigned short int query_length_threshold) {
 
 	unsigned long int offload_max_vD=0, * chunk_accum_vect_sequences_db_count;
-	long int i=0, ii, j=0, k=0, jj;
+	long int i=0;
 	double tick;
 	unsigned short int * m, *n, sequences_db_max_length, query_sequences_max_length; 
 	unsigned int * a_disp, * b_disp = NULL, offload_max_vect_sequences_db_count=0, qp_count, sp_count;
-	unsigned int offload_vect_sequences_db_count;
 	char *a, * b, * queryProfiles;
 
 	a = query_sequences;			b = chunk_b[0];				
@@ -107,7 +106,7 @@ void het_search_sse_sp_knc_ap (char * query_sequences, unsigned short int * quer
 				offload_vect_sequences_db_count = chunk_vect_sequences_db_count[c];
 
 				// process database chunk in MIC 
-				#pragma offload target(mic:tid) in(ptr_chunk_b[0:offload_vD] : into(b[0:offload_vD]) REUSE) \ 
+				#pragma offload target(mic:tid) in(ptr_chunk_b[0:offload_vD] : into(b[0:offload_vD]) REUSE) \
 					in(ptr_chunk_n[0:offload_vect_sequences_db_count] : into(n[0:offload_vect_sequences_db_count]) REUSE) \
 					in(ptr_chunk_b_disp[0:offload_vect_sequences_db_count] : into(b_disp[0:offload_vect_sequences_db_count]) REUSE) \
 					out(mic_scores: length(query_sequences_count*offload_vect_sequences_db_count*MIC_KNC_INT32_VECTOR_LENGTH) REUSE) \
@@ -119,12 +118,12 @@ void het_search_sse_sp_knc_ap (char * query_sequences, unsigned short int * quer
 						int  * ptr_scores;
 						char * ptr_a, * ptr_b, *ptr_b_block, * scoreProfile, *queryProfile, *ptr_scoreProfile;
 
-						__declspec(align(64)) __m512i vzero = _mm512_setzero_epi32(), score, previous, current, aux1, aux2, aux3, aux4, auxLastCol;
+						__declspec(align(64)) __m512i vzero = _mm512_setzero_epi32(), score, previous, current, aux1, aux2, aux4, auxLastCol;
 						__declspec(align(64)) __m512i vextend_gap = _mm512_set1_epi32(extend_gap), vopen_extend_gap = _mm512_set1_epi32(open_gap+extend_gap);
 						__declspec(align(64)) __m512i v16 = _mm512_set1_epi32(16), submat_hi, submat_lo, b_values;
 						__mmask16 mask;
 
-						unsigned int tid, i, j, ii, jj, k, disp_1, disp_2, disp_3, disp_4, dim1, dim2, nbb;
+						unsigned int tid, i, j, jj, k, disp_1, disp_2, disp_3, dim1, nbb;
 						unsigned long int t, s, q; 
 
 						tid = omp_get_thread_num();
@@ -346,7 +345,7 @@ void het_search_sse_sp_knc_ap (char * query_sequences, unsigned short int * quer
 					char * ptr_a, * ptr_b, * scoreProfile;
 
 					__declspec(align(32)) __m128i score, current, auxBlosum[2], auxLastCol, b_values;
-					__declspec(align(32)) __m128i aux0, aux1, aux2, aux3, aux4, aux5, aux6, aux7, aux8;
+					__declspec(align(32)) __m128i aux0, aux1, aux2, aux3, aux4, aux5, aux6, aux7;
 					__declspec(align(32)) __m128i vextend_gap_epi8 = _mm_set1_epi8(extend_gap), vopen_extend_gap_epi8 = _mm_set1_epi8(open_gap+extend_gap), vzero_epi8 = _mm_set1_epi8(0);
 					__declspec(align(32)) __m128i vextend_gap_epi16 = _mm_set1_epi16(extend_gap), vopen_extend_gap_epi16 = _mm_set1_epi16(open_gap+extend_gap), vzero_epi16 = _mm_set1_epi16(0);
 					__declspec(align(32)) __m128i vextend_gap_epi32 = _mm_set1_epi32(extend_gap), vopen_extend_gap_epi32 = _mm_set1_epi32(open_gap+extend_gap), vzero_epi32 = _mm_set1_epi32(0);
@@ -354,7 +353,7 @@ void het_search_sse_sp_knc_ap (char * query_sequences, unsigned short int * quer
 					__declspec(align(32)) __m128i v15 = _mm_set1_epi8(15), v16 = _mm_set1_epi8(16), vneg32 = _mm_set1_epi8(-32);
 
 					unsigned int j, ii, jj, k, disp_1, disp_2, disp_3, disp_4, dim1, dim2, nbb;
-					unsigned long int t, s, q, ss; 
+					unsigned long int t, s, q; 
 					int tid, overflow_flag, bb1, bb2, bb1_start, bb2_start, bb1_end, bb2_end;
 
 					tid = omp_get_thread_num();
@@ -843,7 +842,7 @@ void het_search_avx2_sp_knc_ap (char * query_sequences, unsigned short int * que
 	int cpu_threads, int cpu_block_size, int num_mics, int mic_threads, int * scores, double * workTime, unsigned short int query_length_threshold) {
 
 	unsigned long int offload_max_vD=0, * chunk_accum_vect_sequences_db_count;
-	long int i=0, ii, j=0, k=0, jj;
+	long int i=0;
 	double tick;
 	unsigned short int * m, *n, sequences_db_max_length, query_sequences_max_length; 
 	unsigned int * a_disp, * b_disp = NULL, offload_max_vect_sequences_db_count=0, qp_count, sp_count;
@@ -942,7 +941,7 @@ void het_search_avx2_sp_knc_ap (char * query_sequences, unsigned short int * que
 				offload_vect_sequences_db_count = chunk_vect_sequences_db_count[c];
 
 				// process database chunk in MIC 
-				#pragma offload target(mic:tid) in(ptr_chunk_b[0:offload_vD] : into(b[0:offload_vD]) REUSE) \ 
+				#pragma offload target(mic:tid) in(ptr_chunk_b[0:offload_vD] : into(b[0:offload_vD]) REUSE) \
 					in(ptr_chunk_n[0:offload_vect_sequences_db_count] : into(n[0:offload_vect_sequences_db_count]) REUSE) \
 					in(ptr_chunk_b_disp[0:offload_vect_sequences_db_count] : into(b_disp[0:offload_vect_sequences_db_count]) REUSE) \
 					out(mic_scores: length(query_sequences_count*offload_vect_sequences_db_count*CPU_AVX2_INT8_VECTOR_LENGTH) REUSE) \
@@ -954,12 +953,12 @@ void het_search_avx2_sp_knc_ap (char * query_sequences, unsigned short int * que
 						int  * ptr_scores;
 						char * ptr_a, * ptr_b, *ptr_b_block, *ptr_scoreProfile, * scoreProfile, *queryProfile;
 
-						__declspec(align(64)) __m512i vzero = _mm512_setzero_epi32(), score, previous, current, aux1, aux2, aux3, aux4, auxLastCol;
+						__declspec(align(64)) __m512i vzero = _mm512_setzero_epi32(), score, previous, current, aux1, auxLastCol;
 						__declspec(align(64)) __m512i vextend_gap = _mm512_set1_epi32(extend_gap), vopen_extend_gap = _mm512_set1_epi32(open_gap+extend_gap);
 						__declspec(align(64)) __m512i v16 = _mm512_set1_epi32(16), submat_hi, submat_lo, b_values;
 						__mmask16 mask;
 
-						unsigned int tid, i, j, ii, jj, k, disp_1, disp_2, disp_3, dim1, dim2, nbb, offset;
+						unsigned int tid, i, j, jj, k, disp_1, disp_2, disp_3, dim1, nbb;
 						unsigned long int t, tt, s, q; 
 
 						tid = omp_get_thread_num();
@@ -1190,7 +1189,7 @@ void het_search_avx2_sp_knc_ap (char * query_sequences, unsigned short int * que
 
 
 					__declspec(align(32)) __m256i score, current, auxLastCol, b_values, blosum_lo, blosum_hi;
-					__declspec(align(32)) __m256i aux0, aux1, aux2, aux3, aux4, aux5, aux6, aux7, aux8;
+					__declspec(align(32)) __m256i aux0, aux1, aux2, aux3, aux4, aux5, aux6;
 					__declspec(align(32)) __m256i vextend_gap_epi8 = _mm256_set1_epi8(extend_gap), vopen_extend_gap_epi8 = _mm256_set1_epi8(open_gap+extend_gap);
 					__declspec(align(32)) __m256i vextend_gap_epi16 = _mm256_set1_epi16(extend_gap), vopen_extend_gap_epi16 = _mm256_set1_epi16(open_gap+extend_gap);
 					__declspec(align(32)) __m256i vextend_gap_epi32 = _mm256_set1_epi32(extend_gap), vopen_extend_gap_epi32 = _mm256_set1_epi32(open_gap+extend_gap);
