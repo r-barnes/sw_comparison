@@ -43,6 +43,7 @@
 
 #include "sbtmatrix.h"
 #include "swutils.h"
+#include "cutil.h"
 
 
 //per emulazione: -Xcuda "-deviceemu" -cuda -D_DEVICEEMU

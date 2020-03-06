@@ -3,6 +3,8 @@
 #ifndef _TEMPLATE_SWUTILS_H_
 #define _TEMPLATE_SWUTILS_H_
 
+#include <cutil.h>
+
 union IntChar4
 {
 	int union_int;

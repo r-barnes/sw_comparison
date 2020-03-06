@@ -34,6 +34,7 @@
 #include <algorithm>
 #include <map>
 #include <math.h>
+#include <unistd.h>
 #include <QtCore/QTime>
 #include <QtCore/QDir>
 #include <QtCore/QFile>

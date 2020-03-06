@@ -65,8 +65,6 @@ __global__ void sw_kernel7_global( const char* g_strToAlign, const unsigned size
 
 	const unsigned int MAX_NUM_THREADS = 32;
 
-	const unsigned numThreads = blockDim.x;
-
 	// shared memory
 	//ho bisogno di una riga di E e di una riga di H per ogni sequenza
 	__shared__  short int	Hsh[MAX_NUM_THREADS*(A_SEQ_CHAR+2)];
@@ -125,7 +123,7 @@ __global__ void sw_kernel7_global( const char* g_strToAlign, const unsigned size
 			
 			//taking the single element of the compared sequence
 			int x = i;
-			bElem = texfetch(texB7, x);
+			bElem = tex1Dfetch(texB7, x);
 	
 			h_jprev = 0;
 			e_jprev = 0;
@@ -174,7 +172,7 @@ __global__ void sw_kernel7_global( const char* g_strToAlign, const unsigned size
 			
 			//taking the single element of the compared sequence
 			int x = i;
-			bElem = texfetch(texB7, x);
+			bElem = tex1Dfetch(texB7, x);
 	
 			h_jprev = d_colMemory[memOffset + i];
 			f_jprev = d_colMemory[memOffset + 2050 + i];
@@ -219,7 +217,7 @@ __global__ void sw_kernel7_global( const char* g_strToAlign, const unsigned size
 		
 		//taking the single element of the compared sequence
 		int x = i;
-		bElem = texfetch(texB7, x);
+		bElem = tex1Dfetch(texB7, x);
 		
 		h_jprev = d_colMemory[memOffset + i];
 		f_jprev = d_colMemory[memOffset + 2050 + i];

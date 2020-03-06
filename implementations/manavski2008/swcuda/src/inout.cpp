@@ -34,6 +34,7 @@ using namespace std;
 #include <sys/ioctl.h>
 #include <netinet/in.h>
 #include <net/if.h>
+#include <unistd.h>
 
 void verifyMAC()
 {

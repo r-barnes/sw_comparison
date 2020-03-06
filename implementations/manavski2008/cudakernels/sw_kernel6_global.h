@@ -124,7 +124,7 @@ __global__ void sw_kernel6_global( const char* g_strToAlign, const unsigned size
 		for (unsigned i=1; i<sizeB; i++) { 
 			
 			int x = i;
-			bElem = texfetch(texB6, x);
+			bElem = tex1Dfetch(texB6, x);
 	
 			h_jprev = 0;
 			e_jprev = 0;
@@ -173,7 +173,7 @@ __global__ void sw_kernel6_global( const char* g_strToAlign, const unsigned size
 			
 			//taking the single element of the compared sequence
 			int x = i;
-			bElem = texfetch(texB6, x);
+			bElem = tex1Dfetch(texB6, x);
 	
 			h_jprev = d_colMemory[memOffset + i];
 			f_jprev = d_colMemory[memOffset + 2050 + i];
@@ -218,7 +218,7 @@ __global__ void sw_kernel6_global( const char* g_strToAlign, const unsigned size
 		
 		//taking the single element of the compared sequence
 		int x = i;
-		bElem = texfetch(texB6, x);
+		bElem = tex1Dfetch(texB6, x);
 		
 		h_jprev = d_colMemory[memOffset + i];
 		f_jprev = d_colMemory[memOffset + 2050 + i];

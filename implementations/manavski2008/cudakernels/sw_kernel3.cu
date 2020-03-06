@@ -33,6 +33,7 @@
 
 #include "sbtmatrix.h"
 #include "swutils.h"
+#include "cutil.h"
 
 
 __global__ void smithwatermanKernel_midantidiag_64threads( const char* g_strToAlign, const unsigned size_strToAlign, const char* g_seqlib, unsigned totBytesUsed, unsigned numSeqs, unsigned seqOffset, unsigned *g_offsets, unsigned *g_sizes, unsigned alpha, unsigned beta, int *g_Hdata, int *g_Edata, int *g_Fdata, int *g_scores, unsigned Aoffset, unsigned forwardRunSteps) 
@@ -57,7 +58,6 @@ __global__ void smithwatermanKernel_midantidiag_64threads( const char* g_strToAl
 	// read the substitution matrix
 	loadPAM_64threads(tid);
 
-	unsigned sizeA = g_sizes[blid+seqOffset];
 	unsigned sizeB = size_strToAlign;
 
 	// read in input data from global memory

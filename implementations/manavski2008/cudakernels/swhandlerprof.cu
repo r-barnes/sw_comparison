@@ -85,8 +85,6 @@ extern "C" double smithWatermanCudaProf(const char* strToAlign, const unsigned s
 	unsigned *queryProf = (unsigned *) malloc(profileSize*sizeof(unsigned));
 	memset(queryProf, 'd', profileSize*sizeof(unsigned));
 
-	unsigned i, j;
-
 	char a, b;
 	unsigned pos;
 

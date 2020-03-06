@@ -124,7 +124,6 @@ extern "C" double smithWatermanCuda2( const char* strToAlign, const unsigned siz
 	if ( residueThreads != 0 && !(MAX_BLOCK_SIZE % residueThreads) ) {
 		//se il residuo è un sottomultiplo di MAX_BLOCK_SIZE
 
-		dim3  grid( 1, 1, 1);
 		dim3  threads( residueThreads, 1, 1);
 
 		swhandler6_global(1, residueThreads, d_strToAlign, sizeNotPad, d_seqlib, startPos, d_offsets, d_sizes, alpha, beta, d_scores, d_colMemory);
@@ -143,7 +142,6 @@ extern "C" double smithWatermanCuda2( const char* strToAlign, const unsigned siz
 		unsigned numBlocks = (cnt + GRID_SIZE > numTotBlocks) ? (numTotBlocks - cnt) : GRID_SIZE;
 
 		dim3  grid( numBlocks, 1, 1);
-		dim3  threads( MAX_BLOCK_SIZE, 1, 1);
 		swhandler6_global(numBlocks, MAX_BLOCK_SIZE, d_strToAlign, sizeNotPad, d_seqlib, newStartPos, d_offsets, d_sizes, alpha, beta, d_scores, d_colMemory);
 
 		cnt += numBlocks;

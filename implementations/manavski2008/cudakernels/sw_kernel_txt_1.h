@@ -2,6 +2,8 @@
 #ifndef _TEMPLATE_KERNEL_TXT_1_H_
 #define _TEMPLATE_KERNEL_TXT_1_H_
 
+#include <cutil.h>
+
 #define HSH( index )      CUT_BANK_CHECKER(Hsh, (index))
 #define ESH( index )      CUT_BANK_CHECKER(Esh, (index))
 
@@ -63,16 +65,13 @@ __device__ void swcalc_kernel_txt_1(const char &aElem, const char &bElem, const 
 
 __device__ char textureFetcher(const unsigned &seqNum, const unsigned numChar, unsigned* g_offsets)
 {	
-	unsigned qt1= numChar / 9;
-	unsigned qt2 = seqNum / 64;
-	unsigned off = g_offsets[qt2]+qt1;
 	unsigned seq = seqNum % 64;
 	unsigned seqChar = numChar % 9;
 
 	int x = (seqChar/3)*8 + (seq/8);
 	int y = (seqChar%3)*8 + (seq%8);
 
-	char elem = texfetch(texLib, x, y);
+	char elem = tex1dfetch(texLib, x, y);
 
 	return elem;
 }
@@ -100,8 +99,6 @@ __global__ void sw_kernel_txt_1( const char* g_strToAlign, const unsigned sizeNo
 	}
 
 	unsigned tempVar = (blid*MAX_NUM_THREADS) + tid + seqOffset;
-
-	unsigned libOffset = g_offsets[tempVar];
 
 	unsigned sizeA = g_sizes[tempVar];
 	unsigned sizeB = sizeNotPad;
@@ -134,7 +131,7 @@ __global__ void sw_kernel_txt_1( const char* g_strToAlign, const unsigned sizeNo
 
 		//taking the single element of the compared sequence
 		//aElem = g_seqlib[libOffset + i];
-		//aElem =  texfetch( texLib, static_cast<int>(libOffset + i) );
+		//aElem =  tex1dfetch( texLib, static_cast<int>(libOffset + i) );
 		//aElem = textureFetcher(tempVar, i, g_offsets);
 
 		h_jsucc = e_jsucc = f_jsucc=0;

@@ -924,6 +924,27 @@ extern "C" {
     }                                                                        \
     exit(EXIT_SUCCESS);
 
+#  define CUT_CHECK_DEVICE() do {                                            \
+    int deviceCount;                                                         \
+    CUDA_SAFE_CALL(cudaGetDeviceCount(&deviceCount));                        \
+    if (deviceCount == 0) {                                                  \
+        fprintf(stderr, "There is no device.\n");                            \
+        exit(EXIT_FAILURE);                                                  \
+    }                                                                        \
+    int dev;                                                                 \
+    for (dev = 0; dev < deviceCount; ++dev) {                                \
+        cudaDeviceProp deviceProp;                                           \
+        CUDA_SAFE_CALL(cudaGetDeviceProperties(&deviceProp, dev));           \
+        if (strncmp(deviceProp.name, "Device Emulation", 16))                \
+            break;                                                           \
+    }                                                                        \
+    if (dev == deviceCount) {                                                \
+        fprintf(stderr, "There is no device supporting CUDA.\n");            \
+        exit(EXIT_FAILURE);                                                  \
+    }                                                                        \
+    else                                                                     \
+        CUDA_SAFE_CALL(cudaSetDevice(dev));                                  \
+} while (0)
 
 #ifdef __cplusplus
 }
