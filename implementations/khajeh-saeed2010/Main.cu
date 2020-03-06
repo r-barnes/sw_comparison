@@ -9,7 +9,7 @@
 #include <iostream>
 #include <fstream>
 #include <new>
-#include <cutil_inline.h>
+// #include <cutil_inline.h>
 //#include <Header.h>
 
 using namespace std;
@@ -195,6 +195,6 @@ delete [] h_Kernel_2_output_B;
 	{
 		printf("       \n");
 		printf("Shutting down...\n");
-		CUT_EXIT(argc, argv);
+		// CUT_EXIT(argc, argv);
 	}
 }

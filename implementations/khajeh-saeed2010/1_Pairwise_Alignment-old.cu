@@ -11,6 +11,9 @@
 #include <Scan_SW.cu>  
 #include <ss.cu>
 #include <SW_kernel_1.cu>
+#include <Kernel_1_CPU.cu>
+#include <Kernel_1_Max_CPU.cu>
+#include <Kernel_1_Max_CPU_MPI.cu>
 
 void Pairwise_Alignment (int *h_A, int *d_B, int *h_B, int *h_Max_CPU, int *h_A_Location, int *h_B_Location,
 						 int K1R, int MyProc, int NumProcs, int L_B, int L_A, int L_A1,  

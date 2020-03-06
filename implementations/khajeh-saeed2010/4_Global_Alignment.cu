@@ -8,6 +8,7 @@
 #include <fstream>
 
 #include <SW_kernel_4.cu>
+#include <Kernel_4_CPU.cu>
 
 
 void Global_Alignment (int *h_Val_K3_K4_B_All, int *h_Length_Seq_K4_All, int *d_Val_K3_K4_B_All, int *d_Length_Seq_K4_All,
@@ -19,7 +20,7 @@ void Global_Alignment (int *h_Val_K3_K4_B_All, int *h_Length_Seq_K4_All, int *d_
 	dim3 BlockSize_K4(64, 1);         //64
     dim3 GridSize_K4 (128, 1);        // 512
     CUT_SAFE_CALL ( cutCreateTimer(&hTimer) );
-    CUDA_SAFE_CALL( cudaThreadSynchronize() );
+    CUDA_SAFE_CALL( cudaDeviceSynchronize() );
     CUT_SAFE_CALL ( cutResetTimer(hTimer)   );
     CUT_SAFE_CALL ( cutStartTimer(hTimer)   );
 
@@ -101,7 +102,7 @@ void Global_Alignment (int *h_Val_K3_K4_B_All, int *h_Length_Seq_K4_All, int *d_
 							K3_Length, K3_Report, K3_Safety, K_3_R, MyProc,
 							Start_Th1,  End_Th1,K4_S1, K4_S2, K4_S3);
 		
-	CUDA_SAFE_CALL( cudaThreadSynchronize() );
+	CUDA_SAFE_CALL( cudaDeviceSynchronize() );
    	MPI_Barrier(MPI_COMM_WORLD);
 	float End_Kernel_4_GPU =	cutGetTimerValue(hTimer);
 	CUT_CHECK_ERROR("Kernel 4");

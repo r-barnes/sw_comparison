@@ -9,6 +9,7 @@
 
 
 #include <SW_kernel_5.cu>
+#include <Kernel_5_CPU.cu>
 
 void Multiple_Alignment (int *h_Val_K3_K4_B_All, int *h_Length_Seq_K4_All, int *d_Val_K3_K4_B_All, 
 						 int *d_Length_Seq_K4_All, int *Kernel_4_output_CPU, int *d_Kernel_4_output,
@@ -19,7 +20,7 @@ void Multiple_Alignment (int *h_Val_K3_K4_B_All, int *h_Length_Seq_K4_All, int *
 	dim3 BlockSize_K4(64, 1);         //64
     dim3 GridSize_K4 (128, 1);        // 512
     CUT_SAFE_CALL ( cutCreateTimer(&hTimer) );
-    CUDA_SAFE_CALL( cudaThreadSynchronize() );
+    CUDA_SAFE_CALL( cudaDeviceSynchronize() );
     CUT_SAFE_CALL ( cutResetTimer(hTimer)   );
     CUT_SAFE_CALL ( cutStartTimer(hTimer)   );
 
@@ -72,12 +73,12 @@ void Multiple_Alignment (int *h_Val_K3_K4_B_All, int *h_Length_Seq_K4_All, int *
 	float Start_Kernel_5_GPU =	cutGetTimerValue(hTimer);  
 
 	Kernel_51 <<<GridSize_K4,BlockSize_K4>>> (d_Kernel_4_output, d_Kernel_5_Temp, K3_Report, K5R);
-	CUDA_SAFE_CALL( cudaThreadSynchronize() );
+	CUDA_SAFE_CALL( cudaDeviceSynchronize() );
 
 	Kernel_52 <<<GridSize_K4,BlockSize_K4>>> (d_Val_K3_K4_B_All, d_Kernel_5_output, d_Length_Seq_K4_All, d_Kernel_5_Temp,
 											 K3_Length, K3_Report, K3_Safety, K5R/NumProcs,MyProc,
 											 K5_Length, K4_S1, K4_S2, K4_S3);
-	CUDA_SAFE_CALL( cudaThreadSynchronize() );				   
+	CUDA_SAFE_CALL( cudaDeviceSynchronize() );				   
  	MPI_Barrier(MPI_COMM_WORLD);
 	float End_Kernel_5_GPU =	cutGetTimerValue(hTimer);
 	CUT_CHECK_ERROR("Kernel 5");

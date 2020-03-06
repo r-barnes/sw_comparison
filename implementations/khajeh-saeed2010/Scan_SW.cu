@@ -5,6 +5,7 @@
 // includes, kernels
 #include <Scan_SW_kernel.cu>
 #include <assert.h>
+#include <cutil.h>
 
 inline bool 
 isPowerOfTwo(int n)

@@ -8,6 +8,7 @@
 #include <fstream>
 
 #include <SW_kernel_2.cu>
+#include <Kernel_2_CPU.cu>
 
 void Sequence_Extraction (int *h_A, int *d_A, int *d_B, int *h_Kernel_2_output_B_All, int *h_B, int *h_Max_CPU_All,
 						  int *h_A_Location_All, int *h_B_Location_All,

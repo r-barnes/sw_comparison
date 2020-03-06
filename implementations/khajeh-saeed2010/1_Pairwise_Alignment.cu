@@ -11,6 +11,9 @@
 #include <Scan_SW.cu>  
 #include <ss.cu>
 #include <SW_kernel_1.cu>
+#include <Kernel_1_CPU.cu>
+#include <Kernel_1_Max_CPU.cu>
+#include <Kernel_1_Max_CPU_MPI.cu>
 
 void Pairwise_Alignment (int *h_A, int *d_B, int *h_B, int *h_Max_CPU_All, int *h_A_Location_All, int *h_B_Location_All,
 						 int *h_Max_CPU, int *h_A_Location, int *h_B_Location,
@@ -98,11 +101,10 @@ void Pairwise_Alignment (int *h_A, int *d_B, int *h_B, int *h_Max_CPU_All, int *
 	}
 	
 	unsigned int hTimer;
-	dim3 BlockSize(64, 1);         //64
     dim3 GridSize (512, 1);        // 512
 
 	CUT_SAFE_CALL ( cutCreateTimer(&hTimer) );
-    CUDA_SAFE_CALL( cudaThreadSynchronize() );
+    CUDA_SAFE_CALL( cudaDeviceSynchronize() );
     CUT_SAFE_CALL ( cutResetTimer(hTimer)   );
     CUT_SAFE_CALL ( cutStartTimer(hTimer)   );
 
@@ -157,7 +159,7 @@ void Pairwise_Alignment (int *h_A, int *d_B, int *h_B, int *h_Max_CPU_All, int *
 			
 		float Start_Time_H_Tilda =	cutGetTimerValue(hTimer);
 		H_tilda<<<GridSize,256>>>(d_H, d_A, d_F, d_H_til,d_E_til,h_B[i], L_A,si,dis, Gop, Gex, Threads_N, 0);	
-//		CUDA_SAFE_CALL( cudaThreadSynchronize() );                       
+//		CUDA_SAFE_CALL( cudaDeviceSynchronize() );                       
 		float End_Time_H_Tilda=	cutGetTimerValue(hTimer);
 
 
@@ -165,7 +167,7 @@ void Pairwise_Alignment (int *h_A, int *d_B, int *h_B, int *h_Max_CPU_All, int *
 	    float Start_Time_Scan = cutGetTimerValue(hTimer);
 		prescanArray(d_E_til, d_H_til,L_A);
 		prescanArray(d_E_til, d_H_til,L_A);
-//	    CUDA_SAFE_CALL( cudaThreadSynchronize() ); 
+//	    CUDA_SAFE_CALL( cudaDeviceSynchronize() ); 
 	    float End_Time_Scan = cutGetTimerValue(hTimer);																	
 	//******* SCAN FINISH ********
  
@@ -175,7 +177,7 @@ void Pairwise_Alignment (int *h_A, int *d_B, int *h_B, int *h_Max_CPU_All, int *
 	    float Start_Time_H_Final = cutGetTimerValue(hTimer);
 		Final_H<<<GridSize,256>>> (d_A, d_H_til, d_E_til, d_H, d_Max_H, d_Loc_H ,d_Con_Old, d_Con_New, h_B[i], L_A, L_M, Gop, Gex,Threads_N, Mimimum_Kernel1,0);
 	
-//		CUDA_SAFE_CALL( cudaThreadSynchronize() );                       
+//		CUDA_SAFE_CALL( cudaDeviceSynchronize() );                       
 	    float End_Time_H_Final = cutGetTimerValue(hTimer);
 //		MPI_Barrier(MPI_COMM_WORLD);
 
@@ -184,7 +186,7 @@ void Pairwise_Alignment (int *h_A, int *d_B, int *h_B, int *h_Max_CPU_All, int *
 
 		Shrink_H <<<GridSize,256>>>(d_Max_H2, d_Loc_H2, d_Max_H, d_Loc_H,d_Con_Old,d_Con_New, L_A, L_M, Threads_N, i);
 
-//		CUDA_SAFE_CALL( cudaThreadSynchronize() );                       
+//		CUDA_SAFE_CALL( cudaDeviceSynchronize() );                       
 		float End_Time_Shrink_H = cutGetTimerValue(hTimer);
 //		MPI_Barrier(MPI_COMM_WORLD);
 

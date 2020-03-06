@@ -2,7 +2,9 @@
 // Calculate scalar products of VectorN vectors of ElementN elements on CPU.
 // Straight accumulation in double precision.
 ////////////////////////////////////////////////////////////////////////////
- #include <iostream>
+#pragma once
+
+#include <iostream>
 
 
 void Kernel_1_Max_CPU(int *Max_GPU, int *Max_CPU, int *A_Location, int *B_Location, int *Location,

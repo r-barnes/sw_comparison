@@ -8,6 +8,8 @@
 #include <fstream>
 
 #include <SW_kernel_2.cu>
+#include <Kernel_2_CPU.cu>
+#include <Kernel_2_Max_CPU_MPI.cu>
 
 void Sequence_Extraction (int *h_A, int *d_A, int *d_B, int *h_Kernel_2_output_B, int *h_B, int *h_Max_CPU_All,
 						  int *h_A_Location_All, int *h_B_Location_All,
@@ -21,7 +23,7 @@ void Sequence_Extraction (int *h_A, int *d_A, int *d_B, int *h_Kernel_2_output_B
 	dim3 GridSize (200, 1);        // 512
 	
 	CUT_SAFE_CALL ( cutCreateTimer(&hTimer) );
-	CUDA_SAFE_CALL( cudaThreadSynchronize() );
+	CUDA_SAFE_CALL( cudaDeviceSynchronize() );
 	CUT_SAFE_CALL ( cutResetTimer(hTimer)   );
 	CUT_SAFE_CALL ( cutStartTimer(hTimer)   );
 
@@ -107,7 +109,7 @@ void Sequence_Extraction (int *h_A, int *d_A, int *d_B, int *h_Kernel_2_output_B
 	Kernel_2 <<<GridSize,BlockSize>>> (d_F2,d_H2,d_E2,d_FLoc2,d_ELoc2,d_L2,d_A, d_B, d_Max_Kernel_2, d_Loc_A_Kernel_2, d_Loc_B_Kernel_2,
 									   d_Kernel_2_output_A,d_Kernel_2_output_B,
 									   K2R, Kerene2Max, si, dis, Gop, Gex, Start_A);
-	CUDA_SAFE_CALL( cudaThreadSynchronize() );
+	CUDA_SAFE_CALL( cudaDeviceSynchronize() );
 	CUT_CHECK_ERROR("Kernel 2");
 	MPI_Barrier(MPI_COMM_WORLD);
 	End_Kernel_2_GPU =	cutGetTimerValue(hTimer);

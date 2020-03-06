@@ -1,3 +1,4 @@
+#pragma once
 
 __global__ void Kernel_4 (int* B,int* D, int* Kernel_4_output, int* Start_A, int* Start_B, int* Length_Seq_K4, 
 							int K3_Length, int K3_Report, int K3_Safety, int K_3_R, int MyProc,

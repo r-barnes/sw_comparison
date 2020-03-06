@@ -2,7 +2,9 @@
 // Calculate scalar products of VectorN vectors of ElementN elements on CPU.
 // Straight accumulation in double precision.
 ////////////////////////////////////////////////////////////////////////////
- #include <iostream>
+#pragma once
+
+#include <iostream>
 #include <cmath>
 using namespace std;
 

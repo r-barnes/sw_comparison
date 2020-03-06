@@ -2,7 +2,9 @@
 // Calculate scalar products of VectorN vectors of ElementN elements on CPU.
 // Straight accumulation in double precision.
 ////////////////////////////////////////////////////////////////////////////
- #include <iostream>
+#pragma once
+
+#include <iostream>
 
 //extern "C"
 void Kernel_2_Max_CPU_MPI(int *Max_All_CPU, int *A_Location_All_CPU, int *B_Location_All_CPU, 

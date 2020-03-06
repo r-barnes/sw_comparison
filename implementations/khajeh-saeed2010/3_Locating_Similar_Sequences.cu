@@ -9,6 +9,9 @@
 
 
 #include <SW_kernel_3.cu>
+#include <Kernel_3_CPU.cu>
+#include <Kernel_3_Max_CPU_MPI.cu>
+#include <SW_kernel_4.cu>
 
 void Locating_Similar_Sequences (int *h_A, int *d_A, int *h_Kernel_2_output_B, int *h_B, 
 								 int *h_Val_K3_K4_B_All, int *h_Length_Seq_K4_All, int *d_Val_K3_K4_B_All, int *d_Length_Seq_K4_All,
@@ -21,7 +24,7 @@ void Locating_Similar_Sequences (int *h_A, int *d_A, int *h_Kernel_2_output_B, i
 	dim3 GridSize_K3 (GridSize_K3_X, 1);        // 512
 
 	CUT_SAFE_CALL ( cutCreateTimer(&hTimer) );
-    CUDA_SAFE_CALL( cudaThreadSynchronize() );
+    CUDA_SAFE_CALL( cudaDeviceSynchronize() );
     CUT_SAFE_CALL ( cutResetTimer(hTimer)   );
     CUT_SAFE_CALL ( cutStartTimer(hTimer)   );
 
@@ -184,7 +187,7 @@ void Locating_Similar_Sequences (int *h_A, int *d_A, int *h_Kernel_2_output_B, i
   	CUDA_SAFE_CALL( cudaMemcpy(d_Length_B_K3,   h_Length_B_K3_All,     DATA_SZ_K35,  cudaMemcpyHostToDevice) );
 
 	CUT_CHECK_ERROR("Kernel 3");
-	CUDA_SAFE_CALL( cudaThreadSynchronize() );
+	CUDA_SAFE_CALL( cudaDeviceSynchronize() );
     
  //   printf("************ Start Kernel 3 ************* \n");
  
@@ -225,14 +228,14 @@ void Locating_Similar_Sequences (int *h_A, int *d_A, int *h_Kernel_2_output_B, i
 							   d_Num_Resize,d_Min_Val_K3,d_Min_Loc_K3, d_jStart, d_jEnd,
 							   K3_Length, K3R, K3_Safety, K_3_R,L_A, si, dis, Gop, Gex, 15,j_Start_Section,j_End_Section);      
 						
-		CUDA_SAFE_CALL( cudaThreadSynchronize() );
+		CUDA_SAFE_CALL( cudaDeviceSynchronize() );
     	float E_Kernel_3 =	cutGetTimerValue(hTimer);
 
 		j_Start_Section+=K3_Timed_Out;
 		j_End_Section +=K3_Timed_Out;    					  	
 							
 	}
-	CUDA_SAFE_CALL( cudaThreadSynchronize() );
+	CUDA_SAFE_CALL( cudaDeviceSynchronize() );
 	MPI_Barrier(MPI_COMM_WORLD);
 	float End_Kernel_3 =	cutGetTimerValue(hTimer);
 	CUT_CHECK_ERROR("Kernel 3");
@@ -272,7 +275,7 @@ void Locating_Similar_Sequences (int *h_A, int *d_A, int *h_Kernel_2_output_B, i
 
  	Kernel_3_4 <<<GridSize_K3,BlockSize_K3>>> (d_Loc_K3_K4_A, d_Loc_K3_K4_B, d_Max_K3_K4,d_Max_Kernel_3, d_Loc_Kernel_3_A, d_Loc_Kernel_3_B,d_Length_Seq_K4,
         					   K3_Length, K3R, K3_Safety, K_3_R, K3_Report, Start_A);
-	CUDA_SAFE_CALL( cudaThreadSynchronize() );
+	CUDA_SAFE_CALL( cudaDeviceSynchronize() );
 
 	CUDA_SAFE_CALL( cudaMemcpy(h_Loc_K3_K4_A,    d_Loc_K3_K4_A,   DATA_SZ_K37, cudaMemcpyDeviceToHost) );
 	CUDA_SAFE_CALL( cudaMemcpy(h_Loc_K3_K4_B,   d_Loc_K3_K4_B,   DATA_SZ_K37, cudaMemcpyDeviceToHost) );

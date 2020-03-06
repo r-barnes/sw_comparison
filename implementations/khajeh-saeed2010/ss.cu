@@ -32,6 +32,7 @@
 // includes, kernels
 #include <ss_kernel.cu>
 #include <assert.h>
+#include <cutil.h>
 
 
 inline bool 
