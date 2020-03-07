@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.13)
 
-project(gasal2 LANGUAGES CUDA C CXX)
+project(soap3 LANGUAGES CUDA C CXX)
 
 find_package(OpenMP REQUIRED)
 find_package(ZLIB REQUIRED)
