@@ -25,17 +25,16 @@ Contact the author by mkorpar@gmail.com.
 #include <stdlib.h>
 #include <string.h>
 
-#include "chain.h"
-#include "constants.h"
-#include "cpu_module.h"
-#include "cuda_utils.h"
-#include "error.h"
-#include "scorer.h"
-#include "thread.h"
-#include "threadpool.h"
-#include "utils.h"
-
-#include "score_database_gpu_short.h"
+#include <swsharp/chain.h>
+#include <swsharp/constants.h>
+#include <swsharp/cpu_module.h>
+#include <swsharp/cuda_utils.h>
+#include <swsharp/error.h>
+#include <swsharp/scorer.h>
+#include <swsharp/thread.h>
+#include <swsharp/threadpool.h>
+#include <swsharp/utils.h>
+#include <swsharp/score_database_gpu_short.h>
 
 #define CPU_WORKER_STEP         64
 #define CPU_THREADPOOL_STEP     100

@@ -24,7 +24,7 @@ Contact the author by mkorpar@gmail.com.
 @brief
 */
 
-#include "constants.h"
+#include <swsharp/constants.h>
 
 int BLOSUM_45_TABLE[26 * 26] = {
     5, -1, -1, -2, -1, -2, 0, -2, -1, -1, -1, -1, -1, -1, -5, -1, -1, -2, 1, 0, -5, 0, -2, -1, -2, -1,

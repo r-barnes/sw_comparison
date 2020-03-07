@@ -23,8 +23,7 @@ Contact the author by mkorpar@gmail.com.
 #include <stdlib.h>
 #include <string.h>
 
-#include "swsharp/swsharp.h"
-
+#include <swsharp/swsharp.h>
 #include "mpi_module.h"
 
 //******************************************************************************

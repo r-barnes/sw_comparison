@@ -24,13 +24,12 @@ Contact the author by mkorpar@gmail.com.
 #include <stdlib.h>
 #include <string.h>
 
-#include "chain.h"
-#include "constants.h"
-#include "error.h"
-#include "scorer.h"
-#include "utils.h"
-
-#include "pre_proc.h"
+#include <swsharp/chain.h>
+#include <swsharp/constants.h>
+#include <swsharp/error.h>
+#include <swsharp/scorer.h>
+#include <swsharp/utils.h>
+#include <swsharp/pre_proc.h>
 
 #define SCORERS_LEN (sizeof(scorers) / sizeof(ScorerEntry))
 

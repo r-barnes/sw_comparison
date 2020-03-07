@@ -23,10 +23,9 @@ Contact the author by mkorpar@gmail.com.
 #include <stdlib.h>
 #include <string.h>
 
-#include "chain.h"
-#include "scorer.h"
-
-#include "alignment.h"
+#include <swsharp/chain.h>
+#include <swsharp/scorer.h>
+#include <swsharp/alignment.h>
 
 struct Alignment {
     Chain* query;

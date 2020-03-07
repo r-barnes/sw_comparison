@@ -22,9 +22,8 @@ Contact the author by mkorpar@gmail.com.
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "thread.h"
-
-#include "threadpool.h"
+#include <swsharp/thread.h>
+#include <swsharp/threadpool.h>
 
 #define QUEUE_MAX_SIZE 100000
 

@@ -22,7 +22,7 @@ Contact the author by mkorpar@gmail.com.
 #ifndef __MPI_MODULEH__
 #define __MPI_MODULEH__
 
-#include "swsharp/swsharp.h"
+#include <swsharp/swsharp.h>
 
 #ifdef __cplusplus 
 extern "C" {

@@ -23,10 +23,9 @@ Contact the author by mkorpar@gmail.com.
 #include <string.h>
 #include <assert.h>
 
-#include "error.h"
-#include "utils.h"
-
-#include "scorer.h"
+#include <swsharp/error.h>
+#include <swsharp/utils.h>
+#include <swsharp/scorer.h>
 
 struct Scorer {
 

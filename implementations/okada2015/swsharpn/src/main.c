@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "swsharp/swsharp.h"
+#include <swsharp/swsharp.h>
 
 #define ASSERT(expr, fmt, ...)\
     do {\

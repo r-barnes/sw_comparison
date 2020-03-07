@@ -29,10 +29,9 @@ Contact the author by mkorpar@gmail.com.
 #include <sys/time.h>
 #endif
 
-#include "error.h"
-#include "thread.h"
-
-#include "utils.h"
+#include <swsharp/error.h>
+#include <swsharp/thread.h>
+#include <swsharp/utils.h>
 
 #ifdef DEBUG
 

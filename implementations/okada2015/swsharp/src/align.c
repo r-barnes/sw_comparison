@@ -25,19 +25,18 @@ Contact the author by mkorpar@gmail.com.
 #include <stdlib.h>
 #include <string.h>
 
-#include "alignment.h"
-#include "chain.h"
-#include "constants.h"
-#include "cpu_module.h"
-#include "cuda_utils.h"
-#include "error.h"
-#include "gpu_module.h"
-#include "reconstruct.h"
-#include "scorer.h"
-#include "threadpool.h"
-#include "utils.h"
-
-#include "align.h"
+#include <swsharp/alignment.h>
+#include <swsharp/chain.h>
+#include <swsharp/constants.h>
+#include <swsharp/cpu_module.h>
+#include <swsharp/cuda_utils.h>
+#include <swsharp/error.h>
+#include <swsharp/gpu_module.h>
+#include <swsharp/reconstruct.h>
+#include <swsharp/scorer.h>
+#include <swsharp/threadpool.h>
+#include <swsharp/utils.h>
+#include <swsharp/align.h>
 
 #define GPU_MIN_LEN     256
 #define GPU_MIN_CELLS   1000000.0

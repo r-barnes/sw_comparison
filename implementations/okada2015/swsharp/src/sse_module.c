@@ -21,16 +21,16 @@ Contact the author by mkorpar@gmail.com.
 
 #include <stdio.h>
 
-#include "chain.h"
-#include "constants.h"
-#include "error.h"
-#include "scorer.h"
-#include "utils.h"
+#include <swsharp/chain.h>
+#include <swsharp/constants.h>
+#include <swsharp/error.h>
+#include <swsharp/scorer.h>
+#include <swsharp/utils.h>
 
 #include "swimd/Swimd.h"
 #include "ssw/ssw.h"
 
-#include "sse_module.h"
+#include <swsharp/sse_module.h>
 
 //******************************************************************************
 // PUBLIC

@@ -3,8 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "swsharp/evalue.h"
-#include "swsharp/swsharp.h"
+#include <swsharp/evalue.h>
+#include <swsharp/swsharp.h>
 #include <sys/time.h>
 
 #define ASSERT(expr, fmt, ...)\

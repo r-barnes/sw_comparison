@@ -31,8 +31,8 @@ Contact the author by mkorpar@gmail.com.
 #include <signal.h>
 #endif
 
-#include "error.h"
-#include "thread.h"
+#include <swsharp/error.h>
+#include <swsharp/thread.h>
 
 #if defined(__APPLE__)
 

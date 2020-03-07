@@ -17,4 +17,4 @@ swsharpwin/*/*.h
 swsharpwin/*/*/*.h
 swsharpwin/*/*/*.c
 swsharpwin/*/*/*.cpp
-
+build/

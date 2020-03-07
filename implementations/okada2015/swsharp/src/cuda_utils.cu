@@ -22,10 +22,9 @@ Contact the author by mkorpar@gmail.com.
 #include <stdlib.h>
 #include <string.h>
 
-#include "error.h"
-#include "utils.h"
-
-#include "cuda_utils.h"
+#include <swsharp/error.h>
+#include <swsharp/utils.h>
+#include <swsharp/cuda_utils.h>
 
 extern void cudaGetCards(int** cards, int* cardsLen) {
 

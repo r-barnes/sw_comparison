@@ -21,12 +21,11 @@ Contact the author by mkorpar@gmail.com.
 
 #ifndef __CUDACC__
 
-#include "chain.h"
-#include "error.h"
-#include "scorer.h"
-#include "thread.h"
-
-#include "gpu_module.h"
+#include <swsharp/chain.h>
+#include <swsharp/error.h>
+#include <swsharp/scorer.h>
+#include <swsharp/thread.h>
+#include <swsharp/gpu_module.h>
 
 static const char* errorMessage = "CUDA not available";
 

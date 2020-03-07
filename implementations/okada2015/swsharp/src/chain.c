@@ -24,11 +24,10 @@ Contact the author by mkorpar@gmail.com.
 #include <stdlib.h>
 #include <string.h>
 
-#include "error.h"
-#include "scorer.h"
-#include "thread.h"
-
-#include "chain.h"
+#include <swsharp/error.h>
+#include <swsharp/scorer.h>
+#include <swsharp/thread.h>
+#include <swsharp/chain.h>
 
 struct Chain {
 

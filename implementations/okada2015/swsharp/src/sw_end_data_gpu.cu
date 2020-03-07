@@ -24,15 +24,14 @@ Contact the author by mkorpar@gmail.com.
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "chain.h"
-#include "constants.h"
-#include "cuda_utils.h"
-#include "error.h"
-#include "scorer.h"
-#include "thread.h"
-#include "utils.h"
-
-#include "gpu_module.h"
+#include <swsharp/chain.h>
+#include <swsharp/constants.h>
+#include <swsharp/cuda_utils.h>
+#include <swsharp/error.h>
+#include <swsharp/scorer.h>
+#include <swsharp/thread.h>
+#include <swsharp/utils.h>
+#include <swsharp/gpu_module.h>
 
 #define MAX_THREADS MAX(THREADS_SM1, THREADS_SM2)
 

@@ -25,15 +25,14 @@ Contact the author by mkorpar@gmail.com.
 #include <stdlib.h>
 #include <string.h>
 
-#include "chain.h"
-#include "constants.h"
-#include "cuda_utils.h"
-#include "error.h"
-#include "scorer.h"
-#include "thread.h"
-#include "utils.h"
-
-#include "score_database_gpu_long.h"
+#include <swsharp/chain.h>
+#include <swsharp/constants.h>
+#include <swsharp/cuda_utils.h>
+#include <swsharp/error.h>
+#include <swsharp/scorer.h>
+#include <swsharp/thread.h>
+#include <swsharp/utils.h>
+#include <swsharp/score_database_gpu_long.h>
 
 #define THREADS   64
 #define BLOCKS    240

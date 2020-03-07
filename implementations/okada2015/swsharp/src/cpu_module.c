@@ -25,15 +25,14 @@ Contact the author by mkorpar@gmail.com.
 #include <stdlib.h>
 #include <string.h>
 
-#include "alignment.h"
-#include "chain.h"
-#include "constants.h"
-#include "error.h"
-#include "scorer.h"
-#include "sse_module.h"
-#include "utils.h"
-
-#include "cpu_module.h"
+#include <swsharp/alignment.h>
+#include <swsharp/chain.h>
+#include <swsharp/constants.h>
+#include <swsharp/error.h>
+#include <swsharp/scorer.h>
+#include <swsharp/sse_module.h>
+#include <swsharp/utils.h>
+#include <swsharp/cpu_module.h>
 
 typedef struct Move {
     char move;

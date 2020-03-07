@@ -25,17 +25,17 @@ Contact the author by mkorpar@gmail.com.
 #include <stdio.h>
 #include <string.h>
 
-#include "chain.h"
-#include "cpu_module.h"
-#include "constants.h"
-#include "error.h"
-#include "gpu_module.h"
-#include "scorer.h"
-#include "thread.h"
-#include "threadpool.h"
-#include "utils.h"
+#include <swsharp/chain.h>
+#include <swsharp/cpu_module.h>
+#include <swsharp/constants.h>
+#include <swsharp/error.h>
+#include <swsharp/gpu_module.h>
+#include <swsharp/scorer.h>
+#include <swsharp/thread.h>
+#include <swsharp/threadpool.h>
+#include <swsharp/utils.h>
 
-#include "reconstruct.h"
+#include <swsharp/reconstruct.h>
 
 #define MIN_DUAL_LEN        20000
 #define MIN_BLOCK_SIZE      256 // > MINIMAL THREADS IN LINEAR_DATA * 2 !!!!

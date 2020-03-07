@@ -25,22 +25,21 @@ Contact the author by mkorpar@gmail.com.
 #include <stdlib.h>
 #include <string.h>
 
-#include "align.h"
-#include "alignment.h"
-#include "cpu_module.h"
-#include "chain.h"
-#include "constants.h"
-#include "cuda_utils.h"
-#include "db_alignment.h"
-#include "error.h"
-#include "gpu_module.h"
-#include "post_proc.h"
-#include "scorer.h"
-#include "thread.h"
-#include "threadpool.h"
-#include "utils.h"
-
-#include "database.h"
+#include <swsharp/align.h>
+#include <swsharp/alignment.h>
+#include <swsharp/cpu_module.h>
+#include <swsharp/chain.h>
+#include <swsharp/constants.h>
+#include <swsharp/cuda_utils.h>
+#include <swsharp/db_alignment.h>
+#include <swsharp/error.h>
+#include <swsharp/gpu_module.h>
+#include <swsharp/post_proc.h>
+#include <swsharp/scorer.h>
+#include <swsharp/thread.h>
+#include <swsharp/threadpool.h>
+#include <swsharp/utils.h>
+#include <swsharp/database.h>
 
 #define CPU_THREAD_CHUNK    1000
 #define CPU_PACKED_CHUNK    25
