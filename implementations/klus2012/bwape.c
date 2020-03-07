@@ -14,6 +14,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
+#include <sys/time.h>
+
 #include "bwtaln.h"
 #include "kvec.h"
 #include "bntseq.h"
@@ -503,7 +505,7 @@ static void *sampe_se_worker(void *data)
 
 #endif //HAVE_PTHREAD
 
-int err_fread(const void *ptr, size_t size, size_t nobj, FILE *stream) {
+int err_fread(void *ptr, size_t size, size_t nobj, FILE *stream) {
   if(feof(stream))   err_fatal_simple_core("fread", "already at end of file");
   const size_t n = fread(ptr,size,nobj,stream);
   const int saveErrno = errno;
@@ -513,7 +515,7 @@ int err_fread(const void *ptr, size_t size, size_t nobj, FILE *stream) {
 }
 void check_opt(const gap_opt_t* opt, const int fileid, const char* filename) {
   //sanity check for stupid users like me
-  const unsigned short int temp;
+  unsigned short int temp;
   memcpy(&temp,opt,2);
   if(temp >= 0x0a0a) {//2 ascii chars? Eg fasta file not SAI file, 
                       //also trap gzip,bzip,pkzip,zip magic numbers

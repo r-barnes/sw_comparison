@@ -5,7 +5,7 @@
 */
 
 #include <stdio.h>
-#include <string.h>s
+#include <string.h>
 #include "main.h"
 #include "utils.h"
 #include "barracuda.h"

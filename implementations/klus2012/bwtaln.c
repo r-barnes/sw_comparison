@@ -390,7 +390,7 @@ int bwa_aln(int argc, char *argv[])
 		fprintf(stderr, "         -l INT    seed length [%d]\n", opt->seed_len);
 		fprintf(stderr, "         -k INT    maximum differences in the seed [%d]\n", opt->max_seed_diff);
 		fprintf(stderr, "         -m INT    maximum entries in the queue [%d]\n", opt->max_entries);
-		fprintf(stderr, "         -t INT    Run in CPU mode with a specified number of threads.\n                   Use '-t 0' to detect automatically\n", opt->n_threads);
+		fprintf(stderr, "         -t INT    Run in CPU mode with a specified number of threads [%d].\n                   Use '-t 0' to detect automatically\n", opt->n_threads);
 		fprintf(stderr, "         -M INT    mismatch penalty [%d]\n", opt->s_mm);
 		fprintf(stderr, "         -O INT    gap open penalty [%d]\n", opt->s_gapo);
 		fprintf(stderr, "         -E INT    gap extension penalty [%d]\n", opt->s_gape);
