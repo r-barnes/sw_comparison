@@ -87,7 +87,7 @@ Socket *SocketCreate(const int socketType, const char *socketPath) {
         fprintf(stderr, "Only local socket is supported!\n");
         exit(1);
     }
-    if (socketPath == '\0' || socketPath[0] == '\0') {
+    if (socketPath == NULL || socketPath[0] == '\0') {
         fprintf(stderr, "Socket path is not specified!\n");
         exit(1);
     }
@@ -149,7 +149,7 @@ Socket *SocketInitiateConnection(const int socketType, const char *socketPath) {
         fprintf(stderr, "Only local socket is supported!\n");
         exit(1);
     }
-    if (socketPath == '\0' || socketPath[0] == '\0') {
+    if (socketPath == NULL || socketPath[0] == '\0') {
         fprintf(stderr, "Socket path is not specified!\n");
         exit(1);
     }
