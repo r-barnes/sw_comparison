@@ -35,3 +35,4 @@ reads_*.sam
 ncbi-vdb-*
 ngs-*
 cmake-build-*
+build/
