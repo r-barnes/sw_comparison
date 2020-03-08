@@ -84,7 +84,7 @@
      </widget>
      <widget class="QWidget" name="reportingTresholdsTab">
       <attribute name="title">
-       <string>Reporting tresholds</string>
+       <string>Reporting thresholds</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_11">
        <item>
@@ -335,7 +335,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>Viterbi filter treshold</string>
+            <string>Viterbi filter threshold</string>
            </property>
           </widget>
          </item>
@@ -365,7 +365,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>MSV filter treshold</string>
+            <string>MSV filter threshold</string>
            </property>
           </widget>
          </item>
@@ -398,7 +398,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>Forward filter treshold</string>
+            <string>Forward filter threshold</string>
            </property>
           </widget>
          </item>

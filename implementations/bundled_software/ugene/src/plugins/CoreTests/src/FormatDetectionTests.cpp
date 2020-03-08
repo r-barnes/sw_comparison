@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -35,7 +35,7 @@ static const QString LESS_THAN("less-than");    // score should be less than
 static const QString MORE_THAN("more-than");    // score should be more than
 
 
-/* class GTest_CheckScore : public GTest */
+/* class GTest_CheckScore : public XmlTest */
 
 static bool equal_to(int a, int b) { return a == b; }
 static bool less_than(int a, int b) { return a < b; }
@@ -127,7 +127,7 @@ Task::ReportResult GTest_CheckScore::report() {
 }
 
 
-/*class GTest_PerfectMatch : public GTest */
+/*class GTest_PerfectMatch : public XmlTest */
 
 void GTest_PerfectMatch::init(XMLTestFormat*, const QDomElement& el) {
     QString fileURLStr = el.attribute(URL);

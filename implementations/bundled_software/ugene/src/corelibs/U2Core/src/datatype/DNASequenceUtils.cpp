@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -20,7 +20,6 @@
  */
 
 #include <U2Core/AppContext.h>
-#include <U2Core/DNAAlphabet.h>
 #include <U2Core/DNATranslation.h>
 #include <U2Core/L10n.h>
 #include <U2Core/Log.h>
@@ -39,8 +38,7 @@ void DNASequenceUtils::append(DNASequence& sequence, const DNASequence& appended
 DnaSequencesMatchStatus DNASequenceUtils::compare(const DNASequence& firstSeq, const DNASequence& secondSec) {
     if (firstSeq.constSequence() == secondSec.constSequence()) {
         return MatchExactly;
-    }
-    else {
+    } else {
         return DoNotMatch;
     }
 }
@@ -75,7 +73,7 @@ void DNASequenceUtils::insertChars(QByteArray& sequence, int startPos, const QBy
 
 void DNASequenceUtils::replaceChars(QByteArray& sequence, int startPos, const QByteArray& newChars, U2OpStatus& os) {
     int endPos = startPos + newChars.length();
-    CHECK_EXT(newChars.length() > 0, os.setError("Array of chars for replacing is empty!"),);
+    CHECK_EXT(newChars.length() > 0, os.setError("Array of chars for replacing is empty!"), );
     if ((startPos < 0) || (endPos > sequence.length())) {
         coreLog.trace(QString("Internal error: incorrect parameters was passed to DNASequenceUtils::replaceChars,"
             "startPos '%1', endPos '%2', sequence length '%3'!").arg(startPos).arg(endPos).arg(sequence.length()));
@@ -100,6 +98,14 @@ QByteArray DNASequenceUtils::reverse(const QByteArray &sequence) {
     return result;
 }
 
+DNASequence DNASequenceUtils::reverse(const DNASequence& dnaSequence) {
+    DNASequence newDnaSequence(dnaSequence);
+    newDnaSequence.seq = DNASequenceUtils::reverse(dnaSequence.seq);
+    newDnaSequence.quality = DNAQuality(DNASequenceUtils::reverse(dnaSequence.quality.qualCodes), dnaSequence.quality.type);
+
+    return newDnaSequence;
+}
+
 QByteArray DNASequenceUtils::complement(const QByteArray &sequence) {
     const DNAAlphabet *alphabet = U2AlphabetUtils::findBestAlphabet(sequence.data(), sequence.length());
     SAFE_POINT(NULL != alphabet, L10N::nullPointerError("DNA Alphabet"), "");
@@ -112,8 +118,19 @@ QByteArray DNASequenceUtils::complement(const QByteArray &sequence) {
     return result;
 }
 
+DNASequence DNASequenceUtils::complement(const DNASequence& dnaSequence) {
+    DNASequence newDnaSequence(dnaSequence);
+    newDnaSequence.seq = DNASequenceUtils::complement(dnaSequence.seq);
+
+    return newDnaSequence;
+}
+
 QByteArray DNASequenceUtils::reverseComplement(const QByteArray &sequence) {
     return reverse(complement(sequence));
+}
+
+DNASequence DNASequenceUtils::reverseComplement(const DNASequence& dnaSequence) {
+    return reverse(complement(dnaSequence));
 }
 
 void DNASequenceUtils::crop(DNASequence &sequence, int startPos, int length) {

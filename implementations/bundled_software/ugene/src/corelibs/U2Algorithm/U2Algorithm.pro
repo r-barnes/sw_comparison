@@ -83,6 +83,9 @@ HEADERS += src/misc/BinaryFindOpenCL.h \
            src/util_msa_distance/MSADistanceAlgorithmRegistry.h \
            src/util_msaedit/CreateSubalignmentTask.h \
            src/util_msaedit/MsaUtilTasks.h \
+           src/util_msaedit/color_schemes/percentage_idententity/colored/ColumnCharsCounter.h \
+           src/util_msaedit/color_schemes/percentage_idententity/colored/MsaColorSchemePercentageIdententityColored.h \
+           src/util_msaedit/color_schemes/percentage_idententity/colored/MsaColorSchemePercentageIdententityColoredFactory.h \
            src/util_msaedit/color_schemes/ColorSchemeUtils.h \
            src/util_msaedit/color_schemes/MsaColorScheme.h \
            src/util_msaedit/color_schemes/MsaColorSchemeClustalX.h \
@@ -183,6 +186,9 @@ SOURCES += src/misc/BinaryFindOpenCL.cpp \
            src/util_msa_distance/MSADistanceAlgorithmRegistry.cpp \
            src/util_msaedit/CreateSubalignmentTask.cpp \
            src/util_msaedit/MsaUtilTasks.cpp \
+           src/util_msaedit/color_schemes/percentage_idententity/colored/ColumnCharsCounter.cpp \
+           src/util_msaedit/color_schemes/percentage_idententity/colored/MsaColorSchemePercentageIdententityColored.cpp \
+           src/util_msaedit/color_schemes/percentage_idententity/colored/MsaColorSchemePercentageIdententityColoredFactory.cpp \
            src/util_msaedit/color_schemes/ColorSchemeUtils.cpp \
            src/util_msaedit/color_schemes/MsaColorScheme.cpp \
            src/util_msaedit/color_schemes/MsaColorSchemeClustalX.cpp \

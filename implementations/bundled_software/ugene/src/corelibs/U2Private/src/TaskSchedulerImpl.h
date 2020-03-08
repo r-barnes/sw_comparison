@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -49,10 +49,13 @@ public:
 };
 
 class TaskThread : public QThread {
+    Q_OBJECT
 public:
     TaskThread(TaskInfo* _ti);
     void run();
     void resume();
+    QList<Task*> getProcessedSubtasks() const;
+    void appendProcessedSubtask(Task *);
 
     TaskInfo* ti;
     QObject*  finishEventListener;
@@ -63,6 +66,8 @@ public:
     QWaitCondition pauser;
     volatile bool isPaused;
     QMutex pauseLocker;
+signals:
+    void si_processMySubtasks();
 
 protected:
     bool event(QEvent *event);
@@ -148,6 +153,7 @@ public:
 private slots:
     void update();
     void sl_threadFinished();
+    void sl_processSubtasks();
 
 private:
     bool processFinishedTasks();
@@ -179,12 +185,14 @@ private:
     QList<TaskInfo*>        priorityQueue;
     QList<TaskInfo*>        tasksWithNewSubtasks;
     QList<Task*>            newTasks;
+    QList<Task*>            loadingTasks;
     QStringList             stateNames;
     QMap<quint64, Qt::HANDLE>    threadIds;
 
     AppResourcePool*        resourcePool;
     AppResource*            threadsResource;
     bool                    stateChangesObserved;
+    bool                    stateIsLoaded;
     SleepPreventer*         sleepPreventer;
 };
 

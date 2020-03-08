@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -25,7 +25,6 @@
 #include <U2Core/Annotation.h>
 #include <U2Core/AnnotationGroup.h>
 #include <U2Core/GObject.h>
-#include <U2Core/U2Feature.h>
 
 namespace U2 {
 
@@ -38,15 +37,15 @@ public:
      * This constructor is intended for interaction with Document. It encapsulates creation of
      * annotation table entity in DB.
      */
-                            AnnotationTableObject(const QString &objectName, const U2DbiRef &dbiRef,
-                                const QVariantMap &hintsMap = QVariantMap());
+    AnnotationTableObject(const QString &objectName, const U2DbiRef &dbiRef,
+        const QVariantMap &hintsMap = QVariantMap());
     /**
      * This constructor works with existed annotation table entity available via @tableRef.
      */
-                            AnnotationTableObject(const QString &objectName, const U2EntityRef &tableRef,
-                                const QVariantMap &hintsMap = QVariantMap());
+    AnnotationTableObject(const QString &objectName, const U2EntityRef &tableRef,
+        const QVariantMap &hintsMap = QVariantMap());
 
-                            ~AnnotationTableObject();
+    ~AnnotationTableObject();
     /**
      * Converts all the features stored in DB to annotations and returns the result
      */
@@ -81,6 +80,10 @@ public:
      * beyond the @region or each annotation that intersects it.
      */
     QList<Annotation *>     getAnnotationsByRegion(const U2Region &region, bool contains = false) const;
+    /**
+    * Return the list of annotations having @featureType
+    */
+    QList<Annotation *>     getAnnotationsByType(const U2FeatureType featureType) const;
     /**
      * Reimplemented from GObject
      */

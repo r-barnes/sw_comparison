@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -23,6 +23,7 @@
 #define _HTTP_REQUEST_H_
 
 #include <QBuffer>
+#include <QCoreApplication>
 #include <QDomDocument>
 #include <QDomNode>
 #include <QThread>
@@ -50,6 +51,7 @@ struct ResponseBuffer {
 
 
 class HttpRequestBLAST:public HttpRequest {
+    Q_DECLARE_TR_FUNCTIONS(HttpRequestBLAST)
 public:
     HttpRequestBLAST(Task *_task):HttpRequest(_task){}
     virtual void sendRequest(const QString &program,const QString &query);

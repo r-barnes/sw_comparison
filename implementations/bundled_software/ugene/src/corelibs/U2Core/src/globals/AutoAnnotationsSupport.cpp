@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -27,7 +27,6 @@
 #include <U2Core/L10n.h>
 #include <U2Core/RemoveAnnotationsTask.h>
 #include <U2Core/Settings.h>
-#include <U2Core/U2DbiRegistry.h>
 #include <U2Core/U2DbiUtils.h>
 #include <U2Core/U2ObjectDbi.h>
 #include <U2Core/U2OpStatusUtils.h>
@@ -37,17 +36,16 @@
 
 namespace U2 {
 
-const QString AutoAnnotationObject::AUTO_ANNOTATION_HINT( "auto-annotation object" );
+const QString AutoAnnotationObject::AUTO_ANNOTATION_HINT("auto-annotation object");
 
 AutoAnnotationsUpdater::AutoAnnotationsUpdater(const QString &nm, const QString &gName, bool alwaysOff, bool translationDependent)
-    : groupName(gName), name(nm), alwaysOffByDefault(alwaysOff), translationDependent(translationDependent)
-{
-    checkedByDefault = alwaysOffByDefault ? false : AppContext::getSettings( )
-        ->getValue( AUTO_ANNOTATION_SETTINGS + groupName, false, true ).toBool( );
+    : groupName(gName), name(nm), alwaysOffByDefault(alwaysOff), translationDependent(translationDependent) {
+    checkedByDefault = alwaysOffByDefault ? false : AppContext::getSettings()
+        ->getValue(AUTO_ANNOTATION_SETTINGS + groupName, false, true).toBool();
 }
 
-AutoAnnotationsUpdater::~AutoAnnotationsUpdater( ) {
-    AppContext::getSettings( )->setValue( AUTO_ANNOTATION_SETTINGS + groupName, checkedByDefault, true );
+AutoAnnotationsUpdater::~AutoAnnotationsUpdater() {
+    AppContext::getSettings()->setValue(AUTO_ANNOTATION_SETTINGS + groupName, checkedByDefault, true);
 }
 
 bool AutoAnnotationsUpdater::isTranslationDependent() {
@@ -58,18 +56,18 @@ QList<AutoAnnotationsUpdater *> AutoAnnotationsSupport::getAutoAnnotationUpdater
     return aaUpdaters;
 }
 
-AutoAnnotationsUpdater * AutoAnnotationsSupport::findUpdaterByGroupName( const QString& groupName ) {
-    foreach ( AutoAnnotationsUpdater *updater, aaUpdaters ) {
-        if ( groupName == updater->getGroupName( ) ) {
+AutoAnnotationsUpdater * AutoAnnotationsSupport::findUpdaterByGroupName(const QString& groupName) {
+    foreach(AutoAnnotationsUpdater *updater, aaUpdaters) {
+        if (groupName == updater->getGroupName()) {
             return updater;
         }
     }
     return NULL;
 }
 
-AutoAnnotationsUpdater * AutoAnnotationsSupport::findUpdaterByName( const QString &name ) {
-    foreach ( AutoAnnotationsUpdater *updater, aaUpdaters ) {
-        if ( updater->getName( ) == name ) {
+AutoAnnotationsUpdater * AutoAnnotationsSupport::findUpdaterByName(const QString &name) {
+    foreach(AutoAnnotationsUpdater *updater, aaUpdaters) {
+        if (updater->getName() == name) {
             return updater;
         }
     }
@@ -78,48 +76,47 @@ AutoAnnotationsUpdater * AutoAnnotationsSupport::findUpdaterByName( const QStrin
 
 //////////////////////////////////////////////////////////////////////////
 
-void AutoAnnotationsSupport::registerAutoAnnotationsUpdater( AutoAnnotationsUpdater *updater ) {
-    aaUpdaters.append( updater );
+void AutoAnnotationsSupport::registerAutoAnnotationsUpdater(AutoAnnotationsUpdater *updater) {
+    aaUpdaters.append(updater);
 }
 
-void AutoAnnotationsSupport::unregisterAutoAnnotationsUpdater( AutoAnnotationsUpdater *updater ) {
-    aaUpdaters.removeOne( updater );
+void AutoAnnotationsSupport::unregisterAutoAnnotationsUpdater(AutoAnnotationsUpdater *updater) {
+    aaUpdaters.removeOne(updater);
 }
 
-AutoAnnotationsSupport::~AutoAnnotationsSupport( ) {
-    qDeleteAll( aaUpdaters );
+AutoAnnotationsSupport::~AutoAnnotationsSupport() {
+    qDeleteAll(aaUpdaters);
 }
 
-bool AutoAnnotationsSupport::isAutoAnnotation( const AnnotationTableObject *obj ) {
-    return obj->getGHintsMap( ).value( AutoAnnotationObject::AUTO_ANNOTATION_HINT ).toBool( );
+bool AutoAnnotationsSupport::isAutoAnnotation(const AnnotationTableObject *obj) {
+    return obj->getGHintsMap().value(AutoAnnotationObject::AUTO_ANNOTATION_HINT).toBool();
 }
 
-bool AutoAnnotationsSupport::isAutoAnnotation( const GObject* obj ) {
-    bool isAnnotationObject = obj->getGObjectType( ) == GObjectTypes::ANNOTATION_TABLE;
-    bool hasAutoAnnotationHint = obj->getGHintsMap( ).value( AutoAnnotationObject::AUTO_ANNOTATION_HINT ).toBool( );
-    return ( isAnnotationObject && hasAutoAnnotationHint );
+bool AutoAnnotationsSupport::isAutoAnnotation(const GObject* obj) {
+    bool isAnnotationObject = obj->getGObjectType() == GObjectTypes::ANNOTATION_TABLE;
+    bool hasAutoAnnotationHint = obj->getGHintsMap().value(AutoAnnotationObject::AUTO_ANNOTATION_HINT).toBool();
+    return (isAnnotationObject && hasAutoAnnotationHint);
 }
 
 //////////////////////////////////////////////////////////////////////////
 
 AutoAnnotationObject::AutoAnnotationObject(U2SequenceObject *obj, DNATranslation *aminoTT, QObject *parent)
-    : QObject(parent), dnaObj(obj), aminoTT(aminoTT)
-{
+    : QObject(parent), dnaObj(obj), aminoTT(aminoTT) {
     QVariantMap hints;
     hints.insert(AUTO_ANNOTATION_HINT, true);
-    const QString tableName = AutoAnnotationsSupport::tr( "Auto-annotations [%1 | %2]" )
-        .arg( obj->getDocument( )->getName( ) ).arg( obj->getGObjectName( ) );
+    QString tableName = AutoAnnotationsSupport::tr("Auto-annotations [%1 | %2]")
+        .arg(obj->getDocument()->getName()).arg(obj->getGObjectName());
 
     U2OpStatusImpl os;
     const U2DbiRef localDbiRef = AppContext::getDbiRegistry()->getSessionTmpDbiRef(os);
     SAFE_POINT_OP(os, );
 
-    aobj = new AnnotationTableObject( tableName, localDbiRef, hints );
-    aobj->addObjectRelation( dnaObj, ObjectRole_Sequence );
-    aaSupport = AppContext::getAutoAnnotationsSupport( );
+    aobj = new AnnotationTableObject(tableName, localDbiRef, hints);
+    aobj->addObjectRelation(dnaObj, ObjectRole_Sequence);
+    aaSupport = AppContext::getAutoAnnotationsSupport();
 }
 
-AutoAnnotationObject::~AutoAnnotationObject( ) {
+AutoAnnotationObject::~AutoAnnotationObject() {
     U2OpStatusImpl os;
 
     const U2EntityRef &entity = aobj->getEntityRef();
@@ -127,12 +124,12 @@ AutoAnnotationObject::~AutoAnnotationObject( ) {
     DbiConnection con(entity.dbiRef, os);
     con.dbi->getObjectDbi()->removeObject(entity.entityId, os);
     delete aobj;
-    SAFE_POINT_OP( os, );
+    SAFE_POINT_OP(os, );
 }
 
-void AutoAnnotationObject::updateAll( ) {
-    QList<AutoAnnotationsUpdater *> aaUpdaters = aaSupport->getAutoAnnotationUpdaters( );
-    handleUpdate( aaUpdaters );
+void AutoAnnotationObject::updateAll() {
+    QList<AutoAnnotationsUpdater *> aaUpdaters = aaSupport->getAutoAnnotationUpdaters();
+    handleUpdate(aaUpdaters);
 }
 
 void AutoAnnotationObject::updateTranslationDependent(DNATranslation *newAminoTT) {
@@ -146,12 +143,12 @@ void AutoAnnotationObject::updateTranslationDependent(DNATranslation *newAminoTT
     handleUpdate(aaUpdaters);
 }
 
-void AutoAnnotationObject::updateGroup( const QString &groupName ) {
-    AutoAnnotationsUpdater *updater = aaSupport->findUpdaterByGroupName( groupName );
-    if ( NULL != updater ) {
+void AutoAnnotationObject::updateGroup(const QString &groupName) {
+    AutoAnnotationsUpdater *updater = aaSupport->findUpdaterByGroupName(groupName);
+    if (NULL != updater) {
         QList<AutoAnnotationsUpdater *> updaters;
         updaters << updater;
-        handleUpdate( updaters );
+        handleUpdate(updaters);
     }
 }
 
@@ -175,7 +172,7 @@ bool AutoAnnotationObject::cancelRunningUpdateTasks(AutoAnnotationsUpdater *upda
     SAFE_POINT(NULL != updater, L10N::nullPointerError("Auto-annotation updater"), false);
 
     const bool result = !runningUpdateTasks[updater].isEmpty();
-    foreach (Task *task, runningUpdateTasks[updater]) {
+    foreach(Task *task, runningUpdateTasks[updater]) {
         task->cancel();
     }
 
@@ -189,7 +186,7 @@ void AutoAnnotationObject::handleUpdate(const QList<AutoAnnotationsUpdater *> &u
     QList<Task*> subTasks;
     QStringList groupNames;
 
-    foreach (AutoAnnotationsUpdater *updater, updaters) {
+    foreach(AutoAnnotationsUpdater *updater, updaters) {
         // check constraints
         AutoAnnotationConstraints cns;
         cns.alphabet = dnaObj->getAlphabet();
@@ -241,7 +238,7 @@ void AutoAnnotationObject::sl_updateTaskFinished() {
 
     CHECK(task->isFinished(), );
 
-    foreach (AutoAnnotationsUpdater *updater, runningUpdateTasks.keys()) {
+    foreach(AutoAnnotationsUpdater *updater, runningUpdateTasks.keys()) {
         QList<Task *> &updateTasks = runningUpdateTasks[updater];
         if (updateTasks.contains(task)) {
             updateTasks.removeAll(task);
@@ -255,19 +252,19 @@ void AutoAnnotationObject::sl_updateTaskFinished() {
     }
 }
 
-void AutoAnnotationObject::setGroupEnabled( const QString &groupName, bool enabled ) {
-    if ( enabled ) {
-        enabledGroups.insert( groupName );
+void AutoAnnotationObject::setGroupEnabled(const QString &groupName, bool enabled) {
+    if (enabled) {
+        enabledGroups.insert(groupName);
     } else {
-        enabledGroups.remove( groupName );
+        enabledGroups.remove(groupName);
     }
 }
 
-void AutoAnnotationObject::emitStateChange( bool started ) {
-    if ( started ) {
-        emit si_updateStarted( );
+void AutoAnnotationObject::emitStateChange(bool started) {
+    if (started) {
+        emit si_updateStarted();
     } else {
-        emit si_updateFinshed( );
+        emit si_updateFinshed();
     }
 }
 
@@ -276,57 +273,55 @@ DNATranslation* AutoAnnotationObject::getAminoTT() const {
 }
 
 AutoAnnotationConstraints::AutoAnnotationConstraints()
-    : alphabet( NULL ), hints( NULL )
-{
+    : alphabet(NULL), hints(NULL) {
 
 }
 
 //////////////////////////////////////////////////////////////////////////
 
-const QString AutoAnnotationsUpdateTask::NAME( "Auto-annotations update task" );
+const QString AutoAnnotationsUpdateTask::NAME("Auto-annotations update task");
 
-AutoAnnotationsUpdateTask::AutoAnnotationsUpdateTask( AutoAnnotationObject *aaObj,
-    QList<Task *> updateTasks )
-    : Task( NAME, TaskFlags_NR_FOSE_COSC), aa( aaObj ), aaSeqObj( NULL ), lock( NULL ),
-    subTasks( updateTasks )
-{
+AutoAnnotationsUpdateTask::AutoAnnotationsUpdateTask(AutoAnnotationObject *aaObj,
+    QList<Task *> updateTasks)
+    : Task(NAME, TaskFlags_NR_FOSE_COSC), aa(aaObj), aaSeqObj(NULL), lock(NULL),
+    subTasks(updateTasks) {
     aaObjectInvalid = false;
-    setMaxParallelSubtasks( 1 );
+    setMaxParallelSubtasks(1);
     connect(aaObj, SIGNAL(destroyed(QObject*)), SLOT(sl_onSequenceDeleted()));
 }
 
-AutoAnnotationsUpdateTask::~AutoAnnotationsUpdateTask( ) {
-    cleanup( );
+AutoAnnotationsUpdateTask::~AutoAnnotationsUpdateTask() {
+    cleanup();
 }
 
-void AutoAnnotationsUpdateTask::prepare( ) {
-    SAFE_POINT( NULL != aa, tr( "Empty auto-annotation object" ), );
+void AutoAnnotationsUpdateTask::prepare() {
+    SAFE_POINT(NULL != aa, tr("Empty auto-annotation object"), );
 
-    lock = new StateLock( "Auto-annotations update", StateLockFlag_LiveLock );
-    aaSeqObj = aa->getSeqObject( );
-    aaSeqObj->lockState( lock );
+    lock = new StateLock("Auto-annotations update", StateLockFlag_LiveLock);
+    aaSeqObj = aa->getSeqObject();
+    aaSeqObj->lockState(lock);
 
-    aa->emitStateChange( true );
-    foreach ( Task *subtask, subTasks ) {
-        addSubTask( subtask );
+    aa->emitStateChange(true);
+    foreach(Task *subtask, subTasks) {
+        addSubTask(subtask);
     }
 }
 
-void AutoAnnotationsUpdateTask::cleanup( ) {
-    if ( NULL != lock ) {
+void AutoAnnotationsUpdateTask::cleanup() {
+    if (NULL != lock) {
         CHECK_EXT(!aa.isNull(), cancel(), );
-        aaSeqObj->unlockState( lock );
+        aaSeqObj->unlockState(lock);
         delete lock;
     }
 }
 
-Task::ReportResult AutoAnnotationsUpdateTask::report( ) {
-    if ( isCanceled( ) && aaObjectInvalid ) {
+Task::ReportResult AutoAnnotationsUpdateTask::report() {
+    if (isCanceled() && aaObjectInvalid) {
         return ReportResult_Finished;
     }
 
     CHECK_EXT(!aa.isNull(), cancel(), ReportResult_Finished);
-    aa->emitStateChange( false );
+    aa->emitStateChange(false);
 
     return ReportResult_Finished;
 }

@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -32,7 +32,7 @@ SelectModelsDialog::SelectModelsDialog(const QList<int> &_modelIds, const QList<
 : QDialog(parent), Ui_SelectModelsDialog()
 {
     setupUi(this);
-    new HelpButton(this, buttonBox, "21433219");
+    new HelpButton(this, buttonBox, "24742418");
     buttonBox_1->button(QDialogButtonBox::Cancel)->setText(::U2::SelectModelsDialog::tr("All"));
     buttonBox_1->button(QDialogButtonBox::No)->setText(::U2::SelectModelsDialog::tr("Invert"));
     buttonBox->button(QDialogButtonBox::Ok)->setText(::U2::SelectModelsDialog::tr("OK"));
@@ -87,7 +87,7 @@ void SelectModelsDialog::accept() {
     }
 
     if (selectedModelsIndexes.isEmpty()) {
-        QMessageBox::warning(this, tr("Error"), tr("At least one model shoud be selected."));
+        QMessageBox::warning(this, tr("Error"), tr("At least one model should be selected."));
         return;
     }
 

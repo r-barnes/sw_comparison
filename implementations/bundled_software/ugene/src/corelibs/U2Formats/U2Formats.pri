@@ -3,28 +3,23 @@
 MODULE_ID=U2Formats
 include( ../../ugene_lib_common.pri )
 
-use_bundled_zlib() {
-    macx: LIBS += -lzlib
-} else {
-    macx: LIBS += -lz
-}
-
-UGENE_RELATIVE_DESTDIR = ''
+LIBS += $$add_z_lib()
 
 DEFINES += QT_FATAL_ASSERT BUILDING_U2FORMATS_DLL
 
-LIBS += -L../../_release -lU2Core -lU2Algorithm
-LIBS += -lugenedb -lsamtools
+LIBS += -L../../$$out_dir()
+LIBS += -lU2Core$$D -lU2Algorithm$$D
+LIBS += -lsamtools$$D
+LIBS += $$add_sqlite_lib()
 
 win32-msvc2013 {
     DEFINES += NOMINMAX _XKEYCHECK_H
-    LIBS += -lzlib
 }
 
 QT += sql widgets
 
 # Force re-linking when lib changes
-unix:POST_TARGETDEPS += ../../_release/libsamtools.a
+unix:POST_TARGETDEPS += ../../$$out_dir()/libsamtools$${D}.a
 # Same options which samtools is built with
 DEFINES+="_FILE_OFFSET_BITS=64" _LARGEFILE64_SOURCE _USE_KNETFILE
 INCLUDEPATH += ../../libs_3rdparty/samtools/src ../../libs_3rdparty/samtools/src/samtools
@@ -40,36 +35,9 @@ win32 {
 }
 
 INCLUDEPATH += ../../libs_3rdparty/sqlite3/src
-
-!debug_and_release|build_pass {
-
-    CONFIG(debug, debug|release) {
-        DESTDIR=../../_debug
-        LIBS -= -L../../_release -lU2Core -lU2Algorithm -lugenedb -lsamtools
-        LIBS += -L../../_debug -lU2Cored -lU2Algorithmd -lugenedbd -lsamtoolsd
-
-        win32-msvc2013 {
-            LIBS -= -lzlib
-            LIBS += -lzlibd
-        }
-
-        macx {
-            use_bundled_zlib() {
-                LIBS -= -lzlib
-                LIBS += -lzlibd
-            }
-        }
-
-        unix:POST_TARGETDEPS -= ../../_release/libsamtools.a
-        unix:POST_TARGETDEPS += ../../_debug/libsamtoolsd.a
-    }
-
-    CONFIG(release, debug|release) {
-        DESTDIR=../../_release
-    }
-}
+DESTDIR = ../../$$out_dir()
 
 unix {
-    target.path = $$UGENE_INSTALL_DIR/$$UGENE_RELATIVE_DESTDIR
+    target.path = $$UGENE_INSTALL_DIR/
     INSTALLS += target
 }

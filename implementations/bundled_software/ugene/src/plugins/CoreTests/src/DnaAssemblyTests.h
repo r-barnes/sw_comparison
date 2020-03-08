@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -33,7 +33,7 @@ class DnaAssemblyMultiTask;
 class U2SequenceObject;
 class LoadDocumentTask;
 
-class GTest_DnaAssemblyToReferenceTask : public GTest {
+class GTest_DnaAssemblyToReferenceTask : public XmlTest {
     Q_OBJECT
 public:
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_DnaAssemblyToReferenceTask, "test-dna-assembly-to-ref");
@@ -53,7 +53,7 @@ private:
     bool pairedReads;
 };
 
-class GTest_AssemblycompareTwoSAMbyLength : public GTest {
+class GTest_AssemblycompareTwoSAMbyLength : public XmlTest {
     Q_OBJECT
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_AssemblycompareTwoSAMbyLength, "compare-sam-by-length");
 

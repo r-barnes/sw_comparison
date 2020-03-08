@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -46,6 +46,9 @@ namespace U2 {
 
 //////////////////////////////////////////////////////////////////////////
 // unload document
+
+const QString UnloadDocumentTask::ACTIVE_VIEW_ERROR = QCoreApplication::translate("UnloadDocumentTask", "There is an active view with the document content.");
+
 UnloadDocumentTask::UnloadDocumentTask(Document* _doc, bool save)
     : Task(tr("Unload document task: %1").arg(_doc->getURLString()), TaskFlag_NoRun),
       doc(_doc),
@@ -106,7 +109,7 @@ QList<Task *> UnloadDocumentTask::runUnloadTaskHelper(const QList<Document*>& do
 
     foreach(Document* doc, docs) {
         QString err = checkSafeUnload(doc);
-        if(err == tr("There is an active view with document content")){
+        if (err == ACTIVE_VIEW_ERROR){
             QMessageBox::StandardButtons buttons = QMessageBox::StandardButtons(QMessageBox::Yes) | QMessageBox::No;
             QMessageBox::StandardButton res = QMessageBox::question(NULL,
                 tr("Question?"), tr("Close views for document: %1").arg(doc->getURLString()),
@@ -168,7 +171,7 @@ QList<Task *> UnloadDocumentTask::runUnloadTaskHelper(const QList<Document*>& do
 QString UnloadDocumentTask::checkSafeUnload(Document* doc) {
     bool hasViews = !GObjectViewUtils::findViewsWithAnyOfObjects(doc->getObjects()).isEmpty();
     if (hasViews) {
-        return tr("There is an active view with document content");
+        return ACTIVE_VIEW_ERROR;
     }
 
     QList<StateLock*> locks = doc->findLocks(StateLockableTreeFlags_ItemAndChildren, StateLockFlag_LiveLock);
@@ -177,7 +180,7 @@ QString UnloadDocumentTask::checkSafeUnload(Document* doc) {
         liveLocked = (locks.first()->getUserDesc() != Document::UNLOAD_LOCK_NAME);
     }
     if (liveLocked) {
-        return tr("Document is locked by some algorithm and cannot be unloaded");
+        return tr("The document is locked by some algorithm.");
     }
 
     return QString();

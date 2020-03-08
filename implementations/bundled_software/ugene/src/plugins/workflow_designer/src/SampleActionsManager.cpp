@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -39,8 +39,8 @@ namespace {
     const char *ID_PROPERTY = "action_id";
 }
 
-SampleAction::SampleAction(const QString &actionName, const QString &toolsMenu, const QString &samplePath, LoadingMode mode, const QString &actionText)
-: actionText(actionText), actionName(actionName), toolsMenu(toolsMenu), samplePath(samplePath), mode(mode)
+SampleAction::SampleAction(const QString &actionName, const QString &toolsMenu, const QString &samplePath, const QString &actionText)
+: actionText(actionText), actionName(actionName), toolsMenu(toolsMenu), samplePath(samplePath)
 {
 
 }
@@ -76,7 +76,7 @@ int SampleActionsManager::getValidClickedActionId(U2OpStatus &os) const {
 
 SampleAction SampleActionsManager::getClickedAction(U2OpStatus &os) const {
     int id = getValidClickedActionId(os);
-    CHECK_OP(os, SampleAction("", "", "", SampleAction::Select, ""));
+    CHECK_OP(os, SampleAction("", "", "", ""));
     return actions[id];
 }
 

@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -112,7 +112,7 @@ void SortBamWorkerFactory::init() {
             SortBamWorker::tr("Select the custom output folder."));
 
         Descriptor outName(OUT_NAME_ID, SortBamWorker::tr("Output BAM name"),
-            SortBamWorker::tr("A name of an output BAM file. If default of empty value is provided the output name is the name of the first BAM file with .sorted.bam extention."));
+            SortBamWorker::tr("A name of an output BAM file. If default of empty value is provided the output name is the name of the first BAM file with .sorted.bam extension."));
 
         Descriptor index(INDEX_ID, SortBamWorker::tr("Build index"),
             SortBamWorker::tr("Build index for the sorted file with SAMTools index."));

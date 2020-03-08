@@ -6,4 +6,10 @@ PLUGIN_VENDOR=Unipro
 
 include( ../../ugene_plugin_common.pri )
 
-QT += scripttools webkitwidgets printsupport
+QT += scripttools printsupport widgets
+
+useWebKit() {
+    QT += webkitwidgets
+} else {
+    QT += webenginewidgets
+}

@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -21,10 +21,12 @@
 
 #include "GenomeAssemblyRegistry.h"
 
+#include <U2Core/U2SafePoints.h>
+
 namespace U2 {
 
 GenomeAssemblyTask::GenomeAssemblyTask( const GenomeAssemblyTaskSettings& s, TaskFlags _flags)
-    : Task("GenomeAssemblyTask", _flags), settings(s), resultUrl("˚"){
+    : Task("GenomeAssemblyTask", _flags), settings(s), resultUrl(""){
 }
 
 QString GenomeAssemblyTask::getResultUrl() const{
@@ -108,64 +110,14 @@ QStringList GenomeAssemblyAlgRegistry::getRegisteredAlgorithmIds() const {
     return algorithms.keys();
 }
 
-QStringList GenomeAssemblyUtils::getPairTypes(){
-    return QStringList() << PAIR_TYPE_DEFAULT << PAIR_TYPE_MATE << PAIR_TYPE_MATE_HQ;
-}
-
 QStringList GenomeAssemblyUtils::getOrientationTypes(){
     return QStringList() << ORIENTATION_FR << ORIENTATION_RF << ORIENTATION_FF;
 }
 
-QString GenomeAssemblyUtils::getDefaultOrientation(const QString &pairType){
-    if(pairType == PAIR_TYPE_MATE || pairType == PAIR_TYPE_MATE_HQ){
-        return ORIENTATION_RF;
-    }
-    return ORIENTATION_FR;
-}
-
-QStringList GenomeAssemblyUtils::getLibraryTypes(){
-    QStringList res;
-    res << LIBRARY_SINGLE << LIBRARY_PAIRED << LIBRARY_PAIRED_INTERLACED << LIBRARY_PAIRED_UNPAIRED << LIBRARY_SANGER << LIBRARY_PACBIO;
-    return res;
-}
-
 bool GenomeAssemblyUtils::isLibraryPaired(const QString& libName){
-    if (libName == LIBRARY_PAIRED || libName == LIBRARY_PAIRED_INTERLACED || libName == LIBRARY_PAIRED_UNPAIRED){
-        return true;
-    }
-    return false;
+    return (libName == LIB_PAIR_DEFAULT ||
+            libName == LIB_PAIR_MATE ||
+            libName == LIB_PAIR_MATE_HQ);
 }
-
-bool GenomeAssemblyUtils::hasRightReads(const QString& libName){
-    if (libName == LIBRARY_PAIRED){
-        return true;
-    }
-    return false;
-}
-
-
-QString GenomeAssemblyUtils::getYamlLibraryName(const QString &libName, const QString& paiType){
-    QString result = "";
-    if(libName == LIBRARY_SINGLE){
-        result = "single";
-    }else if (libName == LIBRARY_SANGER){
-        result = "sanger";
-    }else if (libName == LIBRARY_PACBIO){
-        result = "pacbio";
-    }else{
-        if(paiType == PAIR_TYPE_DEFAULT){
-            result = "paired-end";
-        }else if (paiType == PAIR_TYPE_MATE){
-            result = "mate-pairs";
-        }else if (paiType == PAIR_TYPE_MATE_HQ){
-            result = "hq-mate-pairs";
-        }
-    }
-
-    return result;
-}
-
 
 } //namespace
-
-

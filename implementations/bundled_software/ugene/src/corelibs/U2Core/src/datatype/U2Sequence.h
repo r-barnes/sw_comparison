@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -23,7 +23,6 @@
 #define _U2_SEQUENCE_H_
 
 #include <U2Core/U2Type.h>
-#include <U2Core/U2Region.h>
 #include <U2Core/U2Alphabet.h>
 
 namespace U2 {
@@ -31,11 +30,11 @@ namespace U2 {
 /**
     Sequence representation.
     'Length' field contains the overall length of all sequence parts.
-*/
+    */
 class U2CORE_EXPORT U2Sequence : public U2Object {
 public:
-    U2Sequence() : length (0), circular(false){}
-    U2Sequence(const U2DataId& id, const QString& dbId, qint64 version) : U2Object(id, dbId, version), length(0){}
+    U2Sequence() : length(0), circular(false) {}
+    U2Sequence(const U2DataId& id, const QString& dbId, qint64 version) : U2Object(id, dbId, version), length(0) {}
 
     /** Sequence alphabet id */
     U2AlphabetId    alphabet;

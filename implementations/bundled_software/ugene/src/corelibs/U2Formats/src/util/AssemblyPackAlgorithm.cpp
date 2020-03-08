@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -25,10 +25,11 @@
 #include <U2Core/GAutoDeleteList.h>
 #include <U2Core/Log.h>
 #include <U2Core/U2Assembly.h>
+#include <U2Core/U2Region.h>
 
 namespace U2 {
 
-static qint64 selectProw(qint64* tails, qint64 start, qint64 end ){
+static qint64 selectProw(qint64* tails, qint64 start, qint64 end) {
     for (int i = 0; i < PACK_TAIL_SIZE; i++) {
         if (tails[i] <= start) {
             tails[i] = end;
@@ -39,8 +40,8 @@ static qint64 selectProw(qint64* tails, qint64 start, qint64 end ){
 }
 
 PackAlgorithmContext::PackAlgorithmContext() {
-    maxProw  = 0;
-    nReads =  0;
+    maxProw = 0;
+    nReads = 0;
     peakEnd = -1;
     peakRow = PACK_TAIL_SIZE;
     tails.resize(PACK_TAIL_SIZE);
@@ -71,16 +72,16 @@ void AssemblyPackAlgorithm::pack(PackAlgorithmAdapter& adapter, U2AssemblyPackSt
         stat.maxProw = ctx.maxProw;
 
         if ((++nPacked % PACK_TRACE_CHECKPOINT) == 0) {
-            perfLog.trace(QString("Assembly: number packed reads so far: %1 of %2 (%3%)").arg(nPacked).arg(stat.readsCount).arg(100*nPacked/stat.readsCount));
+            perfLog.trace(QString("Assembly: number packed reads so far: %1 of %2 (%3%)").arg(nPacked).arg(stat.readsCount).arg(100 * nPacked / stat.readsCount));
         }
     }
     assert(stat.readsCount == nPacked);
 
     t1.stop();
-    perfLog.trace(QString("Assembly: algorithm pack time: %1 seconds").arg((GTimer::currentTimeMicros() - t0) / float(1000*1000)));
+    perfLog.trace(QString("Assembly: algorithm pack time: %1 seconds").arg((GTimer::currentTimeMicros() - t0) / float(1000 * 1000)));
 }
 
-int AssemblyPackAlgorithm::packRead(const U2Region& reg, PackAlgorithmContext& ctx, U2OpStatus& ) {
+int AssemblyPackAlgorithm::packRead(const U2Region& reg, PackAlgorithmContext& ctx, U2OpStatus&) {
     int prow = selectProw(ctx.tails.data(), reg.startPos, reg.endPos());
     if (prow == -1) {
         if (reg.startPos > ctx.peakEnd) {

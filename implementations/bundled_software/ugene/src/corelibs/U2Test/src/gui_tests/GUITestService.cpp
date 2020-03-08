@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -30,6 +30,7 @@
 #include <U2Core/ExternalToolRegistry.h>
 #include <U2Core/GObject.h>
 #include <U2Core/Log.h>
+#include <U2Core/Settings.h>
 #include <U2Core/TaskSignalMapper.h>
 #include <U2Core/TaskStarter.h>
 #include <U2Core/Timer.h>
@@ -189,14 +190,31 @@ Task* GUITestService::createTestSuiteLauncherTask() const {
 
     bool ok;
     int suiteNumber = cmdLine->getParameterValue(CMDLineCoreOptions::LAUNCH_GUI_TEST_SUITE).toInt(&ok);
+    bool useSameIni = cmdLine->hasParameter(CMDLineCoreOptions::USE_SAME_INI_FOR_TESTS);
+    QString iniTemplate;
+
+    if (useSameIni) {
+        QString settingsFile = AppContext::getSettings()->fileName();
+        QFileInfo iniFile(settingsFile);
+        // check if file exists and if yes: Is it really a file and no directory?
+        if (iniFile.exists() && iniFile.isFile()) {
+            iniTemplate = settingsFile;
+        } else {
+            useSameIni = false;
+        }
+    }
     if(!ok){
         QString pathToSuite = cmdLine->getParameterValue(CMDLineCoreOptions::LAUNCH_GUI_TEST_SUITE);
-        Task *task = new GUITestLauncher(pathToSuite);
+        Task *task = !useSameIni ?
+                     new GUITestLauncher(pathToSuite) :
+                     new GUITestLauncher(pathToSuite, false, iniTemplate);
         Q_ASSERT(task);
         return task;
     }
 
-    Task *task = new GUITestLauncher(suiteNumber);
+    Task *task = !useSameIni ?
+                 new GUITestLauncher(suiteNumber) :
+                 new GUITestLauncher(suiteNumber, false, iniTemplate);
     Q_ASSERT(task);
 
     return task;
@@ -372,7 +390,7 @@ void GUITestService::sl_taskStateChanged(Task* t) {
     AppContext::getTaskScheduler()->disconnect(this);
 
     LaunchOptions launchedFor = getLaunchOptions(AppContext::getCMDLineRegistry());
-    if (launchedFor == RUN_ALL_TESTS || RUN_TEST_SUITE) {
+    if (launchedFor == RUN_ALL_TESTS || launchedFor == RUN_TEST_SUITE) {
         AppContext::getTaskScheduler()->cancelAllTasks();
         AppContext::getMainWindow()->getQMainWindow()->close();
     }

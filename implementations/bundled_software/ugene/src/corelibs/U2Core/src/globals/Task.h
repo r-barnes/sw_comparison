@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -27,9 +27,10 @@
 #include <U2Core/U2OpStatus.h>
 
 #include <QDateTime>
+#include <QPointer>
+#include <QReadWriteLock>
 #include <QStringList>
 #include <QVarLengthArray>
-#include <QReadWriteLock>
 
 namespace U2 {
 
@@ -149,8 +150,9 @@ enum TaskFlag {
 
     TaskFlag_VerboseStateLog = 1 << 22, //tasks prepared/finished state is dumped to the 'info' log category. Effective for top-level tasks only
 
-    TaskFlag_MinimizeSubtaskErrorText = 1 << 23, //for TaskFlag_FailOnSubtaskError task minimizes the error text
-                                                // excluding task-names info from the text
+    TaskFlag_MinimizeSubtaskErrorText = 1 << 23, // for TaskFlag_FailOnSubtaskError task minimizes the error text
+                                                 // excluding task-names info from the text
+                                                 // applies this behaviour for the current task and all children of the current task
 
     TaskFlag_SuppressErrorNotification = 1 << 24, //for top level tasks only: if task fails, tells if notification is shown
 
@@ -158,7 +160,9 @@ enum TaskFlag {
 
     TaskFlag_OnlyNotificationReport = 1 << 26, // task is asked to generate report
 
-    TaskFlag_CollectChildrenWarnings = 1 << 27
+    TaskFlag_CollectChildrenWarnings = 1 << 27,
+
+    TaskFlag_ConcatenateChildrenErrors = 1 << 28 // task collects errors from all children and unites them into one report
 };
 
 #define TaskFlags_FOSCOE                (TaskFlags(TaskFlag_FailOnSubtaskError) | TaskFlag_FailOnSubtaskCancel)
@@ -220,7 +224,8 @@ public:
     bool isCanceled() const {return stateInfo.cancelFlag;}
 
     // Returns subtasks of the task. Task must prepare it's subtask on prepare() call and can't change them latter.
-    QList<Task*> getSubtasks() const {return subtasks;}
+    const QList<QPointer<Task> > &getSubtasks() const;
+    QList<Task *> getPureSubtasks() const;
 
     QString getTaskName() const {return taskName;}
 
@@ -315,6 +320,10 @@ public:
 
     void setVerboseOnTaskCancel(bool v) { setFlag(TaskFlag_VerboseOnTaskCancel, v); }
 
+    bool isConcatenateChildrenErrors() const { return flags.testFlag(TaskFlag_ConcatenateChildrenErrors); }
+
+    void setConcatenateChildrenErrors(bool v) { setFlag(TaskFlag_ConcatenateChildrenErrors, v); }
+
     const TaskResources& getTaskResources() {return taskResources;}
 
     //WARN: if set to MAX_PARALLEL_SUBTASKS_AUTO, returns unprocessed value (MAX_PARALLEL_SUBTASKS_AUTO = 0)
@@ -338,6 +347,8 @@ public:
 
     void addTaskResource(const TaskResourceUsage& r);
 
+    bool isMinimizeSubtaskErrorText() const;
+
 public slots:
     // Set's cancelFlag to true. Does not wait for task to be stopped
     void cancel();
@@ -356,27 +367,26 @@ protected:
 
     void setTaskName(const QString& taskName);
 
-
-    TaskStateInfo       stateInfo;
-    TaskTimeInfo        timeInfo;
-    ProgressManagement  tpm;
-
-    float               progressWeightAsSubtask;
-    int                 maxParallelSubtasks;
-
-private:
     void setFlag(TaskFlag f, bool v) {
         flags = v ? (flags | f) : flags & (~f);
     }
 
-    TaskFlags           flags;
-    QString             taskName;
-    State               state;
-    Task*               parentTask;
-    QList<Task*>        subtasks;
-    qint64              taskId;
-    TaskResources       taskResources;
-    bool                insidePrepare;
+    TaskStateInfo           stateInfo;
+    TaskTimeInfo            timeInfo;
+    ProgressManagement      tpm;
+
+    float                   progressWeightAsSubtask;
+    int                     maxParallelSubtasks;
+
+private:
+    TaskFlags               flags;
+    QString                 taskName;
+    State                   state;
+    Task*                   parentTask;
+    QList<QPointer<Task> >  subtasks;
+    qint64                  taskId;
+    TaskResources           taskResources;
+    bool                    insidePrepare;
 };
 
 
@@ -410,6 +420,7 @@ public:
 
 signals:
     void si_noTasksInScheduler();
+    void si_ugeneIsReadyToWork();
 
 protected:
 

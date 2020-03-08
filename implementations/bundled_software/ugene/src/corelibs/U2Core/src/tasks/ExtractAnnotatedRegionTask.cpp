@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -22,17 +22,15 @@
 #include <U2Core/AppContext.h>
 #include <U2Core/DNAAlphabet.h>
 #include <U2Core/TextUtils.h>
-#include <U2Core/AnnotationSettings.h>
 #include <U2Core/SequenceUtils.h>
 
 #include "ExtractAnnotatedRegionTask.h"
 
-namespace U2{
+namespace U2 {
 
 ExtractAnnotatedRegionTask::ExtractAnnotatedRegionTask(const DNASequence & sequence_, const SharedAnnotationData &sd_,
     const ExtractAnnotatedRegionTaskSettings & cfg_)
-    : Task(tr("Extract annotated regions"), TaskFlag_None), inputSeq(sequence_), inputAnn(sd_), cfg(cfg_), complT(NULL), aminoT(NULL)
-{
+    : Task(tr("Extract annotated regions"), TaskFlag_None), inputSeq(sequence_), inputAnn(sd_), cfg(cfg_), complT(NULL), aminoT(NULL) {
 
 }
 
@@ -57,8 +55,8 @@ void ExtractAnnotatedRegionTask::prepareTranslations() {
         DNATranslationType dnaTranslType = (inputSeq.alphabet->getType() == DNAAlphabet_NUCL)
             ? DNATranslationType_NUCL_2_AMINO : DNATranslationType_RAW_2_AMINO;
         QList<DNATranslation*> aminoTTs = AppContext::getDNATranslationRegistry()->lookupTranslation(inputSeq.alphabet, dnaTranslType);
-        if(!aminoTTs.isEmpty()) {
-             aminoT = AppContext::getDNATranslationRegistry()->getStandardGeneticCodeTranslation(inputSeq.alphabet);
+        if (!aminoTTs.isEmpty()) {
+            aminoT = AppContext::getDNATranslationRegistry()->getStandardGeneticCodeTranslation(inputSeq.alphabet);
         }
     }
 }
@@ -70,7 +68,7 @@ void ExtractAnnotatedRegionTask::run() {
     if (aminoT == NULL) { // extension does not work for translated annotations
         if (cfg.extLeft > 0) {
             int annStart = safeLocation.first().startPos;
-            int preStart = qMax(0,  annStart - cfg.extLeft);
+            int preStart = qMax(0, annStart - cfg.extLeft);
             int preLen = annStart - preStart;
             QByteArray preSeq = inputSeq.seq.mid(preStart, preLen);
             resParts.prepend(preSeq);
@@ -95,26 +93,26 @@ void ExtractAnnotatedRegionTask::run() {
     } else {
         resParts = U1SequenceUtils::translateRegions(resParts, aminoT, inputAnn->isJoin());
     }
-    foreach (const QByteArray &seq, resParts) {
+    foreach(const QByteArray &seq, resParts) {
         bool onlyOneIteration = false;
         DNASequence s;
         s.info[DNAInfo::ID] = inputSeq.getName();
-        if (!cfg.splitJoined || resParts.size() == 1){
+        if (!cfg.splitJoined || resParts.size() == 1) {
             s.seq = resParts.size() == 1 ? resParts.first() : U1SequenceUtils::joinRegions(resParts, cfg.gapLength);
             onlyOneIteration = true;
-        }else{
+        } else {
             s.seq = seq;
         }
         s.alphabet = aminoT ? aminoT->getDstAlphabet() : complT ? complT->getDstAlphabet() : inputSeq.alphabet;
         if (aminoT != NULL) {
             s.alphabet = aminoT->getDstAlphabet();
-        }else if (complT != NULL) {
+        } else if (complT != NULL) {
             s.alphabet = complT->getDstAlphabet();
-        }else {
+        } else {
             s.alphabet = inputSeq.alphabet;
         }
         resultedSeqList.append(s);
-        if (onlyOneIteration){
+        if (onlyOneIteration) {
             break;
         }
     }

@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -20,14 +20,16 @@
  */
 
 #include <QMessageBox>
-#include <QPushButton>
+
+#include <U2Core/AppContext.h>
+#include <U2Core/QObjectScopedPointer.h>
+
+#include <U2Designer/DashboardInfoRegistry.h>
 
 #include <U2Gui/HelpButton.h>
-#include <U2Core/QObjectScopedPointer.h>
 
 #include "DashboardsManagerDialog.h"
 
-static const QString REMOVE_DASHBOARDS_MESSAGE_BOX_TITLE = QObject::tr( "Removing Dashboards" );
 static const QString REMOVE_MULTIPLE_DASHBOARDS_MESSAGE_BOX_TEXT
     = QObject::tr( "The following dashboards are about to be deleted:" );
 static const QString REMOVE_SINGLE_DASHBOARD_MESSAGE_BOX_TEXT
@@ -41,11 +43,11 @@ static const int DASHBOARD_MAX_DISPLAING_NAME_COUNT = 5;
 
 namespace U2 {
 
-DashboardsManagerDialog::DashboardsManagerDialog(ScanDashboardsDirTask *_task, QWidget *parent)
-: QDialog(parent), task(_task)
+DashboardsManagerDialog::DashboardsManagerDialog(QWidget *parent)
+    : QDialog(parent)
 {
     setupUi(this);
-    new HelpButton(this, buttonBox, "21433560");
+    new HelpButton(this, buttonBox, "24740116");
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("OK"));
 
@@ -66,7 +68,8 @@ void DashboardsManagerDialog::setupList() {
     const int defaultNameColumnWidth = 250;
     listWidget->header()->resizeSection(0, defaultNameColumnWidth);
 
-    foreach (const DashboardInfo &info, task->getResult()) {
+    const QList<DashboardInfo> dashboardInfos = AppContext::getDashboardInfoRegistry()->getAllEntries();
+    foreach (const DashboardInfo &info, dashboardInfos) {
         QStringList data;
         data << info.name << info.dirName;
         QTreeWidgetItem *item = new QTreeWidgetItem(listWidget, data);
@@ -79,22 +82,20 @@ void DashboardsManagerDialog::setupList() {
     listWidget->sortByColumn(1, Qt::AscendingOrder);
 }
 
-QList<QTreeWidgetItem*> DashboardsManagerDialog::allItems() {
+QList<QTreeWidgetItem*> DashboardsManagerDialog::allItems() const {
     return listWidget->findItems("*", Qt::MatchWildcard);
 }
 
-QList<DashboardInfo> DashboardsManagerDialog::selectedDashboards() {
-    QList<DashboardInfo> result;
+QMap<QString, bool> DashboardsManagerDialog::getDashboardsVisibility() const {
+    QMap<QString, bool> result;
     foreach (QTreeWidgetItem *item, allItems()) {
-        if (Qt::Checked == item->checkState(0)) {
-            result << item->data(0, Qt::UserRole).value<DashboardInfo>();
-        }
+        result.insert(item->data(0, Qt::UserRole).value<DashboardInfo>().getId(), Qt::Checked == item->checkState(0));
     }
     return result;
 }
 
-QList<DashboardInfo> DashboardsManagerDialog::removedDashboards() {
-    return removed;
+const QStringList &DashboardsManagerDialog::removedDashboards() const {
+    return toRemove;
 }
 
 void DashboardsManagerDialog::sl_check() {
@@ -121,7 +122,7 @@ void DashboardsManagerDialog::sl_remove() {
     }
 
     foreach (QTreeWidgetItem *item, listWidget->selectedItems()) {
-        removed << item->data(0, Qt::UserRole).value<DashboardInfo>();
+        toRemove << item->data(0, Qt::UserRole).value<DashboardInfo>().getId();
         delete item;
     }
 }
@@ -169,7 +170,7 @@ bool DashboardsManagerDialog::confirmDashboardsRemoving( ) const {
 
     QObjectScopedPointer<QMessageBox> questionBox = new QMessageBox;
     questionBox->setIcon( QMessageBox::Question );
-    questionBox->setWindowTitle( REMOVE_DASHBOARDS_MESSAGE_BOX_TITLE );
+    questionBox->setWindowTitle(QObject::tr( "Removing Dashboards"));
     questionBox->setText( warningMessageText );
     if ( tooManyDashboardsSelected ) {
         questionBox->setDetailedText( fullDashboardNamesList );

@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -24,6 +24,7 @@
 
 #include <U2Core/global.h>
 
+#include <QDialogButtonBox>
 #include <QWidget>
 
 namespace U2 {
@@ -34,8 +35,8 @@ class AppSettingsGUIPageController;
 class U2GUI_EXPORT AppSettingsGUI : public QObject {
     Q_OBJECT
 public:
-    AppSettingsGUI(QObject* p = NULL) : QObject(p){};
-    
+    AppSettingsGUI(QObject* p = nullptr) : QObject(p) {};
+
     virtual bool registerPage(AppSettingsGUIPageController* page, const QString& beforePage = QString()) = 0;
 
     virtual bool unregisterPage(AppSettingsGUIPageController* page) = 0;
@@ -47,17 +48,17 @@ public:
 
 
 /** Data stored on the page */
-class U2GUI_EXPORT AppSettingsGUIPageState: public QObject {
+class U2GUI_EXPORT AppSettingsGUIPageState : public QObject {
     Q_OBJECT
 public:
-    AppSettingsGUIPageState(QObject* p = NULL) : QObject(p) {}
+    AppSettingsGUIPageState(QObject* p = nullptr) : QObject(p) {}
 };
 
 /** Page widget */
-class U2GUI_EXPORT AppSettingsGUIPageWidget: public QWidget {
+class U2GUI_EXPORT AppSettingsGUIPageWidget : public QWidget {
     Q_OBJECT
 public:
-    AppSettingsGUIPageWidget(QWidget* w = NULL) : QWidget(w){}
+    AppSettingsGUIPageWidget(QWidget* w = nullptr) : QWidget(w) {}
 
     //reads data from 'state' and initializes the widget state
     virtual void setState(AppSettingsGUIPageState* state) = 0;
@@ -65,17 +66,20 @@ public:
     //returns 'state' of the widget or error if state is not complete
     // the result structure is automatically deleted by controller
     virtual AppSettingsGUIPageState* getState(QString& errMsg) const = 0;
+
+signals:
+    void si_setLockState(bool);
 };
 
 /** Page factory/controller */
-class U2GUI_EXPORT AppSettingsGUIPageController: public QObject {
+class U2GUI_EXPORT AppSettingsGUIPageController : public QObject {
     Q_OBJECT
 public:
-    AppSettingsGUIPageController(const QString& s, const QString& _id, QObject* p = NULL) : QObject(p), name(s), id(_id) {}
+    AppSettingsGUIPageController(const QString& s, const QString& _id, QObject* p = nullptr) : QObject(p), name(s), id(_id) {}
 
-    const QString& getPageName() const {return name;}
+    const QString& getPageName() const { return name; }
 
-    const QString& getPageId() const {return id;}
+    const QString& getPageId() const { return id; }
 
     //should be pure virtual, because every page should have own help page index
     virtual const QString& getHelpPageId() const = 0;

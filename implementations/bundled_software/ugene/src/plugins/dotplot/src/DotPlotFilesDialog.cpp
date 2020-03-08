@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -40,7 +40,7 @@ DotPlotFilesDialog::DotPlotFilesDialog(QWidget *parent)
 : QDialog(parent)
 {
     setupUi(this);
-    new HelpButton(this, buttonBox, "21433231");
+    new HelpButton(this, buttonBox, "24742430");
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Next"));
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
 

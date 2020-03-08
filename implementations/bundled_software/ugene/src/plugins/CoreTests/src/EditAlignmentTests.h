@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -36,7 +36,7 @@ namespace U2 {
 
 class U2SequenceObject;
 
-class GTest_CreateSubalignimentTask : public GTest {
+class GTest_CreateSubalignimentTask : public XmlTest {
     Q_OBJECT
 public:
     SIMPLE_XML_TEST_BODY_WITH_FACTORY_EXT(GTest_CreateSubalignimentTask, "plugin_create-subalignment-task", TaskFlags_NR_FOSCOE);
@@ -54,7 +54,7 @@ private:
     U2Region window;
 };
 
-class GTest_RemoveAlignmentRegion : public GTest {
+class GTest_RemoveAlignmentRegion : public XmlTest {
     Q_OBJECT
 public:
     SIMPLE_XML_TEST_BODY_WITH_FACTORY_EXT(GTest_RemoveAlignmentRegion, "test-remove-alignment-region", TaskFlags_NR_FOSCOE);
@@ -70,7 +70,7 @@ private:
 };
 
 
-class GTest_AddSequenceToAlignment : public GTest {
+class GTest_AddSequenceToAlignment : public XmlTest {
     Q_OBJECT
 public:
     SIMPLE_XML_TEST_BODY_WITH_FACTORY_EXT(GTest_AddSequenceToAlignment, "test-add-seq-to-alignment", TaskFlags_NR_FOSCOE);
@@ -86,7 +86,7 @@ private:
 };
 
 
-class GTest_RemoveColumnsOfGaps : public GTest {
+class GTest_RemoveColumnsOfGaps : public XmlTest {
     Q_OBJECT
 public:
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_RemoveColumnsOfGaps, "remove-columns-of-gaps");

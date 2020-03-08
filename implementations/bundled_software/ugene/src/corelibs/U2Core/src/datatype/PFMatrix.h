@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -28,7 +28,6 @@
 #include <U2Core/DNASequence.h>
 
 #include <QVarLengthArray>
-#include <QList>
 #include <QMap>
 
 namespace U2 {
@@ -45,7 +44,7 @@ public:
     //constructor from matrix_list.txt string
     JasparInfo(const QString& line);
 
-    QString getProperty (const QString& name) const;
+    QString getProperty(const QString& name) const;
 
     QMap<QString, QString> getProperties() const;
 
@@ -75,25 +74,25 @@ public:
     //create matrix from set of sequences with equal length
     PFMatrix(const QList<DNASequence*>& data, const PFMatrixType type);
 
-    PFMatrix(const PFMatrix &m):data(m.data), length(m.length), type(m.type), info(m.info){};
+    PFMatrix(const PFMatrix &m) :data(m.data), length(m.length), type(m.type), info(m.info) {};
 
     //get internal index of position in 1-dimensional array
-    int index (int row, int column) const;
+    int index(int row, int column) const;
 
     //get length of matrix row
-    int getLength () const;
+    int getLength() const;
 
     //get type of matrix: mono- or dinucleotide
     PFMatrixType getType() const;
 
     //get value at specified position
-    int getValue (int row, int column) const;
+    int getValue(int row, int column) const;
 
     //set JASPAR info for matrix
-    void setInfo (const JasparInfo& info);
+    void setInfo(const JasparInfo& info);
 
     //get specified Jaspar property
-    QString getProperty (const QString& propertyName) const;
+    QString getProperty(const QString& propertyName) const;
 
     //get all Jaspar properties
     QMap<QString, QString> getProperties() const;

@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -26,7 +26,6 @@
 #include <U2Core/GUrl.h>
 #include <U2Core/NetworkConfiguration.h>
 
-#include <QUrl>
 #include <QNetworkReply>
 #include <QAuthenticator>
 #include <QXmlReader>
@@ -52,10 +51,10 @@ class LoadDataFromEntrezTask;
 
 class U2CORE_EXPORT RemoteDBRegistry {
     RemoteDBRegistry();
-    QMap<QString,QString> queryDBs;
-    QMap<QString,QString> httpDBs;
-    QMap<QString,QString> hints;
-    QMap<QString,QString> aliases;
+    QMap<QString, QString> queryDBs;
+    QMap<QString, QString> httpDBs;
+    QMap<QString, QString> hints;
+    QMap<QString, QString> aliases;
 public:
     QString getURL(const QString& accId, const QString& dbName);
     QString getDbEntrezName(const QString& dbName);
@@ -79,7 +78,7 @@ public:
 
 class U2CORE_EXPORT RecentlyDownloadedCache : public QObject {
     Q_OBJECT
-    QMap<QString, QString> urlMap;
+        QMap<QString, QString> urlMap;
     void loadCacheFromSettings();
     void saveCacheToSettings();
 public:
@@ -110,7 +109,7 @@ class U2CORE_EXPORT BaseLoadRemoteDocumentTask : public DocumentProviderTask {
 public:
     BaseLoadRemoteDocumentTask(const QString& downloadPath = QString(), const QVariantMap &hints = QVariantMap(), TaskFlags flags = TaskFlags(TaskFlags_NR_FOSCOE | TaskFlag_MinimizeSubtaskErrorText));
     virtual void prepare();
-    QString getLocalUrl(){ return fullPath; }
+    QString getLocalUrl() { return fullPath; }
 
     virtual ReportResult report();
 
@@ -170,13 +169,13 @@ private:
 class U2CORE_EXPORT BaseEntrezRequestTask : public Task {
     Q_OBJECT
 public:
-    BaseEntrezRequestTask( const QString &taskName );
-    virtual ~BaseEntrezRequestTask( );
+    BaseEntrezRequestTask(const QString &taskName);
+    virtual ~BaseEntrezRequestTask();
 
-protected slots:
-    virtual void sl_replyFinished( QNetworkReply *reply ) = 0;
-    void sl_onError( QNetworkReply::NetworkError error );
-    void sl_uploadProgress( qint64 bytesSent, qint64 bytesTotal );
+    protected slots:
+    virtual void sl_replyFinished(QNetworkReply *reply) = 0;
+    void sl_onError(QNetworkReply::NetworkError error);
+    void sl_uploadProgress(qint64 bytesSent, qint64 bytesTotal);
     virtual void onProxyAuthenticationRequired(const QNetworkProxy&, QAuthenticator*);
 
 protected:
@@ -196,17 +195,19 @@ class U2CORE_EXPORT LoadDataFromEntrezTask : public BaseEntrezRequestTask {
     Q_OBJECT
 public:
     LoadDataFromEntrezTask(const QString& dbId,
-                           const QString& accNumber,
-                           const QString& retType,
-                           const QString& fullPath);
+        const QString& accNumber,
+        const QString& retType,
+        const QString& fullPath);
 
     void run();
 
-private slots:
+    private slots:
     void sl_replyFinished(QNetworkReply* reply);
     void sl_cancelCheck();
 
 private:
+    void runRequest(const QUrl& requestUrl);
+
     QNetworkReply* searchReply;     // TODO: I think, it is unsed variable. Check if you can remove it.
     QNetworkReply* downloadReply;
     QXmlSimpleReader xmlReader;
@@ -220,15 +221,17 @@ private:
 class U2CORE_EXPORT EntrezQueryTask : public BaseEntrezRequestTask {
     Q_OBJECT
 public:
-    EntrezQueryTask( QXmlDefaultHandler* resultHandler, const QString& query );
+    EntrezQueryTask(QXmlDefaultHandler* resultHandler, const QString& query);
 
     void run();
     const QXmlDefaultHandler* getResultHandler() const;
 
-private slots:
+    private slots:
     void sl_replyFinished(QNetworkReply* reply);
 
 private:
+    void runRequest(const QUrl& requestUrl);
+
     QNetworkReply* queryReply;
     QXmlDefaultHandler* resultHandler;
     QXmlSimpleReader xmlReader;

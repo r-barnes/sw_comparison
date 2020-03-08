@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -35,7 +35,6 @@
 #include <unistd.h> //for sysconf(3)
 #endif
 #if defined(Q_OS_LINUX)
-#include <proc/readproc.h>
 #include <fstream>
 #endif
 
@@ -150,6 +149,14 @@ int AppResourcePool::getTotalPhysicalMemory() {
 #endif
 
     return totalPhysicalMemory;
+}
+
+bool AppResourcePool::is32BitBuild() {
+    bool result = false;
+#ifdef Q_PROCESSOR_X86_32
+    result = true;
+#endif
+    return result;
 }
 
 bool AppResourcePool::isSystem64bit() {
@@ -269,9 +276,14 @@ bool AppResourcePool::isSSE2Enabled() {
 
 void AppResourcePool::registerResource(AppResource* r) {
     SAFE_POINT(NULL != r,"",);
-    SAFE_POINT(!resources.contains(r->getResourceId()), QString("Duplicate resource: ").arg(r->getResourceId()),);
+    SAFE_POINT(!resources.contains(r->getResourceId()), QString("Duplicate resource: %1").arg(r->getResourceId()),);
 
     resources[r->getResourceId()] = r;
+}
+
+void AppResourcePool::unregisterResource(int id) {
+    CHECK(resources.contains(id), );
+    delete resources.take(id);
 }
 
 AppResource* AppResourcePool::getResource(int id) const {

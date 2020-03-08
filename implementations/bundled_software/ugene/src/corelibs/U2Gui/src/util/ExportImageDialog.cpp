@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -25,7 +25,8 @@
 
 #include <U2Core/AppContext.h>
 #include <U2Core/GUrlUtils.h>
-#include <U2Core/L10n.h>
+#include <U2Core/Theme.h>
+#include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2SafePoints.h>
 
 #include <U2Gui/HelpButton.h>
@@ -99,6 +100,8 @@ void ExportImageDialog::accept() {
         return;
     }
 
+    U2OpStatusImpl os;
+    GUrlUtils::prepareFileLocation(filename, os);
     if (!GUrlUtils::canWriteFile(filename)) {
         QMessageBox::warning(this, tr(DIALOG_ACCEPT_ERROR_TITLE), tr("The image file cannot be created. No write permissions."));
         return;
@@ -150,28 +153,28 @@ void ExportImageDialog::init() {
 
     switch (source) {
     case WD:
-        new HelpButton(this, ui->buttonBox, "21433554");
+        new HelpButton(this, ui->buttonBox, "24740110");
         break;
     case CircularView:
-        new HelpButton(this, ui->buttonBox, "21433206");
+        new HelpButton(this, ui->buttonBox, "24742405");
         break;
     case MSA:
-        new HelpButton(this, ui->buttonBox, "21433279");
+        new HelpButton(this, ui->buttonBox, "24742478");
         break;
     case SequenceView:
-        new HelpButton(this, ui->buttonBox, "21433167");
+        new HelpButton(this, ui->buttonBox, "24742366");
         break;
     case AssemblyView:
-        new HelpButton(this, ui->buttonBox, "21433316");
+        new HelpButton(this, ui->buttonBox, "24742515");
         break;
     case PHYTreeView:
-        new HelpButton(this, ui->buttonBox, "21433344");
+        new HelpButton(this, ui->buttonBox, "24742543");
         break;
     case DotPlot:
-        new HelpButton(this, ui->buttonBox, "21433237");
+        new HelpButton(this, ui->buttonBox, "24742436");
         break;
     case MolView:
-        new HelpButton(this, ui->buttonBox, "21433220");
+        new HelpButton(this, ui->buttonBox, "24742419");
         break;
     default:
         FAIL("Can't find help Id",);
@@ -181,11 +184,12 @@ void ExportImageDialog::init() {
     ui->dpiWidget->setVisible(source == DotPlot);
 
     // set tip color
-    QString style = "QLabel { color: " + L10N::errorColorLabelStr() + "; font: bold;}";
+    QString style = "QLabel { color: " + Theme::errorColorLabelStr() + "; font: bold;}";
     ui->hintLabel->setStyleSheet(style);
     ui->hintLabel->hide();
 
-    initSaveController();
+    QString defaultFormat = "PNG";
+    initSaveController(defaultFormat);
 
     if (scalingPolicy == NoScaling) {
         ui->imageSizeSettingsContainer->hide();
@@ -213,15 +217,16 @@ void ExportImageDialog::init() {
     } else {
         ui->settingsLayout->addWidget(settingsWidget);
     }
+    sl_onFormatsBoxItemChanged(defaultFormat);
 }
 
-void ExportImageDialog::initSaveController() {
+void ExportImageDialog::initSaveController(const QString& defaultFormat) {
     LastUsedDirHelper dirHelper(IMAGE_DIR, GUrlUtils::getDefaultDataPath());
 
     SaveDocumentControllerConfig config;
     config.defaultDomain = IMAGE_DIR;
     config.defaultFileName = dirHelper.dir + "/" + GUrlUtils::fixFileName(origFilename);
-    config.defaultFormatId = "PNG";
+    config.defaultFormatId = defaultFormat;
     config.fileDialogButton = ui->browseFileButton;
     config.fileNameEdit = ui->fileNameEdit;
     config.formatCombo = ui->formatsBox;

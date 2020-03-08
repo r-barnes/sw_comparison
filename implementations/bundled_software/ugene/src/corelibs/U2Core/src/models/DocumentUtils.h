@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -24,8 +24,6 @@
 
 #include <QFile>
 
-#include <U2Core/global.h>
-
 #include "DocumentModel.h"
 
 namespace U2 {
@@ -35,10 +33,10 @@ class DocumentImporter;
 /**
     Result of the format detection.
     contains score and ( format or importer ) instance pointer
-*/
+    */
 class U2CORE_EXPORT FormatDetectionResult {
 public:
-    FormatDetectionResult() : format(NULL), importer(NULL){}
+    FormatDetectionResult() : format(NULL), importer(NULL) {}
     DocumentFormat*         format;
     DocumentImporter*       importer;
     QByteArray              rawData;
@@ -49,7 +47,7 @@ public:
 
     QString getFormatDescriptionText() const;
     QString getFormatOrImporterName() const;
-    int score() const {return rawDataCheckResult.score;}
+    int score() const { return rawDataCheckResult.score; }
 
 };
 
@@ -70,7 +68,7 @@ public:
     bool excludeHiddenFormats;
 };
 
-class U2CORE_EXPORT DocumentUtils: public QObject    {
+class U2CORE_EXPORT DocumentUtils : public QObject {
     Q_OBJECT
 public:
     /* returns set with document urls */
@@ -78,7 +76,7 @@ public:
 
     /*  The set of urls that should not be used for new documents
         returns list of loaded urls. Gets them from the active project
-    */
+        */
     static QSet<QString> getNewDocFileNameExcludesHint();
 
     /* Detects document format. The best match goes first in the returned list */
@@ -87,19 +85,19 @@ public:
     /*
         Detects document format. The best match goes first in the returned list
         IOAdapter must be opened
-    */
+        */
     static QList<FormatDetectionResult> detectFormat(IOAdapter* io, const FormatDetectionConfig& conf = FormatDetectionConfig());
 
     /*
         Detects document format. The best match goes first in the returned list
         ext & url can be used here to add extension bonus to the final score
-    */
+        */
     static QList<FormatDetectionResult> detectFormat(const QByteArray& rawData, const QString& ext = QString(),
-                                            const GUrl& url = GUrl(), const FormatDetectionConfig& conf = FormatDetectionConfig());
+        const GUrl& url = GUrl(), const FormatDetectionConfig& conf = FormatDetectionConfig());
 
     /*
         Find the best matching document format and stores it in @resultId.
-    */
+        */
     enum Detection {
         UNKNOWN,
         FORMAT,

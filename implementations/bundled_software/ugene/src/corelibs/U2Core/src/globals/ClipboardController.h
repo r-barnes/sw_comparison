@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -23,14 +23,13 @@
 #define _U2_CLIPBOARD_CONTROLLER_H_
 
 #include <U2Core/DocumentUtils.h>
-#include <U2Core/U2OpStatus.h>
 #include <U2Core/Task.h>
 
 #include <QClipboard>
 
 namespace U2 {
 
-class U2CORE_EXPORT PasteTask : public Task{
+class U2CORE_EXPORT PasteTask : public Task {
     Q_OBJECT
 public:
     PasteTask();
@@ -38,13 +37,13 @@ public:
     virtual QList<GUrl> getUrls() const = 0;
     virtual QList<Document*> getDocuments() const = 0;
 protected:
-   virtual void processDocument(Document* doc);
+    virtual void processDocument(Document* doc);
 };
 
 class U2CORE_EXPORT PasteFactory : public QObject {
     Q_OBJECT
 public:
-    PasteFactory(QObject *parent=0);
+    PasteFactory(QObject *parent = 0);
 
     virtual PasteTask* pasteTask(bool useInSequenceWidget) = 0;
 };

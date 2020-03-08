@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -24,18 +24,16 @@
 #include <U2Core/U2AlphabetUtils.h>
 #include <U2Core/U2AttributeDbi.h>
 #include <U2Core/U2MsaDbi.h>
-#include <U2Core/U2ObjectDbi.h>
 #include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2SequenceDbi.h>
 
-static const char *NULL_MSA_DBI_ERROR =             "NULL MSA Dbi during exporting rows of an alignment!";
-static const char *OPENED_DBI_CONNECTION_ERROR =    "Connection is already opened!";
+static const char *NULL_MSA_DBI_ERROR = "NULL MSA Dbi during exporting rows of an alignment!";
+static const char *OPENED_DBI_CONNECTION_ERROR = "Connection is already opened!";
 static const char *ROWS_SEQS_COUNT_MISMATCH_ERROR = "Different number of rows and sequences!";
 
 namespace U2 {
 
-MultipleSequenceAlignmentExporter::MultipleSequenceAlignmentExporter()
-{
+MultipleSequenceAlignmentExporter::MultipleSequenceAlignmentExporter() {
 
 }
 
@@ -88,8 +86,7 @@ U2Msa MultipleSequenceAlignmentExporter::getAlignmentObject(const U2DbiRef &dbiR
 }
 
 QList<MsaRowReplacementData> MultipleSequenceAlignmentExporter::getAlignmentRows(const U2DbiRef& dbiRef,
-    const U2DataId& msaId, const QList<qint64> rowIds, U2OpStatus& os) const
-{
+    const U2DataId& msaId, const QList<qint64> rowIds, U2OpStatus& os) const {
     SAFE_POINT(!con.isOpen(), OPENED_DBI_CONNECTION_ERROR, QList<MsaRowReplacementData>());
     con.open(dbiRef, false, os);
     CHECK_OP(os, QList<MsaRowReplacementData>());
@@ -103,8 +100,8 @@ QList<MsaRowReplacementData> MultipleSequenceAlignmentExporter::getAlignmentRows
     QList<MsaRowReplacementData> result;
     SAFE_POINT(rows.count() == sequences.count(), ROWS_SEQS_COUNT_MISMATCH_ERROR,
         QList<MsaRowReplacementData>());
-    for ( int i = 0; i < rows.length( ); ++i ) {
-        result << MsaRowReplacementData( sequences.at(i), rows.at( i ) );
+    for (int i = 0; i < rows.length(); ++i) {
+        result << MsaRowReplacementData(sequences.at(i), rows.at(i));
     }
     return result;
 }
@@ -116,15 +113,14 @@ QList<U2MsaRow> MultipleSequenceAlignmentExporter::exportRows(const U2DataId& ms
     return msaDbi->getRows(msaId, os);
 }
 
-QList<U2MsaRow> MultipleSequenceAlignmentExporter::exportRows( const U2DataId &msaId, const QList<qint64> rowIds,
-    U2OpStatus &os ) const
-{
-    U2MsaDbi* msaDbi = con.dbi->getMsaDbi( );
-    SAFE_POINT( NULL != msaDbi, NULL_MSA_DBI_ERROR, QList<U2MsaRow>( ) );
+QList<U2MsaRow> MultipleSequenceAlignmentExporter::exportRows(const U2DataId &msaId, const QList<qint64> rowIds,
+    U2OpStatus &os) const {
+    U2MsaDbi* msaDbi = con.dbi->getMsaDbi();
+    SAFE_POINT(NULL != msaDbi, NULL_MSA_DBI_ERROR, QList<U2MsaRow>());
     QList<U2MsaRow> result;
-    foreach ( qint64 rowId, rowIds ) {
-        result.append( msaDbi->getRow( msaId, rowId, os) );
-        SAFE_POINT_OP( os, QList<U2MsaRow>( ) );
+    foreach(qint64 rowId, rowIds) {
+        result.append(msaDbi->getRow(msaId, rowId, os));
+        SAFE_POINT_OP(os, QList<U2MsaRow>());
     }
     return result;
 }
@@ -135,7 +131,7 @@ QList<DNASequence> MultipleSequenceAlignmentExporter::exportSequencesOfRows(QLis
     SAFE_POINT(NULL != sequenceDbi, "NULL Sequence Dbi during exporting rows sequences!", QList<DNASequence>());
 
     QList<DNASequence> sequences;
-    sequences.reserve( rows.count( ) );
+    sequences.reserve(rows.count());
     for (int i = 0, n = rows.count(); i < n; ++i) {
         const U2DataId& sequenceId = rows[i].sequenceId;
         qint64 gstart = rows[i].gstart;
@@ -161,10 +157,10 @@ QVariantMap MultipleSequenceAlignmentExporter::exportAlignmentInfo(const U2DataI
 
     // Get all MSA attributes
     QVariantMap alInfo;
-    QList<U2DataId> attributeIds =  attrDbi->getObjectAttributes(msaId, "", os);
+    QList<U2DataId> attributeIds = attrDbi->getObjectAttributes(msaId, "", os);
     CHECK_OP(os, QVariantMap());
 
-    foreach (U2DataId attributeId, attributeIds) {
+    foreach(U2DataId attributeId, attributeIds) {
         U2StringAttribute attr = attrDbi->getStringAttribute(attributeId, os);
         CHECK_OP(os, QVariantMap());
 

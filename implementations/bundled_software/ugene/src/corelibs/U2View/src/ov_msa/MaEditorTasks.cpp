@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -286,6 +286,10 @@ void ExportMaConsensusTask::prepare(){
     addSubTask(extractConsensus);
 }
 
+const QString& ExportMaConsensusTask::getConsensusUrl() const {
+    return settings.url;
+}
+
 QList<Task*> ExportMaConsensusTask::onSubTaskFinished( Task* subTask ){
     QList<Task*> result;
     if(subTask == extractConsensus && !isCanceled() && !hasError()) {
@@ -323,7 +327,7 @@ Document *ExportMaConsensusTask::createDocument(){
         obj = TextObject::createInstance(filteredConsensus, settings.name, doc->getDbiRef(), stateInfo);
     }else{
         DNASequence dna(settings.name, filteredConsensus);
-        U2EntityRef ref = U2SequenceUtils::import(stateInfo, doc->getDbiRef(), U2ObjectDbi::ROOT_FOLDER, dna, dna.alphabet->getId());
+        U2EntityRef ref = U2SequenceUtils::import(stateInfo, doc->getDbiRef(), U2ObjectDbi::ROOT_FOLDER, dna);
         obj = new U2SequenceObject(dna.getName(), ref);
     }
     CHECK_OP(stateInfo, NULL);

@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -35,7 +35,7 @@ namespace Workflow {
  */
 class DatasetsCountValidator : public ActorValidator {
 public:
-    virtual bool validate(const Actor *actor, ProblemList &problemList, const QMap<QString, QString> &options) const;
+    virtual bool validate(const Actor *actor, NotificationsList &notificationList, const QMap<QString, QString> &options) const;
     static const QString ID;
 };
 

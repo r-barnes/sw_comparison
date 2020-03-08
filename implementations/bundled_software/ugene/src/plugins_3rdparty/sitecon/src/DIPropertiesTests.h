@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -29,7 +29,7 @@
 
 namespace U2 {
 
-class GTest_DiPropertySiteconCheckAttribs : public GTest {
+class GTest_DiPropertySiteconCheckAttribs : public XmlTest {
     Q_OBJECT
 public:
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_DiPropertySiteconCheckAttribs, "sitecon-check_diproperty_attrib");

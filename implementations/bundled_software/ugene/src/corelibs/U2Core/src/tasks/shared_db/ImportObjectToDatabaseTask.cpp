@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -19,8 +19,6 @@
  * MA 02110-1301, USA.
  */
 
-#include <QCoreApplication>
-
 #include <U2Core/Counter.h>
 #include <U2Core/DocumentModel.h>
 #include <U2Core/U2SafePoints.h>
@@ -32,12 +30,11 @@
 namespace U2 {
 
 ImportObjectToDatabaseTask::ImportObjectToDatabaseTask(GObject* object, const U2DbiRef& dstDbiRef, const QString& dstFolder) :
-    Task(tr("Import object %1 to database").arg(NULL != object ? object->getGObjectName() : ""), TaskFlag_None),
-    object(object),
-    dstDbiRef(dstDbiRef),
-    dstFolder(dstFolder),
-    dstObject(NULL)
-{
+Task(tr("Import object %1 to database").arg(NULL != object ? object->getGObjectName() : ""), TaskFlag_None),
+object(object),
+dstDbiRef(dstDbiRef),
+dstFolder(dstFolder),
+dstObject(NULL) {
     GCOUNTER(cvar, tvar, "ImportObjectToDatabaseTask");
     CHECK_EXT(NULL != object, setError(tr("Invalid object to import")), );
     CHECK_EXT(dstDbiRef.isValid(), setError(tr("Invalid database reference")), );

@@ -1,6 +1,6 @@
  /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -29,6 +29,7 @@
 namespace U2 {
 
 const int AnnotHighlightTreeItem::ROW_HEIGHT = 22;
+const int AnnotHighlightTreeItem::COLOR_ICON_SIZE = 14;
 
 AnnotHighlightTreeItem::AnnotHighlightTreeItem(const QString& _annotName, const QColor& _annotColor)
     : annotName(_annotName), annotColor(_annotColor)
@@ -41,7 +42,7 @@ AnnotHighlightTreeItem::AnnotHighlightTreeItem(const QString& _annotName, const 
 
 void AnnotHighlightTreeItem::drawColorCell()
 {
-    QIcon icon = GUIUtils::createSquareIcon(annotColor, 14);
+    QIcon icon = GUIUtils::createSquareIcon(annotColor, COLOR_ICON_SIZE);
     setIcon(AnnotHighlightTree::COL_NUM_COLOR, icon);
 }
 

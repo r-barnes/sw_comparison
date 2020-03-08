@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -66,6 +66,9 @@ public:
     static void setWidgetWarning(QWidget *widget, bool value);
 
     static void showMessage(QWidget *widgetToPaintOn, QPainter& painter, const QString& message);
+
+    static const QColor WARNING_COLOR;
+    static const QColor OK_COLOR;
 };
 
 }   // namespace U2

@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -37,7 +37,7 @@ class AppSettingsGUIPageState;
 class AppSettingsGUIPageWidget;
 class AppSettingsTreeItem;
 
-class AppSettingsDialogController: public QDialog, public Ui_AppSettingsDialog {
+class AppSettingsDialogController : public QDialog, public Ui_AppSettingsDialog {
     Q_OBJECT
 
 public:
@@ -46,10 +46,13 @@ public:
 public slots:
     virtual void accept();
     virtual void reject();
-    void sl_currentItemChanged ( QTreeWidgetItem * current, QTreeWidgetItem * previous );
+    void sl_currentItemChanged(QTreeWidgetItem * current, QTreeWidgetItem * previous);
 
 protected:
     void timerEvent(QTimerEvent* e);
+
+private slots:
+    void sl_setLockState(bool);
 
 private:
     bool checkCurrentState(bool saveStateInItem, bool showError);
@@ -58,7 +61,6 @@ private:
 
     AppSettingsTreeItem* findPageItem(const QString& id) const;
 
-private:
     AppSettingsTreeItem*    currentPage;
     HelpButton*             helpButton;
 };

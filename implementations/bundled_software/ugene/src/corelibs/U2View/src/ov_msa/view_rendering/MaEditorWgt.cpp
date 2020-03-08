@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -64,8 +64,9 @@ MaEditorWgt::MaEditorWgt(MaEditor *editor)
       seqAreaHeaderLayout(NULL),
       seqAreaLayout(NULL),
       nameAreaLayout(NULL),
-      collapseModel(new MSACollapsibleItemModel(this)),
+      collapseModel(new MaCollapseModel(this, editor->getMaRowIds())),
       collapsibleMode(false),
+      enableCollapsingOfSingleRowGroups(false),
       scrollController(new ScrollController(editor, this, collapseModel)),
       baseWidthController(new BaseWidthController(this)),
       rowHeightController(NULL),
@@ -202,6 +203,7 @@ void MaEditorWgt::initWidgets() {
     nameAreaContainer->setLayout(nameAreaLayout);
     nameAreaContainer->setStyleSheet("background-color: white;");
 
+    nameAreaContainer->setMinimumWidth(15); // splitter uses min-size to collapse a widget
     maSplitter.addWidget(nameAreaContainer, 0, 0.1);
     maSplitter.addWidget(seqAreaContainer, 1, 3);
 

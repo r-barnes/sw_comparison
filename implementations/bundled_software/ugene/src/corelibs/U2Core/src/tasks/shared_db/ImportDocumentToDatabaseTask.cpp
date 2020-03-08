@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -20,7 +20,6 @@
  */
 
 #include <U2Core/Counter.h>
-#include <U2Core/DocumentModel.h>
 #include <U2Core/Folder.h>
 #include <U2Core/U2DbiUtils.h>
 #include <U2Core/U2ObjectDbi.h>
@@ -32,12 +31,11 @@
 namespace U2 {
 
 ImportDocumentToDatabaseTask::ImportDocumentToDatabaseTask(Document* document, const U2DbiRef& dstDbiRef, const QString& dstFolder, const ImportToDatabaseOptions& options) :
-    Task(tr("Import document %1 to the database").arg(NULL != document ? document->getName() : ""), TaskFlag_NoRun),
-    document(document),
-    dstDbiRef(dstDbiRef),
-    dstFolder(dstFolder),
-    options(options)
-{
+Task(tr("Import document %1 to the database").arg(NULL != document ? document->getName() : ""), TaskFlag_NoRun),
+document(document),
+dstDbiRef(dstDbiRef),
+dstFolder(dstFolder),
+options(options) {
     GCOUNTER(cvar, tvar, "ImportDocumentToDatabaseTask");
     CHECK_EXT(NULL != document, setError(tr("Invalid document to import")), );
     CHECK_EXT(dstDbiRef.isValid(), setError(tr("Invalid database reference")), );
@@ -50,7 +48,7 @@ ImportDocumentToDatabaseTask::ImportDocumentToDatabaseTask(Document* document, c
 }
 
 void ImportDocumentToDatabaseTask::prepare() {
-    foreach (GObject* object, document->getObjects()) {
+    foreach(GObject* object, document->getObjects()) {
         addSubTask(new ImportObjectToDatabaseTask(object, dstDbiRef, dstFolder));
     }
 }
@@ -89,7 +87,7 @@ Document *ImportDocumentToDatabaseTask::getSourceDocument() const {
 QStringList ImportDocumentToDatabaseTask::getImportedObjectNames() const {
     QStringList result;
     const QMap<GObject *, GObject *> objects = getObjectPairs();
-    foreach (GObject* object, objects) {
+    foreach(GObject* object, objects) {
         result << object->getGObjectName();
     }
 
@@ -98,7 +96,7 @@ QStringList ImportDocumentToDatabaseTask::getImportedObjectNames() const {
 
 QStringList ImportDocumentToDatabaseTask::getSkippedObjectNames() const {
     QStringList result;
-    foreach (Task* subtask, getSubtasks()) {
+    foreach(const QPointer<Task> &subtask, getSubtasks()) {
         if (subtask->isCanceled() || subtask->hasError()) {
             ImportObjectToDatabaseTask* importObjectTask = qobject_cast<ImportObjectToDatabaseTask*>(subtask);
             if (NULL != importObjectTask) {
@@ -127,7 +125,7 @@ QSet<GObject *> ImportDocumentToDatabaseTask::getImportedObjects() const {
 
 QMap<GObject *, GObject *> ImportDocumentToDatabaseTask::getObjectPairs() const {
     QMap<GObject *, GObject *> objects;
-    foreach (Task* subtask, getSubtasks()) {
+    foreach(const QPointer<Task> &subtask, getSubtasks()) {
         if (!subtask->isCanceled() && !subtask->hasError()) {
             ImportObjectToDatabaseTask* importObjectTask = qobject_cast<ImportObjectToDatabaseTask*>(subtask);
             if (NULL != importObjectTask) {
@@ -152,7 +150,7 @@ void ImportDocumentToDatabaseTask::propagateObjectsRelations(QStringList& errors
         dstObject->setObjectRelations(QList<GObjectRelation>());
 
         QList<GObjectRelation> relations = srcObject->getObjectRelations();
-        foreach (const GObjectRelation& relation, relations) {
+        foreach(const GObjectRelation& relation, relations) {
             if (srcDocUrl != relation.getDocURL()) {
                 // skip this relation: target object is not imported to the database
                 continue;
@@ -170,9 +168,9 @@ void ImportDocumentToDatabaseTask::propagateObjectsRelations(QStringList& errors
 
             GObject* dstRelationTargetObject = objects.value(srcRelationTargetObject);
             GObjectReference dstReference(U2DbiUtils::ref2Url(dstDbiRef),
-                                          dstRelationTargetObject->getGObjectName(),
-                                          dstRelationTargetObject->getGObjectType(),
-                                          dstRelationTargetObject->getEntityRef());
+                dstRelationTargetObject->getGObjectName(),
+                dstRelationTargetObject->getGObjectType(),
+                dstRelationTargetObject->getEntityRef());
             GObjectRelation dstRelation(dstReference, relation.role);
             dstObject->addObjectRelation(dstRelation);
         }
@@ -182,7 +180,7 @@ void ImportDocumentToDatabaseTask::propagateObjectsRelations(QStringList& errors
 GObject *ImportDocumentToDatabaseTask::getAppropriateObject(const QList<GObject *> objects, const GObject *pattern) {
     CHECK(NULL != pattern, NULL);
 
-    foreach (GObject* object, objects) {
+    foreach(GObject* object, objects) {
         if (object->getGObjectName() == pattern->getGObjectName() &&
             object->getGObjectType() == pattern->getGObjectType()) {
             return object;

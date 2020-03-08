@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -75,6 +75,8 @@ private:
     void saveResults();
     SharedAnnotationData createFragment(int pos1, const DNAFragmentTerm& leftTerm, int pos2, const DNAFragmentTerm& rightTerm);
     void checkForConservedAnnotations();
+    qint64 correctPos(const qint64 pos) const;
+    QByteArray getOverhang(const U2Region& region) const;
     bool isCircular;
     U2Region seqRange;
     AnnotationTableObject *sourceObj, *destObj;

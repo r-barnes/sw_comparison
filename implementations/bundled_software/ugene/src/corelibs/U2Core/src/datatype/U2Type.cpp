@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -19,8 +19,6 @@
  * MA 02110-1301, USA.
  */
 
-#include <QDataStream>
-
 #include "U2Type.h"
 
 namespace U2 {
@@ -30,39 +28,37 @@ namespace U2 {
 //////////////////////////////////////////////////////////////////////////
 
 U2Entity::U2Entity(const U2DataId &id)
-    : id(id)
-{
+    : id(id) {
 
 }
 
-U2Entity::U2Entity( const U2Entity &other )
-    : id( other.id )
-{
+U2Entity::U2Entity(const U2Entity &other)
+    : id(other.id) {
 
 }
 
-U2Entity::~U2Entity( ) {
+U2Entity::~U2Entity() {
 
 }
 
-bool U2Entity::hasValidId( ) const {
-    return !id.isEmpty( );
+bool U2Entity::hasValidId() const {
+    return !id.isEmpty();
 }
 
-U2Entity U2Entity::operator =( const U2Entity &other ) {
+U2Entity U2Entity::operator =(const U2Entity &other) {
     id = other.id;
     return *this;
 }
 
-bool U2Entity::operator ==( const U2Entity &other ) const {
+bool U2Entity::operator ==(const U2Entity &other) const {
     return id == other.id;
 }
 
-bool U2Entity::operator !=( const U2Entity &other ) const {
+bool U2Entity::operator !=(const U2Entity &other) const {
     return id != other.id;
 }
 
-bool U2Entity::operator <( const U2Entity &other ) const {
+bool U2Entity::operator <(const U2Entity &other) const {
     return id < other.id;
 }
 
@@ -71,8 +67,7 @@ bool U2Entity::operator <( const U2Entity &other ) const {
 //////////////////////////////////////////////////////////////////////////
 
 U2DbiRef::U2DbiRef(const U2DbiFactoryId &dbiFactoryId, const U2DbiId &dbiId)
-    : dbiFactoryId(dbiFactoryId), dbiId(dbiId)
-{
+    : dbiFactoryId(dbiFactoryId), dbiId(dbiId) {
 
 }
 
@@ -108,14 +103,12 @@ QDataStream & operator >>(QDataStream &in, U2DbiRef &dbiRef) {
 //////////////////////////////////////////////////////////////////////////
 
 U2EntityRef::U2EntityRef()
-    : version(0)
-{
+    : version(0) {
 
 }
 
 U2EntityRef::U2EntityRef(const U2DbiRef &dbiRef, const U2DataId &entityId)
-    : dbiRef(dbiRef), entityId(entityId), version(0)
-{
+    : dbiRef(dbiRef), entityId(entityId), version(0) {
 
 }
 

@@ -2,8 +2,6 @@
     <qresource prefix="/U2Designer">
         <file>html/Dashboard.css</file>
         <file>html/Dashboard.html</file>
-        <file>html/EstimationReport.css</file>
-        <file>html/EstimationReport.html</file>
         <file>javascript/Common.js</file>
         <file>javascript/ParametersWidget.js</file>
         <file>javascript/ExternalToolsWidget.js</file>
@@ -28,6 +26,10 @@
         <file>images/database_add.png</file>
         <file>images/database_folder.png</file>
         <file>images/blue_circle.png</file>
+        <file>javascript/ProblemsWidget.js</file>
+        <file>javascript/StatisticsWidget.js</file>
+        <file>javascript/TableWidget.js</file>
+        <file>javascript/StatusWidget.js</file>
     </qresource>
     <qresource prefix="/">
         <file>javascript/bootstrap/css/bootstrap-responsive.css</file>

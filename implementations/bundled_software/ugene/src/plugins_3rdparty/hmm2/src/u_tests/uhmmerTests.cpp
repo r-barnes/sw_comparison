@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -308,6 +308,8 @@ void GTest_uHMMERSearch::cleanup() {
         delete aDoc;
         aDoc = NULL;
     }
+
+    XmlTest::cleanup();
 }
 
 
@@ -382,9 +384,11 @@ Task::ReportResult GTest_uHMMERBuild::report() {
 }
 
 void GTest_uHMMERBuild::cleanup(){
-    if(deleteTempFile){
+    if (!hasError() && deleteTempFile){
         QFile::remove(outFile);
     }
+
+    XmlTest::cleanup();
 }
 
 void GTest_hmmCompare::init(XMLTestFormat* tf, const QDomElement& el) {
@@ -595,8 +599,12 @@ GTest_uHMMERCalibrate::GTest_uHMMERCalibrateSubtask::GTest_uHMMERCalibrateSubtas
     }
 }
 void GTest_uHMMERCalibrate::cleanup(){
-    QFile::remove(env->getVar("TEMP_DATA_DIR")+"/temp111");
+    if (!hasError()) {
+        QFile::remove(env->getVar("TEMP_DATA_DIR")+"/temp111");
+    }
     delete[] calibrateTask;
+
+    XmlTest::cleanup();
 }
 
 QList<XMLTestFactory*> UHMMERTests::createTestFactories() {

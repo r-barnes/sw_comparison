@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -52,22 +52,26 @@
 namespace U2 {
 
 const int CircularView::CV_REGION_ITEM_WIDTH = 25;
-
 const int CircularView::MIN_OUTER_SIZE = 100;
-const int CircularView::graduation = 16;
-
-
+const int CircularView::GRADUATION = 16;
+const int CircularView::MAX_GRADUATION_ANGLE = 360 * GRADUATION;
 
 CircularView::CircularView(QWidget* p, ADVSequenceObjectContext* ctx, CircularViewSettings* settings)
-: GSequenceLineViewAnnotated(p, ctx), clockwise(true), holdSelection(false), settings(settings)
-{
+             : GSequenceLineViewAnnotated(p, ctx),
+               lastMovePos(0),
+               currectSelectionLen(0),
+               lastMouseY(0),
+               clockwise(true),
+               holdSelection(false),
+               lastPressAngle(0.0),
+               lastMoveAngle(0.0),
+               settings(settings) {
     QSet<AnnotationTableObject*> anns = ctx->getAnnotationObjects(true);
     foreach(AnnotationTableObject* obj, anns) {
         registerAnnotations(obj->getAnnotations());
     }
 
     renderArea = new CircularViewRenderArea(this);
-    ra = qobject_cast<CircularViewRenderArea*>(renderArea);
     setMouseTracking(true);
 
     connect(ctx->getSequenceGObject(), SIGNAL(si_nameChanged(const QString&)), this, SLOT(sl_onSequenceObjectRenamed(const QString&)));
@@ -88,120 +92,85 @@ void CircularView::pack() {
 }
 
 void CircularView::updateMinSize() {
-    int min = (ra->regionY.count() - 1)*ra->ellipseDelta + MIN_OUTER_SIZE;
+    CircularViewRenderArea* ra = getRenderArea();
+    int min = (ra->regionY.count() - 1) * ra->ellipseDelta + MIN_OUTER_SIZE;
     setMinimumSize(min, min);
 }
 
 
 void CircularView::mousePressEvent(QMouseEvent * e) {
+    visibleRange = U2Region(0, seqLen);
     GSequenceLineViewAnnotated::mousePressEvent(e);
-    QPoint p = toRenderAreaPoint(e->pos());
-    int offset = ra->getCenterY();
-    QPoint point(p.x() - width()/2 , p.y() - offset);
-    qreal arcsin = coordToAngle(point);
-    lastPressPos = 180 * graduation * arcsin / PI;
-    lastPressPos-=ra->rotationDegree*graduation;
-    if(lastPressPos<0) {
-        lastPressPos+=360*graduation;
-    }
+    CircularViewRenderArea* ra = getRenderArea();
+    const QPoint renderAreaPoint = toRenderAreaPoint(e->pos());
+    lastPressAngle = ra->coordToAsin(renderAreaPoint);
+    lastMoveAngle = lastPressAngle;
+
+    lastPressPos = ra->asinToPos(lastPressAngle);
     lastMovePos = lastPressPos;
-    lastMouseY = point.y();
+
+    lastMouseY = toRenderAreaPoint(e->pos()).y() - getRenderArea()->getCenterY();
     currectSelectionLen = 0;
-
     holdSelection = false;
-
     QWidget::mousePressEvent(e);
 }
 
-CircularView::Direction CircularView::getDirection(float a, float b) const {
-    if (a == b) {
-        return UNKNOWN;
-    }
-
-    a/=graduation;
-    b/=graduation;
-
-    bool cl = ((a-b>=180) || ((b-a <=180) && (b-a >=0)));
-
-    if (cl) {
-        return CW;
-    }
-    else {
-        return CCW;
-    }
-}
-
-void CircularView::mouseMoveEvent(QMouseEvent * e)
-{
+void CircularView::mouseMoveEvent(QMouseEvent * e) {
     QWidget::mouseMoveEvent(e);
 
-    QPoint areaPoint = toRenderAreaPoint(e->pos());
-    QPoint point(areaPoint.x() - width()/2 , areaPoint.y() - ra->getCenterY());
-    qreal arcsin = coordToAngle(point);
+    CircularViewRenderArea* ra = getRenderArea();
+    const QPoint areaPoint = toRenderAreaPoint(e->pos());
+    const qreal arcsin = ra->coordToAsin(areaPoint);
     ra->mouseAngle = arcsin;
 
     if (e->buttons() & Qt::LeftButton) {
-        float a = 180 * graduation * arcsin / PI;
-        a-=ra->rotationDegree*graduation;
-        if(a<0) {
-            a+=360*graduation;
-        }
+        Direction pressMove = getDirection(lastPressAngle, lastMoveAngle);
+        Direction moveA = getDirection(lastMoveAngle, arcsin);
 
-        Direction pressMove = getDirection(lastPressPos, lastMovePos);
-        Direction moveA = getDirection(lastMovePos, a);
-
-        float totalLen = qAbs(lastPressPos-lastMovePos) + qAbs(lastMovePos-a);
-        totalLen/=graduation;
-
-        if ((totalLen<10) && !holdSelection) {
-            if ((pressMove!=CW) && (moveA!=CW)) {
+        const float totalLen = qAbs(lastPressAngle - lastMoveAngle) + qAbs(lastMoveAngle - arcsin);
+        if ((totalLen < 10) && !holdSelection) {
+            if ((pressMove != CW) && (moveA != CW)) {
                 clockwise = false;
-            }
-            else if ((pressMove != CCW) && (moveA != CCW)) {
+            } else if ((pressMove != CCW) && (moveA != CCW)) {
                 clockwise = true;
             }
-
             if (totalLen < 1) {
-                clockwise = lastPressPos < a;
+                clockwise = lastPressAngle < arcsin;
             }
-
             holdSelection = true;
         }
 
+        qint64 movement = ra->asinToPos(arcsin);
         if (!clockwise) {
-            float tmp = a;
-            a = lastPressPos;
-            lastPressPos = tmp;
+            qSwap<qint64>(lastPressPos, movement);
         }
 
         // compute selection
         int seqLen = ctx->getSequenceLength();
-        int selStart = lastPressPos / (360.0*graduation) * seqLen + 0.5f;
-        int selEnd = a / (360.0*graduation) * seqLen + 0.5f;
-        int selLen = selEnd-selStart;
+        int selStart = lastPressPos;
+        int selEnd = movement;
+        int selLen = selEnd - selStart;
 
         bool twoParts = false;
         if (selLen < 0) {    // 'a' and 'lastPressPos' are swapped so it should be positive
             selLen = selEnd + seqLen - selStart;
-            Q_ASSERT(selLen>=0);
+            Q_ASSERT(selLen >= 0);
 
             if (selEnd) {    // [0, selEnd]
                 twoParts = true;
             }
         }
 
-        if (selLen > seqLen-selStart) {
-            selLen = seqLen-selStart;
+        if (selLen > seqLen - selStart) {
+            selLen = seqLen - selStart;
         }
 
         if (!clockwise) {
-            float tmp = lastPressPos;
-            lastPressPos = a;
-            a = tmp;
+            qSwap<qint64>(lastPressPos, movement);
         }
 
-        lastMovePos = a;
-        lastMouseY = point.y();
+        lastMovePos = movement;
+        lastMouseY = areaPoint.y() - ra->getCenterY();
 
         if (twoParts) {
             if (e->modifiers() & Qt::ControlModifier) {
@@ -227,8 +196,8 @@ void CircularView::mouseReleaseEvent(QMouseEvent* e) {
 }
 
 void CircularView::setAngle(int angle) {
-    assert(angle>=0 && angle<=360);
-    ra->rotationDegree=angle;
+    assert(angle >= 0 && angle <= 360);
+    getRenderArea()->rotationDegree = angle;
     addUpdateFlags(GSLV_UF_NeedCompleteRedraw);
     renderArea->update();
 }
@@ -243,21 +212,15 @@ void CircularView::sl_onDNASelectionChanged(LRegionsSelection *thiz, const QVect
     renderArea->update();
 }
 
-QList<AnnotationSelectionData> CircularView::selectAnnotationByCoord(const QPoint& coord) const {
-    QList<AnnotationSelectionData> res;
+QList<Annotation*> CircularView::findAnnotationsByCoord(const QPoint& coord) const {
+    QList<Annotation*> res;
     CircularViewRenderArea* renderArea = qobject_cast<CircularViewRenderArea*>(this->renderArea);
     QPoint cp(coord - QPoint(width()/2, renderArea->getCenterY()));
     foreach (CircularAnnotationItem* item, renderArea->circItems) {
         CircularAnnotationRegionItem* regItem = item->getContainingRegion(cp);
         int region = item->containsRegion(cp);
         if(region != -1) {
-            QList<int> indx;
-            indx << region;
-            if (regItem != NULL && regItem->hasJoinedRegion()) {
-                indx << item->getAnnotation()->getRegions().indexOf(regItem->getJoinedRegion());
-            }
-
-            res.append(AnnotationSelectionData(item->getAnnotation(), indx));
+            res.append(item->getAnnotation());
             if (item->getAnnotation()->getType() != U2FeatureTypes::RestrictionSite) {
                 // only restriction sites can intersect
                 return res;
@@ -268,13 +231,8 @@ QList<AnnotationSelectionData> CircularView::selectAnnotationByCoord(const QPoin
         foreach(CircularAnnotationRegionItem* r, item->getRegions()) {
             CircularAnnotationLabel* lbl = r->getLabel();
             SAFE_POINT(lbl != NULL, "NULL annotation label item!", res);
-            if(lbl->isVisible() && lbl->contains(cp)) {
-                QList <int> indx;
-                indx << r->getNumber();
-                if (r->hasJoinedRegion()) {
-                    indx << item->getAnnotation()->getRegions().indexOf(r->getJoinedRegion());
-                }
-                res.append(AnnotationSelectionData(item->getAnnotation(), indx));
+            if (lbl->isVisible() && lbl->contains(cp)) {
+                res.append(item->getAnnotation());
                 return res;
             }
         }
@@ -283,15 +241,15 @@ QList<AnnotationSelectionData> CircularView::selectAnnotationByCoord(const QPoin
 }
 
 QSize CircularView::sizeHint() const {
-    return ra->size();
+    return getRenderArea()->size();
 }
 
 const QMap<Annotation *,CircularAnnotationItem *> & CircularView::getCircularItems() const {
-    return ra->circItems;
+    return getRenderArea()->circItems;
 }
 
 const QList<CircularAnnotationLabel*>& CircularView::getLabelList() const {
-    return ra->labelList;
+    return getRenderArea()->labelList;
 }
 
 bool CircularView::isCircularTopology() const {
@@ -326,7 +284,7 @@ void CircularView::keyReleaseEvent(QKeyEvent *e) {
 
 
 void CircularView::resizeEvent(QResizeEvent* e) {
-    if (ra->currentScale == 0) {
+    if (getRenderArea()->currentScale == 0) {
         sl_fitInView();
     }
     QWidget::resizeEvent(e);
@@ -334,6 +292,7 @@ void CircularView::resizeEvent(QResizeEvent* e) {
 
 #define VIEW_MARGIN 10
 void CircularView::sl_fitInView() {
+    CircularViewRenderArea* ra = getRenderArea();
     int yLvl = ra->regionY.count() - 1;
     ra->outerEllipseSize = qMin(height(), width()) - ra->ellipseDelta*yLvl - VIEW_MARGIN;
     ra->currentScale = 0;
@@ -343,6 +302,7 @@ void CircularView::sl_fitInView() {
 
 #define ZOOM_SCALE 1.2
 void CircularView::sl_zoomIn() {
+    CircularViewRenderArea* ra = getRenderArea();
     if (ra->outerEllipseSize / width() > 10) {
         return;
     }
@@ -353,6 +313,7 @@ void CircularView::sl_zoomIn() {
 }
 
 void CircularView::sl_zoomOut() {
+    CircularViewRenderArea* ra = getRenderArea();
     if (ra->outerEllipseSize / ZOOM_SCALE < MIN_OUTER_SIZE) {
         return;
     }
@@ -367,11 +328,13 @@ void CircularView::sl_onSequenceObjectRenamed(const QString&) {
 }
 
 void CircularView::sl_onCircularTopologyChange() {
+    CircularViewRenderArea* ra = getRenderArea();
     addUpdateFlags(GSLV_UF_AnnotationsChanged);
     ra->update();
 }
 
 void CircularView::updateZoomActions() {
+    CircularViewRenderArea* ra = getRenderArea();
     if (ra->outerEllipseSize * ZOOM_SCALE / width() > 10) {
         emit si_zoomInDisabled(true);
     } else {
@@ -415,7 +378,26 @@ void CircularView::invertCurrentSelection() {
     }
 }
 
+CircularViewRenderArea* CircularView::getRenderArea() const {
+    return qobject_cast<CircularViewRenderArea*>(renderArea);
+}
+
+CircularView::Direction CircularView::getDirection(float a, float b) const {
+    if (a == b) {
+        return UNKNOWN;
+    }
+
+    bool cl = ((a - b >= PI) || ((b - a <= PI) && (b - a >= 0)));
+
+    if (cl) {
+        return CW;
+    } else {
+        return CCW;
+    }
+}
+
 void CircularView::adaptSizes() {
+    CircularViewRenderArea* ra = getRenderArea();
     ra->innerEllipseSize = ra->outerEllipseSize - CV_REGION_ITEM_WIDTH;
     ra->rulerEllipseSize = ra->outerEllipseSize - CV_REGION_ITEM_WIDTH;
     ra->middleEllipseSize = (ra->outerEllipseSize + ra->innerEllipseSize)/2;
@@ -442,11 +424,11 @@ qreal CircularView::coordToAngle(const QPoint point) {
 }
 
 void CircularView::paint(QPainter &p, int w, int h, bool paintSelection, bool paintMarker) {
-    ra->paintContent(p, w, h, paintSelection, paintMarker);
+    getRenderArea()->paintContent(p, w, h, paintSelection, paintMarker);
 }
 
 void CircularView::redraw() {
-    ra->redraw();
+    getRenderArea()->redraw();
 }
 
 /************************************************************************/
@@ -472,7 +454,7 @@ const int CircularViewRenderArea::NOTCH_SIZE = 5;
 
 
 CircularViewRenderArea::CircularViewRenderArea(CircularView* d)
-    : GSequenceLineViewAnnotatedRenderArea(d, true),
+    : GSequenceLineViewAnnotatedRenderArea(d),
       outerEllipseSize(OUTER_ELLIPSE_SIZE),
       ellipseDelta(ELLIPSE_DELTA),
       innerEllipseSize(INNER_ELLIPSE_SIZE),
@@ -614,18 +596,18 @@ void CircularViewRenderArea::drawAll(QPaintDevice* pd) {
 void CircularViewRenderArea::drawAnnotationsSelection(QPainter& p) {
     SequenceObjectContext* ctx = view->getSequenceContext();
 
-    if(ctx->getAnnotationsSelection()->getSelection().isEmpty()) {
+    if(ctx->getAnnotationsSelection()->getAnnotations().isEmpty()) {
         return;
     }
 
     foreach(CircularAnnotationItem* item, circItems.values()) {
         item->setSelected(false);
     }
-    foreach(const AnnotationSelectionData& asd, ctx->getAnnotationsSelection()->getSelection()) {
-        AnnotationTableObject *o = asd.annotation->getGObject();
+    foreach(Annotation* annotation, ctx->getAnnotationsSelection()->getAnnotations()) {
+        AnnotationTableObject *o = annotation->getGObject();
         if (ctx->getAnnotationObjects(true).contains(o)) {
-            if(circItems.contains(asd.annotation)) {
-                CircularAnnotationItem* item = circItems[asd.annotation];
+            if(circItems.contains(annotation)) {
+                CircularAnnotationItem* item = circItems[annotation];
                 item->setSelected(true);
                 item->paint(&p, NULL, this);
                 foreach(const CircularAnnotationRegionItem* r, item->getRegions()) {
@@ -1158,6 +1140,13 @@ U2Region CircularViewRenderArea::getAnnotationYRange(Annotation *, int, const An
     return U2Region(0,0);
 }
 
+qint64 CircularViewRenderArea::coordToPos(const QPoint& p) const {
+    qreal arcsin = coordToAsin(p);
+    qint64 resultPosition = asinToPos(arcsin);
+
+    return resultPosition;
+}
+
 void CircularViewRenderArea::resizeEvent(QResizeEvent *e) {
     view->addUpdateFlags(GSLV_UF_ViewResized);
     QWidget::resizeEvent(e);
@@ -1242,6 +1231,26 @@ void CircularViewRenderArea::removeRegionsOutOfRange(QVector<U2Region> &location
             i--;
         }
     }
+}
+
+qreal CircularViewRenderArea::coordToAsin(const QPoint& p) const {
+    int offset = getCenterY();
+    QPoint point(p.x() - width() / 2, p.y() - offset);
+    qreal arcsin = circularView->coordToAngle(point);
+
+    return arcsin;
+}
+
+qint64 CircularViewRenderArea::asinToPos(const qreal asin) const {
+    qreal graduatedAngle = 180 * CircularView::GRADUATION * asin / PI;
+    graduatedAngle -= rotationDegree * CircularView::GRADUATION;
+    if (graduatedAngle < 0) {
+        graduatedAngle += 360 * CircularView::GRADUATION;
+    }
+    qint64 seqLength = circularView->getSequenceLength();
+    qint64 resultPosition = (seqLength * graduatedAngle) / CircularView::MAX_GRADUATION_ANGLE + 0.5f;
+
+    return resultPosition;
 }
 
 QPair<U2Region, U2Region> CircularViewRenderArea::mergeCircularJunctoinRegion(QVector<U2Region> &location, int seqLen) const {

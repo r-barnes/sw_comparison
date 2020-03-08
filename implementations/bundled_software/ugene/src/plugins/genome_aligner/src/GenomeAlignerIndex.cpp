@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -79,7 +79,7 @@ void GenomeAlignerIndex::serialize(const QString &refFileName) {
     data += QByteArray::number(bitCharLen, 10) + ", ";
     data += QByteArray::number(seqPartSize, 10) + ", ";
     data += QByteArray::number(objCount, 10) + "\n";
-    data += seqObjName + "\n";
+    data += firstSequenceObjectName + "\n";
     for (qint64 i=0; i < objCount; i++) {
         data += QByteArray::number(objLens[i], 10);
         if (objCount-1 == i) {
@@ -154,7 +154,7 @@ bool GenomeAlignerIndex::deserialize(QByteArray &error) {
         return false;
     }
 
-    seqObjName = file.readLine().trimmed();
+    firstSequenceObjectName = file.readLine().trimmed();
     data = file.readLine().trimmed();
     objLens = new quint32[objCount];
     eol = false;

@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -136,7 +136,7 @@ DNATranslation* DNATranslationRegistry::getStandardGeneticCodeTranslation(const 
     if (srcAlphabet->isNucleic()) {
         return lookupTranslation(srcAlphabet, DNATranslationID(1));
     }
-    FAIL("Standart genetic code is used only with source nucleic alphabet", NULL);
+    FAIL("Standard genetic code is used only with source nucleic alphabet", NULL);
 }
 
 DNATranslation* DNATranslationRegistry::lookupTranslation(const DNAAlphabet* srcAlphabet,

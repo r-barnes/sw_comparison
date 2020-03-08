@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -45,7 +45,7 @@ void DotPlotImageExportToBitmapTask::run() {
         tmp.fill(Qt::white);
         defaultDpm = tmp.dotsPerMeterX();
     }
-    SAFE_POINT(dpm != 0, tr("Incorrect DPI paramter"), );
+    SAFE_POINT(dpm != 0, tr("Incorrect DPI parameter"), );
     float fontScale = (float)defaultDpm / dpm;
     dotplotWidget->drawAll(painter, settings.imageSize, fontScale, dpExportSettings);
 
@@ -58,7 +58,7 @@ DotPlotImageExportController::DotPlotImageExportController(DotPlotWidget *wgt)
       dotplotWidget(wgt)
 {
     SAFE_POINT( dotplotWidget != NULL, tr("Dotplot widget is NULL"), );
-    shortDescription = tr("DotPlot");
+    shortDescription = tr("Dotplot");
     initSettingsWidget();
 }
 

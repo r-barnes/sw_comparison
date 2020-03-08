@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -287,129 +287,163 @@ static bool checkHeader( const char* data, int sz ) {
 }
 
 //returns true if the line was skipped
-static bool skipCommentOrMarkup( IOAdapter* io, AnnotationBank& ann_bank ) {
-    assert( NULL != io );
+static bool skipCommentOrMarkup(IOAdapter* io, U2OpStatus& os, AnnotationBank& ann_bank) {
+    assert(NULL != io);
 
-    QByteArray buf( BUF_SZ, TERM_SYM );
+    QByteArray buf(BUF_SZ, TERM_SYM);
     bool term_there = false;
-    int ret = io->readUntil( buf.data(), BUF_SZ, TextUtils::LINE_BREAKS, IOAdapter::Term_Exclude, &term_there );
+    int ret = io->readUntil(buf.data(), BUF_SZ, TextUtils::LINE_BREAKS, IOAdapter::Term_Exclude, &term_there);
+    CHECK_EXT(!io->hasError(), os.setError(io->errorString()), false);
 
-    checkValThrowException<int>( false, -1, ret, StockholmFormat::ReadError(io->getURL()) );
-    if ( COMMENT_OR_MARKUP_LINE == buf[0] ) {
+    checkValThrowException<int>(false, -1, ret, StockholmFormat::ReadError(io->getURL()));
+    if (COMMENT_OR_MARKUP_LINE == buf[0]) {
         QByteArray line;
-        line.append( QByteArray( buf.data(), ret ) );
-        while ( !term_there ) {
-            ret = io->readUntil( buf.data(), BUF_SZ, TextUtils::LINE_BREAKS, IOAdapter::Term_Exclude, &term_there );
+        line.append(QByteArray(buf.data(), ret));
+        while (!term_there) {
+            ret = io->readUntil(buf.data(), BUF_SZ, TextUtils::LINE_BREAKS, IOAdapter::Term_Exclude, &term_there);
+            CHECK_EXT(!io->hasError(), os.setError(io->errorString()), false);
+
             checkValThrowException<int>( false, -1, ret,StockholmFormat::ReadError(io->getURL()) );
-            if ( NO_BYTES == ret ) {
-                break;
-            }
-            line.append( QByteArray( buf.data(), ret ) );
+            CHECK_BREAK(NO_BYTES != ret);
+
+            line.append(QByteArray(buf.data(), ret));
         }
-        ann_bank.addAnnotation( getAnnotation( line ) );
+        ann_bank.addAnnotation(getAnnotation(line));
         return true;
     }
     io->skip( -ret );
+    if (io->hasError()) {
+        os.setError(io->errorString());
+    }
     return false;
 }
 
-static void skipBlankLines( IOAdapter* io, QByteArray* lines = NULL ) {
-    assert( NULL != io );
+static void skipBlankLines(IOAdapter* io, U2OpStatus& os, QByteArray* lines = NULL) {
+    assert(NULL != io);
 
     char c = 0;
     bool work = true;
     while ( work ) {
         int ret = io->readBlock( &c, 1 );
-        checkValThrowException<int>( false, -1, ret, StockholmFormat::ReadError(io->getURL()) );
-        if ( NO_BYTES == ret ) {
-            return;
-        }
+        CHECK_EXT(!io->hasError(), os.setError(io->errorString()), );
+
+        checkValThrowException<int>(false, -1, ret, StockholmFormat::ReadError(io->getURL()));
+        CHECK(ret != NO_BYTES, );
+
         work = TextUtils::LINE_BREAKS[(uchar)c] || TextUtils::WHITES[(uchar)c];
         if ( lines && TextUtils::LINE_BREAKS[(uchar)c] ) {
             lines->append( c );
         }
     }
-    io->skip( -1 );
+    io->skip(-1);
+    if (io->hasError()) {
+        os.setError(io->errorString());
+    }
 }
 
 //skips all that it can
-static void skipMany( IOAdapter* io, AnnotationBank& ann_bank ) {
-    assert( NULL != io );
+static void skipMany(IOAdapter* io, U2OpStatus& os, AnnotationBank& ann_bank) {
+    assert(NULL != io);
 
     char c = 0;
     while ( 1 ) {
-        bool ret = io->getChar( &c );
+        bool ret = io->getChar(&c);
+        CHECK_EXT(!io->hasError(), os.setError(io->errorString()), );
+
         checkValThrowException<bool>( false, false, ret, StockholmFormat::ReadError(io->getURL()) );
-        if ( COMMENT_OR_MARKUP_LINE == c ) {
+        if (COMMENT_OR_MARKUP_LINE == c) {
             io->skip( -1 );
-            skipCommentOrMarkup( io, ann_bank );
+            CHECK_EXT(!io->hasError(), os.setError(io->errorString()), );
+
+            skipCommentOrMarkup(io, os, ann_bank);
+            CHECK_OP(os, );
+
             continue;
         }
-        else if ( TextUtils::LINE_BREAKS[(uchar)c] || TextUtils::WHITES[(uchar)c] ) {
-            skipBlankLines( io );
+        else if (TextUtils::LINE_BREAKS[(uchar)c] || TextUtils::WHITES[(uchar)c]) {
+            skipBlankLines(io, os);
+            CHECK_OP(os, );
+
             continue;
         }
-        io->skip( -1 );
+        io->skip(-1);
+        if (io->hasError()) {
+            os.setError(io->errorString());
+        }
         break;
     }
 }
 
-static bool eofMsa( IOAdapter* io ) {
-    assert( NULL != io );
+static bool eofMsa(IOAdapter* io, U2OpStatus& os) {
+    assert(NULL != io);
 
     QByteArray buf( SMALL_BUF_SZ, TERM_SYM );
     int ret = io->readUntil( buf.data(), SMALL_BUF_SZ, TextUtils::LINE_BREAKS, IOAdapter::Term_Include );
-    checkValThrowException( false, -1, ret, StockholmFormat::ReadError(io->getURL()) );
-    io->skip( -ret );
+    CHECK_EXT(!io->hasError(), os.setError(io->errorString()), false);
+
+    checkValThrowException(false, -1, ret, StockholmFormat::ReadError(io->getURL()));
+    io->skip(-ret);
+    if (io->hasError()) {
+        os.setError(io->errorString());
+    }
     return EOF_STR == QByteArray( buf.data(), ret ).trimmed();
 }
 
-static void readEofMsa( IOAdapter* io ) {
-    assert( eofMsa( io ) );
+static void readEofMsa(IOAdapter* io, U2OpStatus& os) {
+    assert(eofMsa(io, os));
+    CHECK_OP(os, );
+
     QByteArray buf( SMALL_BUF_SZ, TERM_SYM );
     int ret = io->readUntil( buf.data(), SMALL_BUF_SZ, TextUtils::LINE_BREAKS, IOAdapter::Term_Include );
+    CHECK_EXT(!io->hasError(), os.setError(io->errorString()), );
+
     checkValThrowException( false, -1, ret, StockholmFormat::ReadError(io->getURL()) );
 }
 
 //returns end of sequence name in line
-static int getLine( IOAdapter* io, QByteArray& to ) {
+static int getLine( IOAdapter* io, U2OpStatus& os, QByteArray& to ) {
     assert( NULL != io );
 
     QByteArray buf( BUF_SZ, TERM_SYM );
     bool there = false;
 
-    while ( !there ) {
+    while (!there) {
         int ret = io->readUntil( buf.data(), BUF_SZ, TextUtils::LINE_BREAKS, IOAdapter::Term_Exclude, &there );
+        CHECK_EXT(!io->hasError(), os.setError(io->errorString()), 0);
+
         checkValThrowException<int>( false, -1, ret, StockholmFormat::ReadError(io->getURL()) );
-        if( NO_BYTES == ret ) {
-            break;
-        }
+        CHECK_BREAK(ret != NO_BYTES);
+
         to.append( QByteArray( buf.data(), ret ) );
     }
 
     int sz = to.size();
     int i = 0;
     for ( i = 0; i < sz; ++i ) {
-        if ( TextUtils::WHITES[(uchar)to[i]] ) {
+        if (TextUtils::WHITES[(uchar)to[i]]) {
             break;
         }
     }
     return i;
 }
 
-static bool blockEnded( IOAdapter* io ) {
+static bool blockEnded(IOAdapter* io, U2OpStatus& os) {
     assert( NULL != io );
 
     QByteArray lines;
-    skipBlankLines( io, &lines );
-    if ( eofMsa( io ) ) {
+    skipBlankLines(io, os, &lines);
+    CHECK_OP(os, false);
+
+    if (eofMsa(io, os)) {
+        CHECK_OP(os, false);
+
         return true;
     }
     int nl_count = 0;
     int lines_sz = lines.size();
 
-    for( int i = 0; i < lines_sz; ++i ) {
-        nl_count = ( NEW_LINE == lines[i] )? nl_count + 1: nl_count;
+    for (int i = 0; i < lines_sz; ++i) {
+        nl_count = (NEW_LINE == lines[i]) ? nl_count + 1 : nl_count;
     }
     return 1 < nl_count;
 }
@@ -444,8 +478,12 @@ static bool loadOneMsa( IOAdapter* io, U2OpStatus& tsi, MultipleSequenceAlignmen
     int ret = 0;
 
     //skip header
-    skipBlankLines( io );
+    skipBlankLines(io, tsi);
+    CHECK_OP(tsi, false);
+
     ret = io->readUntil( buf.data(), BUF_SZ, TextUtils::LINE_BREAKS, IOAdapter::Term_Exclude );
+    CHECK_EXT(!io->hasError(), tsi.setError(io->errorString()), false);
+
     checkValThrowException<int>( false, -1, ret, StockholmFormat::ReadError(io->getURL()) );
     if ( !checkHeader( buf.data(), ret ) ) {
         throw StockholmFormat::BadFileData( StockholmFormat::tr( "invalid file: bad header line" ) );
@@ -454,35 +492,41 @@ static bool loadOneMsa( IOAdapter* io, U2OpStatus& tsi, MultipleSequenceAlignmen
     //read blocks
     bool firstBlock = true;
     while ( 1 ) {
-        if( tsi.isCoR()) {
-            return false;
-        }
-        skipMany( io, ann_bank );
-        if ( eofMsa( io ) ) {
+        CHECK_OP(tsi, false);
+
+        skipMany(io, tsi, ann_bank);
+        CHECK_OP(tsi, false);
+
+        if (eofMsa(io, tsi)) {
             break;
         }
+        CHECK_OP(tsi, false);
 
         bool hasSeqs = true;
         int seq_ind = 0;
         int blockSize = -1;
-        while ( hasSeqs ) {
+        while (hasSeqs) {
             QByteArray line;
-            int name_end = getLine( io, line );
-            QByteArray name = line.left( name_end );
-            QByteArray seq  = line.mid( name_end + 1 ).trimmed();
+            int name_end = getLine(io, tsi, line);
+            CHECK_OP(tsi, false);
 
-            if ( name.startsWith( COMMENT_OR_MARKUP_LINE ) ) {
-                ann_bank.addAnnotation( getAnnotation( line ) );
-                hasSeqs = !blockEnded( io );
+            QByteArray name = line.left(name_end);
+            QByteArray seq  = line.mid(name_end + 1).trimmed();
+
+            if (name.startsWith(COMMENT_OR_MARKUP_LINE)) {
+                ann_bank.addAnnotation(getAnnotation(line));
+                hasSeqs = !blockEnded(io, tsi);
+                CHECK_OP(tsi, false);
+
                 tsi.setProgress(io->getProgress());
                 continue;
             }
-            changeGaps( seq );
-            if ( firstBlock ) {
-                if ( EMPTY_STR == name ) {
+            changeGaps(seq);
+            if (firstBlock) {
+                if (EMPTY_STR == name) {
                     throw StockholmFormat::BadFileData( StockholmFormat::tr( "invalid file: empty sequence name" ) );
                 }
-                if ( nameWasBefore( msa, QString( name.data() ) ) ) {
+                if (nameWasBefore(msa, QString( name.data()))) {
                     throw StockholmFormat::BadFileData( StockholmFormat::tr( "invalid file: equal sequence names in one block" ) );
                 }
 
@@ -505,14 +549,19 @@ static bool loadOneMsa( IOAdapter* io, U2OpStatus& tsi, MultipleSequenceAlignmen
                 }
             }
             seq_ind++;
-            hasSeqs = !blockEnded( io );
+            hasSeqs = !blockEnded(io, tsi);
+            CHECK_OP(tsi, false);
+
             tsi.setProgress(io->getProgress());
         }
         firstBlock = false;
         currentLen += blockSize;
     }// while( 1 )
-    readEofMsa( io );
-    skipBlankLines( io );
+    readEofMsa(io, tsi);
+    CHECK_OP(tsi, false);
+
+    skipBlankLines(io, tsi);
+    CHECK_OP(tsi, false);
 
     if ( msa->getNumRows() == 0 ) {
         throw StockholmFormat::BadFileData( StockholmFormat::tr( "invalid file: empty sequence alignment" ) );
@@ -524,8 +573,8 @@ static bool loadOneMsa( IOAdapter* io, U2OpStatus& tsi, MultipleSequenceAlignmen
     return true;
 }
 
-static void setMsaInfoCutoffs( QVariantMap& info, const QString& string, MultipleAlignmentInfo::Cutoffs cof1,
-                               MultipleAlignmentInfo::Cutoffs cof2 ) {
+static void setMsaInfoCutoffs(QVariantMap& info, const QString& string, MultipleAlignmentInfo::Cutoffs cof1,
+                               MultipleAlignmentInfo::Cutoffs cof2) {
     QByteArray str = string.toLatin1();
     QTextStream txtStream( str );
     float val1 = .0f;
@@ -535,37 +584,37 @@ static void setMsaInfoCutoffs( QVariantMap& info, const QString& string, Multipl
     MultipleAlignmentInfo::setCutoff( info, cof2, val2 );
 }
 
-static void setMsaInfo( const QHash< QString, QString>& annMap, MultipleSequenceAlignment& ma ) {
+static void setMsaInfo(const QHash< QString, QString>& annMap, MultipleSequenceAlignment& ma) {
     QVariantMap info = ma->getInfo();
 
-    if (annMap.contains( StockholmFormat::FILE_ANNOTATION_AC ) ) {
-        MultipleAlignmentInfo::setAccession( info, annMap[StockholmFormat::FILE_ANNOTATION_AC] );
+    if (annMap.contains(StockholmFormat::FILE_ANNOTATION_AC)) {
+        MultipleAlignmentInfo::setAccession( info, annMap[StockholmFormat::FILE_ANNOTATION_AC]);
     }
-    if (annMap.contains( StockholmFormat::FILE_ANNOTATION_DE ) ) {
-        MultipleAlignmentInfo::setDescription( info, annMap[StockholmFormat::FILE_ANNOTATION_DE] );
+    if (annMap.contains(StockholmFormat::FILE_ANNOTATION_DE)) {
+        MultipleAlignmentInfo::setDescription( info, annMap[StockholmFormat::FILE_ANNOTATION_DE]);
     }
-    if (annMap.contains( StockholmFormat::COLUMN_ANNOTATION_SS_CONS ) ) {
-        MultipleAlignmentInfo::setSSConsensus( info, annMap[StockholmFormat::COLUMN_ANNOTATION_SS_CONS] );
+    if (annMap.contains(StockholmFormat::COLUMN_ANNOTATION_SS_CONS)) {
+        MultipleAlignmentInfo::setSSConsensus( info, annMap[StockholmFormat::COLUMN_ANNOTATION_SS_CONS]);
     }
-    if (annMap.contains( StockholmFormat::COLUMN_ANNOTATION_RF ) ) {
-        MultipleAlignmentInfo::setReferenceLine( info, annMap[StockholmFormat::COLUMN_ANNOTATION_RF] );
+    if (annMap.contains(StockholmFormat::COLUMN_ANNOTATION_RF)) {
+        MultipleAlignmentInfo::setReferenceLine( info, annMap[StockholmFormat::COLUMN_ANNOTATION_RF]);
     }
-    if (annMap.contains( StockholmFormat::FILE_ANNOTATION_GA ) ) {
-        setMsaInfoCutoffs( info, annMap[StockholmFormat::FILE_ANNOTATION_GA], MultipleAlignmentInfo::CUTOFF_GA1,
-                                                                              MultipleAlignmentInfo::CUTOFF_GA2 );
+    if (annMap.contains(StockholmFormat::FILE_ANNOTATION_GA)) {
+        setMsaInfoCutoffs(info, annMap[StockholmFormat::FILE_ANNOTATION_GA], MultipleAlignmentInfo::CUTOFF_GA1,
+                                                                              MultipleAlignmentInfo::CUTOFF_GA2);
     }
-    if (annMap.contains( StockholmFormat::FILE_ANNOTATION_NC ) ) {
-        setMsaInfoCutoffs( info, annMap[StockholmFormat::FILE_ANNOTATION_NC], MultipleAlignmentInfo::CUTOFF_NC1,
-                                                                              MultipleAlignmentInfo::CUTOFF_NC2 );
+    if (annMap.contains(StockholmFormat::FILE_ANNOTATION_NC)) {
+        setMsaInfoCutoffs(info, annMap[StockholmFormat::FILE_ANNOTATION_NC], MultipleAlignmentInfo::CUTOFF_NC1,
+                                                                              MultipleAlignmentInfo::CUTOFF_NC2);
     }
-    if (annMap.contains( StockholmFormat::FILE_ANNOTATION_TC ) ) {
-        setMsaInfoCutoffs( info, annMap[StockholmFormat::FILE_ANNOTATION_TC], MultipleAlignmentInfo::CUTOFF_TC1,
-                                                                              MultipleAlignmentInfo::CUTOFF_TC2 );
+    if (annMap.contains(StockholmFormat::FILE_ANNOTATION_TC)) {
+        setMsaInfoCutoffs(info, annMap[StockholmFormat::FILE_ANNOTATION_TC], MultipleAlignmentInfo::CUTOFF_TC1,
+                                                                              MultipleAlignmentInfo::CUTOFF_TC2);
     }
     ma->setInfo(info);
 }
 
-static void load( IOAdapter* io, const U2DbiRef& dbiRef, QList<GObject*>& l, const QVariantMap& fs, U2OpStatus& tsi, bool& uni_file) {
+static void load(IOAdapter* io, const U2DbiRef& dbiRef, QList<GObject*>& l, const QVariantMap& fs, U2OpStatus& tsi, bool& uni_file) {
     QStringList names_list;
     QString filename = io->getURL().baseFileName();
     while( !io->isEof() ) {
@@ -576,24 +625,25 @@ static void load( IOAdapter* io, const U2DbiRef& dbiRef, QList<GObject*>& l, con
         QHash< QString, QString > annMap;
 
         notCanceled = loadOneMsa( io, tsi, msa, ann_bank );
-        if( !notCanceled ) {
-            break;
-        }
+        CHECK_OP(tsi, );
+        CHECK_BREAK(notCanceled);
+
         uni_file = uni_file || isUniFile( ann_bank );
 
         name = getMsaName( ann_bank );
-        name = ( QString::null == name || names_list.contains( name ) )?
-            filename + "_" + QString::number( l.size() ): name;
-        names_list.append( name );
-        msa->setName( name );
+        name = (QString::null == name || names_list.contains(name))?
+            filename + "_" + QString::number(l.size()): name;
+        names_list.append(name);
+        msa->setName(name);
 
-        annMap = getAnnotationMap( ann_bank );
-        setMsaInfo( annMap, msa );
+        annMap = getAnnotationMap(ann_bank);
+        setMsaInfo(annMap, msa);
 
         U2OpStatus2Log os;
         const QString folder = fs.value(DocumentFormat::DBI_FOLDER_HINT, U2ObjectDbi::ROOT_FOLDER).toString();
         MultipleSequenceAlignmentObject* obj = MultipleSequenceAlignmentImporter::createAlignment(dbiRef, folder, msa, os);
         CHECK_OP(os, );
+
         obj->setIndexInfo(annMap);
         l.append( obj );
     }
@@ -673,14 +723,14 @@ static void save( IOAdapter* io, const MultipleSequenceAlignment& msa, QString n
 }
 
 namespace U2 {
-StockholmFormat::StockholmFormat( QObject *obj ) : DocumentFormat( obj , DocumentFormatFlags(DocumentFormatFlag_SupportWriting) | DocumentFormatFlag_OnlyOneObject | DocumentFormatFlag_LockedIfNotCreatedByUGENE, QStringList() << "sto") {
-    format_name = tr( "Stockholm" );
+StockholmFormat::StockholmFormat( QObject *obj ) : TextDocumentFormat(obj, BaseDocumentFormats::STOCKHOLM, DocumentFormatFlags(DocumentFormatFlag_SupportWriting) | DocumentFormatFlag_OnlyOneObject | DocumentFormatFlag_LockedIfNotCreatedByUGENE, QStringList() << "sto") {
+    formatName = tr("Stockholm");
     formatDescription = tr("A multiple sequence alignments file format");
     supportedObjectTypes+=GObjectTypes::MULTIPLE_SEQUENCE_ALIGNMENT;
 }
 
 
-Document* StockholmFormat::loadDocument(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& fs, U2OpStatus& os){
+Document* StockholmFormat::loadTextDocument(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& fs, U2OpStatus& os){
     CHECK_EXT(io != NULL && io->isOpen(), os.setError(L10N::badArgument("IO adapter")), NULL);
     QList<GObject*> objects;
     try {
@@ -688,7 +738,7 @@ Document* StockholmFormat::loadDocument(IOAdapter* io, const U2DbiRef& dbiRef, c
         QString lockReason;
         load( io, dbiRef, objects, fs, os, uniFile);
         if ( !uniFile ) {
-            lockReason = DocumentFormat::CREATED_NOT_BY_UGENE;
+            lockReason = QObject::tr("The document is created not by UGENE");
         }
         return new Document( this, io->getFactory(), io->getURL(), dbiRef, objects, fs, lockReason );
     }
@@ -717,7 +767,7 @@ void StockholmFormat::storeDocument(Document* doc, IOAdapter* io, U2OpStatus& os
     }
 }
 
-FormatCheckResult StockholmFormat::checkRawData(const QByteArray& data, const GUrl&) const {
+FormatCheckResult StockholmFormat::checkRawTextData(const QByteArray& data, const GUrl&) const {
     bool headerIsOK = checkHeader( data.constData(), data.size());
     return headerIsOK ? FormatDetection_VeryHighSimilarity : FormatDetection_NotMatched;
 }

@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -21,25 +21,18 @@
 
 #include <QScopedPointer>
 
-#include <U2Lang/IntegralBusModel.h>
-#include <U2Lang/WorkflowEnv.h>
-#include <U2Lang/ActorPrototypeRegistry.h>
+#include <U2Core/DNATranslation.h>
+#include <U2Core/Log.h>
 #include <U2Core/QVariantUtils.h>
+
+#include <U2Designer/DelegateEditors.h>
+
+#include <U2Lang/ActorPrototypeRegistry.h>
 #include <U2Lang/BaseTypes.h>
 #include <U2Lang/BaseSlots.h>
 #include <U2Lang/BasePorts.h>
 #include <U2Lang/BaseActorCategories.h>
-#include <U2Designer/DelegateEditors.h>
-#include <U2Lang/CoreLibConstants.h>
-
-#include <U2Core/AnnotationTableObject.h>
-#include <U2Core/DNASequence.h>
-#include <U2Core/DNASequenceObject.h>
-#include <U2Core/DNATranslation.h>
-#include <U2Core/DNAAlphabet.h>
-#include <U2Core/AppContext.h>
-#include <U2Core/Log.h>
-#include <U2Core/U2SafePoints.h>
+#include <U2Lang/WorkflowEnv.h>
 
 #include "CollocationsSearchAlgorithm.h"
 #include "CollocationsDialogController.h"
@@ -67,11 +60,11 @@ const QString CollocationWorkerFactory::ACTOR_ID("collocated-annotation-search")
 
 class CollocationValidator : public ConfigurationValidator {
 public:
-    virtual bool validate(const Configuration* cfg, ProblemList &problemList) const {
+    virtual bool validate(const Configuration* cfg, NotificationsList &notificationList) const {
         QString annotations = cfg->getParameter(ANN_ATTR)->getAttributeValueWithoutScript<QString>();
         QSet<QString> names = QSet<QString>::fromList(annotations.split(QRegExp("\\W+"), QString::SkipEmptyParts));
         if (names.size() < 2) {
-            problemList.append(Problem(CollocationWorker::tr("At least 2 annotations are required for collocation search.")));
+            notificationList.append(WorkflowNotification(CollocationWorker::tr("At least 2 annotations are required for collocation search.")));
             return false;
         }
         return true;

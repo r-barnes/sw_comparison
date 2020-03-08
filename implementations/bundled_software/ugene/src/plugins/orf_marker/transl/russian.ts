@@ -337,7 +337,7 @@ Ignore boundary ORFs which last beyond the search region
         <translation>Предел результатов</translation>
     </message>
     <message>
-        <source>The amount of results will be limited id that option is setted.</source>
+        <source>The amount of results will be limited id that option is set.</source>
         <translation>Количество результатов будет ограничего если эта опция установлена.</translation>
     </message>
 </context>
@@ -516,7 +516,7 @@ Ignore boundary ORFs which last beyond the search region
         <translation>Предел результатов</translation>
     </message>
     <message>
-        <source>The amount of results will be limited id that option is setted</source>
+        <source>The amount of results will be limited id that option is set</source>
         <translation>Количество результатов будет ограничего если эта опция установлена</translation>
     </message>
 </context>

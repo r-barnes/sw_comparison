@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -85,6 +85,18 @@ void Task::cancel() {
     stateInfo.cancelFlag = true;
 }
 
+const QList<QPointer<Task> > &Task::getSubtasks() const {
+    return subtasks;
+}
+
+QList<Task *> Task::getPureSubtasks() const {
+    QList<Task*> subtasksPointers;
+    subtasksPointers.reserve(subtasks.size());
+    foreach(const QPointer<Task> &subtask, subtasks) {
+        subtasksPointers << subtask.data();
+    }
+    return subtasksPointers;
+}
 
 void Task::addSubTask(Task* sub) {
     SAFE_POINT(sub != NULL, "Trying to add NULL subtask",);
@@ -99,7 +111,9 @@ void Task::addSubTask(Task* sub) {
 
 void Task::cleanup()    {
     assert(isFinished());
-    foreach(Task* sub, getSubtasks()) {
+    foreach(const QPointer<Task> &sub, getSubtasks()) {
+        CHECK_CONTINUE(!sub.isNull());
+
         sub->cleanup();
     }
 }
@@ -109,16 +123,16 @@ bool Task::propagateSubtaskError() {
         return true;
     }
     Task* badChild = getSubtaskWithErrors();
-    if (badChild) {
-        stateInfo.setError(stateInfo.getError() + badChild->getError());
+    if (nullptr != badChild) {
+        stateInfo.setError(badChild->getError());
     }
     return stateInfo.hasError();
 }
 
 Task* Task::getSubtaskWithErrors() const  {
-    foreach(Task* sub, getSubtasks()) {
+    foreach(const QPointer<Task> &sub, getSubtasks()) {
         if (sub->hasError()) {
-            return sub;
+            return sub.data();
         }
     }
     return NULL;
@@ -150,6 +164,18 @@ void Task::addTaskResource(const TaskResourceUsage& r) {
     SAFE_POINT(!insidePrepare || !r.prepareStageLock, "Can't add prepare-time resource from within prepare function call!",);
     SAFE_POINT(!r.locked, QString("Resource is already locked, resource id: %1").arg(r.resourceId),);
     taskResources.append(r);
+}
+
+bool Task::isMinimizeSubtaskErrorText() const {
+    bool result = false;
+    Task* parentTask = getParentTask();
+    if (getFlags().testFlag(TaskFlag_MinimizeSubtaskErrorText)) {
+        result = true;
+    } else if (parentTask != nullptr) {
+        result = parentTask->isMinimizeSubtaskErrorText();
+    }
+
+    return result;
 }
 
 void Task::setCollectChildrensWarningsFlag(bool v) {

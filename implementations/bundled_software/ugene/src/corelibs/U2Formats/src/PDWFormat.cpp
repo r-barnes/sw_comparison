@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -52,7 +52,7 @@ namespace U2 {
 #define PDW_CIRCULAR_TAG    "IScircular"
 
 PDWFormat::PDWFormat(QObject* p)
-: DocumentFormat(p, DocumentFormatFlag(DocumentFormatFlag_LockedIfNotCreatedByUGENE), QStringList()<<"pdw")
+: TextDocumentFormat(p, BaseDocumentFormats::PDW, DocumentFormatFlag(DocumentFormatFlag_LockedIfNotCreatedByUGENE), QStringList()<<"pdw")
 {
     formatName = tr("pDRAW");
     formatDescription = tr("pDRAW is a sequence file format used by pDRAW software");
@@ -60,7 +60,7 @@ PDWFormat::PDWFormat(QObject* p)
     supportedObjectTypes+=GObjectTypes::ANNOTATION_TABLE;
 }
 
-FormatCheckResult PDWFormat::checkRawData(const QByteArray& rawData, const GUrl&) const {
+FormatCheckResult PDWFormat::checkRawTextData(const QByteArray& rawData, const GUrl&) const {
     const char* data = rawData.constData();
     int size = rawData.size();
     if (!rawData.startsWith(PDW_FORMAT_TAG)) {
@@ -78,7 +78,7 @@ void PDWFormat::load(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& f
     CHECK_OP(os,);
     Q_UNUSED(opBlock);
 
-    QByteArray readBuff(READ_BUFF_SIZE+1, 0);
+    QByteArray readBuff(READ_BUFF_SIZE + 1, 0);
     char* buff = readBuff.data();
     qint64 len = 0;
 
@@ -93,9 +93,9 @@ void PDWFormat::load(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& f
     while (!os.isCoR()) {
         //read header
         len = io->readUntil(buff, READ_BUFF_SIZE, TextUtils::LINE_BREAKS, IOAdapter::Term_Include, &lineOk);
-        if (len == 0) { //end if stream
-            break;
-        }
+        CHECK_EXT(!io->hasError(), os.setError(io->errorString()), );
+        CHECK_BREAK(len != 0);
+
         if (!lineOk) {
             os.setError(PDWFormat::tr("Line is too long"));
         }
@@ -138,6 +138,8 @@ void PDWFormat::load(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& f
             }
         } else if (readBuff.startsWith(PDW_ANNOTATION_TAG)) {
             SharedAnnotationData a = parseAnnotation(io, os);
+            CHECK_OP(os, );
+
             annotations.append(a);
         }
     }
@@ -150,11 +152,11 @@ void PDWFormat::load(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& f
         objects.append(annObj);
     }
 
-    CHECK_OP(os,);
+    CHECK_OP(os, );
     CHECK_EXT(!objects.isEmpty(), os.setError(Document::tr("Document is empty.")),);
 }
 
-Document * PDWFormat::loadDocument(IOAdapter *io, const U2DbiRef &dbiRef, const QVariantMap &fs, U2OpStatus &os) {
+Document * PDWFormat::loadTextDocument(IOAdapter *io, const U2DbiRef &dbiRef, const QVariantMap &fs, U2OpStatus &os) {
     U2SequenceObject* seqObj = NULL;
     AnnotationTableObject *annObj = NULL;
     CHECK_EXT(NULL != io && io->isOpen(), os.setError(L10N::badArgument("IO adapter")),
@@ -165,7 +167,7 @@ Document * PDWFormat::loadDocument(IOAdapter *io, const U2DbiRef &dbiRef, const 
 
     CHECK_OP_EXT(os, qDeleteAll(objects), NULL);
 
-    QString lockReason(DocumentFormat::CREATED_NOT_BY_UGENE);
+    QString lockReason = QObject::tr("The document is created not by UGENE");
     Document *doc = new Document(this, io->getFactory(), io->getURL(), dbiRef, objects, fs,
         lockReason);
 
@@ -183,9 +185,9 @@ QByteArray PDWFormat::parseSequence(IOAdapter* io, U2OpStatus& ti) {
     while (!ti.isCoR()) {
         bool lineOk = false;
         qint64 len = io->readUntil(readBuff.data(), READ_BUFF_SIZE, TextUtils::LINE_BREAKS, IOAdapter::Term_Include, &lineOk);
-        if (len == 0) {
-            break;
-        }
+        CHECK_EXT(!io->hasError(), ti.setError(io->errorString()), QByteArray());
+        CHECK_BREAK(len != 0);//end if stream
+
         if (!lineOk) {
             ti.setError(PDWFormat::tr("Line is too long"));
         }
@@ -226,11 +228,13 @@ SharedAnnotationData PDWFormat::parseAnnotation(IOAdapter *io, U2OpStatus &ti) {
     while (!ti.isCoR()) {
         bool lineOk = false;
         qint64 len = io->readUntil(readBuf.data(), READ_BUFF_SIZE, TextUtils::LINE_BREAKS, IOAdapter::Term_Include, &lineOk);
+        CHECK_EXT_BREAK(!io->hasError(), ti.setError(io->errorString()));
 
         if (!readBuf.startsWith(PDW_ANNOTATION_TAG)) {
             break;
         } else if (readBuf.startsWith(PDW_ANNOTATION_NUMBER)) {
             io->skip(-len);
+            CHECK_EXT_BREAK(!io->hasError(), ti.setError(io->errorString()));
             break;
         } else if (readBuf.startsWith(PDW_ANNOTATION_NAME)) {
             aName = readPdwValue(readBuf, PDW_ANNOTATION_NAME);
@@ -245,7 +249,6 @@ SharedAnnotationData PDWFormat::parseAnnotation(IOAdapter *io, U2OpStatus &ti) {
             int orientVal = readPdwValue(readBuf, PDW_ANNOTATION_ORIENT).toInt();
             cmpl = orientVal == 0 ? true : false;
         }
-
     }
 
     SharedAnnotationData sd(new AnnotationData);

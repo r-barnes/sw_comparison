@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -37,20 +37,27 @@ class QWidget;
 
 namespace U2 {
 
-#define LIBRARY_SINGLE                "Single-end"
-#define LIBRARY_PAIRED                "Paired-end"
-#define LIBRARY_PAIRED_INTERLACED     "Paired-end (Interlaced)"
-#define LIBRARY_PAIRED_UNPAIRED       "Paired-end (Unpaired files)"
-#define LIBRARY_SANGER                "Sanger"
-#define LIBRARY_PACBIO                "PacBio"
+#define LIB_PAIR_DEFAULT                "paired-end"
+#define LIB_PAIR_MATE                   "mate-pairs"
+#define LIB_PAIR_MATE_HQ                "hq-mate-pairs"
 
-#define PAIR_TYPE_DEFAULT              "default"
-#define PAIR_TYPE_MATE                 "mate"
-#define PAIR_TYPE_MATE_HQ              "high-quality mate"
+#define LIB_SINGLE_UNPAIRED             "single"
+#define LIB_SINGLE_CSS                  "single"
+#define LIB_SINGLE_CLR                  "pacbio"
+#define LIB_SINGLE_NANOPORE             "nanopore"
+#define LIB_SINGLE_SANGER               "sanger"
+#define LIB_SINGLE_TRUSTED              "trusted-contigs"
+#define LIB_SINGLE_UNTRUSTED            "untrusted-contigs"
 
-#define ORIENTATION_FR                 "fr"
-#define ORIENTATION_RF                 "rf"
-#define ORIENTATION_FF                 "ff"
+#define ORIENTATION_FR                  "fr"
+#define ORIENTATION_RF                  "rf"
+#define ORIENTATION_FF                  "ff"
+
+#define PLATFORM_ILLUMINA               "illumina"
+#define PLATFORM_ION_TORRENT            "ion torrent"
+
+#define TYPE_SINGLE                     "single reads"
+#define TYPE_INTERLACED                 "interlaced reads"
 
 class GenomeAssemblyAlgorithmMainWidget;
 
@@ -63,14 +70,8 @@ public:
 
 class U2ALGORITHM_EXPORT GenomeAssemblyUtils {
 public:
-
-    static QStringList getPairTypes();
     static QStringList getOrientationTypes();
-    static QString getDefaultOrientation(const QString& pairType);
-    static QStringList getLibraryTypes();
     static bool isLibraryPaired(const QString& libName);
-    static bool hasRightReads(const QString& libName);
-    static QString getYamlLibraryName(const QString& libName, const QString& pairType);
 };
 
 /////////////////////////////////////////////////////////////
@@ -78,22 +79,23 @@ public:
 
 class U2ALGORITHM_EXPORT AssemblyReads {
 public:
-    AssemblyReads(const GUrl& left = GUrl(), const GUrl& right = GUrl(), const QString& libNumber = QString("1"), const QString& libType = PAIR_TYPE_DEFAULT, const QString& orientation = ORIENTATION_FR, const QString& libName = LIBRARY_SINGLE)
-        :
-         left(left)
+    AssemblyReads(const QList<GUrl>& left = QList<GUrl>(),
+                  const QList<GUrl>& right = QList<GUrl>(),
+                  const QString& orientation = ORIENTATION_FR,
+                  const QString& libName = LIB_SINGLE_UNPAIRED,
+                  const QString& readType = TYPE_SINGLE)
+        :left(left)
         ,right(right)
-        ,libNumber(libNumber)
-        ,libType(libType)
         ,orientation(orientation)
         ,libName(libName)
+        ,readType(readType)
         {}
 
-        GUrl left;
-        GUrl right;
-        QString libNumber;
-        QString libType;
-        QString orientation;
-        QString libName;
+        QList<GUrl> left;
+        QList<GUrl> right;
+        QString     orientation;
+        QString     libName;
+        QString     readType;
 };
 
 class U2ALGORITHM_EXPORT GenomeAssemblyTaskSettings {
@@ -164,7 +166,7 @@ public:
     GenomeAssemblyGUIExtensionsFactory* getGUIExtFactory() const {return guiExtFactory;}
 
 private:
-    Q_DISABLE_COPY(GenomeAssemblyAlgorithmEnv);
+    Q_DISABLE_COPY(GenomeAssemblyAlgorithmEnv)
 
 protected:
     QString id;
@@ -187,7 +189,7 @@ private:
     mutable QMutex mutex;
     QMap<QString, GenomeAssemblyAlgorithmEnv*> algorithms;
 
-    Q_DISABLE_COPY(GenomeAssemblyAlgRegistry);
+    Q_DISABLE_COPY(GenomeAssemblyAlgRegistry)
 };
 
 } // namespace

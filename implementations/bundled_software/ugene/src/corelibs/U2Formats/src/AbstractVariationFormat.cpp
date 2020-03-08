@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -57,8 +57,8 @@ QList<U2Variant> splitVariants(const U2Variant& v, const QList<QString>& altAlle
 }
 
 
-AbstractVariationFormat::AbstractVariationFormat(QObject *p, const QStringList &fileExts, bool _isSupportHeader)
-    : DocumentFormat(p, DocumentFormatFlags_SW, fileExts),
+AbstractVariationFormat::AbstractVariationFormat(QObject *p, const DocumentFormatId& id, const QStringList &fileExts, bool _isSupportHeader)
+    : TextDocumentFormat(p, id, DocumentFormatFlags_SW, fileExts),
       isSupportHeader(_isSupportHeader),
       maxColumnNumber(0)
 {
@@ -68,21 +68,20 @@ AbstractVariationFormat::AbstractVariationFormat(QObject *p, const QStringList &
 }
 
 namespace {
-    const int LOCAL_READ_BUFF_SIZE = 10 * 1024; // 10 Kb
+const int LOCAL_READ_BUFF_SIZE = 10 * 1024; // 10 Kb
 
-    inline QByteArray readLine(IOAdapter *io, char *buffer, int bufferSize) {
-        QByteArray result;
-        bool terminatorFound = false;
-        do {
-            qint64 length = io->readLine(buffer, bufferSize, &terminatorFound);
-            CHECK(-1 != length, result);
-            result += QByteArray(buffer, length);
-        } while (!terminatorFound && !io->isEof());
-        return result;
-    }
+inline QByteArray readLine(IOAdapter *io, char *buffer, int bufferSize, U2OpStatus& os) {
+    QByteArray result;
+    bool terminatorFound = false;
+    do {
+        qint64 length = io->readLine(buffer, bufferSize, &terminatorFound);
+        CHECK_EXT(!io->hasError(), os.setError(io->errorString()), QByteArray());
+        CHECK(-1 != length, result);
+
+        result += QByteArray(buffer, length);
+    } while (!terminatorFound && !io->isEof());
+    return result;
 }
-
-namespace {
 
 void addStringAttribute(U2OpStatus &os, U2Dbi *dbi, const U2VariantTrack &variantTrack, const QString &name, const QString &value) {
     CHECK(!value.isEmpty(), );
@@ -96,7 +95,7 @@ void addStringAttribute(U2OpStatus &os, U2Dbi *dbi, const U2VariantTrack &varian
 
 #define CHR_PREFIX "chr"
 
-Document *AbstractVariationFormat::loadDocument(IOAdapter *io, const U2DbiRef &dbiRef, const QVariantMap &fs, U2OpStatus &os) {
+Document *AbstractVariationFormat::loadTextDocument(IOAdapter *io, const U2DbiRef &dbiRef, const QVariantMap &fs, U2OpStatus &os) {
     DbiConnection con(dbiRef, os);
     SAFE_POINT_OP(os, NULL);
     U2Dbi *dbi = con.dbi;
@@ -119,7 +118,9 @@ Document *AbstractVariationFormat::loadDocument(IOAdapter *io, const U2DbiRef &d
     int lineNumber = 0;
     do {
         os.setProgress(io->getProgress());
-        QString line = readLine(io, buff, LOCAL_READ_BUFF_SIZE);
+        QString line = readLine(io, buff, LOCAL_READ_BUFF_SIZE, os);
+        CHECK_OP(os, NULL);
+
         lineNumber++;
         if (line.isEmpty()) {
             continue;
@@ -214,6 +215,7 @@ Document *AbstractVariationFormat::loadDocument(IOAdapter *io, const U2DbiRef &d
 
 
     } while (!io->isEof());
+    CHECK_EXT(!io->hasError(), os.setError(io->errorString()), NULL);
 
     GAutoDeleteList<GObject> objects;
     QSet<QString> names;
@@ -268,7 +270,7 @@ Document *AbstractVariationFormat::loadDocument(IOAdapter *io, const U2DbiRef &d
     return doc;
 }
 
-FormatCheckResult AbstractVariationFormat::checkRawData(const QByteArray &dataPrefix, const GUrl &) const {
+FormatCheckResult AbstractVariationFormat::checkRawTextData(const QByteArray &dataPrefix, const GUrl &) const {
     QStringList lines = QString(dataPrefix).split("\n");
     int idx = 0;
     int mismatchesNumber = 0;

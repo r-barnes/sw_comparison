@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -31,6 +31,7 @@ namespace U2 {
 
 class ADVSequenceObjectContext;
 class GObject;
+class Document;
 class AnnotatedDNAView;
 class U2SequenceObject;
 
@@ -73,8 +74,16 @@ protected slots:
 
     void sl_loadTaskStateChanged(Task* t);
 
+    void sl_documentAddedOrRemoved();
+    void sl_objectAddedOrRemoved();
+    void sl_loadedStateChanged();
+
+    void sl_sequenceSelectorIndexChanged();
+
 private:
-    QList<U2SequenceObject*>   sequences;
+    void reconnectAllProjectDocuments();
+    void updateSequenceSelectors();
+
     ADVSequenceObjectContext    *xSeq, *ySeq;
     AnnotatedDNAView*           adv;
 
@@ -86,7 +95,6 @@ private:
     GObject* getGObjectByName(const QString& gObjectName);
 
     Task* openSequenceTask;
-    QString curURL;
 };
 
 } //namespace

@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -69,12 +69,6 @@ DnaAssemblySupport::DnaAssemblySupport()
     convertAssemblyToSamAction->setIcon(QIcon(":core/images/align.png"));
     connect( convertAssemblyToSamAction, SIGNAL( triggered() ), SLOT( sl_showConvertToSamDialog() ) );
     ToolsMenu::addAction(ToolsMenu::NGS_MENU, convertAssemblyToSamAction);
-
-    QAction* genomeAssemblyAction = new QAction( tr("Reads de novo assembly (with SPAdes)..."), this );
-    genomeAssemblyAction->setObjectName(ToolsMenu::NGS_DENOVO);
-    genomeAssemblyAction->setIcon(QIcon(":core/images/align.png"));
-    connect( genomeAssemblyAction, SIGNAL( triggered() ), SLOT( sl_showGenomeAssemblyDialog() ) );
-    ToolsMenu::addAction(ToolsMenu::NGS_MENU, genomeAssemblyAction);
 
     QAction* dnaAssemblyAction = new QAction(tr("Map reads to reference..."), this );
     dnaAssemblyAction->setObjectName(ToolsMenu::NGS_MAP);

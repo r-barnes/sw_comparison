@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -44,10 +44,6 @@ namespace U2 {
 PluginViewerController::PluginViewerController() {
     showServices = false; //'true' mode is not functional anymore after service<->plugin model refactoring
     mdiWindow = NULL;
-    addPluginAction = NULL;
-    enablePluginAction = NULL;
-    disableServiceAction = NULL;
-
     connectStaticActions();    
    
     if (AppContext::getSettings()->getValue(PLUGIN_VIEW_SETTINGS + "isVisible", false).toBool()) {
@@ -113,15 +109,6 @@ void PluginViewerController::connectStaticActions() {
     viewPluginsAction->setObjectName(ACTION__PLUGINS_VIEW);
     pluginsMenu->addAction(viewPluginsAction);
 
-    addPluginAction = new QAction(tr("Add plugin"), this);
-    connect(addPluginAction, SIGNAL(triggered()), SLOT(sl_addPlugin()));
-
-    enablePluginAction = new QAction(tr("Enable plugin"), this);
-    connect(enablePluginAction, SIGNAL(triggered()), SLOT(sl_enablePlugin()));
-
-    disablePluginAction = new QAction(tr("Remove plugin"), this);
-    connect(disablePluginAction, SIGNAL(triggered()), SLOT(sl_disablePlugin()));
-
     enableServiceAction =  new QAction(tr("Enable service"), this);
     connect(enableServiceAction, SIGNAL(triggered()), SLOT(sl_enableService()));
 
@@ -131,18 +118,13 @@ void PluginViewerController::connectStaticActions() {
 
 void PluginViewerController::connectVisualActions() {
     //connect to plugin support signals
-    PluginSupport* ps = AppContext::getPluginSupport();
-    connect(ps, SIGNAL(si_pluginAdded(Plugin*)), SLOT(sl_onPluginAdded(Plugin*)));
-    connect(ps, SIGNAL(si_pluginRemoveFlagChanged(Plugin*)), SLOT(sl_pluginRemoveFlagChanged(Plugin*)));
     if (showServices) {
         ServiceRegistry* sr = AppContext::getServiceRegistry();
         connect(sr, SIGNAL(si_serviceStateChanged(Service*, ServiceState)), SLOT(sl_onServiceStateChanged(Service*, ServiceState)));
-        connect(sr, SIGNAL(si_serviceRegistered(Service*)), SLOT(sl_onServiceRegistered(Service*)));
         connect(sr, SIGNAL(si_serviceUnregistered(Service*)), SLOT(sl_onServiceUnregistered(Service*)));
     }
 
     connect(ui.treeWidget, SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)),SLOT(sl_treeCurrentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)));
-    connect(ui.treeWidget, SIGNAL(customContextMenuRequested(const QPoint&)),SLOT(sl_treeCustomContextMenuRequested(const QPoint&)));
     connect(ui.showLicenseButton,SIGNAL(clicked()),SLOT(sl_showHideLicense()));
     connect(ui.acceptLicenseButton,SIGNAL(clicked()),SLOT(sl_acceptLicense()));
 }
@@ -156,12 +138,6 @@ void PluginViewerController::disconnectVisualActions() {
 
 void PluginViewerController::updateActions() {
     PlugViewTreeItem* item = static_cast<PlugViewTreeItem*>(ui.treeWidget->currentItem());
-    bool isPlugin = item!=NULL && item->isPluginItem();
-    Plugin* p = isPlugin ? (static_cast<PlugViewPluginItem*>(item))->plugin : NULL;
-    
-    bool isRemoved = isPlugin && AppContext::getPluginSupport()->getRemoveFlag(p);
-    disablePluginAction->setEnabled(isPlugin && !isRemoved);
-    enablePluginAction->setEnabled(isPlugin && isRemoved);
 
     bool isService = item!=NULL && item->isServiceItem();
     Service* s = isService ? (static_cast<PlugViewServiceItem*>(item))->service : NULL;
@@ -175,7 +151,22 @@ void PluginViewerController::updateActions() {
 void PluginViewerController::buildItems() {
     const QList<Plugin*>& plugins = AppContext::getPluginSupport()->getPlugins();
     foreach(Plugin* p, plugins) {
-        sl_onPluginAdded(p);
+        QTreeWidget* treeWidget = ui.treeWidget;
+        PlugViewPluginItem* pluginItem = new PlugViewPluginItem(NULL, p, showServices);
+        if (showServices) {
+            const QList<Service*>& services = p->getServices();
+            //this method is called for default state init also -> look for registered plugin services
+            ServiceRegistry* sr = AppContext::getServiceRegistry();
+            QList<Service*> registered = sr->getServices();
+            foreach(Service* s, services) {
+                if (registered.contains(s)) {
+                    PlugViewTreeItem* serviceItem = new PlugViewServiceItem(pluginItem, s);
+                    pluginItem->addChild(serviceItem);
+                }
+            }
+        }
+        treeWidget->addTopLevelItem(pluginItem);
+        pluginItem->setExpanded(true);
     }
 }
 
@@ -214,6 +205,7 @@ bool PluginViewerController::eventFilter(QObject *obj, QEvent *event) {
     return QObject::eventFilter(obj, event);
 }
 
+/*
 void PluginViewerController::sl_onPluginAdded(Plugin* p) {
     assert(findPluginItem(p)==NULL);
     
@@ -234,6 +226,7 @@ void PluginViewerController::sl_onPluginAdded(Plugin* p) {
     treeWidget->addTopLevelItem(pluginItem);
     pluginItem->setExpanded(true);
 }
+*/
 
 void PluginViewerController::sl_onServiceStateChanged(Service* s, ServiceState oldState) {
     Q_UNUSED(oldState);
@@ -242,16 +235,6 @@ void PluginViewerController::sl_onServiceStateChanged(Service* s, ServiceState o
     assert(si!=NULL);
     si->updateVisual();
     updateState();
-}
-
-void PluginViewerController::sl_onServiceRegistered(Service* /*s*/) {
-    /*assert(showServices);
-    PlugViewPluginItem* pluginItem = findPluginItem(s->getPlugin());
-    assert(pluginItem!=NULL);
-    PlugViewTreeItem* serviceItem = findServiceItem(s);
-    assert(serviceItem == NULL);
-    serviceItem = new PlugViewServiceItem(pluginItem, s);
-    pluginItem->addChild(serviceItem);*/
 }
 
 void PluginViewerController::sl_onServiceUnregistered(Service* s) {
@@ -268,52 +251,6 @@ void PluginViewerController::sl_show() {
     } else {
         AppContext::getMainWindow()->getMDIManager()->activateWindow(mdiWindow);
     }
-}
-
-void PluginViewerController::sl_addPlugin() {
-    QString caption = tr("Select plugin file");
-    QString lastDir = AppContext::getSettings()->getValue(PLUGIN_VIEW_SETTINGS + "addDir").toString();
-    
-    QString ext=tr("Plugin files")+" (*."+PLUGIN_FILE_EXT+")";
-
-    QString pluginFilePath = U2FileDialog::getOpenFileName(ui.treeWidget, caption, lastDir, ext);
-    if (pluginFilePath.isEmpty())  {
-        return;
-    }
-    QFileInfo fi(pluginFilePath);
-    QString newLastDir = fi.absoluteDir().absolutePath();
-    AppContext::getSettings()->setValue(PLUGIN_VIEW_SETTINGS + "addDir", newLastDir);
-    Task* task = AppContext::getPluginSupport()->addPluginTask(pluginFilePath);
-    AppContext::getTaskScheduler()->registerTopLevelTask(task);
-    connect(task, SIGNAL(si_stateChanged()), SLOT(sl_taskStateChanged()));
-}
-
-void PluginViewerController::sl_taskStateChanged() {
-    Task* t = qobject_cast<Task*>(sender());
-    assert(t!=NULL);
-    if (t->isFinished() && t->hasError()) {
-        QMessageBox::critical(ui.treeWidget, tr("Error"), t->getError());
-    }
-}
-
-
-void PluginViewerController::sl_enablePlugin() {
-    PlugViewPluginItem* pi = getCurrentPluginItem();
-    assert(pi!=NULL);
-    AppContext::getPluginSupport()->setRemoveFlag(pi->plugin, false);
-}
-
-void PluginViewerController::sl_disablePlugin() {
-    PlugViewPluginItem* pi = getCurrentPluginItem();
-    assert(pi!=NULL);
-    AppContext::getPluginSupport()->setRemoveFlag(pi->plugin, true);
-}
-
-void PluginViewerController::sl_pluginRemoveFlagChanged(Plugin* p) {
-    PlugViewPluginItem* pi = findPluginItem(p);
-    assert(pi!=NULL);
-    pi->updateVisual();
-    updateState();
 }
 
 PlugViewServiceItem* PluginViewerController::getCurrentServiceItem() const {
@@ -393,37 +330,6 @@ void PluginViewerController::sl_treeCurrentItemChanged(QTreeWidgetItem * current
     updateState();
 }
 
-
-void PluginViewerController::sl_treeCustomContextMenuRequested(const QPoint & pos) {
-    Q_UNUSED(pos);
-
-    assert(mdiWindow);
-    QMenu* menu = new QMenu(ui.treeWidget);    
-    
-    menu->addAction(addPluginAction);
-
-    if (disablePluginAction->isEnabled()) {
-        menu->addAction(disablePluginAction);
-    }
-
-    if (enablePluginAction->isEnabled()) {
-        menu->addAction(enablePluginAction);
-    }
-
-    if (showServices) {
-        if (enableServiceAction->isEnabled()) {
-            menu->addAction(enableServiceAction);
-        }
-
-        if (disableServiceAction->isEnabled()) {
-            menu->addAction(disableServiceAction);
-        }
-    }
-
-
-    menu->exec(QCursor::pos());
-}
-
 void PluginViewerController::sl_showHideLicense(){
     if(ui.licenseView->isHidden()){
         showLicense();
@@ -480,10 +386,7 @@ void PlugViewPluginItem::updateVisual() {
     setData(0, Qt::DisplayRole, PluginViewerController::tr("Plugin"));
     setData(1, Qt::DisplayRole, plugin->getName());
 
-    bool toRemove = AppContext::getPluginSupport()->getRemoveFlag(plugin);
-    QString state = toRemove ?
-        PluginViewerController::tr("to remove after restart") 
-        : PluginViewerController::tr("On");
+    QString state = PluginViewerController::tr("On");
 
     setData(2, Qt::DisplayRole, state);
     QString desc=QString(plugin->getDescription()).replace("\n"," ");
@@ -491,7 +394,7 @@ void PlugViewPluginItem::updateVisual() {
 
     setIcon(showServices ? 0 : 1, QIcon(":ugene/images/plugins.png"));
 
-    GUIUtils::setMutedLnF(this, toRemove);
+    GUIUtils::setMutedLnF(this, false);
     if(!plugin->getDescription().contains("\n") && desc.length() > 80){
         for(int i=80;i<desc.length();){
             i=desc.lastIndexOf(" ", i);

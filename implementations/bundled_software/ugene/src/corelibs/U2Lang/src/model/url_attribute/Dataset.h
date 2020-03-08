@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -45,13 +45,18 @@ public:
     QList<URLContainer*> & getUrls();
 
     bool contains(const QString &url) const;
+    void clear();
 
     static QList<Dataset> getDefaultDatasetList();
+
+    Dataset &operator =(const Dataset &other);
 
 public:
     static const QString DEFAULT_NAME;
 
 private:
+    void copy(const Dataset &other);
+
     QString name;
     QList<URLContainer*> urls;
 };

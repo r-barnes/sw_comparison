@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -31,6 +31,44 @@
 
 namespace U2 {
 
+const QString XmlTest::TRUE_VALUE = "true";
+const QString XmlTest::FALSE_VALUE = "false";
+
+XmlTest::XmlTest(const QString &taskName, GTest *cp, const GTestEnvironment *env, TaskFlags flags, const QList<GTest *> &subtasks)
+    : GTest(taskName, cp, env, flags, subtasks)
+{
+
+}
+
+void XmlTest::checkNecessaryAttributeExistence(const QDomElement &element, const QString &attribute) {
+    CHECK_EXT(element.hasAttribute(attribute), failMissingValue(attribute), );
+}
+
+void XmlTest::checkAttribute(const QDomElement &element, const QString &attribute, const QStringList &acceptableValues, bool isNecessary) {
+    if (isNecessary) {
+        checkNecessaryAttributeExistence(element, attribute);
+        CHECK_OP(stateInfo, );
+    }
+
+    CHECK_EXT(!element.hasAttribute(attribute) || acceptableValues.contains(element.attribute(attribute)),
+              setError(QString("Attribute '%1' has inacceptable value. Acceptable values are: %2")
+                       .arg(attribute).arg(acceptableValues.join(", "))), );
+}
+
+void XmlTest::checkBooleanAttribute(const QDomElement &element, const QString &attribute, bool isNecessary) {
+    checkAttribute(element, attribute, QStringList( { TRUE_VALUE, FALSE_VALUE } ), isNecessary);
+}
+
+const QString XMLTestUtils::TMP_DATA_DIR_PREFIX  = "!tmp_data_dir!";
+const QString XMLTestUtils::COMMON_DATA_DIR_PREFIX = "!common_data_dir!";
+const QString XMLTestUtils::LOCAL_DATA_DIR_PREFIX = "!input!";
+const QString XMLTestUtils::SAMPLE_DATA_DIR_PREFIX = "!sample_data_dir!";
+const QString XMLTestUtils::WORKFLOW_SAMPLES_DIR_PREFIX = "!workflow_samples!";
+const QString XMLTestUtils::WORKFLOW_OUTPUT_DIR_PREFIX = "!workflow_output!";
+const QString XMLTestUtils::EXPECTED_OUTPUT_DIR_PREFIX = "!expected!";
+
+const QString XMLTestUtils::CONFIG_FILE_PATH = "!config_file_path!";
+
 QList<XMLTestFactory*>  XMLTestUtils::createTestFactories() {
     QList<XMLTestFactory*> res;
 
@@ -44,10 +82,6 @@ QList<XMLTestFactory*>  XMLTestUtils::createTestFactories() {
 
 void XMLTestUtils::replacePrefix(const GTestEnvironment *env, QString &path){
     QString result;
-
-    const QString EXPECTED_OUTPUT_DIR_PREFIX = "!expected!";
-    const QString TMP_DATA_DIR_PREFIX = "!tmp_data_dir!";
-    const QString COMMON_DATA_DIR_PREFIX = "!common_data_dir!";
 
     // Determine which environment variable is required
     QString envVarName;
@@ -64,8 +98,13 @@ void XMLTestUtils::replacePrefix(const GTestEnvironment *env, QString &path){
         envVarName = "COMMON_DATA_DIR";
         prefix = COMMON_DATA_DIR_PREFIX;
     }
+    else if (path.startsWith(WORKFLOW_OUTPUT_DIR_PREFIX)) {
+        envVarName = "WORKFLOW_OUTPUT_DIR";
+        prefix = WORKFLOW_OUTPUT_DIR_PREFIX;
+    }
     else {
-        FAIL(QString("Unexpected 'prefix' value in the path: '%1'!").arg(path), );
+        algoLog.details(QString("There are no known prefixes in the path: '%1', the path was not modified").arg(path));
+        return;
     }
 
     // Replace with the correct value
@@ -84,14 +123,40 @@ void XMLTestUtils::replacePrefix(const GTestEnvironment *env, QString &path){
     path = result.mid(0, result.size() - 1); // without the last ';'
 }
 
+bool XMLTestUtils::parentTasksHaveError(Task* t) {
+    Task* parentTask = t->getParentTask();
+    CHECK(nullptr != parentTask, false);
+
+    bool result = false;
+    if (parentTask->hasError()) {
+        result = true;
+    } else {
+        result = parentTasksHaveError(parentTask);
+    }
+    return result;
+}
+
+const QString XMLMultiTest::FAIL_ON_SUBTEST_FAIL = "fail-on-subtest-fail";
+const QString XMLMultiTest::LOCK_FOR_LOG_LISTENING = "lockForLogListening";
+
 void XMLMultiTest::init(XMLTestFormat *tf, const QDomElement& el) {
 
     // This attribute is used to avoid mixing log messages between different tests
     // Each test that listens to log should set this attribute to "true"
     // See also: GTestLogHelper
+    checkAttribute(el, LOCK_FOR_LOG_LISTENING, { "true", "false" }, false);
+    CHECK_OP(stateInfo, );
+
     bool lockForLogListening = false;
-    if ("true" == el.attribute("lockForLogListening")) {
+    if ("true" == el.attribute(LOCK_FOR_LOG_LISTENING)) {
         lockForLogListening = true;
+    }
+
+    checkAttribute(el, FAIL_ON_SUBTEST_FAIL, { "true", "false" }, false);
+    CHECK_OP(stateInfo, );
+
+    if ("false" == el.attribute(FAIL_ON_SUBTEST_FAIL, "true")) {
+        setFlag(TaskFlag_FailOnSubtaskError, false);
     }
 
     QDomNodeList subtaskNodes = el.childNodes();
@@ -157,9 +222,7 @@ void GTest_DeleteTmpFile::init(XMLTestFormat*, const QDomElement& el) {
 }
 
 Task::ReportResult GTest_DeleteTmpFile::report() {
-    if (!QFile::exists(url)) {
-        stateInfo.setError(QString("TMP file not found: %1").arg(url));
-    } else if(!QFileInfo(url).isDir()) {
+    if (!QFileInfo(url).isDir()) {
         QFile::remove(url);
     } else{
         GUrlUtils::removeDir(url, stateInfo);
@@ -187,6 +250,4 @@ Task::ReportResult GTest_CreateTmpFolder::report() {
     return ReportResult_Finished;
 }
 
-
 }//namespace
-

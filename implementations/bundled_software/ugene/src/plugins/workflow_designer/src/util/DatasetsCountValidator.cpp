@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -63,7 +63,7 @@ namespace {
     }
 }
 
-bool DatasetsCountValidator::validate(const Actor *actor, ProblemList &problemList, const QMap<QString, QString> &options) const {
+bool DatasetsCountValidator::validate(const Actor *actor, NotificationsList &notificationList, const QMap<QString, QString> &options) const {
     int min = minimum(options);
     int max = maximum(options);
     QString attrId = attributeId(options);
@@ -71,11 +71,11 @@ bool DatasetsCountValidator::validate(const Actor *actor, ProblemList &problemLi
     QList<Dataset> sets = getValue< QList<Dataset> >(actor, attrId);
     bool result = true;
     if (sets.size() < min) {
-        problemList << Problem(QObject::tr("The minimum datasets count is %1. The current count is %2").arg(min).arg(sets.size()));
+        notificationList << WorkflowNotification(QObject::tr("The minimum datasets count is %1. The current count is %2").arg(min).arg(sets.size()));
         result = false;
     }
     if (sets.size() > max) {
-        problemList << Problem(QObject::tr("The maximum datasets count is %1. The current count is %2").arg(max).arg(sets.size()));
+        notificationList << WorkflowNotification(QObject::tr("The maximum datasets count is %1. The current count is %2").arg(max).arg(sets.size()));
         result = false;
     }
     return result;

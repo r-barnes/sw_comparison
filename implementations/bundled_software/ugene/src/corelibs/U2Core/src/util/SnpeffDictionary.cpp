@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -49,7 +49,7 @@ QMap<QString, QString> SnpeffDictionary::initEffectDescriptions() {
     result.insert("downstream_gene_variant", "Downstream of a gene (default length: 5K bases).");
     result.insert("exon_variant", "The variant hits an exon (from a non-coding transcript) or a retained intron.");
     result.insert("exon_loss_variant", "A deletion removes the whole exon.");
-    result.insert("frameshift_variant", "Insertion or deletion causes a frame shift. E.g.: An indel size is not multple of 3.");
+    result.insert("frameshift_variant", "Insertion or deletion causes a frame shift. E.g.: An indel size is not multiple of 3.");
     result.insert("gene_variant", "The variant hits a gene.");
     result.insert("intergenic_region", "The variant is in an intergenic region.");
     result.insert("conserved_intergenic_variant", "The variant is in a highly conserved intergenic region.");
@@ -93,7 +93,7 @@ QMap<QString, QString> SnpeffDictionary::initEffectDescriptions() {
     result.insert("DOWNSTREAM", "Downstream of a gene (default length: 5K bases).");
     result.insert("EXON", "The variant hits an exon (from a non-coding transcript) or a retained intron.");
     result.insert("EXON_DELETED", "A deletion removes the whole exon.");
-    result.insert("FRAME_SHIFT", "Insertion or deletion causes a frame shift. E.g.: An indel size is not multple of 3.");
+    result.insert("FRAME_SHIFT", "Insertion or deletion causes a frame shift. E.g.: An indel size is not multiple of 3.");
     result.insert("GENE", "The variant hits a gene.");
     result.insert("INTERGENIC", "The variant is in an intergenic region.");
     result.insert("INTERGENIC_CONSERVED", "The variant is in a highly conserved intergenic region.");

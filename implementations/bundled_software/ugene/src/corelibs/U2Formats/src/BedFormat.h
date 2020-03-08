@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -26,6 +26,8 @@
 #include <U2Core/BaseDocumentFormats.h>
 #include <U2Core/DocumentModel.h>
 #include <U2Core/U2Region.h>
+
+#include "TextDocumentFormat.h"
 
 namespace U2 {
 
@@ -94,25 +96,20 @@ class IOAdapter;
  * Track lines (see http://genome.ucsc.edu/goldenPath/help/customTrack.html#TRACK)
  * are partially supported: only a name and a description of a track.
  */
-class U2FORMATS_EXPORT BedFormat : public DocumentFormat {
+class U2FORMATS_EXPORT BedFormat : public TextDocumentFormat {
     Q_OBJECT
 
 public:
     BedFormat(QObject* parent);
 
-    virtual DocumentFormatId getFormatId() const {return BaseDocumentFormats::BED;}
-
-    virtual const QString& getFormatName() const {return FORMAT_NAME;}
-
     virtual void storeDocument(Document* doc, IOAdapter* io, U2OpStatus& os);
-
-    virtual FormatCheckResult checkRawData(const QByteArray& rawData, const GUrl& = GUrl()) const;
 
     /** Gets annotation data from a BED file, but doesn't create an annotation table */
     static QList<SharedAnnotationData> getAnnotData(IOAdapter* io, U2OpStatus& os);
 
 protected:
-    virtual Document* loadDocument(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& fs, U2OpStatus& os);
+    virtual FormatCheckResult checkRawTextData(const QByteArray& rawData, const GUrl& = GUrl()) const;
+    virtual Document* loadTextDocument(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& fs, U2OpStatus& os);
 
     /**
     * A common method for parsing and validating an input file.
@@ -121,8 +118,6 @@ protected:
 
 private:
     void load(IOAdapter* io, QList<GObject*>& objects, const U2DbiRef& dbiRef, U2OpStatus& os, const QVariantMap& fs = QVariantMap());
-
-    static const QString FORMAT_NAME;
 };
 
 class BedFormatParser {

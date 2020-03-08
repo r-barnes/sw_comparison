@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -21,13 +21,12 @@
 
 #include <QColorDialog>
 #include <QPainter>
-#include <QPushButton>
 
 #include <U2Algorithm/ColorSchemeUtils.h>
 
 #include <U2Core/GUrlUtils.h>
-#include <U2Core/L10n.h>
 #include <U2Core/QObjectScopedPointer.h>
+#include <U2Core/Theme.h>
 #include <U2Core/U2SafePoints.h>
 
 #include <U2Gui/HelpButton.h>
@@ -48,7 +47,7 @@ ColorSchemaDialogController::ColorSchemaDialogController(QMap<char, QColor>& col
 
 int ColorSchemaDialogController::adjustAlphabetColors(){
     setupUi(this);
-    new HelpButton(this, buttonBox, "21433248");
+    new HelpButton(this, buttonBox, "24742447");
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("OK"));
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
     alphabetColorsView = new QPixmap(alphabetColorsFrame->size());
@@ -178,7 +177,7 @@ void ColorSchemaDialogController::mouseReleaseEvent(QMouseEvent * event){
 
 CreateColorSchemaDialog::CreateColorSchemaDialog(ColorSchemeData* _newSchema, QStringList _usedNames) : usedNames(_usedNames), newSchema(_newSchema) {
     setupUi(this);
-    new HelpButton(this, buttonBox, "21433248");
+    new HelpButton(this, buttonBox, "24742447");
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Create"));
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
 
@@ -187,7 +186,7 @@ CreateColorSchemaDialog::CreateColorSchemaDialog(ColorSchemeData* _newSchema, QS
 
     connect(alphabetComboBox, SIGNAL(currentIndexChanged(int)), SLOT(sl_alphabetChanged(int)));
     extendedModeBox->setVisible( false );
-    validLabel->setStyleSheet( "color: " + L10N::errorColorLabelStr( ) + "; font: bold;" );
+    validLabel->setStyleSheet( "color: " + Theme::errorColorLabelStr( ) + "; font: bold;" );
     validLabel->setVisible( false );
     adjustSize( );
 

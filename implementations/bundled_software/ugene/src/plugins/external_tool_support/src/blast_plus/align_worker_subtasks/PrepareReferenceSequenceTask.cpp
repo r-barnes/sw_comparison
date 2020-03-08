@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -99,7 +99,8 @@ QList<Task *> PrepareReferenceSequenceTask::onSubTaskFinished(Task *subTask) {
         DocumentFormat *fastaFormat = AppContext::getDocumentFormatRegistry()->getFormatById(BaseDocumentFormats::FASTA);
         IOAdapterFactory *ioAdapterFactory = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(IOAdapterUtils::url2io(doc->getURL()));
 
-        Document *fastaDoc = doc->getSimpleCopy(fastaFormat, ioAdapterFactory, doc->getURL());
+        preparedReferenceUrl = GUrlUtils::rollFileName(doc->getURL().getURLString(), "_");        // we roll the URL here because there was a strange problem when UGENE couldn't overwrite the file (UTI-242)
+        Document *fastaDoc = doc->getSimpleCopy(fastaFormat, ioAdapterFactory, preparedReferenceUrl);
         SaveDocumentTask* saveTask = new SaveDocumentTask(fastaDoc, SaveDoc_Overwrite | SaveDoc_DestroyButDontUnload);
         newSubTasks << saveTask;
     }

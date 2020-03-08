@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -18,8 +18,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301, USA.
  */
-
-#include <QWebElement>
 
 #include "GTUtilsMdi.h"
 #include "GTUtilsProject.h"
@@ -113,7 +111,7 @@ GUI_TEST_CLASS_DEFINITION(test_0006){
     GTGlobals::sleep();
     GTUtilsStartPage::clickResentProject(os, "proj1.uprj");
 //    Expected state: project is opened
-    GTUtilsDocument::checkDocument(os, "1CF7.PDB");
+    GTUtilsDocument::checkDocument(os, "1CF7.pdb");
 
     QString expectedTitle;
     expectedTitle = "proj1 UGENE";

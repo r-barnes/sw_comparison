@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -23,8 +23,8 @@
 
 namespace U2 {
 
-WriteAlignedReadsSubTask::WriteAlignedReadsSubTask(QReadWriteLock &_listM, GenomeAlignerWriter *_seqWriter, QList<DataBunch*> &_data, quint64 &r)
-: Task("WriteAlignedReadsSubTask", TaskFlag_None), seqWriter(_seqWriter), data(_data), readsAligned(r), listM(_listM)
+WriteAlignedReadsSubTask::WriteAlignedReadsSubTask(QReadWriteLock &_listM, QMutex& _writeLock, GenomeAlignerWriter *_seqWriter, QList<DataBunch*> &_data, quint64 &r)
+: Task("WriteAlignedReadsSubTask", TaskFlag_None), seqWriter(_seqWriter), data(_data), readsAligned(r), listM(_listM), writeLock(_writeLock)
 {
 
 }
@@ -42,6 +42,7 @@ void WriteAlignedReadsSubTask::setReadWritten(SearchQuery *read, SearchQuery *re
 void WriteAlignedReadsSubTask::run() {
     // ReadShortReadsSubTask can add new data what can lead to realloc. Noone can touch these vectors without sync
     QReadLocker locker(&listM);
+    QMutexLocker writeLockLocker(&writeLock);
 
     stateInfo.setProgress(0);
 

@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -80,7 +80,7 @@ bool DocumentReadingModeSelectorController::adjustReadingMode(FormatDetectionRes
     d->setModal(true);
     ui.setupUi(d.data());
 
-    new HelpButton(d.data(), ui.buttonBox, "21433094");
+    new HelpButton(d.data(), ui.buttonBox, "24742289");
 
     bool canBeShortReads = minSequenceSize > 0 && maxSequenceSize < 2000;
     bool haveReadAligners = !AppContext::getDnaAssemblyAlgRegistry()->getRegisteredAlgorithmIds().isEmpty();

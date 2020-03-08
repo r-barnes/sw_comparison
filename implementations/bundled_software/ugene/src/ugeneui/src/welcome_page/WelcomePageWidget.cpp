@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -25,17 +25,17 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QTextStream>
-#include <QWebElement>
-#include <QWebFrame>
 
 #include <U2Core/AppContext.h>
+#include <U2Core/Log.h>
 #include <U2Core/Settings.h>
 #include <U2Core/U2SafePoints.h>
 
-#include "WelcomePageController.h"
-#include "main_window/MainWindowImpl.h"
+#include <U2Gui/SimpleWebViewBasedWidgetController.h>
 
+#include "WelcomePageJsAgent.h"
 #include "WelcomePageWidget.h"
+#include "main_window/MainWindowImpl.h"
 
 namespace U2 {
 
@@ -43,52 +43,57 @@ namespace {
     const int MAX_RECENT = 7;
 }
 
-WelcomePageWidget::WelcomePageWidget(QWidget *parent, WelcomePageController *controller)
-    : MultilingualHtmlView("qrc:///ugene/html/welcome_page.html", parent),
-      controller(controller)
+WelcomePageWidget::WelcomePageWidget(QWidget *parent)
+    : U2WebView(parent)
 {
     installEventFilter(this);
     setObjectName("webView");
-    addController();
-}
 
-void WelcomePageWidget::sl_loaded(bool ok) {
-    MultilingualHtmlView::sl_loaded(ok);
-    addController();
+    controller = new SimpleWebViewBasedWidgetController(this, new WelcomePageJsAgent(this));
+    connect(controller, SIGNAL(si_pageReady()), SLOT(sl_loaded()));
+    controller->loadPage("qrc:///ugene/html/welcome_page.html");
 }
 
 void WelcomePageWidget::updateRecent(const QStringList &recentProjects, const QStringList &recentFiles) {
     updateRecentFilesContainer("recent_projects", recentProjects, tr("No opened projects yet"));
     updateRecentFilesContainer("recent_files", recentFiles, tr("No opened files yet"));
-    page()->mainFrame()->evaluateJavaScript("updateLinksVisibility()");
+    controller->runJavaScript("updateLinksVisibility()");
 }
 
 void WelcomePageWidget::updateRecentFilesContainer(const QString &id, const QStringList &files, const QString &message) {
-    static const QString divTemplate = "<div id=\"%1\" class=\"recent_items_content\">%2</div>";
-    static const QString linkTemplate = "<a class=\"recentLink\" href=\"#\" onclick=\"ugene.openFile('%1')\" title=\"%1\">- %2</a>";
-
-    QWebElement doc = page()->mainFrame()->documentElement();
-    QWebElement recentFilesDiv = doc.findFirst("#" + id);
-    SAFE_POINT(!recentFilesDiv.isNull(), "No recent files container", );
-    recentFilesDiv.removeAllChildren();
-
-    QStringList links;
+    controller->runJavaScript(QString("clearRecent(\"%1\")").arg(id));
+    bool emptyList = true;
     foreach (const QString &file, files.mid(0, MAX_RECENT)) {
         if (file.isEmpty()) {
             continue;
         }
-        links << linkTemplate.arg(file).arg(QFileInfo(file).fileName());
+        emptyList = false;
+        addRecentItem(id, file);
     }
-    QString result = message;
-    if (!links.isEmpty()) {
-        result = links.join("\n");
+
+    if (emptyList) {
+        addNoItems(id, message);
     }
-    recentFilesDiv.setOuterXml(divTemplate.arg(id).arg(result));
 }
 
-void WelcomePageWidget::addController() {
-    page()->mainFrame()->addToJavaScriptWindowObject("ugene", controller);
-    controller->onPageLoaded();
+void WelcomePageWidget::addRecentItem(const QString &id, const QString &file) {
+    if (id.contains("recent_files")) {
+        controller->runJavaScript(QString("addRecentItem(\"recent_files\", \"%1\", \"%2\")").arg(file).arg(QFileInfo(file).fileName()));
+    } else if (id.contains("recent_projects")) {
+        controller->runJavaScript(QString("addRecentItem(\"recent_projects\", \"%1\", \"%2\")").arg(file).arg(QFileInfo(file).fileName()));
+    } else {
+        SAFE_POINT(false, "Unknown containerId", );
+    }
+}
+
+void WelcomePageWidget::addNoItems(const QString &id, const QString &message) {
+    if (id.contains("recent_files")) {
+        controller->runJavaScript(QString("addRecentItem(\"recent_files\", \"%1\", \"\")").arg(message));
+    } else if (id.contains("recent_projects")) {
+        controller->runJavaScript(QString("addRecentItem(\"recent_projects\", \"%1\", \"\")").arg(message));
+    } else {
+        SAFE_POINT(false, "Unknown containerId", );
+    }
 }
 
 void WelcomePageWidget::dragEnterEvent(QDragEnterEvent *event) {
@@ -101,6 +106,11 @@ void WelcomePageWidget::dropEvent(QDropEvent *event) {
 
 void WelcomePageWidget::dragMoveEvent(QDragMoveEvent *event) {
     MainWindowDragNDrop::dragMoveEvent(event);
+}
+
+void WelcomePageWidget::sl_loaded() {
+    emit si_loaded();
+    controller->runJavaScript("document.activeElement.blur();");
 }
 
 bool WelcomePageWidget::eventFilter(QObject *watched, QEvent *event) {
@@ -121,6 +131,10 @@ bool WelcomePageWidget::eventFilter(QObject *watched, QEvent *event) {
         default:
             return false;
     }
+}
+
+bool WelcomePageWidget::isLoaded() const {
+    return controller->isPageReady();
 }
 
 } // U2

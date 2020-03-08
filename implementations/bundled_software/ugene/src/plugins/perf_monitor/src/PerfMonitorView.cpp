@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -28,7 +28,7 @@
 
 #ifdef Q_OS_LINUX
 #include <stdio.h>
-#include <proc/readproc.h>
+#include <sys/sysinfo.h>
 #endif
 
 #ifdef Q_OS_WIN32
@@ -64,10 +64,10 @@ PerfMonitorView::PerfMonitorView() : MWMDIWindow(tr("Application counters")){
     updateCounter.totalCount = 0;
 
 #ifdef Q_OS_LINUX
-    struct proc_t usage;
-    look_up_our_self(&usage);
-    virtMemoryCounter.totalCount = usage.vsize;
-    rssMemoryCounter.totalCount = usage.rss;
+    struct sysinfo usage;
+    sysinfo(&usage);
+    virtMemoryCounter.totalCount = usage.totalram;
+    rssMemoryCounter.totalCount = 0; // not supported
 #endif
 #ifdef Q_OS_WIN32
     PROCESS_MEMORY_COUNTERS memCounter;
@@ -83,10 +83,10 @@ PerfMonitorView::PerfMonitorView() : MWMDIWindow(tr("Application counters")){
 void PerfMonitorView::timerEvent(QTimerEvent *) {
     TimeCounter c(&updateCounter);
 #ifdef Q_OS_LINUX
-    struct proc_t usage;
-    look_up_our_self(&usage);
-    virtMemoryCounter.totalCount = usage.vsize;
-    rssMemoryCounter.totalCount = usage.rss;
+    struct sysinfo usage;
+    sysinfo(&usage);
+    virtMemoryCounter.totalCount = usage.totalram;
+    rssMemoryCounter.totalCount = 0; // not supported
 #endif
 #ifdef Q_OS_WIN32
     PROCESS_MEMORY_COUNTERS memCounter;

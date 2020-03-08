@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -20,9 +20,7 @@
  */
 
 #include <U2Core/DbiConnection.h>
-#include <U2Core/DNAAlphabet.h>
 #include <U2Core/DNASequenceObject.h>
-#include <U2Core/DocumentModel.h>
 #include <U2Core/GHints.h>
 #include <U2Core/GObjectTypes.h>
 #include <U2Core/GObjectUtils.h>
@@ -34,7 +32,6 @@
 #include <U2Core/U2AlphabetUtils.h>
 #include <U2Core/U2AttributeDbi.h>
 #include <U2Core/U2AttributeUtils.h>
-#include <U2Core/U2DbiUtils.h>
 #include <U2Core/U2ObjectDbi.h>
 #include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2SafePoints.h>
@@ -47,12 +44,10 @@ namespace U2 {
 const QString MultipleChromatogramAlignmentObject::MCAOBJECT_REFERENCE = "MCAOBJECT_REFERENCE";
 
 MultipleChromatogramAlignmentObject::MultipleChromatogramAlignmentObject(const QString &name,
-                                                                         const U2EntityRef &mcaRef,
-                                                                         const QVariantMap &hintsMap,
-                                                                         const MultipleChromatogramAlignment &mca)
- : MultipleAlignmentObject(GObjectTypes::MULTIPLE_CHROMATOGRAM_ALIGNMENT, name, mcaRef, hintsMap, mca), referenceObj(NULL)
-{
-}
+    const U2EntityRef &mcaRef,
+    const QVariantMap &hintsMap,
+    const MultipleChromatogramAlignment &mca)
+    : MultipleAlignmentObject(GObjectTypes::MULTIPLE_CHROMATOGRAM_ALIGNMENT, name, mcaRef, hintsMap, mca), referenceObj(NULL) {}
 
 MultipleChromatogramAlignmentObject::~MultipleChromatogramAlignmentObject() {
     delete referenceObj;
@@ -240,15 +235,15 @@ void MultipleChromatogramAlignmentObject::trimRow(const int rowIndex, int curren
     int pos = 0;
     int count = 0;
     switch (edge) {
-        case Left:
-            pos = row->getCoreStart();
-            count = currentPos - pos;
-            break;
-            case Right:
-                pos = currentPos + 1;
-                int lengthWithoutTrailing = row->getRowLengthWithoutTrailing();
-                count = lengthWithoutTrailing - currentPos;
-                break;
+    case Left:
+        pos = row->getCoreStart();
+        count = currentPos - pos;
+        break;
+    case Right:
+        pos = currentPos + 1;
+        int lengthWithoutTrailing = row->getRowLengthWithoutTrailing();
+        count = lengthWithoutTrailing - currentPos;
+        break;
     }
     McaDbiUtils::removeRegion(entityRef, rowId, pos, count, os);
     U2Region region(rowIndex, 1);
@@ -274,7 +269,7 @@ void MultipleChromatogramAlignmentObject::updateCachedRows(U2OpStatus &os, const
     MultipleChromatogramAlignmentExporter mcaExporter;
     QMap<qint64, McaRowMemoryData> mcaRowsMemoryData = mcaExporter.getMcaRowMemoryData(os, entityRef.dbiRef, entityRef.entityId, rowIds);
     SAFE_POINT_OP(os, );
-    foreach (const qint64 rowId, mcaRowsMemoryData.keys()) {
+    foreach(const qint64 rowId, mcaRowsMemoryData.keys()) {
         const int rowIndex = cachedMca->getRowIndexByRowId(rowId, os);
         SAFE_POINT_OP(os, );
         cachedMca->setRowContent(rowIndex, mcaRowsMemoryData[rowId]);
@@ -293,7 +288,7 @@ void MultipleChromatogramAlignmentObject::removeRowPrivate(U2OpStatus &os, const
 }
 
 void MultipleChromatogramAlignmentObject::removeRegionPrivate(U2OpStatus &os, const U2EntityRef &maRef,
-                                                              const QList<qint64> &rows, int startPos, int nBases) {
+    const QList<qint64> &rows, int startPos, int nBases) {
     McaDbiUtils::removeCharacters(maRef, rows, startPos, nBases, os);
 }
 

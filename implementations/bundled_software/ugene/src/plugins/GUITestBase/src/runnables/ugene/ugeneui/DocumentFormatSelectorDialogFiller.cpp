@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -52,6 +52,19 @@ void DocumentFormatSelectorDialogFiller::commonScenario()
 
     QRadioButton* radio = getButton(os);
     if (NULL != radio) {
+        if (-1 != score) {
+            GT_CHECK(formatLineLable != -1, "line is not defined");
+
+            QLabel* label = GTWidget::findExactWidget<QLabel*>(os, QString("label_%1").arg(formatLineLable), dialog, GTGlobals::FindOptions(false));
+            GT_CHECK(label, "label is NULL");
+
+            const QString sign = label->text();
+            QRegExp regExp(QString("<b>%1</b> format. Score: (\\d+)").arg(format));
+            regExp.indexIn(sign);
+            int currentScore = regExp.cap(1).toInt();
+            GT_CHECK(currentScore == score, QString("Unexpected similarity score, expected: %1, current: %2").arg(score).arg(currentScore));
+        }
+
         GTRadioButton::click(os, radio);
     } else {
         QRadioButton* chooseFormatManuallyRadio = GTWidget::findExactWidget<QRadioButton*>(os, "chooseFormatManuallyRadio", dialog);

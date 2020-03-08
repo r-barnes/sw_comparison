@@ -132,7 +132,7 @@
           <string>Join into alignment</string>
          </property>
         </widget>
-        <widget class="QWidget" name="">
+        <widget class="QWidget" name="layoutWidget">
          <property name="geometry">
           <rect>
            <x>10</x>
@@ -167,11 +167,10 @@
           </item>
          </layout>
         </widget>
+        <zorder>layoutWidget</zorder>
         <zorder>rbSeparate</zorder>
         <zorder>rbMerge</zorder>
         <zorder>rbMalignment</zorder>
-        <zorder>verticalSpacer_2</zorder>
-        <zorder>label</zorder>
        </widget>
       </item>
       <item>

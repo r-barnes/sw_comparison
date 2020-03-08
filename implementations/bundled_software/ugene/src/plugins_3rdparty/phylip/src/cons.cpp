@@ -1039,8 +1039,8 @@ void rehash()
     memcpy(s, grouping[old_index], setsz * sizeof(group_type));
     ss = 0.0;
     for (j = 0; j < setsz; j++)
-      ss += s[j] /* pow(2, SETBITS*j)*/;
-    temp = ss * smult;
+      ss += s[j] * smult; /* pow(2, SETBITS*j)*/;
+    temp = ss;
     new_index = (long)(new_maxgrp * (temp - floor(temp)));
     done = false;
     while (!done) {

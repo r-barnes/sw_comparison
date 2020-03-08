@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -43,10 +43,10 @@ public:
 
     bool validate() const;
 
-    double e;                   // -E: report sequences <= this e-value treshold in output
-    double t;                   // -T: report sequences >= this score treshold in output
+    double e;                   // -E: report sequences <= this e-value threshold in output
+    double t;                   // -T: report sequences >= this score threshold in output
     double z;                   // -Z: set # of camparisons done, for e-value calculation
-    double domE;                // --domE: report domains <= this e-value treshold in output
+    double domE;                // --domE: report domains <= this e-value threshold in output
     double domT;                // --domT: report domains >= this score cutoff in output
     double domZ;                // --domZ: set number of significant seqs, for domain e-value calibration
     BitCutoffs useBitCutoffs;   // --cut_ga: use profile's GA gathering cutoffs to set -T, --domT

@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -33,7 +33,7 @@ class U2OpStatus;
 /**
     U2Attribute utility functions
 
-    All functions return empty attribute if it is not found or error occured.
+    All functions return empty attribute if it is not found or error occurred.
     Use U2Entity::hasValidId() to check for valid value.
 */
 class U2CORE_EXPORT U2AttributeUtils : public QObject {

@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -23,36 +23,33 @@
 #define _U2_PROJECT_SERVICE_H_
 
 #include <U2Core/ProjectModel.h>
-#include <U2Core/ServiceModel.h>
 #include <U2Core/ServiceTypes.h>
 #include <U2Core/Task.h>
 
-#include <QAction>
-
 namespace U2 {
 
-    enum SaveProjectTaskKind {
-        SaveProjectTaskKind_SaveProjectOnly,
-        SaveProjectTaskKind_SaveProjectAndDocuments,
-        SaveProjectTaskKind_SaveProjectAndDocumentsAskEach
-    };
+enum SaveProjectTaskKind {
+    SaveProjectTaskKind_SaveProjectOnly,
+    SaveProjectTaskKind_SaveProjectAndDocuments,
+    SaveProjectTaskKind_SaveProjectAndDocumentsAskEach
+};
 
 
 
-    class U2CORE_EXPORT ProjectService : public Service {
-    public:
-        ProjectService(const QString& sname, const QString& sdesc)
-            : Service(Service_Project, sname, sdesc, QList<ServiceType>(), ServiceFlag_Singleton) {}
+class U2CORE_EXPORT ProjectService : public Service {
+public:
+    ProjectService(const QString& sname, const QString& sdesc)
+        : Service(Service_Project, sname, sdesc, QList<ServiceType>(), ServiceFlag_Singleton) {}
 
-        virtual Project* getProject() const = 0;
+    virtual Project* getProject() const = 0;
 
-        virtual Task* saveProjectTask(SaveProjectTaskKind kind) = 0;
+    virtual Task* saveProjectTask(SaveProjectTaskKind kind) = 0;
 
-        virtual Task* closeProjectTask() = 0;
+    virtual Task* closeProjectTask() = 0;
 
-        // hack to work around ambigous shortcuts
-        virtual void enableSaveAction(bool e) = 0;
-    };
+    // hack to work around ambigous shortcuts
+    virtual void enableSaveAction(bool e) = 0;
+};
 
 }//namespace
 

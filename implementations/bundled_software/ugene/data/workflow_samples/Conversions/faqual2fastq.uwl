@@ -68,6 +68,7 @@ workflow "Convert seq/qual pair to FASTQ"{
         wizard {
             name:"Convert seq/qual pair to FASTQ Wizard";
             help-page-id:16122704;
+            auto-run: true;
             page {
                 id:1;
                 next:2;

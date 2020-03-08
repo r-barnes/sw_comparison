@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -61,12 +61,6 @@ public:
 
     virtual const QList<Plugin*>& getPlugins() {return plugins;}
 
-    virtual Task* addPluginTask(const QString& pathToPlugin);
-
-    //plugin will not be removed from the plugin list during the next app run
-    virtual void setRemoveFlag(Plugin* p, bool v);
-    virtual bool getRemoveFlag(Plugin* p) const;
-
     virtual void setLicenseAccepted(Plugin* p);
 
 
@@ -88,7 +82,6 @@ protected:
     QString getPluginFileURL(Plugin* p) const;
 
     void updateSavedState(PluginRef* ref);
-    static QSet<QString> getPluginPaths();
 
 private:
     QList<PluginRef*>    plugRefs;
@@ -102,9 +95,10 @@ public:
     AddPluginTask(PluginSupportImpl* ps, const PluginDesc& desc, bool forceVerificatoin = false);
     void prepare();
     ReportResult report();
-
-
 private:
+    bool verifyPlugin();
+    void instantiatePlugin();
+
     QScopedPointer<QLibrary> lib;
     PluginSupportImpl*  ps;
     PluginDesc          desc;

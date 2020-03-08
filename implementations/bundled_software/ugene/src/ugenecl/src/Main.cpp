@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -55,6 +55,7 @@
 #include <U2Core/DataBaseRegistry.h>
 #include <U2Core/DataPathRegistry.h>
 #include <U2Core/ExternalToolRegistry.h>
+#include <U2Core/FileAndDirectoryUtils.h>
 #include <U2Core/GObjectTypes.h>
 #include <U2Core/LoadRemoteDocumentTask.h>
 #include <U2Core/Log.h>
@@ -70,6 +71,8 @@
 #include <U2Core/UserApplicationsSettings.h>
 #include <U2Core/Version.h>
 #include <U2Core/VirtualFileSystem.h>
+
+#include <U2Designer/DashboardInfoRegistry.h>
 
 #include <U2Formats/ConvertFileTask.h>
 #include <U2Formats/DocumentFormatUtils.h>
@@ -285,7 +288,6 @@ int main(int argc, char **argv)
     ConsoleLogDriver logs;
     Q_UNUSED(logs);
     coreLog.details(AppContextImpl::tr("UGENE initialization started"));
-    GCOUNTER( cvar, tvar, "ugenecl" );
 
     ResourceTracker* resTrack = new ResourceTracker();
     appContext->setResourceTracker(resTrack);
@@ -392,6 +394,9 @@ int main(int argc, char **argv)
     VirtualFileSystemRegistry * vfsReg = new VirtualFileSystemRegistry();
     appContext->setVirtualFileSystemRegistry( vfsReg );
 
+    DashboardInfoRegistry *dashboardInfoRegistry = new DashboardInfoRegistry;
+    appContext->setDashboardInfoRegistry(dashboardInfoRegistry);
+
     Workflow::WorkflowEnv::init(new Workflow::WorkflowEnvImpl());
     Workflow::WorkflowEnv::getDomainRegistry()->registerEntry(new LocalWorkflow::LocalDomainFactory());
 
@@ -461,11 +466,22 @@ int main(int argc, char **argv)
         QObject::connect(psp, SIGNAL(si_allStartUpPluginsLoaded()), new TaskStarter(new DumpVersionTask()), SLOT(registerTask()));
     }
 
-    bool hasNewTmpDir = cmdLineRegistry->hasParameter(CMDLineCoreOptions::TMP_DIR);
-    if (hasNewTmpDir) {
-        QString newTmpDir = cmdLineRegistry->getParameterValue(CMDLineCoreOptions::TMP_DIR);
-        AppContext::getAppSettings()->getUserAppsSettings()->setUserTemporaryDirPath(newTmpDir);
+    if (cmdLineRegistry->hasParameter(CMDLineCoreOptions::DOWNLOAD_DIR)) {
+        userAppSettings->setDownloadDirPath(FileAndDirectoryUtils::getAbsolutePath(cmdLineRegistry->getParameterValue(CMDLineCoreOptions::DOWNLOAD_DIR)));
     }
+    if (cmdLineRegistry->hasParameter(CMDLineCoreOptions::CUSTOM_TOOLS_CONFIG_DIR)) {
+        userAppSettings->setCustomToolsConfigsDirPath(FileAndDirectoryUtils::getAbsolutePath(cmdLineRegistry->getParameterValue(CMDLineCoreOptions::CUSTOM_TOOLS_CONFIG_DIR)));
+    }
+    if (cmdLineRegistry->hasParameter(CMDLineCoreOptions::TMP_DIR)) {
+        userAppSettings->setUserTemporaryDirPath(FileAndDirectoryUtils::getAbsolutePath(cmdLineRegistry->getParameterValue(CMDLineCoreOptions::TMP_DIR)));
+    }
+    if (cmdLineRegistry->hasParameter(CMDLineCoreOptions::DEFAULT_DATA_DIR)) {
+        userAppSettings->setDefaultDataDirPath(FileAndDirectoryUtils::getAbsolutePath(cmdLineRegistry->getParameterValue(CMDLineCoreOptions::DEFAULT_DATA_DIR)));
+    }
+    if (cmdLineRegistry->hasParameter(CMDLineCoreOptions::FILE_STORAGE_DIR)) {
+        userAppSettings->setFileStorageDir(FileAndDirectoryUtils::getAbsolutePath(cmdLineRegistry->getParameterValue(CMDLineCoreOptions::FILE_STORAGE_DIR)));
+    }
+
 
     if (!showHelp && !showLicense && !showVersion) {
         QObject::connect(psp, SIGNAL(si_allStartUpPluginsLoaded()), new TaskStarter(new TmpDirChecker()), SLOT(registerTask()));
@@ -497,6 +513,9 @@ int main(int argc, char **argv)
 
     appContext->setDataPathRegistry(NULL);
     delete dpr;
+
+    appContext->setDashboardInfoRegistry(nullptr);
+    delete dashboardInfoRegistry;
 
     appContext->setVirtualFileSystemRegistry( NULL );
     delete vfsReg;

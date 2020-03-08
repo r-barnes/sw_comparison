@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -73,11 +73,12 @@ public:
     // find matching data and assign it
     void setupBusMap();
 
-    virtual bool validate(ProblemList& problemList) const;
+    virtual bool validate(NotificationsList& notificationList) const;
     // reimplemented from Configuration
     virtual void remap(const QMap<ActorId, ActorId>&);
     virtual void updateBindings(const QMap<ActorId, ActorId> &actorsMapping);
     virtual void replaceActor(Actor *oldActor, Actor *newActor, const QList<PortMapping> &mappings);
+    virtual void setVisibleSlot(const QString& slotId, const bool isVisible);
 
     // used when loading schema
     void setBusMapValue(const QString & slotId, const QString & value);
@@ -92,8 +93,13 @@ protected:
     mutable bool recursing;
 
 private:
+    void removeBusMapKey(const QString& slotId);
+    void restoreBusMapKey(const QString& slotId);
     StrStrMap getBusMap() const;
     SlotPathMap getPathsMap() const;
+
+    // links with invisible slots
+    StrStrMap removedBusMap;
 }; // IntegralBusPort
 
 /**
@@ -117,8 +123,8 @@ class U2LANG_EXPORT ScreenedSlotValidator : public ConfigurationValidator {
 public:
     ScreenedSlotValidator(const QString& slot): screenedSlots(slot) {}
     ScreenedSlotValidator(const QStringList& slotList): screenedSlots(slotList) {}
-    static bool validate(const QStringList& screenedSlots, const IntegralBusPort*, ProblemList &problemList);
-    virtual bool validate(const Configuration*, ProblemList& problemList) const;
+    static bool validate(const QStringList& screenedSlots, const IntegralBusPort*, NotificationsList &notificationList);
+    virtual bool validate(const Configuration*, NotificationsList& notificationList) const;
 
 protected:
     QStringList screenedSlots;
@@ -134,7 +140,7 @@ public:
     ScreenedParamValidator(const QString& id, const QString& port, const QString& slot);
     virtual ~ScreenedParamValidator() {}
 
-    virtual bool validate(const Configuration*, ProblemList& problemList) const;
+    virtual bool validate(const Configuration*, NotificationsList& notificationList) const;
     QString validate(const Configuration * cfg) const;
 
     QString getId() const {return id;}
@@ -178,8 +184,8 @@ private:
 
 class U2LANG_EXPORT PortValidator : public ConfigurationValidator {
 public:
-    virtual bool validate(const Configuration *cfg, ProblemList &problemList) const;
-    virtual bool validate(const IntegralBusPort *port, ProblemList &problemList) const = 0;
+    virtual bool validate(const Configuration *cfg, NotificationsList &notificationList) const;
+    virtual bool validate(const IntegralBusPort *port, NotificationsList &notificationList) const = 0;
 
 public:
     static StrStrMap getBusMap(const IntegralBusPort *port);

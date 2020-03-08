@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -29,6 +29,7 @@
 #include <U2Core/AppContext.h>
 #include <U2Core/BaseDocumentFormats.h>
 #include <U2Core/DocumentUtils.h>
+#include <U2Core/FileAndDirectoryUtils.h>
 #include <U2Core/FormatUtils.h>
 #include <U2Core/GUrlUtils.h>
 #include <U2Core/L10n.h>
@@ -84,6 +85,10 @@ QString SaveDocumentController::SimpleFormatsInfo::getIdByName(const QString &na
     return names.key(name);
 }
 
+void SaveDocumentController::forceRoll(const QSet<QString>& excludeList) {
+    setPath(getSaveFileName(), excludeList);
+}
+
 QStringList SaveDocumentController::SimpleFormatsInfo::getExtensionsByName(const QString &formatName) const {
     CHECK(names.values().contains(formatName), QStringList());
     return extensions.value(names.key(formatName));
@@ -94,12 +99,6 @@ QString SaveDocumentController::SimpleFormatsInfo::getFirstExtensionByName(const
     CHECK(!extensions.isEmpty(), QString());
     return extensions.first();
 }
-
-#if defined(Q_OS_LINUX) | defined (Q_OS_MAC)
-const QString SaveDocumentController::HOME_DIR_IDENTIFIER = "~/";
-#else
-const QString SaveDocumentController::HOME_DIR_IDENTIFIER = "%UserProfile%/";
-#endif
 
 SaveDocumentController::SaveDocumentController(const SaveDocumentControllerConfig &config,
                                                const DocumentFormatConstraints &formatCnstr,
@@ -137,12 +136,7 @@ void SaveDocumentController::addFormat(const QString &id, const QString &name, c
 }
 
 QString SaveDocumentController::getSaveFileName() const {
-    QString filePath = conf.fileNameEdit->text();
-    if (QDir::fromNativeSeparators(filePath).startsWith(HOME_DIR_IDENTIFIER, Qt::CaseInsensitive)) {
-        filePath.remove(0, HOME_DIR_IDENTIFIER.length() - 1);
-        filePath.prepend(QDir::homePath());
-    }
-    return filePath;
+    return FileAndDirectoryUtils::getAbsolutePath(conf.fileNameEdit->text());
 }
 
 DocumentFormatId SaveDocumentController::getFormatIdToSave() const {
@@ -328,13 +322,13 @@ QString SaveDocumentController::prepareFileFilter() const {
     return FormatUtils::prepareFileFilter(formatsWithExtensions, false, extraExtensions);
 }
 
-void SaveDocumentController::setPath(const QString &path) {
-    QSet<QString> excludeList;
+void SaveDocumentController::setPath(const QString &path, const QSet<QString>& excludeList) {
+    QSet<QString> currentExcludeList = excludeList;
     if (conf.rollOutProjectUrls) {
-        excludeList += DocumentUtils::getNewDocFileNameExcludesHint();
+        currentExcludeList += DocumentUtils::getNewDocFileNameExcludesHint();
     }
 
-    const QString newPath = (conf.rollFileName && !overwritingConfirmed) ? GUrlUtils::rollFileName(path, conf.rollSuffix, excludeList) : path;
+    const QString newPath = (conf.rollFileName && !overwritingConfirmed) ? GUrlUtils::rollFileName(path, conf.rollSuffix, currentExcludeList) : path;
     conf.fileNameEdit->setText(QDir::toNativeSeparators(newPath));
     overwritingConfirmed = false;
     emit si_pathChanged(newPath);

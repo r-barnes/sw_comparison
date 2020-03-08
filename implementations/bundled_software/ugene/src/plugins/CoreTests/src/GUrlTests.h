@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -27,7 +27,7 @@
 
 namespace U2 {
 
-class GTest_ConvertPath : public GTest {
+class GTest_ConvertPath : public XmlTest {
     Q_OBJECT
 public:
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_ConvertPath, "convert-path");
@@ -39,7 +39,7 @@ private:
     bool                isFileUrl, runThisTest;
 };
 
-class GTest_CreateTmpDir : public GTest {
+class GTest_CreateTmpDir : public XmlTest {
     Q_OBJECT
 public:
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_CreateTmpDir, "create-temp-dir");
@@ -50,7 +50,7 @@ private:
     QString url;
 };
 
-class GTest_RemoveTmpDir : public GTest {
+class GTest_RemoveTmpDir : public XmlTest {
     Q_OBJECT
 public:
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_RemoveTmpDir, "remove-temp-dir");
@@ -64,7 +64,7 @@ private:
     void removeDir(const QString &url);
 };
 
-class GTest_RemoveTmpFile : public GTest {
+class GTest_RemoveTmpFile : public XmlTest {
     Q_OBJECT
 public:
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_RemoveTmpFile, "remove-temp-file");
@@ -75,7 +75,7 @@ private:
     QString url;
 };
 
-class GTest_CreateTmpFile : public GTest {
+class GTest_CreateTmpFile : public XmlTest {
     Q_OBJECT
 public:
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_CreateTmpFile, "create-temp-file");
@@ -87,7 +87,7 @@ private:
     QString data;
 };
 
-class GTest_CheckTmpFile : public GTest {
+class GTest_CheckTmpFile : public XmlTest {
     Q_OBJECT
 public:
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_CheckTmpFile, "check-temp-file");
@@ -99,7 +99,7 @@ private:
     bool exists;
 };
 
-class GTest_CheckStorageFile : public GTest {
+class GTest_CheckStorageFile : public XmlTest {
     Q_OBJECT
 public:
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_CheckStorageFile, "check-storage-file");
@@ -114,7 +114,7 @@ private:
     bool exists;
 };
 
-class GTest_CheckCreationTime : public GTest {
+class GTest_CheckCreationTime : public XmlTest {
     Q_OBJECT
 public:
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_CheckCreationTime, "check-creation-time");
@@ -127,7 +127,7 @@ private:
     int moreThen;
 };
 
-class GTest_CheckFilesNum : public GTest {
+class GTest_CheckFilesNum : public XmlTest {
     Q_OBJECT
 public:
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_CheckFilesNum, "check-files-num");

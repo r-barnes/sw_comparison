@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -228,6 +228,8 @@ void GTest_FindEnzymes::cleanup() {
         }
         delete aObj;
     }
+
+    XmlTest::cleanup();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -241,6 +243,9 @@ void GTest_DigestIntoFragments::init(XMLTestFormat *tf, const QDomElement& el) {
         stateInfo.setError( "Sequence object context not specified");
         return;
     }
+
+    QString isCircularBuf = el.attribute("circular");
+    isCircular = isCircularBuf == "true" ? true : false;
 
     aObjCtx = el.attribute("annotation-table");
     if (aObjCtx.isEmpty()) {
@@ -313,6 +318,7 @@ QList<Task*> GTest_DigestIntoFragments::onSubTaskFinished(Task* subTask) {
     DigestSequenceTaskConfig cfg;
     cfg.searchForRestrictionSites = searchForEnzymes;
     cfg.enzymeData = enzymesToSearch;
+    cfg.forceCircular = isCircular;
 
     DigestSequenceTask* t = new DigestSequenceTask(seqObj, aObj, aObj, cfg);
     res.append(t);
@@ -453,6 +459,8 @@ void GTest_LigateFragments::cleanup()
     if (contextAdded) {
         removeContext(resultDocName);
     }
+
+    XmlTest::cleanup();
 }
 
 

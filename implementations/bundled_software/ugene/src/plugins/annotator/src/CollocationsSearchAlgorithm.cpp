@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -83,7 +83,7 @@ void CollocationsAlgorithm::findN(const QList<CollocationsAlgorithmItem>& items,
     } while (i + distance < searchRegion.endPos());
 }
 
-void averagingRes(U2Region& res, const U2Region& min, const U2Region& max, int distance, const U2Region& searchRegion)
+void averagingRes(U2Region& res, const U2Region& min, const U2Region& max, qint64 distance, const U2Region& searchRegion)
 {
     //?
     if (!min.intersects(max)) {
@@ -94,7 +94,7 @@ void averagingRes(U2Region& res, const U2Region& min, const U2Region& max, int d
         res.startPos = max.startPos;
         res.length = min.endPos() - max.startPos;
     }
-    int tmp = distance - res.length;
+    qint64 tmp = distance - res.length;
     res.startPos -= tmp*min.length/(max.length+min.length);
     if (res.startPos<0) res.startPos = 0;
     res.length = distance;
@@ -126,7 +126,6 @@ void CollocationsAlgorithm::findP(const QList<CollocationsAlgorithmItem>& items,
     if (i == searchRegion.endPos()) {
         return;
     }
-    U2Region prevResult;
     U2Region prevMax;
     do {
         U2Region res;
@@ -156,38 +155,10 @@ void CollocationsAlgorithm::findP(const QList<CollocationsAlgorithmItem>& items,
         }
         //error mb use list of prev included anno?
         //
-        if (onResult &&
-            prevMax != max
-            //!prevResult.contains(res)
-            ) {
-            prevResult = res;
+        if (onResult && prevMax != max) {
             prevMax = max;
 
-
             if (res.length > distance) {
-                //function res averaging
-                //void averagingRes(U2Region& res, const U2Region& min, const U2Region& max, int distance)
-/*                if (!min.intersects(max)) {
-                    res.startPos = min.endPos()-1;
-                    res.len = max.startPos - min.endPos() + 2;
-
-                    int tmp = distance - res.len;
-                    res.startPos -= tmp*min.len/(max.len+min.len);
-                    if (res.startPos<0) res.startPos = 0;
-                    res.len = distance;
-                    if (res.endPos() > searchRegion.endPos()) res.len = (searchRegion.endPos() - res.startPos);
-                }
-                else {
-                    res.startPos = max.startPos;
-                    res.len = min.endPos() - max.startPos;
-
-                    int tmp = distance - res.len;
-                    res.startPos -= tmp*min.len/(max.len+min.len);
-                    if (res.startPos<0) res.startPos = 0;
-                    res.len = distance;
-                    if (res.endPos() > searchRegion.endPos()) res.len = (searchRegion.endPos() - res.startPos);
-
-                }*/
                 averagingRes(res, min, max, distance, searchRegion);
             }
 

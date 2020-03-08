@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -110,6 +110,8 @@ protected:
     QString prepareAnnotationText(const SharedAnnotationData &a, const AnnotationSettings *as) const;
 
     void addArrowPath(QPainterPath& path, const QRect& rect, bool leftArrow) const;
+
+    qint64 correctCutPos(const qint64 pos) const;
 
     AnnotationViewMetrics annMetrics;
 

@@ -1,6 +1,6 @@
 /**
 * UGENE - Integrated Bioinformatics Tools.
-* Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+* Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
 * http://ugene.net
 *
 * This program is free software; you can redistribute it and/or
@@ -33,7 +33,7 @@ namespace U2 {
 /*****************************************
 * Builds hmm profile from input file
 *****************************************/
-class GTest_UHMMER3Build : public GTest {
+class GTest_UHMMER3Build : public XmlTest {
     Q_OBJECT
 public:
     static const QString INPUT_FILE_TAG;
@@ -54,8 +54,7 @@ public:
     static void setBuildSettings(HmmerBuildSettings & settings, const QDomElement& el, TaskStateInfo & ti);
 
 public:
-    SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_UHMMER3Build, "uhmmer3-build");
-    ~GTest_UHMMER3Build();
+    SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_UHMMER3Build, "uhmmer3-build")
 
     virtual void prepare();
     ReportResult report();
@@ -77,7 +76,7 @@ private:
 /*****************************************
 * Totally compares two hmm files
 *****************************************/
-class GTest_CompareHmmFiles : public GTest {
+class GTest_CompareHmmFiles : public XmlTest {
     Q_OBJECT
 public:
     static const QString FILE1_NAME_TAG;

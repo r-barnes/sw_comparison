@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -26,6 +26,8 @@
 #include <U2Core/BaseDocumentFormats.h>
 #include <U2Core/DocumentModel.h>
 
+#include "TextDocumentFormat.h"
+
 namespace U2 {
 
 class IOAdapter;
@@ -33,20 +35,16 @@ class Annotation;
 class AnnotationTableObject;
 class U2SequenceObject;
 
-class U2FORMATS_EXPORT PDWFormat : public DocumentFormat {
+class U2FORMATS_EXPORT PDWFormat : public TextDocumentFormat {
     Q_OBJECT
 public:
                                     PDWFormat(QObject *p);
 
-    virtual DocumentFormatId        getFormatId() const { return BaseDocumentFormats::PDW; }
-
-    virtual const QString &         getFormatName() const { return formatName; }
-
-    virtual FormatCheckResult       checkRawData(const QByteArray &rawData,
+protected:
+    virtual FormatCheckResult       checkRawTextData(const QByteArray &rawData,
                                         const GUrl & = GUrl()) const;
 
-protected:
-    virtual Document *              loadDocument(IOAdapter *io, const U2DbiRef &dbiRef,
+    virtual Document *              loadTextDocument(IOAdapter *io, const U2DbiRef &dbiRef,
                                         const QVariantMap &fs, U2OpStatus &os);
 
 private:
@@ -58,8 +56,6 @@ private:
 
     void                            load(IOAdapter *io, const U2DbiRef &ref, const QVariantMap &fs, const GUrl &docUrl, QList<GObject *> &objects,
                                         U2OpStatus &ti, U2SequenceObject *&dnaObj, AnnotationTableObject *&aObj);
-
-    QString                         formatName;
 };
 
 }//namespace

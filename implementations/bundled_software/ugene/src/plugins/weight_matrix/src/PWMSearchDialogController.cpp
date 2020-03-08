@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -109,7 +109,7 @@ public:
 
 PWMSearchDialogController::PWMSearchDialogController(ADVSequenceObjectContext* _ctx, QWidget *p):QDialog(p) {
     setupUi(this);
-    new HelpButton(this, buttonBox, "21433412");
+    new HelpButton(this, buttonBox, "24742611");
     buttonBox->button(QDialogButtonBox::Yes)->setText(tr("Add to queue"));
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Search"));
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
@@ -331,7 +331,7 @@ void PWMSearchDialogController::sl_onAlgoChanged(QString newAlgo){
     PWMConversionAlgorithm* algo = factory->createAlgorithm();
     PWMatrix m = algo->convert(intermediate);
     if (m.getLength() == 0) {
-        QMessageBox::critical(this, L10N::errorTitle(), tr("Zero length or corrupted model\nMaybe model data is not enough for selected algorithm"));
+        QMessageBox::critical(this, L10N::errorTitle(), tr("Zero length or corrupted model\nMaybe model data are not enough for selected algorithm"));
         return;
     }
     updateModel(m);
@@ -563,7 +563,7 @@ void PWMSearchDialogController::loadFile(QString filename) {
         PWMConversionAlgorithm* algo = factory->createAlgorithm();
         m = algo->convert(intermediate);
         if (m.getLength() == 0) {
-            QMessageBox::critical(this, L10N::errorTitle(), tr("Zero length or corrupted model\nMaybe model data is not enough for selected algorithm"));
+            QMessageBox::critical(this, L10N::errorTitle(), tr("Zero length or corrupted model\nMaybe model data are not enough for selected algorithm"));
         }
     }
     updateModel(m);

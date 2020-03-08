@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -46,6 +46,9 @@ namespace U2 {
 #define RUN_AFTER_ALL_SUBS_FINISHED_FLAG_ATTR "run_after_all_subs"
 #define DELAY_ATTR       "ms"
 #define CONDITION_ATTR   "cond"
+#define BASE_TASK                 "base_task"
+#define INFINITE_TASK             "infinite_task"
+#define DESTRUCTOR_CLEANUP_TASK   "destructor_cleanup_task"
 
 class SThread : public QThread {
 public:
@@ -100,10 +103,24 @@ static Task::State stateFromString(QString str, bool *ok = NULL) {
     return taskState;
 }
 
+/*****************************************/
+/*InfiniteTestTask*/
+/*****************************************/
+
 void InfiniteTestTask::run() {
     while(!stateInfo.cancelFlag) {
         SThread::msleep(100);
     }
+}
+
+/*****************************************/
+/*DestructorCleanupTask*/
+/*****************************************/
+
+DestructorCleanupTask::DestructorCleanupTask(QString taskName, TaskFlags f) :Task(taskName, f) {}
+
+DestructorCleanupTask::~DestructorCleanupTask() {
+    cleanup();
 }
 
 StateOrderTestTask::StateOrderTestTask(StateOrderTestTaskCallback *ptr, TaskFlags _f)
@@ -166,11 +183,13 @@ void GTest_TaskCreateTest::init(XMLTestFormat *tf, const QDomElement& el) {
         }
     }
 
-    if( taskType_str == "base_task") {
+    if (taskType_str == BASE_TASK) {
         task = new Task(taskName_str, taskFlags|TaskFlags(TaskFlag_NoRun));
-    } else if(taskType_str == "infinite_task") {
+    } else if (taskType_str == INFINITE_TASK) {
         task = new InfiniteTestTask(taskName_str, taskFlags);
-    } else {
+    } else if (taskType_str == DESTRUCTOR_CLEANUP_TASK) {
+        task = new DestructorCleanupTask(taskName_str, taskFlags | TaskFlags(TaskFlag_NoRun));
+    }  else {
         failMissingValue(TASK_TYPE_ATTR);
         return;
     }
@@ -190,6 +209,8 @@ void GTest_TaskCreateTest::cleanup() {
     if (deleteTask /*|| task->hasFlags(TaskFlag_NoAutoDelete)*/) {
         delete task;
     }
+
+    XmlTest::cleanup();
 }
 
 void GTest_TaskAddSubtaskTest::init(U2::XMLTestFormat *tf, const QDomElement &el){
@@ -205,6 +226,7 @@ void GTest_TaskAddSubtaskTest::init(U2::XMLTestFormat *tf, const QDomElement &el
         return;
     }
 }
+
 Task::ReportResult GTest_TaskAddSubtaskTest::report() {
     Task *task= getContext<Task>(this, taskContextName);
     if(task==NULL) {
@@ -219,7 +241,7 @@ Task::ReportResult GTest_TaskAddSubtaskTest::report() {
     }
     task->addSubTask(subtask);
 
-    if(!task->getSubtasks().contains(subtask)) {
+    if(!task->getPureSubtasks().contains(subtask)) {
         stateInfo.setError(QString("subtask not add"));
         return ReportResult_Finished;
     }

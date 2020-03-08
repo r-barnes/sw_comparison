@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -334,13 +334,13 @@ GUrl BAMUtils::sortBam(const GUrl &bamUrl, const QString &sortedBamBaseName, U2O
     // sort bam
     {
         coreLog.details(BAMUtils::tr("Sort bam file: \"%1\" using %2 Mb of memory. Result sorted file is: \"%3\"")
-            .arg(QString(bamFileName)).arg(maxMemMB).arg(QString(sortedFileName)));
+            .arg(QString::fromLocal8Bit(bamFileName)).arg(maxMemMB).arg(QString::fromLocal8Bit(sortedFileName)));
         size_t maxMemBytes = (size_t)(mB2bytes(maxMemMB)); // maxMemMB < 500 Mb, so the conversation is correct!
         bam_sort_core(0, bamFileName.constData(), baseName.toLocal8Bit().constData(), maxMemBytes); //maxMemBytes
     }
     memory->release(maxMemMB);
 
-    return QString(sortedFileName);
+    return QString::fromLocal8Bit(sortedFileName);
 }
 
 GUrl BAMUtils::mergeBam(const QStringList &bamUrls, const QString &mergetBamTargetUrl, U2OpStatus &/*os*/){
@@ -448,7 +448,7 @@ bool BAMUtils::hasValidFastaIndex(const GUrl &fastaUrl) {
 void BAMUtils::createBamIndex(const GUrl &bamUrl, U2OpStatus &os) {
     const QByteArray &bamFileName = bamUrl.getURLString().toLocal8Bit();
 
-    coreLog.details(BAMUtils::tr("Build index for bam file: \"%1\"").arg(QString(bamFileName)));
+    coreLog.details(BAMUtils::tr("Build index for bam file: \"%1\"").arg(QString::fromLocal8Bit(bamFileName)));
 
     int error = bam_index_build(bamFileName.constData());
     if (-1 == error) {
@@ -787,10 +787,9 @@ FASTQIterator::~FASTQIterator(){
 DNASequence FASTQIterator::next(){
     if (hasNext()) {
         kseq_t *realSeq = static_cast<kseq_t *>(seq);
-
-        QString name = QString::fromLatin1(realSeq->name.s);
-        QString comment = QString::fromLatin1(realSeq->comment.s);
-        QString rseq = QString::fromLatin1(realSeq->seq.s);
+        QString name = realSeq->name.l != 0 ? QString::fromLatin1(realSeq->name.s) : "";
+        QString comment = realSeq->comment.l != 0 ? QString::fromLatin1(realSeq->comment.s) : "";
+        QString rseq = realSeq->seq.l != 0 ? QString::fromLatin1(realSeq->seq.s) : "";
         DNAQuality quality = (realSeq->qual.l) ? QString::fromLatin1(realSeq->qual.s).toLatin1()
             : QByteArray("");
         DNASequence res(name, rseq.toLatin1());

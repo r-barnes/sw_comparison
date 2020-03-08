@@ -8,7 +8,6 @@ workflow "Quality control by FastQC"{
     fastqc {
         type:fastqc;
         name:"FastQC Quality Control";
-        out-mode:1;
     }
     get-file-list {
         type:get-file-list;
@@ -29,8 +28,8 @@ workflow "Quality control by FastQC"{
             fastqc.contaminants {
                 alias:c;
             }
-            fastqc.custom-dir {
-                alias:out_dir;
+            fastqc.out-file {
+                alias:out_file;
             }
             fastqc.out-mode {
                 alias:mode;
@@ -41,13 +40,13 @@ workflow "Quality control by FastQC"{
         }
         visual {
             fastqc {
-                pos:"-493 -559";
+                pos:"-480 -540";
                 style:ext;
                 bg-color-ext:"0 128 64 64";
                 in-file.angle:180;
             }
             get-file-list {
-                pos:"-773 -560";
+                pos:"-765 -540";
                 style:ext;
                 bg-color-ext:"216 113 57 64";
                 bounds:"-30 -30 116.25 84";
@@ -59,7 +58,7 @@ workflow "Quality control by FastQC"{
         }
         wizard {
             name:"Quality Control by FastQC Wizard";
-            help-page-id:16122729;
+            auto-run:true;
             page {
                 id:1;
                 title:"QC report settings";

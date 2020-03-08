@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -31,7 +31,7 @@ namespace U2 {
 
 class Document;
 
-class GTest_DNASequenceSize : public GTest {
+class GTest_DNASequenceSize : public XmlTest {
     Q_OBJECT
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_DNASequenceSize, "check-sequence-size");
 
@@ -43,7 +43,7 @@ class GTest_DNASequenceSize : public GTest {
 
 };
 
-class GTest_DNASequenceAlphabet : public GTest {
+class GTest_DNASequenceAlphabet : public XmlTest {
     Q_OBJECT
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_DNASequenceAlphabet, "check-sequence-alphabet");
 
@@ -55,7 +55,7 @@ class GTest_DNASequenceAlphabet : public GTest {
     QString alphabetId;
 };
 
-class GTest_DNASequencePart : public GTest {
+class GTest_DNASequencePart : public XmlTest {
     Q_OBJECT
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_DNASequencePart, "check-sequence-part");
 
@@ -67,7 +67,7 @@ class GTest_DNASequencePart : public GTest {
     int         startPos;
 };
 
-class GTest_DNASequenceAlphabetType : public GTest {
+class GTest_DNASequenceAlphabetType : public XmlTest {
     Q_OBJECT
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_DNASequenceAlphabetType, "check-sequence-alphabet-by-type");
 
@@ -78,7 +78,7 @@ class GTest_DNASequenceAlphabetType : public GTest {
     DNAAlphabetType alphabetType;
 };
 
-class GTest_DNASequenceAlphabetId : public GTest {
+class GTest_DNASequenceAlphabetId : public XmlTest {
     Q_OBJECT
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_DNASequenceAlphabetId, "check-sequence-alphabet-by-id");
 
@@ -90,7 +90,7 @@ class GTest_DNASequenceAlphabetId : public GTest {
 };
 
 
-class GTest_DNASequenceQualityScores : public GTest {
+class GTest_DNASequenceQualityScores : public XmlTest {
     Q_OBJECT
         SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_DNASequenceQualityScores, "check-sequence-quality-scores");
 
@@ -100,7 +100,7 @@ class GTest_DNASequenceQualityScores : public GTest {
     QByteArray  qualityScores;
 };
 
-class GTest_DNASequenceQualityValue : public GTest {
+class GTest_DNASequenceQualityValue : public XmlTest {
     Q_OBJECT
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_DNASequenceQualityValue, "check-sequence-quality-value");
 
@@ -111,7 +111,7 @@ class GTest_DNASequenceQualityValue : public GTest {
     int     expectedVal;
 };
 
-class GTest_CompareDNASequenceQualityInTwoObjects : public GTest {
+class GTest_CompareDNASequenceQualityInTwoObjects : public XmlTest {
     Q_OBJECT
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_CompareDNASequenceQualityInTwoObjects, "compare-sequence-quality-in-two-objects");
 
@@ -121,7 +121,7 @@ class GTest_CompareDNASequenceQualityInTwoObjects : public GTest {
     QString doc2CtxName;
 };
 
-class GTest_DNAcompareSequencesNamesInTwoObjects : public GTest {
+class GTest_DNAcompareSequencesNamesInTwoObjects : public XmlTest {
     Q_OBJECT
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_DNAcompareSequencesNamesInTwoObjects, "compare-sequences-names-in-two-objects");
 
@@ -130,7 +130,7 @@ class GTest_DNAcompareSequencesNamesInTwoObjects : public GTest {
     QString secondDocContextName;
 };
 
-class GTest_DNAcompareSequencesInTwoObjects : public GTest {
+class GTest_DNAcompareSequencesInTwoObjects : public XmlTest {
     Q_OBJECT
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_DNAcompareSequencesInTwoObjects, "compare-sequences-in-two-objects");
 
@@ -139,7 +139,7 @@ class GTest_DNAcompareSequencesInTwoObjects : public GTest {
     QString secondDocContextName;
 };
 
-class GTest_DNAcompareSequencesAlphabetsInTwoObjects : public GTest {
+class GTest_DNAcompareSequencesAlphabetsInTwoObjects : public XmlTest {
     Q_OBJECT
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_DNAcompareSequencesAlphabetsInTwoObjects, "compare-sequences-alphabets-in-two-objects");
 
@@ -148,7 +148,7 @@ class GTest_DNAcompareSequencesAlphabetsInTwoObjects : public GTest {
     QString secondDocContextName;
 };
 
-class GTest_DNAMulSequenceAlphabetId : public GTest {
+class GTest_DNAMulSequenceAlphabetId : public XmlTest {
     Q_OBJECT
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_DNAMulSequenceAlphabetId, "check-Msequence-alphabet-by-id");
 
@@ -159,7 +159,7 @@ class GTest_DNAMulSequenceAlphabetId : public GTest {
     QString alpId;
 };
 
-class GTest_DNAMulSequenceSize : public GTest {
+class GTest_DNAMulSequenceSize : public XmlTest {
     Q_OBJECT
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_DNAMulSequenceSize, "check-Msequence-size");
 
@@ -171,7 +171,7 @@ class GTest_DNAMulSequenceSize : public GTest {
 
 };
 
-class GTest_DNAMulSequencePart : public GTest {
+class GTest_DNAMulSequencePart : public XmlTest {
     Q_OBJECT
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_DNAMulSequencePart, "check-Msequence-part");
 
@@ -185,7 +185,19 @@ class GTest_DNAMulSequencePart : public GTest {
 
 };
 
-class GTest_DNAMulSequenceQuality : public GTest {
+class GTest_DNAMulSequenceName : public XmlTest {
+    Q_OBJECT
+        SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_DNAMulSequenceName, "check-Msequence-name");
+
+    ReportResult report();
+
+    QString     objContextName;
+
+    QString     seqName;
+
+};
+
+class GTest_DNAMulSequenceQuality : public XmlTest {
     Q_OBJECT
         SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_DNAMulSequenceQuality, "check-Msequence-quality");
 
@@ -200,7 +212,7 @@ class GTest_DNAMulSequenceQuality : public GTest {
 };
 
 
-class GTest_DNASequencInMulSequence : public GTest {
+class GTest_DNASequencInMulSequence : public XmlTest {
     Q_OBJECT
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_DNASequencInMulSequence, "check-numbers-of-sequence-in-Msequence");
 
@@ -211,7 +223,7 @@ class GTest_DNASequencInMulSequence : public GTest {
     int     seqInMSeq;
 
 };
-class GTest_DNAcompareMulSequencesInTwoObjects : public GTest {
+class GTest_DNAcompareMulSequencesInTwoObjects : public XmlTest {
     Q_OBJECT
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_DNAcompareMulSequencesInTwoObjects, "compare-Msequences-in-two-objects");
 
@@ -221,7 +233,7 @@ class GTest_DNAcompareMulSequencesInTwoObjects : public GTest {
     QString sortValue;
 };
 
-class GTest_DNAcompareMulSequencesNamesInTwoObjects : public GTest {
+class GTest_DNAcompareMulSequencesNamesInTwoObjects : public XmlTest {
     Q_OBJECT
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_DNAcompareMulSequencesNamesInTwoObjects, "compare-Msequences-names-in-two-objects");
 
@@ -230,7 +242,7 @@ class GTest_DNAcompareMulSequencesNamesInTwoObjects : public GTest {
     QString secondDocContextName;
 };
 
-class GTest_DNAcompareMulSequencesAlphabetIdInTwoObjects : public GTest {
+class GTest_DNAcompareMulSequencesAlphabetIdInTwoObjects : public XmlTest {
     Q_OBJECT
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_DNAcompareMulSequencesAlphabetIdInTwoObjects, "compare-Msequences-alphabets-in-two-objects");
 

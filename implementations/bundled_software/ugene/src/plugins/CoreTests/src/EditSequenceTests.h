@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -36,7 +36,7 @@
 
 namespace U2 {
 
-class GTest_RemovePartFromSequenceTask : GTest {
+class GTest_RemovePartFromSequenceTask : public XmlTest {
 Q_OBJECT
 public:
     SIMPLE_XML_TEST_BODY_WITH_FACTORY_EXT(GTest_RemovePartFromSequenceTask, "Remove_Part_From_Sequence_Task", TaskFlags_NR_FOSCOE);
@@ -57,7 +57,7 @@ private:
     U2SequenceObject*  dnaso;
 };
 
-class GTest_AddPartToSequenceTask : GTest {
+class GTest_AddPartToSequenceTask : public XmlTest {
 Q_OBJECT
 public:
     SIMPLE_XML_TEST_BODY_WITH_FACTORY_EXT(GTest_AddPartToSequenceTask, "Add_Part_To_Sequence_Task", TaskFlags_NR_FOSCOE);
@@ -77,7 +77,7 @@ private:
     U2SequenceObject *  dnaso;
 };
 
-class GTest_ReplacePartOfSequenceTask : GTest {
+class GTest_ReplacePartOfSequenceTask : public XmlTest {
     Q_OBJECT
 public:
     SIMPLE_XML_TEST_BODY_WITH_FACTORY_EXT(GTest_ReplacePartOfSequenceTask, "replace-part-of-sequence", TaskFlags_NR_FOSCOE);

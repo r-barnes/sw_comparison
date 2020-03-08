@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -39,7 +39,8 @@ public:
     const MultipleSequenceAlignment getMsaCopy() const;
 
     /** GObject methods */
-    virtual GObject * clone(const U2DbiRef &dstDbiRef, U2OpStatus &os, const QVariantMap &hints = QVariantMap()) const;
+    //Actually this method doesn't exactly clone MSA database rows, row ID will be generated for each copied row again
+    virtual MultipleSequenceAlignmentObject* clone(const U2DbiRef &dstDbiRef, U2OpStatus &os, const QVariantMap &hints = QVariantMap()) const;
 
     /** Const getters */
     char charAt(int seqNum, qint64 position) const;
@@ -53,6 +54,7 @@ public:
     void updateGapModel(const QList<MultipleSequenceAlignmentRow> &sourceRows);
 
     void crop(const U2Region &window, const QSet<QString> &rowNames);
+    void crop(const U2Region &window, const QList<qint64> &rowIds);
     void crop(const U2Region &window);
 
     /** Methods to work with rows */

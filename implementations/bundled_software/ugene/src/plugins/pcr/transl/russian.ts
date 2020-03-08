@@ -298,7 +298,7 @@
 <context>
     <name>U2::ExtractProductWrapperTask</name>
     <message>
-        <location filename="../src/ExtractProductTask.cpp" line="267"/>
+        <location filename="../src/ExtractProductTask.cpp" line="276"/>
         <source>Extract PCR product and open document</source>
         <translation>Extract PCR product and open document</translation>
     </message>
@@ -520,7 +520,7 @@
 <context>
     <name>U2::InSilicoPcrProductsTable</name>
     <message>
-        <location filename="../src/InSilicoPcrProductsTable.cpp" line="78"/>
+        <location filename="../src/InSilicoPcrProductsTable.cpp" line="79"/>
         <source>N/A</source>
         <translation>N/A</translation>
     </message>
@@ -528,32 +528,32 @@
 <context>
     <name>U2::InSilicoPcrTask</name>
     <message>
-        <location filename="../src/InSilicoPcrTask.cpp" line="52"/>
+        <location filename="../src/InSilicoPcrTask.cpp" line="58"/>
         <source>In Silico PCR</source>
         <translation>In Silico PCR</translation>
     </message>
     <message>
-        <location filename="../src/InSilicoPcrTask.cpp" line="106"/>
+        <location filename="../src/InSilicoPcrTask.cpp" line="128"/>
         <source>Forward primers found: %1</source>
         <translation>Forward primers found: %1</translation>
     </message>
     <message>
-        <location filename="../src/InSilicoPcrTask.cpp" line="107"/>
+        <location filename="../src/InSilicoPcrTask.cpp" line="129"/>
         <source>Reverse primers found: %1</source>
         <translation>Reverse primers found: %1</translation>
     </message>
     <message>
-        <location filename="../src/InSilicoPcrTask.cpp" line="197"/>
+        <location filename="../src/InSilicoPcrTask.cpp" line="252"/>
         <source>Products found: %1</source>
         <translation>Products found: %1</translation>
     </message>
     <message>
-        <location filename="../src/InSilicoPcrTask.cpp" line="201"/>
+        <location filename="../src/InSilicoPcrTask.cpp" line="256"/>
         <source>Primers details:</source>
         <translation>Информация о праймерах:</translation>
     </message>
     <message>
-        <location filename="../src/InSilicoPcrTask.cpp" line="205"/>
+        <location filename="../src/InSilicoPcrTask.cpp" line="260"/>
         <source>Products found: %1. &lt;br&gt;&lt;br&gt;The detailed information about primers is not available as primers or sequence contain a character from the Extended DNA alphabet.</source>
         <translation>Найдено продуктов: %1. &lt;br&gt;&lt;br&gt;Детальная информация о праймерах недоступна так как праймеры или продукты содержат символы из расширенного ДНК алфавита.</translation>
     </message>

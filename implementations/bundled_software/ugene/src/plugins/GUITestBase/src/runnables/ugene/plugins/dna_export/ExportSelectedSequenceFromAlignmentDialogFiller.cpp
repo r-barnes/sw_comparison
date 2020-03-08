@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -49,6 +49,7 @@ ExportSelectedSequenceFromAlignment::ExportSelectedSequenceFromAlignment(HI::GUI
     comboBoxItems[GFF] = "GFF";
     comboBoxItems[Genbank] = "GenBank";
     comboBoxItems[Swiss_Prot] = "Swiss_Prot";
+    comboBoxItems[Ugene_db] = "UGENE Database";
 
 }
 

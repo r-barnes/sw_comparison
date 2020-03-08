@@ -1,6 +1,6 @@
 /**
 * UGENE - Integrated Bioinformatics Tools.
-* Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+* Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
 * http://ugene.net
 *
 * This program is free software; you can redistribute it and/or
@@ -35,7 +35,7 @@ namespace U2 {
 * settings set by same tags from hmm3-search and hmm3-build tests + gaps probab. options and subst. matr
 * we test here 1<->1 queries
 *****************************************/
-class GTest_UHMM3Phmmer : public GTest {
+class GTest_UHMM3Phmmer : public XmlTest {
     Q_OBJECT
 public:
     static const QString QUERY_FILENAME_TAG;
@@ -73,7 +73,7 @@ private:
 * Note, that you should make original hmmer3 to show results in academic version (e.g. 1.01e-23)
 *****************************************/
 
-class GTest_UHMM3PhmmerCompare : public GTest {
+class GTest_UHMM3PhmmerCompare : public XmlTest {
     Q_OBJECT
 public:
     static const QString ACTUAL_OUT_FILE_TAG;

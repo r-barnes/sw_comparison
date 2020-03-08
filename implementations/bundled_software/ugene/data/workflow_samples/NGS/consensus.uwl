@@ -75,6 +75,7 @@ workflow "Extract consensus from assembly"{
         wizard {
             name:"Extract Consensus Wizard";
             help-page-id:16122723;
+            auto-run: true;
             page {
                 id:1;
                 title:"Extract Consensus";

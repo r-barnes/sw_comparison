@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -110,6 +110,8 @@ void CreateExportItemsFromSeqRegionsTask::run() {
     DbiOperationsBlock dbiBlock(dbiRef, stateInfo);
     Q_UNUSED(dbiBlock);
 
+    ExportSequenceItem startItem;
+    ExportSequenceItem endItem;
     int regionCount = 0;
     QSet<QString> usedNames;
     foreach (const U2Region &r, regions) {
@@ -122,10 +124,12 @@ void CreateExportItemsFromSeqRegionsTask::run() {
         }
 
         usedNames.insert(name);
-        ExportSequenceItem ei;
+
+        const qint64 seqLength = seqObject->getSequenceLength();
 
         U2SequenceImporter seqImporter(QVariantMap(), true);
-        seqImporter.startSequence(stateInfo, dbiRef, U2ObjectDbi::ROOT_FOLDER, name, false);
+        bool isCircular = seqObject->isCircular() && (r.startPos == 0 && r.length == seqLength);
+        seqImporter.startSequence(stateInfo, dbiRef, U2ObjectDbi::ROOT_FOLDER, name, isCircular);
         SAFE_POINT_OP(stateInfo, );
         for (qint64 pos = r.startPos; pos < r.endPos(); pos += sequenceChunkMaxLength) {
             const qint64 currentChunkSize = qMin(sequenceChunkMaxLength, r.endPos() - pos);
@@ -140,6 +144,7 @@ void CreateExportItemsFromSeqRegionsTask::run() {
         const U2Sequence importedRegionSeq = seqImporter.finalizeSequence(stateInfo);
         SAFE_POINT_OP(stateInfo, );
 
+        ExportSequenceItem ei;
         ei.setOwnershipOverSeq(importedRegionSeq, dbiRef);
         ei.complTT = complTrans;
         ei.aminoTT = aminoTrans;
@@ -152,6 +157,20 @@ void CreateExportItemsFromSeqRegionsTask::run() {
         exportSettings.items.append(ei);
 
         stateInfo.setProgress(100 * ++regionCount / regions.size());
+
+        const qint64 endPos = r.endPos();
+        CHECK_CONTINUE(!(r.startPos == 0 && endPos == seqLength));
+        CHECK_OPERATIONS(r.startPos != 0, startItem = ei, continue);
+        CHECK_OPERATIONS(endPos != seqLength, endItem = ei, continue);
+    }
+
+    if (!startItem.isEmpty() && !endItem.isEmpty() && seqObject->isCircular()) {
+        const ExportSequenceItem circularItem = ExportSequenceTask::mergedCircularItem(endItem, startItem, stateInfo);
+        CHECK_OP(stateInfo, );
+
+        exportSettings.items.removeOne(startItem);
+        exportSettings.items.removeOne(endItem);
+        exportSettings.items.append(circularItem);
     }
 }
 

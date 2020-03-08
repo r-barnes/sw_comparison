@@ -1,9 +1,10 @@
 #!/usr/bin/bash
 PRODUCT_NAME="ugeneuid"
 
-VERSION=`cat ../../src/ugene_version.pri | grep UGENE_VERSION | awk -F'=' '{print $2}'`
+if [ -z ${SOURCE_DIR} ]; then SOURCE_DIR=../..; fi
+
 BUILD_DIR=./debug_bundle
-DEBUG_DIR=../../src/_debug
+DEBUG_DIR=${SOURCE_DIR}/src/_debug
 TARGET_APP_DIR="$BUILD_DIR/${PRODUCT_NAME}.app"
 TARGET_EXE_DIR="${TARGET_APP_DIR}/Contents/MacOS"
 
@@ -18,7 +19,6 @@ mkdir $BUILD_DIR
 echo
 echo copying UGENE bundle 
 cp -R $DEBUG_DIR/${PRODUCT_NAME}.app/ "$TARGET_APP_DIR"
-changeCoreInstallNames ${PRODUCT_NAME}
 
 mkdir "${TARGET_EXE_DIR}/../Frameworks"
 mkdir "${TARGET_EXE_DIR}/plugins"
@@ -52,11 +52,9 @@ cp "$DEBUG_DIR/ugenem.app/Contents/MacOS/ugenem" "$TARGET_EXE_DIR"
 
 echo copying console binary
 cp "$DEBUG_DIR/ugenecld.app/Contents/MacOS/ugenecld" "$TARGET_EXE_DIR"
-changeCoreInstallNames ugenecld
 
 echo copying plugin checker binary
 cp "$DEBUG_DIR/plugins_checkerd" "$TARGET_EXE_DIR"
-changeCoreInstallNames plugins_checkerd
 
 echo Copying core shared libs
 
@@ -74,7 +72,7 @@ add-library ugenedb
 add-library breakpad
 if [ "$1" == "-test" ]
    then
-      add-library humimit
+      add-library QSpec
 fi
 
 #install_name_tool -change @executable_path/../Frameworks/Breakpad.framework/Versions/A/Breakpad @executable_path/../../../../includes/breakpad/Breakpad.framework/Versions/A/BreakPad ${TARGET_EXE_DIR}/libU2Privated.1.dylib
@@ -84,10 +82,11 @@ echo Copying plugins
 add-plugin annotator
 add-plugin ball
 add-plugin biostruct3d_view
-add-plugin browser_support
 add-plugin chroma_view
 add-plugin circular_view
+add-plugin clark_support
 add-plugin dbi_bam
+add-plugin diamond_support
 add-plugin dna_export
 add-plugin dna_flexibility
 add-plugin dna_graphpack
@@ -99,7 +98,10 @@ add-plugin genome_aligner
 add-plugin gor4
 add-plugin hmm2
 add-plugin kalign
+add-plugin kraken_support
 add-plugin linkdata_support
+add-plugin metaphlan2_support
+add-plugin ngs_reads_classification
 add-plugin opencl_support
 add-plugin orf_marker
 add-plugin pcr
@@ -115,6 +117,7 @@ add-plugin smith_waterman
 add-plugin umuscle
 add-plugin variants
 add-plugin weight_matrix
+add-plugin wevote_support
 add-plugin workflow_designer
 
 if [ "$1" == "-test" ]

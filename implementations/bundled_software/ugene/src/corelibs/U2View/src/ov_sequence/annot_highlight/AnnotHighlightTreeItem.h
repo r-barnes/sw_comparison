@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -39,6 +39,7 @@ public:
     void setColor(const QColor& _annotColor);
 
     static const int ROW_HEIGHT;
+    static const int COLOR_ICON_SIZE;
 
 private:
     void drawColorCell();

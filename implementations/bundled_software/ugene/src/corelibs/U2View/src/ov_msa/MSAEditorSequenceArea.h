@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -32,7 +32,7 @@
 
 #include "DeleteGapsDialog.h"
 #include "ExportHighlightedDialogController.h"
-#include "MSACollapsibleModel.h"
+#include "MaCollapseModel.h"
 #include "MsaEditorUserModStepController.h"
 #include "SaveSelectedSequenceFromMSADialogController.h"
 
@@ -119,13 +119,7 @@ public:
 
     MSAEditor *getEditor() const;
 
-    QStringList getAvailableHighlightingSchemes() const;
-
     bool hasAminoAlphabet();
-
-private:
-    // emulating cursor mode with
-    void moveCursor(int dx, int dy);
 
 public:
     QString exportHighlighting(int startPos, int endPos, int startingIndex, bool keepGaps, bool dots, bool transpose);
@@ -182,9 +176,8 @@ private:
 
     void reverseComplementModification(ModificationType& type);
 
-    void updateCollapsedGroups(const MaModificationInfo& modInfo);
+    void updateCollapseModel(const MaModificationInfo& modInfo) override;
 
-    QAction*        copySelectionAction;
     QAction*        delColAction;
     QAction*        removeAllGapsAction;
     QAction*        gotoAction;

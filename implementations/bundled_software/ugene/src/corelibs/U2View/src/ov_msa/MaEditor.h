@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -57,6 +57,7 @@ namespace U2 {
 
 class MaEditorWgt;
 class MultipleAlignmentObject;
+class MaEditorSelection;
 
 class SNPSettings {
 public:
@@ -87,6 +88,8 @@ public:
 
     virtual MultipleAlignmentObject* getMaObject() const { return maObject; }
 
+    QList<qint64> getMaRowIds() const;
+
     virtual MaEditorWgt* getUI() const { return ui; }
 
     virtual OptionsPanel* getOptionsPanel() { return optionsPanel; }
@@ -101,7 +104,14 @@ public:
 
     bool isAlignmentEmpty() const;
 
-    const QRect& getCurrentSelection() const;
+    /* Returns current selection. */
+    const MaEditorSelection& getSelection() const;
+
+    /*
+     * Shortcut for getSelection().toRect().
+     * Note: this method is useful because we have no "MaEditorSelection" type available outside of the U2View today.
+     */
+    QRect getSelectionRect() const;
 
     virtual int getRowContentIndent(int rowId) const;
     int getSequenceRowHeight() const; // SANGER_TODO: order the methods
@@ -126,6 +136,12 @@ public:
 
     void exportHighlighted(){ sl_exportHighlighted(); }
 
+    /** Returns current cursor position. */
+    const QPoint& getCursorPosition() const;
+
+    /** Sets new cursor position. Emits si_cursorPositionChanged() signal. */
+    void setCursorPosition(const QPoint& cursorPosition);
+
 signals:
     void si_fontChanged(const QFont& f);
     void si_zoomOperationPerformed(bool resizeModeChanged);
@@ -133,6 +149,7 @@ signals:
     void si_sizeChanged(int newHeight, bool isMinimumSize, bool isMaximumSize);
     void si_completeUpdate();
     void si_updateActions();
+    void si_cursorPositionChanged(const QPoint& cursorPosition);
 
 protected slots:
     virtual void sl_onContextMenuRequested(const QPoint & pos) = 0;
@@ -184,6 +201,9 @@ protected:
     double      zoomFactor;
     double      fontPixelToPointSize;
     mutable int cachedColumnWidth;
+
+    /** Current cursor position: 'x' is offset in alignment (0...len) and 'y' is a sequence index in the aligment. */
+    QPoint cursorPosition;
 
     QAction*          saveAlignmentAction;
     QAction*          saveAlignmentAsAction;

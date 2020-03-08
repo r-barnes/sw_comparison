@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -675,7 +675,7 @@ GUI_TEST_CLASS_DEFINITION(test_0024) {
 
     GTUtilsDialog::waitForDialog(os, new SelectSequenceRegionDialogFiller(os, "150000..199950,1..50000"));
     GTKeyboardDriver::keyClick('a', Qt::ControlModifier);
-	GTGlobals::sleep(200);
+    GTGlobals::sleep(200);
 
     GTUtilsDialog::waitForDialog(os, new PopupChooser(os, QStringList() << "ADV_MENU_ANALYSE" << "primer3_action"));
     Primer3DialogFiller::Primer3Settings settings;
@@ -713,12 +713,20 @@ GUI_TEST_CLASS_DEFINITION(test_0025) {
     ADVSingleSequenceWidget* wgt = GTUtilsSequenceView::getSeqWidgetByNumber(os);
     CHECK_SET_ERR(wgt != NULL, "ADVSequenceWidget is NULL");
 
+    GTWidget::click(os, GTWidget::findWidget(os, "CircularViewAction"));
+
+    QWidget *toggleViewButton = GTWidget::findWidget(os, "toggleViewButton");
+    GTUtilsDialog::waitForDialog(os, new PopupChooser(os, QStringList() << "toggleZoomView"));
+    GTWidget::click(os, toggleViewButton);
+    GTGlobals::sleep();
+
     GTUtilsDialog::waitForDialog(os, new SelectSequenceRegionDialogFiller(os, "560..743,1..180"));
     GTKeyboardDriver::keyClick('a', Qt::ControlModifier);
+    GTGlobals::sleep();
 
     GTUtilsDialog::waitForDialog(os, new PopupChooser(os, QStringList() << "ADV_MENU_ANALYSE" << "primer3_action"));
     GTUtilsDialog::waitForDialog(os, new Primer3DialogFiller(os));
-    GTWidget::click(os, wgt, Qt::RightButton);
+    GTWidget::click(os, wgt, Qt::RightButton, QPoint(10,10));
 
     GTGlobals::sleep();
 
@@ -748,7 +756,7 @@ GUI_TEST_CLASS_DEFINITION(test_0026) {
     settings.start = 560;
     settings.end = 180;
     GTUtilsDialog::waitForDialog(os, new Primer3DialogFiller(os, settings));
-    GTWidget::click(os, wgt, Qt::RightButton);
+    GTWidget::click(os, GTWidget::findWidget(os, "det_view_Primers_DNA"), Qt::RightButton);
 
     GTGlobals::sleep();
 
@@ -1031,7 +1039,7 @@ GUI_TEST_CLASS_DEFINITION(test_0031_2){
     CHECK_SET_ERR(clipboardtext.endsWith("GTCTTTCATT"), "Unexpected reverse complement end: " + clipboardtext.right(10));
 
 //    Check joined annotations
-    GTUtilsSequenceView::clickAnnotationDet(os, "CDS", 2970, 0, true);
+    GTUtilsAnnotationsTreeView::clickItem(os, "CDS", 2, true);
 
     GTUtilsDialog::waitForDialog(os, new PopupChooser(os, QStringList() << ADV_MENU_COPY
                                                       << "action_copy_annotation_sequence"));
@@ -1060,7 +1068,7 @@ GUI_TEST_CLASS_DEFINITION(test_0031_3){
     CHECK_SET_ERR(clipboardtext.endsWith("GTCTTTCATT"), "Unexpected reverse complement end: " + clipboardtext.right(10));
 
 //    Check joined annotations
-    GTUtilsSequenceView::clickAnnotationDet(os, "CDS", 2970, 0, true);
+    GTUtilsAnnotationsTreeView::clickItem(os, "CDS", 2, true);
 
     GTUtilsDialog::waitForDialog(os, new PopupChooser(os, QStringList() << ADV_MENU_COPY
                                                       << "action_copy_annotation_sequence"));
@@ -1335,6 +1343,7 @@ GUI_TEST_CLASS_DEFINITION(test_0040){
     QAbstractButton* wrapButton = GTAction::button(os, "wrap_sequence_action");
     CHECK_SET_ERR(wrapButton->isChecked(), "Multi-line mode is unexpectedly inactive");
     GTWidget::click(os, wrapButton);
+    GTUtilsProjectTreeView::toggleView(os, GTGlobals::UseKey);
 
     DetView* det = GTWidget::findExactWidget<DetView*>(os, "det_view_human_T1 (UCSC April 2002 chr7:115977709-117855134)");
     QScrollBar* scroll = GTScrollBar::getScrollBar(os, "singleline_scrollbar");
@@ -1687,7 +1696,7 @@ GUI_TEST_CLASS_DEFINITION(test_0051){
 
     GTUtilsDialog::waitForDialog(os, new ColorDialogFiller(os, 255, 0, 0));
     GTUtilsAnnotHighlightingTreeView::click(os, "CDS");
-    GTMouseDriver::moveTo(GTMouseDriver::getMousePosition() + QPoint(20, 0));
+    GTMouseDriver::moveTo(GTMouseDriver::getMousePosition() + QPoint(60, 0));
     GTMouseDriver::click();
     GTGlobals::sleep(1000);
 
@@ -2112,23 +2121,25 @@ GUI_TEST_CLASS_DEFINITION(test_0064) {
 //    2. Scroll with the mouse wheel to the end of the sequence and back to the beginning
 
     GTFileDialog::openFile(os, testDir + "_common_data/fasta", "seq4.fa");
+    GTUtilsTaskTreeView::waitTaskFinished(os);
+
     QAbstractButton* wrapButton = GTAction::button(os, "wrap_sequence_action");
     CHECK_SET_ERR(wrapButton->isChecked(), "Multi-line mode is unexpectedly inactive");
 
     QScrollBar* scrollBar = GTScrollBar::getScrollBar(os, "multiline_scrollbar");
     CHECK_SET_ERR(scrollBar != NULL, "Cannot find multiline_scrollbar");
-
+    GTGlobals::sleep(500);
     GTScrollBar::moveSliderWithMouseWheelDown(os, scrollBar, scrollBar->maximum());
     GTGlobals::sleep();
 
     U2Region visibleRange = GTUtilsSequenceView::getVisibleRange(os);
-    CHECK_SET_ERR(visibleRange.contains(GTUtilsSequenceView::getSeqWidgetByNumber(os)->getSequenceLength() - 1), "The end position of the sequence is not visible. Failed to scroll to the end" );
+    CHECK_SET_ERR(visibleRange.contains(GTUtilsSequenceView::getSeqWidgetByNumber(os)->getSequenceLength() - 1), "The end position of the sequence is not visible. Failed to scroll to the end_1" );
 
     GTScrollBar::moveSliderWithMouseWheelUp(os, scrollBar, scrollBar->maximum());
-    GTGlobals::sleep();
+    GTGlobals::sleep(500);
 
     visibleRange = GTUtilsSequenceView::getVisibleRange(os);
-    CHECK_SET_ERR(visibleRange.contains(1), "The end position of the sequence is not visible. Failed to scroll to the end" );
+    CHECK_SET_ERR(visibleRange.contains(1), "The end position of the sequence is not visible. Failed to scroll to the end_2" );
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0065) {
@@ -2483,7 +2494,7 @@ GUI_TEST_CLASS_DEFINITION(test_0078) {
     // Expected state: the line edits are red
     // 4. Click Ok
     // Expected state: message box appears
-    // 5. Set start search postion back to 1
+    // 5. Set start search position back to 1
     // 6. Check the exclude checkbox
     // 7. Click Ok
     // Expected state: message box appears

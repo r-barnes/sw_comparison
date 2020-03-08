@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -28,8 +28,9 @@
 
 #include <U2Core/AppContext.h>
 #include <U2Core/AppSettings.h>
-#include <U2Core/U2SafePoints.h>
+#include <U2Core/Log.h>
 #include <U2Core/NetworkConfiguration.h>
+#include <U2Core/U2SafePoints.h>
 
 #include "HttpFileAdapter.h"
 #include "ZlibAdapter.h"
@@ -59,8 +60,6 @@ QNetworkProxy HttpFileAdapterFactory::getProxyByUrl( const QUrl & url ) const {
     NetworkConfiguration* nc = AppContext::getAppSettings()->getNetworkConfiguration();
     return nc->getProxyByUrl(url);
 }
-
-
 
 HttpFileAdapter::HttpFileAdapter(HttpFileAdapterFactory* factory, QObject* o)
 : IOAdapter(factory, o), is_cached(false), begin_ptr(-1), end_ptr(0),
@@ -103,14 +102,14 @@ bool HttpFileAdapter::open( const QUrl& url, const QNetworkProxy & p)
     }
     netManager->setProxy(p);
     connect(netManager, SIGNAL(proxyAuthenticationRequired(const QNetworkProxy&, QAuthenticator*)), this, SLOT(onProxyAuthenticationRequired(const QNetworkProxy&, QAuthenticator*)));
-    if(url.toString().length()>MAX_GET_LENGTH) {
+    if (url.toString().length() > MAX_GET_LENGTH) {
         QStringList splittedStrings = url.toString().split(RemoteRequestConfig::HTTP_BODY_SEPARATOR);
         if(splittedStrings.count() > 1) {
             SAFE_POINT(2 == splittedStrings.count(), tr("Incorrect url string has been passed to HttpFileAdapter::open()"), false);
             QString headerString = splittedStrings.at(0);
-            QString data = splittedStrings.at(1);
+            postData = splittedStrings.at(1).toLatin1();
             QNetworkRequest netRequest(headerString);
-            reply=netManager->post(netRequest, data.toLatin1());
+            reply=netManager->post(netRequest, postData);
         }
         else {
             QNetworkRequest netRequest(url);
@@ -123,6 +122,7 @@ bool HttpFileAdapter::open( const QUrl& url, const QNetworkProxy & p)
         QNetworkRequest netRequest(urlString);
         reply = netManager->get(netRequest);
     }
+    coreLog.details(tr("Downloading from %1").arg(reply->url().toString()));
     connect( reply, SIGNAL(readyRead()), this, SLOT(add_data()), Qt::DirectConnection );
     connect( reply, SIGNAL(downloadProgress(qint64,qint64)), this, SLOT(progress(qint64,qint64)), Qt::DirectConnection );//+
     connect( reply, SIGNAL(finished()), this, SLOT(done()), Qt::DirectConnection );
@@ -138,7 +138,7 @@ void HttpFileAdapter::close() {
     assert( reply );
     reply->abort();
     delete reply;
-    reply = 0;
+    reply = NULL;
     gurl = GUrl();
     init();
 }
@@ -160,8 +160,12 @@ qint64 HttpFileAdapter::readBlock(char* data, qint64 size)
     rwmut.lock();
     qint64 write_offs = 0;
     while( write_offs < size ) {
-        int howmuch = qMin( size - write_offs, (qint64)firstChunkContains() );
-        readFromChunk( data + write_offs, howmuch );
+        qint64 howmuch = qMin( size - write_offs, (qint64)firstChunkContains() );
+        readFromChunk(data + write_offs, howmuch);
+        if (formatMode == TextMode) {
+            cutByteOrderMarks(data, errorMessage, howmuch);
+            CHECK(errorMessage.isEmpty(), -1);
+        }
         write_offs += howmuch;
     }
 
@@ -210,6 +214,7 @@ void HttpFileAdapter::init() {
     badstate = false;
     is_downloaded = false;
     is_cached= false;
+    end_ptr = 0;
     chunk_list.clear();
     chunk_list.append( QByteArray(CHUNKSIZE, 0) );
     loop.exit();
@@ -314,8 +319,22 @@ qint64 HttpFileAdapter::waitData( qint64 until )
 
 void HttpFileAdapter::done()
 {
+    QString locationHeaderValue = reply->header(QNetworkRequest::LocationHeader).toString();
+    if (!locationHeaderValue.isEmpty()) {
+        QUrl redirectUrl(locationHeaderValue);
+        chunk_list.clear();
+        close();
+        coreLog.details(tr("Redirecting to %1").arg(locationHeaderValue));
+        QString fullRedirectUrl(redirectUrl.toString());
+        if (!postData.isEmpty()) {
+            fullRedirectUrl = redirectUrl.toString() + RemoteRequestConfig::HTTP_BODY_SEPARATOR + postData;
+        }
+        open(fullRedirectUrl, netManager->proxy());
+        return;
+    }
     is_downloaded = true;
     badstate = (reply->error() != QNetworkReply::NoError);
+
     loop.exit();
 }
 
@@ -331,10 +350,13 @@ void HttpFileAdapter::progress( qint64 done_, qint64 total_ )
 }
 
 QString HttpFileAdapter::errorString() const{
+    QString result;
     if (reply){
-        return reply->errorString();
+        result = reply->errorString();
+    } else {
+        result = errorMessage;
     }
-    return "";
+    return result;
 }
 
 void HttpFileAdapter::onProxyAuthenticationRequired(const QNetworkProxy &proxy, QAuthenticator *auth){

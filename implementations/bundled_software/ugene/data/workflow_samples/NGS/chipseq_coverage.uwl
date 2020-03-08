@@ -95,6 +95,7 @@ workflow "ChIP-Seq coverage"{
         }
         wizard {
             name:"ChIP-Seq Coverage Wizard";
+            auto-run: true;
             help-page-id:16122722;
             page {
                 id:1;

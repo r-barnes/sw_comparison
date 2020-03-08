@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -33,8 +33,7 @@ namespace U2 {
 const int AnnotHighlightTree::COL_NUM_ANNOT_NAME = 0;
 const int AnnotHighlightTree::COL_NUM_COLOR = 1;
 
-const int AnnotHighlightTree::ANNOT_COLUMN_WIDTH = 140;
-const int AnnotHighlightTree::COLOR_COLUMN_WIDTH = 10;
+const int AnnotHighlightTree::COLOR_COLUMN_WIDTH = 60;
 const int AnnotHighlightTree::INITIAL_TREE_HEIGHT = 25;
 
 
@@ -53,10 +52,10 @@ AnnotHighlightTree::AnnotHighlightTree()
     headerLabels << QObject::tr("Annotation") << QObject::tr("Color");
     setHeaderLabels(headerLabels);
 
-    header()->resizeSection(COL_NUM_ANNOT_NAME, ANNOT_COLUMN_WIDTH);
-    header()->resizeSection(COL_NUM_COLOR, COLOR_COLUMN_WIDTH);
+    header()->setSectionResizeMode(COL_NUM_ANNOT_NAME, QHeaderView::Stretch);
+    header()->setSectionResizeMode(COL_NUM_COLOR, QHeaderView::Fixed);
     header()->setStretchLastSection(false);
-    header()->setSectionResizeMode(0, QHeaderView::Stretch);
+    header()->resizeSection(COL_NUM_COLOR, COLOR_COLUMN_WIDTH);
 
     setStyleSheet("QTreeWidget#OP_ANNOT_HIGHLIGHT_TREE { "
         "border-style: solid;"
@@ -75,13 +74,6 @@ AnnotHighlightTree::AnnotHighlightTree()
     connect(this, SIGNAL(itemClicked(QTreeWidgetItem*, int)),
         SLOT(sl_onItemClicked(QTreeWidgetItem*, int)));
 }
-
-
-QSize AnnotHighlightTree::sizeHint() const
-{
-    return QSize(ANNOT_COLUMN_WIDTH + COLOR_COLUMN_WIDTH, annotTreeHeight);
-}
-
 
 void AnnotHighlightTree::addItem(QString annotName, QColor annotColor)
 {
@@ -140,8 +132,6 @@ void AnnotHighlightTree::setItemSelectedWithAnnotName(QString annotName)
 
     setCurrentItem(items[0]);
 }
-
-
 
 void AnnotHighlightTree::sl_onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* /* previous */ )
 {

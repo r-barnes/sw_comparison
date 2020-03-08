@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -126,6 +126,9 @@ public:
 
     /** Source SAM file url - SAM_TO_BAM - destination BAM file url */
     static const QString SAM_TO_BAM;
+
+    /** Source custom file url - CUSTOM_FILE_TO_FILE_ROLE - destination custom file url */
+    static const QString CUSTOM_FILE_TO_FILE;
 }; // StorageRoles
 
 } // U2

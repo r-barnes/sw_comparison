@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -23,6 +23,8 @@
 #define _U2_QUERY_VIEW_CONTROLLER_H_
 
 #include "ui_AddConstraintDialog.h"
+
+#include <QActionGroup>
 
 #include <U2Lang/QDConstraint.h>
 

@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -64,6 +64,7 @@ public:
     static QString getQualifierValue(HI::GUITestOpStatus &os, const QString &qualifierName, QTreeWidgetItem *parentItem);
     static QString getQualifierValue(HI::GUITestOpStatus &os, const QString &qualName, const QString &parentName);
     static QList<U2Region> getAnnotatedRegions(HI::GUITestOpStatus &os);
+    static QList<U2Region> getSelectedAnnotatedRegions(HI::GUITestOpStatus &os);
     static QString getAnnotationRegionString(HI::GUITestOpStatus &os, const QString &annotationName);
     static QString getAnnotationType(HI::GUITestOpStatus &os, const QString &annotationName);
 

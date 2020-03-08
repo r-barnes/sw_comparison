@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -33,7 +33,14 @@ class InfiniteTestTask : public Task {
     Q_OBJECT
 public:
     InfiniteTestTask(QString _taskName, TaskFlags _f) : Task(_taskName, _f) {}
-    void run();
+    void run() override;
+};
+
+class DestructorCleanupTask : public Task {
+    Q_OBJECT
+public:
+    DestructorCleanupTask(QString taskName, TaskFlags f);
+    ~DestructorCleanupTask();
 };
 
 enum StateOrderType {
@@ -59,7 +66,7 @@ private:
     StateOrderTestTaskCallback *callback;
 };
 
-class GTest_TaskCreateTest : public GTest {
+class GTest_TaskCreateTest : public XmlTest {
     Q_OBJECT
 public:
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_TaskCreateTest, "task-create");
@@ -72,7 +79,7 @@ private:
     QString resultContextName;
 };
 
-class GTest_TaskAddSubtaskTest : public GTest {
+class GTest_TaskAddSubtaskTest : public XmlTest {
     Q_OBJECT
 public:
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_TaskAddSubtaskTest, "task-add-subtask");
@@ -83,7 +90,7 @@ private:
     QString subtaskContextName;
 };
 
-class GTest_TaskCancelTest : public GTest {
+class GTest_TaskCancelTest : public XmlTest {
     Q_OBJECT
 public:
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_TaskCancelTest, "task-cancel");
@@ -93,7 +100,7 @@ private:
     QString objContextName;
 };
 
-class GTest_TaskCheckFlag : public GTest {
+class GTest_TaskCheckFlag : public XmlTest {
     Q_OBJECT
 public:
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_TaskCheckFlag, "task-check-flag");
@@ -104,7 +111,7 @@ private:
     QString taskContextName;
 };
 
-class GTest_TaskCheckState : public GTest {
+class GTest_TaskCheckState : public XmlTest {
     Q_OBJECT
 public:
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_TaskCheckState, "task-check-state");
@@ -121,7 +128,7 @@ private:
     QString taskContextName;
 };
 
-class GTest_TaskExec : public GTest {
+class GTest_TaskExec : public XmlTest {
     Q_OBJECT
 public:
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_TaskExec, "task-exec");
@@ -132,7 +139,7 @@ private:
     QString taskContextName;
 };
 
-class GTest_TaskStateOrder : public GTest, public StateOrderTestTaskCallback{
+class GTest_TaskStateOrder : public XmlTest, public StateOrderTestTaskCallback{
     Q_OBJECT
 public:
     SIMPLE_XML_TEST_BODY_WITH_FACTORY_EXT(GTest_TaskStateOrder, "task-state-order-test", TaskFlags_FOSCOE);
@@ -149,7 +156,7 @@ private:
     bool run_after_all_subs_flag;
 };
 
-class GTest_Wait : public GTest {
+class GTest_Wait : public XmlTest {
     Q_OBJECT
 public:
     SIMPLE_XML_TEST_BODY_WITH_FACTORY_EXT(GTest_Wait, "wait",TaskFlags(TaskFlags_FOSCOE));

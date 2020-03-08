@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -74,7 +74,7 @@ void PairedFastqComparator::compare(U2OpStatus &os) {
     FastqSequenceInfo tmp;
     while (it_1.hasNext() && it_2.hasNext() && !os.isCoR()) {
         CHECK_EXT(unpaired_1.size() + unpaired_2.size() < UNPAIRED_LIMIT,
-                  os.setError(tr("Too much reads without a pair (>%1). Check the input data is set correctly.").arg(UNPAIRED_LIMIT)), );
+                  os.setError(tr("Too much reads without a pair (>%1). Check the input data are set correctly.").arg(UNPAIRED_LIMIT)), );
 
         FastqSequenceInfo seqInfo_1(it_1.next());
         FastqSequenceInfo seqInfo_2(it_2.next());

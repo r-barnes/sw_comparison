@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -37,7 +37,7 @@ public:
     static const Descriptor CATEGORY_ALIGNMENT();
     static const Descriptor CATEGORY_ASSEMBLY();
     static const Descriptor CATEGORY_NGS_BASIC();
-    static const Descriptor CATEGORY_NGS_ALIGN_SHORT_READS();
+    static const Descriptor CATEGORY_NGS_MAP_ASSEMBLE_READS();
     static const Descriptor CATEGORY_RNA_SEQ();
     static const Descriptor CATEGORY_VARIATION_ANALYSIS();
     static const Descriptor CATEGORY_TRANSCRIPTION();

@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -125,7 +125,7 @@ GUI_TEST_CLASS_DEFINITION(test_0003) {
 
     // Expected: There is a single item under the "Sequence accession number" item. It contains "CVU55762.gb".
     GTUtilsProjectTreeView::checkFilteredGroup(os, "Sequence accession number", QStringList() << "CVU55762.gb",
-        QStringList(), QStringList() << "ugene_gui_test" << "COI.aln");
+        QStringList(), QStringList() << "ugene_gui_test" << "COI.aln", QStringList() << "4113");
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0004) {
@@ -211,8 +211,8 @@ GUI_TEST_CLASS_DEFINITION(test_0006) {
     GTUtilsProjectTreeView::checkFilteredGroup(os, "Text content", QStringList() << "ugene_gui_test",
         QStringList(), QStringList() << "text.txt" << "HIV-1.aln");
     const QModelIndexList groupIndexes = GTUtilsProjectTreeView::findFilteredIndexes(os, "Text content");
-    CHECK_SET_ERR(groupIndexes.size() == 1, "Expected a single filter group in the project view");
-    CHECK_SET_ERR(1 == groupIndexes.first().model()->rowCount(groupIndexes.first()), "Expected a single filtered object");
+    bool containsItem = GTUtilsProjectTreeView::checkItem(os, "object", groupIndexes.first(), GTGlobals::FindOptions(true, Qt::MatchStartsWith));
+    CHECK_SET_ERR(containsItem, "\"object\' item is absent");
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0007) {
@@ -231,10 +231,10 @@ GUI_TEST_CLASS_DEFINITION(test_0007) {
     GTUtilsProjectTreeView::filterProject(os, "phosphoesterase");
 
     // Expected: There is a single top level item named "mat_peptide" and its only sub-item contains "sars.gb"
-    GTUtilsProjectTreeView::checkFilteredGroup(os, "mat_peptide", QStringList() << "sars.gb", QStringList(), QStringList());
+    GTUtilsProjectTreeView::checkFilteredGroup(os, "mat_peptide", QStringList() << "sars.gb", QStringList(), QStringList(), QStringList() << "4113");
     const QModelIndexList groupIndexes = GTUtilsProjectTreeView::findFilteredIndexes(os, "mat_peptide");
-    CHECK_SET_ERR(groupIndexes.size() == 1, "Expected a single filter group in the project view");
-    CHECK_SET_ERR(1 == groupIndexes.first().model()->rowCount(groupIndexes.first()), "Expected a single filtered object");
+    bool containsItem = GTUtilsProjectTreeView::checkItem(os, "NC_004718 features", groupIndexes.first(), GTGlobals::FindOptions(true, Qt::MatchStartsWith));
+    CHECK_SET_ERR(containsItem, "\"NC_004718 features\' item is absent");
 
     // 5. Type to the project filter field "genemark"
     GTUtilsProjectTreeView::filterProject(os, "genemark");
@@ -453,14 +453,15 @@ GUI_TEST_CLASS_DEFINITION(test_0013) {
     GTUtilsProjectTreeView::filterProject(os, "polyprotein");
 
     // Expected: There is a single top-level group "CDS".
-    QTreeView *projectTreeView = GTUtilsProjectTreeView::getTreeView(os);
-    QAbstractItemModel *filterModel = projectTreeView->model();
-    CHECK_SET_ERR(filterModel->rowCount() == 1 && "CDS" == filterModel->index(0, 0).data().toString(), "Unexpected number of project filter groups");
+    bool containsCds = !GTUtilsProjectTreeView::findFilteredIndexes(os, "CDS").isEmpty();
+    CHECK_SET_ERR(containsCds, "\"CDS\" item is absent");
 
     // 5. Type to the project filter field "gag polyprotein"
     GTUtilsProjectTreeView::filterProject(os, "gag polyprotein");
 
     // Expected : There are 3 top - level groups named "CDS", "Multiple alignment content" and "Sequence content".
+    QTreeView *projectTreeView = GTUtilsProjectTreeView::getTreeView(os);
+    QAbstractItemModel *filterModel = projectTreeView->model();
     CHECK_SET_ERR(filterModel->rowCount() == 3 && "CDS" == filterModel->index(0, 0).data().toString()
         && "Multiple alignment content" == filterModel->index(1, 0).data().toString()
         && "Sequence content" == filterModel->index(2, 0).data().toString(), "Unexpected project filter groups");

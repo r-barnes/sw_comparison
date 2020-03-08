@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -36,8 +36,8 @@ public:
     virtual const QVariant & getDefaultPureValue() const;
     virtual bool isDefaultValue() const;
     virtual bool isEmpty() const;
-    virtual Attribute * clone();
-    virtual bool validate(ProblemList &problemList);
+    virtual URLAttribute *clone();
+    virtual bool validate(NotificationsList &notificationList);
 
     virtual const QSet<GObjectType> & getCompatibleObjectTypes() const;
     virtual void setCompatibleObjectTypes(const QSet<GObjectType> &types);
@@ -46,11 +46,14 @@ public:
     void updateValue();
 
 private:
+    URLAttribute(const URLAttribute &other);
+    URLAttribute &operator=(const URLAttribute &other);
+
+    QStringList emptyDatasetNames(bool &hasUrls);
+    void copy(const URLAttribute &other);
+
     QList<Dataset> sets;
     QSet<GObjectType> compatibleObjectTypes;
-
-private:
-    QStringList emptyDatasetNames(bool &hasUrls);
 };
 
 } // U2

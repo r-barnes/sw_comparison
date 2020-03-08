@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -638,147 +638,8 @@ GUI_TEST_CLASS_DEFINITION(test_0005_2) {
 }
 
 
-GUI_TEST_CLASS_DEFINITION(test_0006) {
-    // Check find from status bar
 
-    // 1. Open document _common_data\scenarios\msa\ma2_gapped.aln
-    GTFileDialog::openFile(os, testDir + "_common_data/scenarios/msa/" , "ma2_gapped.aln");
-    GTUtilsTaskTreeView::waitTaskFinished(os);
 
-    // Expected state: Aligniment length 14, left offset 1, right offset 14
-    GTGlobals::sleep();
-    CHECK_SET_ERR(GTUtilsMSAEditorSequenceArea::getLength(os) == 14, "Wrong length");
-    CHECK_SET_ERR(GTUtilsMSAEditorSequenceArea::getFirstVisibleBase(os) == 0, "Wrong first base idx");
-    CHECK_SET_ERR(GTUtilsMSAEditorSequenceArea::getLastVisibleBase(os) == 13, "Wrong last base idx");
-
-    QWidget *msaEditorStatusBar = GTWidget::findWidget(os, "msa_editor_status_bar");
-    CHECK_SET_ERR(msaEditorStatusBar != NULL, "MSAEditorStatusBar is NULL");
-
-    QLineEdit *searchEdit = qobject_cast<QLineEdit*>(GTWidget::findWidget(os, "searchEdit", msaEditorStatusBar));
-    QWidget *findForward = GTWidget::findWidget(os, "Find forward", msaEditorStatusBar);
-    QWidget *findBackward = GTWidget::findWidget(os, "Find backward", msaEditorStatusBar);
-
-    // 2. Put AAGT in text field at status bar. Click Find next button.
-    GTLineEdit::setText(os, searchEdit, "AAGT");
-    GTWidget::click(os, findForward);
-    // Expected state: find result sequence Tettigonia_viridissima region 1..4
-    GTGlobals::sleep();
-    GTUtilsMSAEditorSequenceArea::checkSelectedRect(os, QRect(0, 3, 4, 1));
-
-    // 3. Click Find next button.
-    GTWidget::click(os, findForward);
-    // Expected state: find result sequence Mecopoda_elongata__Ishigaki__J region 1..4
-    GTGlobals::sleep();
-    GTUtilsMSAEditorSequenceArea::checkSelectedRect(os, QRect(0, 7, 4, 1));
-
-    // 4. Click Find previous button.
-    GTWidget::click(os, findBackward);
-    // Expected state: find result sequence Tettigonia_viridissima region 1..4
-    GTGlobals::sleep();
-    GTUtilsMSAEditorSequenceArea::checkSelectedRect(os, QRect(0, 3, 4, 1));
-}
-
-GUI_TEST_CLASS_DEFINITION(test_0006_1) {
-    // Check find from status bar
-
-    // 1. Open document _common_data\scenarios\msa\ma2_gapped.aln
-    GTFileDialog::openFile(os, testDir + "_common_data/scenarios/msa/" , "ma2_gapped.aln");
-    GTUtilsTaskTreeView::waitTaskFinished(os);
-
-    // Expected state: Aligniment length 14, left offset 1, right offset 14
-    GTGlobals::sleep();
-    CHECK_SET_ERR(GTUtilsMSAEditorSequenceArea::getLength(os) == 14, "Wrong length");
-    CHECK_SET_ERR(GTUtilsMSAEditorSequenceArea::getFirstVisibleBase(os) == 0, "Wrong first base idx");
-    CHECK_SET_ERR(GTUtilsMSAEditorSequenceArea::getLastVisibleBase(os) == 13, "Wrong last base idx");
-
-    QWidget *msaEditorStatusBar = GTWidget::findWidget(os, "msa_editor_status_bar");
-    CHECK_SET_ERR(msaEditorStatusBar != NULL, "MSAEditorStatusBar is NULL");
-
-    QLineEdit *searchEdit = qobject_cast<QLineEdit*>(GTWidget::findWidget(os, "searchEdit", msaEditorStatusBar));
-    QWidget *findForward = GTWidget::findWidget(os, "Find forward", msaEditorStatusBar);
-    QWidget *findBackward = GTWidget::findWidget(os, "Find backward", msaEditorStatusBar);
-
-    // 2. Put AAGT in text field at status bar. Click Find next button.
-    GTLineEdit::setText(os, searchEdit, "AAGT");
-    GTWidget::click(os, findForward);
-    // Expected state: find result sequence Tettigonia_viridissima region 1..4
-    GTGlobals::sleep();
-    GTUtilsMSAEditorSequenceArea::checkSelectedRect(os, QRect(0, 3, 4, 1));
-
-    // 3. Click Find next button. CHANGES: click 3 times
-    GTWidget::click(os, findForward);
-    GTWidget::click(os, findForward);
-    GTWidget::click(os, findForward);
-    // Expected state: find result sequence Mecopoda_elongata__Ishigaki__J region 1..4
-    GTGlobals::sleep();
-    GTUtilsMSAEditorSequenceArea::checkSelectedRect(os, QRect(0, 7, 4, 1));
-
-    // 4. Click Find previous button. CHANGES: click 3 times
-    GTWidget::click(os, findBackward);
-    GTWidget::click(os, findBackward);
-    GTWidget::click(os, findBackward);
-    // Expected state: find result sequence Tettigonia_viridissima region 1..4
-    GTGlobals::sleep();
-    GTUtilsMSAEditorSequenceArea::checkSelectedRect(os, QRect(0, 3, 4, 1));
-}
-
-GUI_TEST_CLASS_DEFINITION(test_0006_2) {
-    // Check find from status bar
-
-    // 1. Open document _common_data\scenarios\msa\ma2_gapped.aln
-    GTFileDialog::openFile(os, testDir + "_common_data/scenarios/msa/" , "ma2_gapped.aln");
-    GTUtilsTaskTreeView::waitTaskFinished(os);
-
-    // Expected state: Aligniment length 14, left offset 1, right offset 14
-    GTGlobals::sleep();
-    CHECK_SET_ERR(GTUtilsMSAEditorSequenceArea::getLength(os) == 14, "Wrong length");
-    CHECK_SET_ERR(GTUtilsMSAEditorSequenceArea::getFirstVisibleBase(os) == 0, "Wrong first base idx");
-    CHECK_SET_ERR(GTUtilsMSAEditorSequenceArea::getLastVisibleBase(os) == 13, "Wrong last base idx");
-
-    QWidget *msaEditorStatusBar = GTWidget::findWidget(os, "msa_editor_status_bar");
-    CHECK_SET_ERR(msaEditorStatusBar != NULL, "MSAEditorStatusBar is NULL");
-
-    QLineEdit *searchEdit = qobject_cast<QLineEdit*>(GTWidget::findWidget(os, "searchEdit", msaEditorStatusBar));
-    QWidget *findForward = GTWidget::findWidget(os, "Find forward", msaEditorStatusBar);
-    QWidget *findBackward = GTWidget::findWidget(os, "Find backward", msaEditorStatusBar);
-
-    // 2. Put AAGT in text field at status bar. Click Find next button.
-    GTLineEdit::setText(os, searchEdit, "AAGT");
-    GTWidget::click(os, findForward);
-    // Expected state: find result sequence Tettigonia_viridissima region 1..4
-    GTGlobals::sleep();
-    GTUtilsMSAEditorSequenceArea::checkSelectedRect(os, QRect(0, 3, 4, 1));
-
-    // CHANGES: clear search text, click Find forward and check that selection wasn't changed; set AAGT again
-    GTLineEdit::setText(os, searchEdit, "");
-    GTWidget::click(os, findForward);
-    // Expected state: find result sequence Tettigonia_viridissima region 1..4
-    GTGlobals::sleep();
-    GTUtilsMSAEditorSequenceArea::checkSelectedRect(os, QRect(0, 3, 4, 1));
-    GTLineEdit::setText(os, searchEdit, "AAGT");
-    GTGlobals::sleep();
-
-    // 3. Click Find next button.
-    GTWidget::click(os, findForward);
-    // Expected state: find result sequence Mecopoda_elongata__Ishigaki__J region 1..4
-    GTGlobals::sleep();
-    GTUtilsMSAEditorSequenceArea::checkSelectedRect(os, QRect(0, 7, 4, 1));
-
-    // CHANGES: clear search text, click Find backward and check that selection wasn't changed; set AAGT again
-    GTLineEdit::setText(os, searchEdit, "");
-    GTWidget::click(os, findBackward);
-    // Expected state: find result sequence Mecopoda_elongata__Ishigaki__J region 1..4
-    GTGlobals::sleep();
-    GTUtilsMSAEditorSequenceArea::checkSelectedRect(os, QRect(0, 7, 4, 1));
-    GTLineEdit::setText(os, searchEdit, "AAGT");
-    GTGlobals::sleep();
-
-    // 4. Click Find previous button.
-    GTWidget::click(os, findBackward);
-    // Expected state: find result sequence Tettigonia_viridissima region 1..4
-    GTGlobals::sleep();
-    GTUtilsMSAEditorSequenceArea::checkSelectedRect(os, QRect(0, 3, 4, 1));
-}
 
 GUI_TEST_CLASS_DEFINITION(test_0007) {
     //1. Open document _common_data\scenarios\msa\ma2_gapped.aln
@@ -1232,8 +1093,7 @@ GUI_TEST_CLASS_DEFINITION(test_0009) {
 
     GTUtilsDialog::waitForDialog(os, new PopupChooser(os, QStringList() << MSAE_MENU_ALIGN << "Align with muscle", GTGlobals::UseKey));
     GTWidget::click(os, GTUtilsMdi::activeWindow(os), Qt::RightButton);
-    GTGlobals::sleep();
-    //GTGlobals::sleep();
+    GTUtilsTaskTreeView::waitTaskFinished(os);
 
     //Expected state: Column range = 12-14
     GTUtilsMSAEditorSequenceArea::selectArea(os, QPoint(11, 0), QPoint(13, 9));
@@ -1270,8 +1130,7 @@ GUI_TEST_CLASS_DEFINITION(test_0009_1) {
 
     GTUtilsDialog::waitForDialog(os, new PopupChooser(os, QStringList() << MSAE_MENU_ALIGN << "Align with muscle", GTGlobals::UseKey));
     GTWidget::click(os, GTUtilsMdi::activeWindow(os), Qt::RightButton);
-    GTGlobals::sleep();
-    //GTGlobals::sleep();
+    GTUtilsTaskTreeView::waitTaskFinished(os);
 
     //Expected state: Column range = 12-14
     GTUtilsMSAEditorSequenceArea::selectArea(os, QPoint(11, 0), QPoint(13, 9));
@@ -1306,8 +1165,7 @@ GUI_TEST_CLASS_DEFINITION(test_0009_2) {
 
     GTUtilsDialog::waitForDialog(os, new PopupChooser(os, QStringList() << MSAE_MENU_ALIGN << "Align with muscle", GTGlobals::UseKey));
     GTWidget::click(os, GTUtilsMdi::activeWindow(os), Qt::RightButton);
-    GTGlobals::sleep();
-    //GTGlobals::sleep();
+    GTUtilsTaskTreeView::waitTaskFinished(os);
 
     //Expected state: Column range = 12-14
     GTUtilsMSAEditorSequenceArea::selectArea(os, QPoint(11, 0), QPoint(13, 9));
@@ -1341,7 +1199,7 @@ GUI_TEST_CLASS_DEFINITION(test_0010) {
     GTUtilsMSAEditorSequenceArea::selectArea(os);
     GTUtilsDialog::waitForDialog(os, new PopupChooser(os, QStringList() << "MSAE_MENU_COPY" << "copy_selection"));
     GTMouseDriver::click(Qt::RightButton);
-    GTGlobals::sleep();
+    GTUtilsTaskTreeView::waitTaskFinished(os);
 
 // Expected state: every sequense name is the same as its amino translation
     const QString clipboardText = GTClipboard::text(os);
@@ -1365,7 +1223,7 @@ GUI_TEST_CLASS_DEFINITION(test_0010_1) {
     GTUtilsMSAEditorSequenceArea::selectArea(os);
     GTUtilsDialog::waitForDialog(os, new PopupChooser(os, QStringList() << MSAE_MENU_COPY << "copy_selection"));
     GTMouseDriver::click(Qt::RightButton);
-    GTGlobals::sleep();
+    GTUtilsTaskTreeView::waitTaskFinished(os);
 
 // Expected state: every sequense name the same as it amino translation
     const QString clipboardText = GTClipboard::text(os);
@@ -1389,8 +1247,9 @@ GUI_TEST_CLASS_DEFINITION(test_0010_2) {
     GTUtilsMSAEditorSequenceArea::selectArea(os);
     GTUtilsDialog::waitForDialog(os, new PopupChooser(os, QStringList() << MSAE_MENU_COPY << "copy_selection"));
     GTMouseDriver::click(Qt::RightButton);
+    GTUtilsTaskTreeView::waitTaskFinished(os);
 
-// Expected state: every sequense name the same as it amino translation
+// Expected state: every sequence name the same as it amino translation
     const QString clipboardText = GTClipboard::text(os);
     const QString expectedMSA = "L\nS\nD\nS\nP\nK";
     CHECK_SET_ERR(clipboardText == expectedMSA, "Clipboard string and expected MSA string differs");
@@ -1411,6 +1270,7 @@ GUI_TEST_CLASS_DEFINITION(test_0011) {
     GTUtilsDialog::waitForDialog(os, new PopupChooser(os, QStringList() << MSAE_MENU_EDIT << "replace_selected_rows_with_reverse-complement"));
     GTUtilsMSAEditorSequenceArea::selectArea(os, QPoint(0, 0), QPoint(-1, 0));
     GTMouseDriver::click(Qt::RightButton);
+    GTUtilsTaskTreeView::waitTaskFinished(os);
 
 // Expected state: sequence changed from TTG -> CAA
     GTGlobals::sleep();
@@ -1874,7 +1734,7 @@ GUI_TEST_CLASS_DEFINITION(test_0016) {
 //    GTKeyboardDriver::keyClick( 'c', Qt::ControlModifier);
     GTUtilsDialog::waitForDialog(os,new PopupChooser(os,QStringList()<<MSAE_MENU_COPY<<"copy_selection"));
     GTMouseDriver::click(Qt::RightButton);
-    GTGlobals::sleep();
+    GTGlobals::sleep(4000);
 
     QString clipboardText = GTClipboard::text(os);
     CHECK_SET_ERR(clipboardText == "CTT", "MSA part differs from expected");
@@ -1907,15 +1767,14 @@ GUI_TEST_CLASS_DEFINITION(test_0016_1) {
     GTFile::copy(os, sandBoxDir + "ma2_gapped_edited.aln", sandBoxDir + "ma2_gapped.aln");
 //    Expected state: Dialog suggesting to reload modified document has appeared.
 // 3. Press 'Yes'.
-    GTGlobals::sleep(10000);
+    GTGlobals::sleep(1000);
 
 //    Expected state: document was reloaded, view activated.
 //    'Phaneroptera_falcata' starts with CTT.
     GTUtilsMdi::activeWindow(os);
-
     GTGlobals::sleep();
     GTUtilsMSAEditorSequenceArea::selectArea(os, QPoint(0, 0), QPoint(2, 0));
-    GTGlobals::sleep();
+  
 // copy to clipboard
     GTKeyboardDriver::keyClick( 'c', Qt::ControlModifier);
     GTGlobals::sleep();
@@ -1923,7 +1782,7 @@ GUI_TEST_CLASS_DEFINITION(test_0016_1) {
     QString clipboardText = GTClipboard::text(os);
 
     CHECK_SET_ERR(clipboardText == "CTT", "MSA part differs from expected. Expected: CTT, actual: " + clipboardText);
-    GTGlobals::sleep(3000);
+    GTGlobals::sleep();
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0016_2) {
@@ -1943,11 +1802,12 @@ GUI_TEST_CLASS_DEFINITION(test_0016_2) {
 
 //    Expected state: Dialog suggesting to reload modified document has appeared.
 // 3. Press 'Yes'.
-    GTGlobals::sleep(10000);
+    GTGlobals::sleep(1000);
 
 //    Expected state: document was reloaded, view activated.
 //    'Phaneroptera_falcata' starts with CTT.
     GTUtilsMdi::activeWindow(os);
+    GTGlobals::sleep();
 
     GTUtilsMSAEditorSequenceArea::selectArea(os, QPoint(0, 0), QPoint(2, 0));
 // copy to clipboard
@@ -1955,13 +1815,13 @@ GUI_TEST_CLASS_DEFINITION(test_0016_2) {
     GTGlobals::sleep();
 
     QString clipboardText = GTClipboard::text(os);
-    CHECK_SET_ERR(clipboardText == "CTT", "MSA part differs from expected");
+    CHECK_SET_ERR(clipboardText == "CTT", "MSA part differs from expected. Expected: CTT, actual: " + clipboardText);
 
 // CHANGES: select item in project tree view and press delete
     GTMouseDriver::moveTo(GTUtilsProjectTreeView::getItemCenter(os, "ma2_gapped.aln"));
     GTMouseDriver::click();
     GTKeyboardDriver::keyClick( Qt::Key_Delete);
-    GTGlobals::sleep(5000);
+    GTGlobals::sleep();
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0017) {
@@ -3232,7 +3092,7 @@ void test_0039_function(HI::GUITestOpStatus &os, int comboNum, QString extention
     //3.Fill dialog:
     //    File name: test/_common_data/scenarios/sandbox/transl.aln
     //    File format: CLUSTALW(use other formats too, check extension change)
-    //    Amino translation: Standart genetic code
+    //    Amino translation: Standard genetic code
     //    Add document to project: checked
     GTUtilsDialog::waitForDialog(os, new PopupChooser(os, QStringList() << "action_project__export_import_menu_action"
         << "action_project__export_to_amino_action"));

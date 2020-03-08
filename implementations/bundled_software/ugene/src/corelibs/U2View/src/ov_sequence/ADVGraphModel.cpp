@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -168,20 +168,21 @@ void GSequenceGraphUtils::fitToScreen(const QVector<float>& data, int dataStartB
 
 int GSequenceGraphUtils::getNumSteps(const U2Region& range, int w, int s) {
     if(range.length < w) return 1;
-    int steps = (range.length  - w) / s + 1;
-    return steps;
+    qint64 steps = (range.length  - w) / s + 1;
+    return (int) steps;
 }
 
 //////////////////////////////////////////////////////////////////////////
 //drawer
 
-const QString GSequenceGraphDrawer::DEFAULT_COLOR(QObject::tr("Default color"));
-const int GSequenceGraphDrawer::UNKNOWN_VAL = -1;
+const float GSequenceGraphDrawer::UNKNOWN_VAL = -1000; // todo: use numeric limits and test all platforms
 
 GSequenceGraphDrawer::GSequenceGraphDrawer(GSequenceGraphView* v, const GSequenceGraphWindowData& wd,
                                            QMap<QString,QColor> colors)
 : QObject(v), view(v), lineColors(colors), globalMin(0), globalMax(0), wdata(wd)
 {
+    DEFAULT_COLOR = tr("Default color");
+
     connect(v, SIGNAL(si_labelAdded(const QSharedPointer<GSequenceGraphData>&, GraphLabel*, const QRect&)),
             this, SLOT(sl_labelAdded(const QSharedPointer<GSequenceGraphData>&, GraphLabel*, const QRect&)));
     connect(v, SIGNAL(si_labelMoved(const QSharedPointer<GSequenceGraphData>&, GraphLabel*, const QRect&)),
@@ -652,19 +653,36 @@ bool GSequenceGraphDrawer::calculateLabelData(const QRect &rect, const PairVecto
     return true;
 }
 
+QPair<float, float> GSequenceGraphDrawer::getMinAndMaxInRange(const PairVector& points, const U2Region& region) {
+    QPair<float, float> result(UNKNOWN_VAL, UNKNOWN_VAL);
+    for (qint64 x = region.startPos, n = region.endPos(); x < n; x++) {
+        float value = calculatePointValue(points, x);
+        if (isUnknownValue(value)) {
+            continue;
+        }
+        result.first = qFuzzyCompare(result.first, UNKNOWN_VAL) ? value : qMin(value, result.first) ;
+        result.second = qFuzzyCompare(result.second, UNKNOWN_VAL) ? value : qMax(value, result.second) ;
+    }
+    return result;
+}
+
+
+
 float GSequenceGraphDrawer::calculateLabelValue(int nPoints, const PairVector &points, GraphLabel *label, int xcoordInRect) {
     float value = calculatePointValue(points, xcoordInRect);
     if (value == UNKNOWN_VAL) {
         return 2 * globalMax;
     }
 
-    const int comparisonWindowSize = 50;
-
-    int startPos = qMax(xcoordInRect, 0);
-    startPos = qMin(startPos, nPoints - comparisonWindowSize/2 - 1);
-    U2Region comparisonWindow(startPos, comparisonWindowSize/2);
-    bool isExtremum = isExtremumPoint(nPoints, points, value, comparisonWindow);
-    if(true == isExtremum) {
+    int rangeToCheck = 50;
+    int startPos = qBound(0, xcoordInRect - rangeToCheck/2, nPoints);
+    int endPos = qBound(startPos, xcoordInRect + rangeToCheck/2, nPoints);
+    QPair<float, float> minAndMax = getMinAndMaxInRange(points, U2Region(startPos, endPos - startPos));
+    bool flat = qFuzzyCompare(minAndMax.first, minAndMax.second);
+    bool isMin = qFuzzyCompare(value, minAndMax.first);
+    bool isMax = qFuzzyCompare(value, minAndMax.second);
+    bool isExtremum = !flat && (isMin || isMax);
+    if (isExtremum) {
         label->mark();
     } else {
         label->unmark();
@@ -704,64 +722,6 @@ float GSequenceGraphDrawer::calculatePointValue(const PairVector &points, int xc
     }
 
     return value;
-}
-
-bool GSequenceGraphDrawer::isExtremumPoint(int npoints, const PairVector& points, float value, U2Region& comparisonWindow)
-{
-    int compareRes = -2;
-    int length = comparisonWindow.length;
-    int counter = 0;
-    const QVector<float> &firstPoints = points.firstPoints;
-    for(int x = comparisonWindow.startPos; counter <= length; x++)
-    {
-        if (x >= npoints - 2) {
-            break;
-        }
-        if (isUnknownValue(firstPoints.at(x))) {
-            continue;
-        }
-        counter++;
-        float comparedValue = firstPoints.at(x);
-        if(true == qFuzzyCompare(value, comparedValue)) {
-            if(0 == compareRes) {
-                return false;
-            }
-            compareRes = 0;
-        } else {
-            bool condition = value > comparedValue;
-            if((true == condition && compareRes == -1) || (false == condition && compareRes == 1)) {
-                return false;
-            }
-            compareRes = condition ? 1 : -1;
-        }
-    }
-    counter = 0;
-    for(int x = comparisonWindow.startPos; counter <= length; x--) {
-        if (x <= 0) {
-            break;
-        }
-        if (isUnknownValue(firstPoints.at(x))) {
-            continue;
-        }
-        counter++;
-        float comparedValue = firstPoints.at(x);
-        if (qFuzzyCompare(value, comparedValue)) {
-            if (compareRes == 0) {
-                return false;
-            }
-            compareRes = 0;
-        } else {
-            bool condition = value > comparedValue;
-            if ((condition && compareRes == -1) || (!condition && compareRes == 1)) {
-                return false;
-            }
-            compareRes = condition ? 1 : -1;
-        }
-    }
-    if (compareRes == 0|| compareRes == -2) {
-        return false;
-    }
-    return true;
 }
 
 static void align(int start, int end, int win, int step, int seqLen, int& alignedFirst, int& alignedLast) {

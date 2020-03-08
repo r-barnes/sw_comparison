@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -27,7 +27,6 @@
 #include <QList>
 #include <QObject>
 
-#include <U2Core/global.h>
 #include <U2Core/AnnotationData.h>
 #include <U2Core/Task.h>
 
@@ -35,14 +34,13 @@ namespace U2 {
 
 class HttpRequest {
 public:
-    virtual void sendRequest(const QString &program,const QString &query) = 0;
+    virtual void sendRequest(const QString &program, const QString &query) = 0;
     virtual QList<SharedAnnotationData> getAnnotations() { return result; }
     virtual QString getError() { return error; }
-    virtual QByteArray getOutputFile() {return NULL;}
+    virtual QByteArray getOutputFile() { return NULL; }
     virtual ~HttpRequest() {};
-    bool connectionError;
 protected:
-    HttpRequest(Task *_task):connectionError(false),error(""),task(_task){};
+    HttpRequest(Task *_task) :error(""), task(_task) {};
     QString error;
     QList<SharedAnnotationData> result;
     Task *task;
@@ -54,17 +52,17 @@ public:
     virtual HttpRequest * getRequest(Task *t) = 0;
 };
 
-class U2CORE_EXPORT DataBaseRegistry:public QObject{
+class U2CORE_EXPORT DataBaseRegistry :public QObject {
     Q_OBJECT
 public:
-    DataBaseRegistry(QObject *o = 0);
+    DataBaseRegistry(QObject *o = NULL);
     ~DataBaseRegistry();
     bool registerDataBase(DataBaseFactory *f, const QString &id);
     DataBaseFactory *getFactoryById(const QString& id);
     bool isRegistered(const QString& id);
 
 private:
-    QMap<QString,DataBaseFactory *> factories;
+    QMap<QString, DataBaseFactory *> factories;
 };
 
 }

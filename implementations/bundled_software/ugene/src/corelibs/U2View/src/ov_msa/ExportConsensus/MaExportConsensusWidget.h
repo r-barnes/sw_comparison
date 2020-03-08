@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -30,6 +30,7 @@ namespace U2 {
 
 class MaEditor;
 class SaveDocumentController;
+class ExportMaConsensusTask;
 
 class MaExportConsensusWidget : public QWidget, private Ui_ExportConsensusWidget {
     Q_OBJECT
@@ -41,6 +42,7 @@ public:
 private slots:
     void sl_exportClicked();
     void sl_consensusChanged(const QString& algoId);
+    void sl_exportTaskStateChanged();
 
 private:
     void initSaveController();
@@ -49,6 +51,7 @@ private:
     MaEditor *ma;
     U2SavableWidget savableWidget;
     SaveDocumentController *saveController;
+    QSet<QString> exportTaskUrls;
 };
 
 } // namespace

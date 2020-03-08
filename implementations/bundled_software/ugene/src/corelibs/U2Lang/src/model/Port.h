@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -51,6 +51,8 @@ public:
     DataTypePtr getOutputType() const;
     void setNewType(const DataTypePtr &newType);
     QMap<Descriptor, DataTypePtr> getOwnTypeMap() const;
+    virtual void setVisibleSlot(const QString& slotId, const bool isVisible);
+    QString getSlotNameById(const QString& id) const;
 
 protected:
     // type of data that this port contains
@@ -62,6 +64,9 @@ protected:
     // for user purposes
     // see usage in implementations e.g. IntegralBusModel.cpp
     uint flags;
+
+private:
+    DataTypePtr defaultType;
 
 }; // PortDescriptor
 

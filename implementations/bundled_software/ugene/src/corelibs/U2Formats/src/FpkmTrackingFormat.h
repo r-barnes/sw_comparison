@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -27,6 +27,7 @@
 #include <U2Core/DocumentModel.h>
 #include <U2Core/U2Region.h>
 
+#include "TextDocumentFormat.h"
 
 namespace U2 {
 
@@ -102,23 +103,19 @@ enum FpkmTrackingLineFieldsIndeces {FPKM_TRACKING_ID_INDEX = 0, FPKM_CLASS_CODE_
  * Description of the format from the Cufflinks manual was used:
  * http://cufflinks.cbcb.umd.edu/manual.html#fpkm_tracking_format
  */
-class U2FORMATS_EXPORT FpkmTrackingFormat : public DocumentFormat
+class U2FORMATS_EXPORT FpkmTrackingFormat : public TextDocumentFormat
 {
     Q_OBJECT
 
 public:
     FpkmTrackingFormat(QObject* parent);
 
-    virtual DocumentFormatId getFormatId() const { return BaseDocumentFormats::FPKM_TRACKING_FORMAT; }
-
-    virtual const QString& getFormatName() const { return FORMAT_NAME; }
-
     virtual void storeDocument(Document* doc, IOAdapter* io, U2OpStatus& os);
 
-    virtual FormatCheckResult checkRawData(const QByteArray& rawData, const GUrl& = GUrl()) const;
-
 protected:
-    virtual Document* loadDocument(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& hints, U2OpStatus& os);
+    virtual FormatCheckResult checkRawTextData(const QByteArray& rawData, const GUrl& = GUrl()) const;
+
+    virtual Document* loadTextDocument(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& hints, U2OpStatus& os);
 
     QList<SharedAnnotationData> parseDocument(IOAdapter* io, QString& seqName, QString annotName, U2OpStatus& os);
 
@@ -127,10 +124,7 @@ protected:
 private:
     FpkmTrackingLineData parseAndValidateLine(QString line, QStringList columns, FpkmTrackingLineValidateFlags& status) const;
 
-    static const QString FORMAT_NAME;
-
     static const QString NO_VALUE_STR;
-
     static const QString TRACKING_ID_COLUMN;
     static const QString CLASS_CODE_COLUMN;
     static const QString NEAREST_REF_ID_COLUMN;

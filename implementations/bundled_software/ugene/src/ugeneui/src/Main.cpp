@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -18,6 +18,17 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301, USA.
  */
+
+#include <qglobal.h>
+
+#ifdef Q_OS_WIN
+#include <windows.h>
+#include <tchar.h>
+#endif // Q_OS_WIN
+
+#ifdef Q_OS_MAC
+#include "app_settings/ResetSettingsMac.h"
+#endif
 
 #include <QApplication>
 #include <QDesktopWidget>
@@ -63,6 +74,7 @@
 #include <U2Core/DataBaseRegistry.h>
 #include <U2Core/DataPathRegistry.h>
 #include <U2Core/ExternalToolRegistry.h>
+#include <U2Core/FileAndDirectoryUtils.h>
 #include <U2Core/GObjectTypes.h>
 #include <U2Core/GUrlUtils.h>
 #include <U2Core/LoadRemoteDocumentTask.h>
@@ -80,6 +92,8 @@
 #include <U2Core/UserActionsWriter.h>
 #include <U2Core/UserApplicationsSettings.h>
 #include <U2Core/VirtualFileSystem.h>
+
+#include <U2Designer/DashboardInfoRegistry.h>
 
 #include <U2Formats/ConvertFileTask.h>
 #include <U2Formats/DocumentFormatUtils.h>
@@ -116,6 +130,7 @@
 #include <U2View/AssemblySettingsWidget.h>
 #include <U2View/ColorSchemaSettingsController.h>
 #include <U2View/DnaAssemblyUtils.h>
+#include <U2View/FindPatternMsaWidgetFactory.h>
 #include <U2View/FindPatternWidgetFactory.h>
 #include <U2View/McaGeneralTabFactory.h>
 #include <U2View/MaExportConsensusTabFactory.h>
@@ -150,9 +165,33 @@
 #include "shtirlitz/Shtirlitz.h"
 #include "task_view/TaskViewController.h"
 #include "update/UgeneUpdater.h"
-#include "welcome_page/WelcomePageController.h"
+#include "welcome_page/WelcomePageMdiController.h"
 
 using namespace U2;
+
+#ifdef Q_OS_WIN
+typedef BOOL(WINAPI *LPFN_ISWOW64PROCESS) (HANDLE, PBOOL);
+
+LPFN_ISWOW64PROCESS fnIsWow64Process;
+
+BOOL IsWow64() {
+    BOOL bIsWow64 = FALSE;
+
+    //IsWow64Process is not available on all supported versions of Windows.
+    //Use GetModuleHandle to get a handle to the DLL that contains the function
+    //and GetProcAddress to get a pointer to the function if available.
+
+    fnIsWow64Process = (LPFN_ISWOW64PROCESS)GetProcAddress(
+        GetModuleHandle(TEXT("kernel32")), "IsWow64Process");
+
+    if (NULL != fnIsWow64Process) {
+        if (!fnIsWow64Process(GetCurrentProcess(), &bIsWow64)) {
+            //handle error
+        }
+    }
+    return bIsWow64;
+}
+#endif // Q_OS_WIN
 
 static void registerCoreServices() {
     ServiceRegistry* sr = AppContext::getServiceRegistry();
@@ -214,7 +253,18 @@ static void initLogsCache(LogCacheExt& logsCache, const QStringList& ) {
     }
     LogSettings ls;
     ls.reinitAll();
-    if(ls.toFile){
+
+#ifdef UGENE_FORCE_WRITE_LOG_TO_FILE
+    // It should be defined during the UGENE building.
+    // It is to force log writing for user's personal packages to avoid explaining how to write the log to file
+    // Add to DEFINES when you execute qmake for the project
+    ls.toFile = true;
+    const QString logsDir = AppContext::getAppSettings()->getUserAppsSettings()->getDefaultDataDirPath() + "/logs";
+    QDir().mkpath(logsDir);
+    ls.outputFile = logsDir + "/ugene_log_" + QDateTime::currentDateTime().toString("yyyy.MM.dd_hh-mm") + ".txt";
+#endif
+
+    if (ls.toFile) {
         logsCache.setFileOutputEnabled(ls.outputFile);
     }
 }
@@ -257,6 +307,7 @@ static void initOptionsPanels() {
     MSAGeneralTabFactory *msaGeneralTabFactory = new MSAGeneralTabFactory();
     QString msaGeneralId = msaGeneralTabFactory->getOPGroupParameters().getGroupId();
     opWidgetFactoryRegistry->registerFactory(msaGeneralTabFactory);
+    opWidgetFactoryRegistry->registerFactory(new FindPatternMsaWidgetFactory());
 
     MSAHighlightingFactory *msaHighlightingFactory = new MSAHighlightingFactory();
     QString msaHighlightingId = msaHighlightingFactory->getOPGroupParameters().getGroupId();
@@ -372,6 +423,11 @@ int main(int argc, char **argv)
     //QApplication app(argc, argv);
     GApplication app(argc, argv);
 
+#ifdef Q_OS_LINUX
+    QPixmap pixmap(":/ugene/images/originals/ugene_128.png");
+    app.setWindowIcon(pixmap);
+#endif
+
     QMainWindow window;
     SplashScreen *splashScreen = new SplashScreen(&window);
     splashScreen->adjustSize();
@@ -419,6 +475,21 @@ int main(int argc, char **argv)
 
     UserAppsSettings* userAppSettings = AppContext::getAppSettings()->getUserAppsSettings();
 
+    if (cmdLineRegistry->hasParameter(CMDLineCoreOptions::DOWNLOAD_DIR)) {
+        userAppSettings->setDownloadDirPath(FileAndDirectoryUtils::getAbsolutePath(cmdLineRegistry->getParameterValue(CMDLineCoreOptions::DOWNLOAD_DIR)));
+    }
+    if (cmdLineRegistry->hasParameter(CMDLineCoreOptions::CUSTOM_TOOLS_CONFIG_DIR)) {
+        userAppSettings->setCustomToolsConfigsDirPath(FileAndDirectoryUtils::getAbsolutePath(cmdLineRegistry->getParameterValue(CMDLineCoreOptions::CUSTOM_TOOLS_CONFIG_DIR)));
+    }
+    if (cmdLineRegistry->hasParameter(CMDLineCoreOptions::TMP_DIR)) {
+        userAppSettings->setUserTemporaryDirPath(FileAndDirectoryUtils::getAbsolutePath(cmdLineRegistry->getParameterValue(CMDLineCoreOptions::TMP_DIR)));
+    }
+    if (cmdLineRegistry->hasParameter(CMDLineCoreOptions::DEFAULT_DATA_DIR)) {
+        userAppSettings->setDefaultDataDirPath(FileAndDirectoryUtils::getAbsolutePath(cmdLineRegistry->getParameterValue(CMDLineCoreOptions::DEFAULT_DATA_DIR)));
+    }
+    if (cmdLineRegistry->hasParameter(CMDLineCoreOptions::FILE_STORAGE_DIR)) {
+        userAppSettings->setFileStorageDir(FileAndDirectoryUtils::getAbsolutePath(cmdLineRegistry->getParameterValue(CMDLineCoreOptions::FILE_STORAGE_DIR)));
+    }
 
     bool trOK = false;
     QTranslator translator;
@@ -466,8 +537,46 @@ int main(int argc, char **argv)
     LogCache::setAppGlobalInstance(&logsCache);
     app.installEventFilter(new UserActionsWriter());
     coreLog.details(UserAppsSettings::tr("UGENE initialization started"));
-    GCOUNTER( cvar, tvar, "ugeneui" );
+    
+    GReportableCounter ugeneArchCounter("UGENE architecture", "", 1);
+    ++ugeneArchCounter.totalCount;
+#if defined UGENE_X86_64
+    ugeneArchCounter.suffix = "Ugene 64-bit";
+#elif defined UGENE_X86
+    ugeneArchCounter.suffix = "Ugene 32-bit";
+#else
+    ugeneArchCounter.suffix = "Undetected architecture";
+#endif
 
+    GReportableCounter sysArchCounter("OS architecture", "", 1);
+    ++sysArchCounter.totalCount;
+#if defined Q_OS_WIN
+    if (ugeneArchCounter.suffix == "Ugene 64-bit") {
+        sysArchCounter.suffix = "Windows 64-bit";
+    } else {
+        if (IsWow64()) {
+            sysArchCounter.suffix = "Windows 64-bit";
+        } else {
+            sysArchCounter.suffix = "Windows 32-bit";
+        }
+    }
+#elif defined Q_OS_MAC
+    sysArchCounter.suffix = "MacOS 64-bit";
+#elif defined Q_OS_LINUX
+    if(QSysInfo::currentCpuArchitecture().contains("64")) {
+        sysArchCounter.suffix = "Linux 64-bit";
+    } else {
+        sysArchCounter.suffix = "Linux 32-bit";
+    }
+#elif defined Q_OS_UNIX
+    if(QSysInfo::currentCpuArchitecture().contains("64")) {
+        sysArchCounter.suffix = "Unix 64-bit";
+    } else {
+        sysArchCounter.suffix = "Unix 32-bit";
+    }
+#else
+    sysArchCounter.suffix = "Undetected OS";
+#endif
     coreLog.trace(QString("UGENE run at dir %1 with parameters %2").arg(AppContext::getWorkingDirectoryPath()).arg(app.arguments().join(" ")));
 
     //print some settings info, can't do it earlier than logging is initialized
@@ -672,6 +781,9 @@ int main(int argc, char **argv)
     PasteFactory *pasteFactory = new PasteFactoryImpl;
     appContext->setPasteFactory(pasteFactory);
 
+    DashboardInfoRegistry *dashboardInfoRegistry = new DashboardInfoRegistry;
+    appContext->setDashboardInfoRegistry(dashboardInfoRegistry);
+
     Workflow::WorkflowEnv::init(new Workflow::WorkflowEnvImpl());
     Workflow::WorkflowEnv::getDomainRegistry()->registerEntry(new LocalWorkflow::LocalDomainFactory());
 
@@ -744,11 +856,11 @@ int main(int argc, char **argv)
     coreLog.info( QObject::tr( "UGENE version: %1 %2-bit").arg( v.text ).arg( Version::appArchitecture ) );
     coreLog.info( QObject::tr( "UGENE distribution: %1").arg( v.distributionInfo ));
 
-    QObject::connect(ts, SIGNAL(si_noTasksInScheduler()), splashScreen, SLOT(sl_close()));
-    QObject::connect(ts, SIGNAL(si_noTasksInScheduler()), mw, SLOT(sl_show()));
+    QObject::connect(ts, SIGNAL(si_ugeneIsReadyToWork()), splashScreen, SLOT(sl_close()));
+    QObject::connect(ts, SIGNAL(si_ugeneIsReadyToWork()), mw, SLOT(sl_show()));
 
-    WelcomePageController *wpc = new WelcomePageController();
-    QObject::connect(ts, SIGNAL(si_noTasksInScheduler()), wpc, SLOT(sl_showPage()));
+    WelcomePageMdiController *wpc = new WelcomePageMdiController();
+    QObject::connect(ts, SIGNAL(si_ugeneIsReadyToWork()), wpc, SLOT(sl_showPage()));
     QObject::connect(mw, SIGNAL(si_showWelcomePage()), wpc, SLOT(sl_showPage()));
     QObject::connect(pli, SIGNAL(si_recentListChanged()), wpc, SLOT(sl_onRecentChanged()));
 
@@ -777,6 +889,9 @@ int main(int argc, char **argv)
     }
 
     delete wpc;
+
+    appContext->setDashboardInfoRegistry(nullptr);
+    delete dashboardInfoRegistry;
 
     appContext->setPasteFactory(NULL);
     delete pasteFactory;
@@ -968,8 +1083,12 @@ int main(int argc, char **argv)
     delete globalSettings;
 
     if (deleteSettingsFile){
+#ifndef Q_OS_MAC
         QFile ff;
         ff.remove(iniFile);
+#else
+        ResetSettingsMac::reset();
+#endif // !Q_OS_MAC        
     }
 
     UgeneUpdater::onClose();

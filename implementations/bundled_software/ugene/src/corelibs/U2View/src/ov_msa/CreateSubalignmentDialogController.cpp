@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -46,10 +46,12 @@
 
 namespace U2{
 
+#define ROW_ID_PROPERTY "row-id"
+
 CreateSubalignmentDialogController::CreateSubalignmentDialogController(MultipleSequenceAlignmentObject *_mobj, const QRect& selection, QWidget *p)
 : QDialog(p), mobj(_mobj), saveController(NULL){
     setupUi(this);
-    new HelpButton(this, buttonBox, "21433278");
+    new HelpButton(this, buttonBox, "24742477");
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Extract"));
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
 
@@ -96,7 +98,9 @@ CreateSubalignmentDialogController::CreateSubalignmentDialogController(MultipleS
     endLineEdit->setText(QString::number(endPos));
 
     for (int i=0; i<rowNumber; i++) {
-        QCheckBox *cb = new QCheckBox(mobj->getMsa()->getMsaRow(i)->getName(), this);
+        MultipleSequenceAlignmentRow row = mobj->getMsa()->getMsaRow(i);
+        QCheckBox *cb = new QCheckBox(row->getName(), this);
+        cb->setProperty(ROW_ID_PROPERTY, row.data()->getRowId());
         cb->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
         if ( (i >= startSeq) && (i <= endSeq)) {
             cb->setChecked(true);
@@ -122,10 +126,6 @@ DocumentFormatId CreateSubalignmentDialogController::getFormatId() {
 
 U2Region CreateSubalignmentDialogController::getRegion() {
     return window;
-}
-
-QStringList CreateSubalignmentDialogController::getSelectedSeqNames() {
-    return selectedNames;
 }
 
 void CreateSubalignmentDialogController::sl_allButtonClicked(){
@@ -226,9 +226,9 @@ void CreateSubalignmentDialogController::accept(){
         return;
     }
 
-    selectSeqNames();
+    updateSelectedRowIds();
 
-    if(selectedNames.size() == 0){
+    if (selectedRowIds.empty()) {
         QMessageBox::critical(this, this->windowTitle(), tr("You must select at least one sequence"));
         return;
     }
@@ -243,15 +243,15 @@ bool CreateSubalignmentDialogController::getAddToProjFlag() {
     return addToProjBox->isChecked();
 }
 
-void CreateSubalignmentDialogController::selectSeqNames(){
-    QStringList names;
+void CreateSubalignmentDialogController::updateSelectedRowIds() {
+    selectedRowIds.clear();
     for (int i=0; i<sequencesTableWidget->rowCount(); i++) {
         QCheckBox *cb = qobject_cast<QCheckBox*>(sequencesTableWidget->cellWidget(i, 0));
         if(cb->isChecked()){
-            names.append(cb->text());
+            qint64 rowId = (qint64) cb->property(ROW_ID_PROPERTY).toLongLong();
+            selectedRowIds << rowId;
         }
     }
-    selectedNames = names;
 }
 
 

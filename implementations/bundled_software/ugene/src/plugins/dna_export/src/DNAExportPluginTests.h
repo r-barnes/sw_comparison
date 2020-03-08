@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -34,7 +34,7 @@ namespace U2 {
 class U2SequenceObject;
 class MultipleSequenceAlignmentObject;
 
-class GTest_ImportPhredQualityScoresTask : public GTest {
+class GTest_ImportPhredQualityScoresTask : public XmlTest {
     Q_OBJECT
 public:
     SIMPLE_XML_TEST_BODY_WITH_FACTORY_EXT(GTest_ImportPhredQualityScoresTask, "import-phred-qualities", TaskFlags_NR_FOSCOE);
@@ -47,7 +47,7 @@ public:
 
 };
 
-class GTest_ExportNucleicToAminoAlignmentTask : public GTest {
+class GTest_ExportNucleicToAminoAlignmentTask : public XmlTest {
     Q_OBJECT
 
 

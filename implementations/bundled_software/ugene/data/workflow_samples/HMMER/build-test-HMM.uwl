@@ -115,6 +115,7 @@ workflow "Build HMM from alignment and test it"{
         wizard {
             name:"Build HMM from alignment and test it Wizard";
             help-page-id:16122715;
+            auto-run: true;
             page {
                 id:1;
                 next:2;

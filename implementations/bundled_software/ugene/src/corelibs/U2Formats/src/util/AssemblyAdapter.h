@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -23,6 +23,7 @@
 #define _U2_ASSEMBLY_ADAPTER_H_
 
 #include <U2Core/U2Assembly.h>
+#include <U2Core/U2Region.h>
 
 namespace U2 {
 
@@ -30,8 +31,7 @@ class U2AssemblyReadsImportInfo;
 class U2OpStatus;
 
 // reserved for future use;
-class AssemblyCompressor {
-};
+class AssemblyCompressor {};
 
 class AssemblyAdapter {
 public:
@@ -39,9 +39,9 @@ public:
         assemblyId(assemblyId), compressor(compressor) {}
     virtual ~AssemblyAdapter() {}
 
-    virtual void createReadsTables(U2OpStatus& ) {}
-    virtual void createReadsIndexes(U2OpStatus& ) {}
-    virtual void shutdown(U2OpStatus& ) {}
+    virtual void createReadsTables(U2OpStatus&) {}
+    virtual void createReadsIndexes(U2OpStatus&) {}
+    virtual void shutdown(U2OpStatus&) {}
 
     virtual qint64 countReads(const U2Region& r, U2OpStatus& os) = 0;
 

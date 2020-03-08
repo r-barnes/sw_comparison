@@ -91,6 +91,7 @@ workflow "In silico PCR"{
         wizard {
             name:"In Silico PCR";
             help-page-id:16123482;
+            auto-run: true;
             page {
                 id:1;
                 next:2;

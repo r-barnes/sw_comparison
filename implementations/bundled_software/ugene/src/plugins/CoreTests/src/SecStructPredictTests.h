@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -30,7 +30,7 @@ namespace U2 {
 class SecStructPredictTask;
 class AnnotationTableObject;
 
-class GTest_SecStructPredictAlgorithm : public GTest {
+class GTest_SecStructPredictAlgorithm : public XmlTest {
     Q_OBJECT
 public:
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_SecStructPredictAlgorithm, "test-sec-struct-predict-algorithm");
@@ -44,7 +44,7 @@ private:
 };
 
 
-class GTest_SecStructPredictTask : public GTest {
+class GTest_SecStructPredictTask : public XmlTest {
     Q_OBJECT
 public:
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_SecStructPredictTask, "predict-sec-structure-and-save-results");

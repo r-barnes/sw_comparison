@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -23,6 +23,8 @@
 #include <U2Core/DocumentModel.h>
 #include <U2Core/DocumentUtils.h>
 #include <U2Core/IOAdapter.h>
+#include <U2Core/IOAdapterUtils.h>
+#include <U2Core/U2SafePoints.h>
 #include <U2Core/Timer.h>
 
 #include "StreamSequenceReader.h"
@@ -39,7 +41,7 @@ DNASequence* StreamSequenceReader::getNextSequenceObject() {
 }
 
 StreamSequenceReader::StreamSequenceReader()
-: currentReaderIndex(-1), currentSeq(NULL), errorOccured(false), lookupPerformed(false)
+: currentReaderIndex(-1), currentSeq(NULL), lookupPerformed(false)
 {
 
 }
@@ -57,6 +59,9 @@ bool StreamSequenceReader::hasNext() {
         while (currentReaderIndex < readers.count()) {
             ReaderContext ctx = readers.at(currentReaderIndex);
             DNASequence *newSeq = ctx.format->loadSequence(ctx.io, taskInfo);
+            if (taskInfo.hasError()) {
+                errorMessage = taskInfo.getError();
+            }
             currentSeq.reset(newSeq);
             if (NULL == newSeq) {
                 ++currentReaderIndex;
@@ -75,11 +80,19 @@ bool StreamSequenceReader::hasNext() {
     return true;
 }
 
+bool StreamSequenceReader::init(const QStringList &urls) {
+    QList<GUrl> gUrls;
+    foreach (const QString &url, urls) {
+        gUrls << url;
+    }
+    return init(gUrls);
+}
+
 bool StreamSequenceReader::init( const QList<GUrl>& urls ) {
     foreach (const GUrl& url, urls) {
         QList<FormatDetectionResult> detectedFormats = DocumentUtils::detectFormat(url);
         if (detectedFormats.isEmpty()) {
-            taskInfo.setError(QString("File %1 unsupported format.").arg(url.getURLString()));
+            taskInfo.setError(tr("File %1 unsupported format.").arg(url.getURLString()));
             break;
         }
         ReaderContext ctx;
@@ -87,7 +100,7 @@ bool StreamSequenceReader::init( const QList<GUrl>& urls ) {
         if ( ctx.format->getFlags().testFlag(DocumentFormatFlag_SupportStreaming) == false  ) {
             break;
         }
-        IOAdapterFactory* factory = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(BaseIOAdapters::LOCAL_FILE);
+        IOAdapterFactory* factory = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(IOAdapterUtils::url2io(url));
         IOAdapter* io = factory->createIOAdapter();
         if (!io->open(url, IOAdapterMode_Read)) {
             break;
@@ -97,7 +110,7 @@ bool StreamSequenceReader::init( const QList<GUrl>& urls ) {
     }
 
     if (readers.isEmpty()) {
-        taskInfo.setError("Unsupported file format or short reads list is empty");
+        taskInfo.setError(tr("Unsupported file format or short reads list is empty"));
         return false;
     } else {
         currentReaderIndex = 0;
@@ -105,6 +118,24 @@ bool StreamSequenceReader::init( const QList<GUrl>& urls ) {
     }
 
 
+}
+
+const IOAdapter *StreamSequenceReader::getIO() const
+{
+    if (currentReaderIndex < readers.count()) {
+        ReaderContext ctx = readers.at(currentReaderIndex);
+        return ctx.io;
+    }
+    return NULL;
+}
+
+DocumentFormat *StreamSequenceReader::getFormat() const
+{
+    if (currentReaderIndex < readers.count()) {
+        ReaderContext ctx = readers.at(currentReaderIndex);
+        return ctx.format;
+    }
+    return NULL;
 }
 
 QString StreamSequenceReader::getErrorMessage() {
@@ -132,5 +163,23 @@ StreamSequenceReader::~StreamSequenceReader() {
     }
 }
 
+int StreamSequenceReader::getNumberOfSequences(const QString& url, U2OpStatus& os) {
+    int result = 0;
+    StreamSequenceReader streamSequenceReader;
+    bool wasInitialized = streamSequenceReader.init(QStringList() << url);
+    CHECK_EXT(wasInitialized,
+              os.setError(streamSequenceReader.getErrorMessage()),
+              -1);
+
+    while (streamSequenceReader.hasNext()) {
+        streamSequenceReader.getNextSequenceObject();
+        result++;
+    }
+    CHECK_EXT(!streamSequenceReader.hasError(),
+              os.setError(streamSequenceReader.getErrorMessage()),
+              -1);
+
+    return result;
+}
 
 } //namespace

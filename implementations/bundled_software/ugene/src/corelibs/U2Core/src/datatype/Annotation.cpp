@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -19,6 +19,8 @@
  * MA 02110-1301, USA.
  */
 
+#include "Annotation.h"
+
 #include <QTextDocument>
 
 #include <U2Core/AnnotationModification.h>
@@ -27,33 +29,30 @@
 #include <U2Core/DNATranslation.h>
 #include <U2Core/L10n.h>
 #include <U2Core/TextUtils.h>
+#include <U2Core/U1AnnotationUtils.h>
 #include <U2Core/U2DbiUtils.h>
 #include <U2Core/U2FeatureKeys.h>
 #include <U2Core/U2FeatureUtils.h>
 #include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2SafePoints.h>
 
-#include "Annotation.h"
-
 const QString QUALIFIER_NAME_CIGAR = "cigar";
 const QString QUALIFIER_NAME_SUBJECT = "subj_seq";
 
 namespace U2 {
 
-Annotation::Annotation(const U2DataId &featureId, const SharedAnnotationData &data,
-    AnnotationGroup *parentGroup, AnnotationTableObject *parentObject)
-    : U2Entity(featureId), parentObject(parentObject), data(data), group(parentGroup)
-{
+Annotation::Annotation(const U2DataId &featureId, const SharedAnnotationData &data, AnnotationGroup *parentGroup, AnnotationTableObject *parentObject)
+    : U2Entity(featureId), parentObject(parentObject), data(data), group(parentGroup) {
     SAFE_POINT(NULL != parentGroup, L10N::nullPointerError("Annotation group"), );
     SAFE_POINT(NULL != parentObject, L10N::nullPointerError("Annotation table object"), );
     SAFE_POINT(hasValidId(), "Invalid DB reference", );
 }
 
-AnnotationTableObject * Annotation::getGObject() const {
+AnnotationTableObject *Annotation::getGObject() const {
     return parentObject;
 }
 
-const SharedAnnotationData & Annotation::getData() const {
+const SharedAnnotationData &Annotation::getData() const {
     return data;
 }
 
@@ -71,7 +70,7 @@ void Annotation::setName(const QString &name) {
 
     U2OpStatusImpl os;
     U2FeatureUtils::updateFeatureName(id, name, parentObject->getEntityRef().dbiRef, os);
-    SAFE_POINT_OP(os,);
+    SAFE_POINT_OP(os, );
 
     data->name = name;
 
@@ -85,7 +84,7 @@ void Annotation::setType(U2FeatureType type) {
 
     U2OpStatusImpl os;
     U2FeatureUtils::updateFeatureType(id, type, parentObject->getEntityRef().dbiRef, os);
-    SAFE_POINT_OP(os,);
+    SAFE_POINT_OP(os, );
 
     data->type = type;
 
@@ -170,8 +169,16 @@ QVector<U2Region> Annotation::getRegions() const {
     return data->getRegions();
 }
 
+qint64 Annotation::getRegionsLen() const {
+    qint64 len = 0;
+    foreach (const U2Region &region, getRegions()) {
+        len += region.length;
+    }
+    return len;
+}
+
 void Annotation::updateRegions(const QVector<U2Region> &regions) {
-    SAFE_POINT(!regions.isEmpty(), "Attempting to assign the annotation to an empty region!",);
+    SAFE_POINT(!regions.isEmpty(), "Attempting to assign the annotation to an empty region!", );
     CHECK(regions != data->location->regions, );
 
     U2Location newLocation = data->location;
@@ -189,7 +196,7 @@ void Annotation::updateRegions(const QVector<U2Region> &regions) {
 }
 
 void Annotation::addLocationRegion(const U2Region &reg) {
-    SAFE_POINT(!reg.isEmpty(), "Attempting to annotate an empty region!",);
+    SAFE_POINT(!reg.isEmpty(), "Attempting to annotate an empty region!", );
     CHECK(!data->location->regions.contains(reg), );
 
     U2Location newLocation = data->location;
@@ -211,11 +218,11 @@ QVector<U2Qualifier> Annotation::getQualifiers() const {
 }
 
 void Annotation::addQualifier(const U2Qualifier &q) {
-    SAFE_POINT(q.isValid(), "Invalid annotation qualifier detected!",);
+    SAFE_POINT(q.isValid(), "Invalid annotation qualifier detected!", );
 
     U2OpStatusImpl os;
     U2FeatureUtils::addFeatureKey(id, U2FeatureKey(q.name, q.value), parentObject->getEntityRef().dbiRef, os);
-    SAFE_POINT_OP(os,);
+    SAFE_POINT_OP(os, );
 
     data->qualifiers.append(q);
 
@@ -225,11 +232,11 @@ void Annotation::addQualifier(const U2Qualifier &q) {
 }
 
 void Annotation::removeQualifier(const U2Qualifier &q) {
-    SAFE_POINT(q.isValid(), "Invalid annotation qualifier detected!",);
+    SAFE_POINT(q.isValid(), "Invalid annotation qualifier detected!", );
 
     U2OpStatusImpl os;
     U2FeatureUtils::removeFeatureKey(id, U2FeatureKey(q.name, q.value), parentObject->getEntityRef().dbiRef, os);
-    SAFE_POINT_OP(os,);
+    SAFE_POINT_OP(os, );
 
     for (int i = 0, n = data->qualifiers.size(); i < n; ++i) {
         if (data->qualifiers[i] == q) {
@@ -261,7 +268,7 @@ void Annotation::setCaseAnnotation(bool caseAnnotation) {
     data->caseAnnotation = caseAnnotation;
 }
 
-AnnotationGroup * Annotation::getGroup() const {
+AnnotationGroup *Annotation::getGroup() const {
     return group;
 }
 
@@ -278,7 +285,7 @@ void Annotation::setGroup(AnnotationGroup *newGroup) {
 }
 
 void Annotation::findQualifiers(const QString &name, QList<U2Qualifier> &res) const {
-    SAFE_POINT(!name.isEmpty(), "Attempting to find a qualifier having an empty name!",);
+    SAFE_POINT(!name.isEmpty(), "Attempting to find a qualifier having an empty name!", );
 
     foreach (const U2Qualifier &qual, data->qualifiers) {
         if (name == qual.name) {
@@ -354,24 +361,24 @@ QBitArray getValidAnnotationChars() {
     validChars['+'] = true;
     validChars['\\'] = true;
     validChars['|'] = true;
-    validChars[',']  = true;
-    validChars['.']  = true;
-    validChars['<']  = true;
-    validChars['>']  = true;
-    validChars['?']  = true;
-    validChars[';']  = true;
-    validChars[':']  = true;
-    validChars['\'']  = true;
-    validChars['[']  = true;
-    validChars[']']  = true;
-    validChars['{']  = true;
-    validChars['}']  = true;
-    validChars['\"']  = false;
-    validChars['/']  = false;
+    validChars[','] = true;
+    validChars['.'] = true;
+    validChars['<'] = true;
+    validChars['>'] = true;
+    validChars['?'] = true;
+    validChars[';'] = true;
+    validChars[':'] = true;
+    validChars['\''] = true;
+    validChars['['] = true;
+    validChars[']'] = true;
+    validChars['{'] = true;
+    validChars['}'] = true;
+    validChars['\"'] = false;
+    validChars['/'] = false;
     return validChars;
 }
 
-}
+}    // namespace
 
 bool Annotation::isValidAnnotationName(const QString &n) {
     if (n.isEmpty() || ANNOTATION_NAME_MAX_LENGTH < n.length()) {
@@ -395,7 +402,7 @@ QString Annotation::produceValidAnnotationName(const QString &name) {
     if (result.isEmpty()) {
         return U2FeatureTypes::getVisualName(U2FeatureTypes::MiscFeature);
     }
-    if(result.length() > ANNOTATION_NAME_MAX_LENGTH) {
+    if (result.length() > ANNOTATION_NAME_MAX_LENGTH) {
         result = result.left(ANNOTATION_NAME_MAX_LENGTH);
     }
 
@@ -481,16 +488,14 @@ static QString getAlignmentTip(const QString &ref, const QList<U2CigarToken> &to
         if (newPos + 1 >= alignmentTip.length()) {
             break;
         }
-        alignmentTip.replace(newPos, 1,  QString("<b>%1</b>").arg(alignmentTip.at(newPos)));
+        alignmentTip.replace(newPos, 1, QString("<b>%1</b>").arg(alignmentTip.at(newPos)));
         offset += OFFSET_LEN;
     }
 
     return alignmentTip;
 }
 
-QString Annotation::getQualifiersTip(const SharedAnnotationData &data, int maxRows, U2SequenceObject *seqObj,
-    DNATranslation *complTT, DNATranslation *aminoTT)
-{
+QString Annotation::getQualifiersTip(const SharedAnnotationData &data, int maxRows, U2SequenceObject *seqObj, DNATranslation *complTT, DNATranslation *aminoTT) {
     SAFE_POINT(0 < maxRows, "Invalid maximum row count parameter passed!", QString());
     QString tip;
 
@@ -541,41 +546,51 @@ QString Annotation::getQualifiersTip(const SharedAnnotationData &data, int maxRo
         }
     }
 
-    if (NULL != seqObj && rows <= maxRows && (data->location->strand.isCompementary() || complTT != NULL)
-        && canShowSeq)
-    {
+    if (NULL != seqObj && rows <= maxRows && (data->location->strand.isCompementary() || complTT != NULL) && canShowSeq) {
         QVector<U2Region> loc = data->location->regions;
-        if (data->location->strand.isCompementary()) {
-            qStableSort(loc.begin(), loc.end(), qGreater<U2Region>());
-        }
+        std::stable_sort(loc.begin(), loc.end());
         QString seqVal;
         QString aminoVal;
         bool complete = true;
+        bool hasAnnotationOnJunctionPoint = seqObj->isCircular() && U1AnnotationUtils::isRegionsAroundJunctionPoint(loc, seqLen);
+        if (hasAnnotationOnJunctionPoint) {
+            U2Region start = loc.takeFirst();
+            loc.push_back(start);
+        }
+        QByteArray tripletBeginingBeforeJunctionPoint;
         for (int i = 0; i < loc.size(); i++) {
-            if (!seqVal.isEmpty()) {
-                seqVal += "^";
-            }
-            if (!aminoVal.isEmpty()) {
-                aminoVal += "^";
+            if (!hasAnnotationOnJunctionPoint || i != loc.size() - 1) {
+                if (!seqVal.isEmpty()) {
+                    seqVal += "^";
+                }
+                if (!aminoVal.isEmpty()) {
+                    aminoVal += "^";
+                }
             }
             const U2Region &r = loc.at(i);
-            const int len = qMin(int(r.length), QUALIFIER_VALUE_CUT - seqVal.length());
-            if (len != r.length) {
+            const int currentRegionLength = qMin(int(r.length), QUALIFIER_VALUE_CUT - seqVal.length());
+            const int tripletBeginingLength = tripletBeginingBeforeJunctionPoint.length();
+            const int len = currentRegionLength + tripletBeginingLength;
+            if (currentRegionLength != r.length) {
                 complete = false;
             }
-            if (data->location->strand.isCompementary() && NULL != complTT) {
-                QByteArray ba = seqObj->getSequenceData(U2Region(r.endPos() - len, len));
-                complTT->translate(ba.data(), len);
-                TextUtils::reverse(ba.data(), len);
-                seqVal += QString::fromLocal8Bit(ba.data(), len);
-                if (NULL != aminoTT) {
-                    const int aminoLen = aminoTT->translate(ba.data(), len);
-                    aminoVal += QString::fromLocal8Bit(ba.data(), aminoLen);
-                }
+            bool isAminoBeforeJunctionPoint = hasAnnotationOnJunctionPoint && i == loc.size() - 2;
+            bool isAminoAfterJunctionPoint = hasAnnotationOnJunctionPoint && i == loc.size() - 1;
+            bool isComlpementary = data->location->strand.isCompementary() && nullptr != complTT;
+            QByteArray ba = seqObj->getSequenceData(U2Region((isComlpementary ? r.endPos() - currentRegionLength : r.startPos), currentRegionLength));
+             if (isAminoBeforeJunctionPoint) {
+                tripletBeginingBeforeJunctionPoint = ba;
             } else {
-                QByteArray ba = seqObj->getSequenceData(U2Region(r.startPos, len));
+                if (isAminoAfterJunctionPoint) {
+                    ba.insert(0, tripletBeginingBeforeJunctionPoint);
+                    tripletBeginingBeforeJunctionPoint.clear();
+                }
+                if (isComlpementary) {
+                    complTT->translate(ba.data(), len);
+                    TextUtils::reverse(ba.data(), len);
+                }
                 seqVal += QString::fromLocal8Bit(ba.constData(), len);
-                if (NULL != aminoTT) {
+                if (nullptr != aminoTT) {
                     const int aminoLen = aminoTT->translate(ba.data(), len);
                     aminoVal += QString::fromLocal8Bit(ba.data(), aminoLen);
                 }
@@ -595,17 +610,15 @@ QString Annotation::getQualifiersTip(const SharedAnnotationData &data, int maxRo
             tip += "<br>";
         }
         SAFE_POINT(!seqVal.isEmpty(), "Empty sequence detected!", QString());
-        tip += "<nobr><b>" + QObject::tr("Sequence") + "</b> = " + seqVal.toHtmlEscaped()
-            + "</nobr>";
+        tip += "<nobr><b>" + QObject::tr("Sequence") + "</b> = " + seqVal.toHtmlEscaped() + "</nobr>";
         rows++;
 
         if (rows <= maxRows && NULL != aminoTT) {
             tip += "<br>";
-            tip += "<nobr><b>" + QObject::tr("Translation") + "</b> = "
-                + aminoVal.toHtmlEscaped() + "</nobr>";
+            tip += "<nobr><b>" + QObject::tr("Translation") + "</b> = " + aminoVal.toHtmlEscaped() + "</nobr>";
         }
     }
     return tip;
 }
 
-} // namespace U2
+}    // namespace U2

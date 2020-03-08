@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -28,6 +28,7 @@
 
 #include <U2Core/AnnotationTableObject.h>
 #include <U2Core/AppContext.h>
+#include <U2Core/AppResources.h>
 #include <U2Core/DNASequenceObject.h>
 #include <U2Core/DNASequenceSelection.h>
 #include <U2Core/GenbankFeatures.h>
@@ -64,7 +65,7 @@ FindTandemsDialog::FindTandemsDialog(ADVSequenceObjectContext* _sc)
 {
     sc = _sc;
     setupUi(this);
-    new HelpButton(this, buttonBox, "21433359");
+    new HelpButton(this, buttonBox, "24742558");
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Start"));
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
 
@@ -183,6 +184,9 @@ U2Region FindTandemsDialog::getActiveRange(bool *ok) const {
     return region;
 }
 
+// This is maximum sequence size we allow to use on 32bit OS to search for tandem repeats.
+#define MAX_TANDEM_REPEAT_SEQUENCE_LENGTH_32_BIT_OS (300 * 1000 * 1000)
+
 void FindTandemsDialog::accept() {
     int minPeriod = minPeriodBox->value();
     int maxPeriod = maxPeriodBox->value();
@@ -197,6 +201,14 @@ void FindTandemsDialog::accept() {
     if (!err.isEmpty()) {
         QMessageBox::critical(this, L10N::errorTitle(), err);
         return;
+    }
+
+    if (AppResourcePool::is32BitBuild()) {
+        qint64 sequenceLen = sc->getSequenceObject()->getSequenceLength();
+        if (sequenceLen > MAX_TANDEM_REPEAT_SEQUENCE_LENGTH_32_BIT_OS) {
+            QMessageBox::warning(this, L10N::warningTitle(),  tr("Sequence size is too large!"));
+            return;
+        }
     }
 
     U2OpStatusImpl os;

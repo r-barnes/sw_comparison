@@ -15,148 +15,262 @@
     </message>
 </context>
 <context>
-    <name>CreateExternalProcessWorkerDialog</name>
+    <name>CreateCmdlineBasedWorkerWizardCommandPage</name>
     <message>
-        <location filename="../src/library/ExternalProcessWorkerDialog.ui" line="14"/>
-        <source>Create Element with Command Line Tool</source>
-        <translation>Создать элемент при помощи командной строки</translation>
+        <location filename="../src/library/create_cmdline_based_worker/CreateCmdlineBasedWorkerWizardCommandPage.ui" line="14"/>
+        <source>WizardPage</source>
+        <translation>WizardPage</translation>
     </message>
     <message>
-        <location filename="../src/library/ExternalProcessWorkerDialog.ui" line="49"/>
-        <source>Element description</source>
-        <translation>Описание элемента</translation>
+        <location filename="../src/library/create_cmdline_based_worker/CreateCmdlineBasedWorkerWizardCommandPage.ui" line="32"/>
+        <source>Command</source>
+        <translation>Команда</translation>
     </message>
     <message>
-        <location filename="../src/library/ExternalProcessWorkerDialog.ui" line="65"/>
-        <source>Name</source>
-        <translation>Имя</translation>
+        <location filename="../src/library/create_cmdline_based_worker/CreateCmdlineBasedWorkerWizardCommandPage.ui" line="44"/>
+        <source>Specify the execution string in the format expected by the command-line tool. Use argument names added for ports and parameters on the previous wizard pages.</source>
+        <translation>Укажите строку выполнения в формате командной строки. Используйте имена аргументов, которые были добавлены для портов и параметров на предыдущих страницах визарда.</translation>
+    </message>
+</context>
+<context>
+    <name>CreateCmdlineBasedWorkerWizardElementAppearancePage</name>
+    <message>
+        <location filename="../src/library/create_cmdline_based_worker/CreateCmdlineBasedWorkerWizardElementAppearancePage.ui" line="14"/>
+        <source>WizardPage</source>
+        <translation>WizardPage</translation>
     </message>
     <message>
-        <location filename="../src/library/ExternalProcessWorkerDialog.ui" line="77"/>
-        <source>Description</source>
-        <translation>Описание</translation>
+        <location filename="../src/library/create_cmdline_based_worker/CreateCmdlineBasedWorkerWizardElementAppearancePage.ui" line="22"/>
+        <source>Element appearance</source>
+        <translation>Внешний вид элемента</translation>
     </message>
     <message>
-        <location filename="../src/library/ExternalProcessWorkerDialog.ui" line="36"/>
+        <location filename="../src/library/create_cmdline_based_worker/CreateCmdlineBasedWorkerWizardElementAppearancePage.ui" line="29"/>
+        <source>Set up appearance of the element in the Workflow Designer GUI. Note that it is possible to specify an argument name in the &quot;Element description on the scene&quot; field, so that this value is replaced by an exact value provided in the &quot;Property Editor&quot;.</source>
+        <translation>Настройте внешний вид элемента в графическом интерфейсе Дизайнера вычислительных схем. Обратите внимание, что имя аргумента можно указать в поле «Описание элемента на сцене», чтобы это значение было заменено точным значением, указанным в «Редакторе свойств».</translation>
+    </message>
+    <message>
+        <location filename="../src/library/create_cmdline_based_worker/CreateCmdlineBasedWorkerWizardElementAppearancePage.ui" line="57"/>
+        <source>Element description on the scene</source>
+        <translation>Описание элемента на сцене</translation>
+    </message>
+    <message>
+        <location filename="../src/library/create_cmdline_based_worker/CreateCmdlineBasedWorkerWizardElementAppearancePage.ui" line="64"/>
+        <location filename="../src/library/create_cmdline_based_worker/CreateCmdlineBasedWorkerWizardElementAppearancePage.ui" line="100"/>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Name and description for new workflow element.&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt; font-weight:600;&quot;&gt;Status:&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt; font-weight:600;&quot;&gt;%1&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;monospace&apos;; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Name and description for new workflow element.&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt; font-weight:600;&quot;&gt;Status:&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt; font-weight:600;&quot;&gt;%1&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;monospace&apos;; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../src/library/ExternalProcessWorkerDialog.ui" line="84"/>
-        <location filename="../src/library/ExternalProcessWorkerDialog.ui" line="349"/>
-        <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <location filename="../src/library/create_cmdline_based_worker/CreateCmdlineBasedWorkerWizardElementAppearancePage.ui" line="93"/>
+        <source>Detailed element description</source>
+        <translation>Подробное описание элемента</translation>
+    </message>
+</context>
+<context>
+    <name>CreateCmdlineBasedWorkerWizardGeneralSettingsPage</name>
+    <message>
+        <location filename="../src/library/create_cmdline_based_worker/CreateCmdlineBasedWorkerWizardGeneralSettingsPage.ui" line="14"/>
+        <source>WizardPage</source>
+        <translation>WizardPage</translation>
     </message>
     <message>
-        <location filename="../src/library/ExternalProcessWorkerDialog.ui" line="105"/>
-        <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Input and output data for external tool. Name is a command line parameter for input/output data in external tool. Set data type and format in which external tool reads/writes input/output data. You also can set description for workflow designer. Each input data will be represented as port in workflow designer. Each output data will be represented as slot of single slot.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Input and output data for external tool. Name is a command line parameter for input/output data in external tool. Set data type and format in which external tool reads/writes input/output data. You also can set description for workflow designer. Each input data will be represented as port in workflow designer. Each output data will be represented as slot of single slot.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <location filename="../src/library/create_cmdline_based_worker/CreateCmdlineBasedWorkerWizardGeneralSettingsPage.ui" line="32"/>
+        <source>General settings</source>
+        <translation>Основные настройки</translation>
     </message>
     <message>
-        <location filename="../src/library/ExternalProcessWorkerDialog.ui" line="116"/>
+        <location filename="../src/library/create_cmdline_based_worker/CreateCmdlineBasedWorkerWizardGeneralSettingsPage.ui" line="39"/>
+        <source>To integrate a custom command-line tool into a workflow, create a workflow element that will run this tool.
+
+Set up the element name. Select either a local executable file, an external tool provided with UGENE, or a custom external tool (see the &quot;External Tools&quot; page in the &quot;Application Settings&quot; dialog). Follow the wizard.
+</source>
+        <translation>Чтобы интегрировать пользовательский инструмент командной строки в схему, создайте элемент, который будет запускать этот инструмент.
+
+Задайте имя элемента. Выберите локальный исполняемый файл, внешний инструмент, поставляемый с UGENE, или пользовательский внешний инструмент (см. Страницу «Внешние инструменты» в окне «Настройки приложения»). Следуйте за пошаговой настройкой.
+</translation>
+    </message>
+    <message>
+        <location filename="../src/library/create_cmdline_based_worker/CreateCmdlineBasedWorkerWizardGeneralSettingsPage.ui" line="66"/>
+        <source>Element name</source>
+        <translation>Имя элемента</translation>
+    </message>
+    <message>
+        <location filename="../src/library/create_cmdline_based_worker/CreateCmdlineBasedWorkerWizardGeneralSettingsPage.ui" line="94"/>
+        <source>External command-line tool</source>
+        <translation>Внешний инструмент командной строки</translation>
+    </message>
+    <message>
+        <location filename="../src/library/create_cmdline_based_worker/CreateCmdlineBasedWorkerWizardGeneralSettingsPage.ui" line="100"/>
+        <source>Integrated external tool</source>
+        <translation>Интегрированный внешний инструмент</translation>
+    </message>
+    <message>
+        <location filename="../src/library/create_cmdline_based_worker/CreateCmdlineBasedWorkerWizardGeneralSettingsPage.ui" line="107"/>
+        <source>Executable path</source>
+        <translation>Путь к исполняемому файлу</translation>
+    </message>
+    <message>
+        <location filename="../src/library/create_cmdline_based_worker/CreateCmdlineBasedWorkerWizardGeneralSettingsPage.ui" line="145"/>
+        <source>...</source>
+        <translation>...</translation>
+    </message>
+</context>
+<context>
+    <name>CreateCmdlineBasedWorkerWizardInputDataPage</name>
+    <message>
+        <location filename="../src/library/create_cmdline_based_worker/CreateCmdlineBasedWorkerWizardInputDataPage.ui" line="14"/>
+        <source>WizardPage</source>
+        <translation>WizardPage</translation>
+    </message>
+    <message>
+        <location filename="../src/library/create_cmdline_based_worker/CreateCmdlineBasedWorkerWizardInputDataPage.ui" line="32"/>
         <source>Input data</source>
         <translation>Входные данные</translation>
     </message>
     <message>
-        <location filename="../src/library/ExternalProcessWorkerDialog.ui" line="151"/>
+        <location filename="../src/library/create_cmdline_based_worker/CreateCmdlineBasedWorkerWizardInputDataPage.ui" line="50"/>
+        <source>To input data from other workflow element(s) to this element add one or several port(s) of the required type(s).
+
+The incoming data will be either saved into a file and the file URL will be specified as an argument in the command to run the tool or an input string can be used directly in the command in case of the &quot;String&quot; type, &quot;String data value&quot; argument value.
+</source>
+        <translation>Для ввода данных из других элементов схемы к этому элементу добавьте один или несколько портов требуемого типа.
+
+Входящие данные будут либо сохранены в файл, а URL-адрес файла будет указан в качестве аргумента в команде для запуска инструмента, либо входная строка может быть использована непосредственно в команде, в случае когда аргумент имеет тип «Строка» или «Значение строки».
+</translation>
+    </message>
+    <message>
+        <location filename="../src/library/create_cmdline_based_worker/CreateCmdlineBasedWorkerWizardInputDataPage.ui" line="124"/>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Error: please use unique argument names for all ports and parameters!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Ошибка: используйте уникальные имена аргументов для всех портов и параметров!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <location filename="../src/library/create_cmdline_based_worker/CreateCmdlineBasedWorkerWizardInputDataPage.ui" line="149"/>
         <source>Add input</source>
         <translation>Добавить входные данные</translation>
     </message>
     <message>
-        <location filename="../src/library/ExternalProcessWorkerDialog.ui" line="158"/>
-        <location filename="../src/library/ExternalProcessWorkerDialog.ui" line="209"/>
-        <location filename="../src/library/ExternalProcessWorkerDialog.ui" line="281"/>
+        <location filename="../src/library/create_cmdline_based_worker/CreateCmdlineBasedWorkerWizardInputDataPage.ui" line="156"/>
         <source>Delete</source>
         <translation>Удалить</translation>
     </message>
+</context>
+<context>
+    <name>CreateCmdlineBasedWorkerWizardOutputDataPage</name>
     <message>
-        <location filename="../src/library/ExternalProcessWorkerDialog.ui" line="167"/>
+        <location filename="../src/library/create_cmdline_based_worker/CreateCmdlineBasedWorkerWizardOutputDataPage.ui" line="14"/>
+        <source>WizardPage</source>
+        <translation>WizardPage</translation>
+    </message>
+    <message>
+        <location filename="../src/library/create_cmdline_based_worker/CreateCmdlineBasedWorkerWizardOutputDataPage.ui" line="35"/>
         <source>Output data</source>
         <translation>Выходные данные</translation>
     </message>
     <message>
-        <location filename="../src/library/ExternalProcessWorkerDialog.ui" line="202"/>
+        <location filename="../src/library/create_cmdline_based_worker/CreateCmdlineBasedWorkerWizardOutputDataPage.ui" line="47"/>
+        <source>To output data from this element to other workflow element(s) add one or several port(s) of the required type(s).
+
+It is assumed that the external tool creates some file(s). This element reads the file(s) according to the specified type and format, and pass the data to the next element in the workflow. Alternatively, it is possible to pass the output file or folder URL, see the &quot;String&quot; type, &quot;Output URL&quot; argument value.
+</source>
+        <translation>Для вывода данных из этого элемента в другие элементы схемы добавьте один или несколько портов требуемого типа.
+
+Предполагается, что внешний инструмент создает файл(ы). Этот элемент читает файл(ы) в соответствии с указанным типом и форматом и передает данные следующему элементу схемы. Кроме того, можно передать URL-адрес выходного файла или папки для значения аргумента типа «Строка» или «URL выходного файла».
+</translation>
+    </message>
+    <message>
+        <location filename="../src/library/create_cmdline_based_worker/CreateCmdlineBasedWorkerWizardOutputDataPage.ui" line="121"/>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Error: please use unique argument names for all ports and parameters!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Ошибка: используйте уникальные имена аргументов для всех портов и параметров!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <location filename="../src/library/create_cmdline_based_worker/CreateCmdlineBasedWorkerWizardOutputDataPage.ui" line="146"/>
         <source>Add output</source>
         <translation>Добавить выходные данные</translation>
     </message>
     <message>
-        <location filename="../src/library/ExternalProcessWorkerDialog.ui" line="228"/>
-        <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Another parameters for external tool. You must set name for parameter and its type. You also can set description for workflow designer. Each parameter will be represented as parameter of workflow element.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Another parameters for external tool. You must set name for parameter and its type. You also can set description for workflow designer. Each parameter will be represented as parameter of workflow element.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <location filename="../src/library/create_cmdline_based_worker/CreateCmdlineBasedWorkerWizardOutputDataPage.ui" line="153"/>
+        <source>Delete</source>
+        <translation>Удалить</translation>
+    </message>
+</context>
+<context>
+    <name>CreateCmdlineBasedWorkerWizardParametersPage</name>
+    <message>
+        <location filename="../src/library/create_cmdline_based_worker/CreateCmdlineBasedWorkerWizardParametersPage.ui" line="14"/>
+        <source>WizardPage</source>
+        <translation>WizardPage</translation>
     </message>
     <message>
-        <location filename="../src/library/ExternalProcessWorkerDialog.ui" line="239"/>
+        <location filename="../src/library/create_cmdline_based_worker/CreateCmdlineBasedWorkerWizardParametersPage.ui" line="32"/>
         <source>Parameters</source>
         <translation>Параметры</translation>
     </message>
     <message>
-        <location filename="../src/library/ExternalProcessWorkerDialog.ui" line="274"/>
-        <source>Add attribute</source>
-        <translation>Добавить атрибут</translation>
+        <location filename="../src/library/create_cmdline_based_worker/CreateCmdlineBasedWorkerWizardParametersPage.ui" line="41"/>
+        <source>Make the element configurable by adding one or several parameter(s).
+
+The parameter(s) value(s) can be later set up in the &quot;Property Editor&quot; (located at the right side of the Workflow Designer window) when an element is selected on the scene. During a workflow execution the specified parameters are applied to each input dataset.
+</source>
+        <translation>Сделайте элемент настраиваемым, добавив один или несколько параметров.
+
+Значения параметра(ов) могут быть позже установлены в «Редакторе свойств» (расположенном в правой части окна Дизайнера вычислительных схем), когда элемент выбран на сцене. Во время выполнения рабочего процесса указанные параметры применяются к каждому входному набору данных.
+</translation>
     </message>
     <message>
-        <location filename="../src/library/ExternalProcessWorkerDialog.ui" line="300"/>
-        <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Execution string and element&apos;s description. To substitute input, output data or parameter, use it&apos;s name with prefix $ in execution string. You can set parameterized description for new element(description that appears not in property editor but on element itself). In parameterized description you also can use parameters substitution with prefix $. If file paths in the execution string contain spaces, they must be enclosed with single quotes.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Execution string and element&apos;s description. To substitute input, output data or parameter, use it&apos;s name with prefix $ in execution string. You can set parameterized description for new element(description that appears not in property editor but on element itself). In parameterized description you also can use parameters substitution with prefix $. If file paths in the execution string contain spaces, they must be enclosed with single quotes.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <location filename="../src/library/create_cmdline_based_worker/CreateCmdlineBasedWorkerWizardParametersPage.ui" line="109"/>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Error: please use unique argument names for all ports and parameters!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Ошибка: используйте уникальные имена аргументов для всех портов и параметров!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../src/library/ExternalProcessWorkerDialog.ui" line="311"/>
-        <source>Command line template</source>
-        <translation>Заготовка для командной строки</translation>
+        <location filename="../src/library/create_cmdline_based_worker/CreateCmdlineBasedWorkerWizardParametersPage.ui" line="134"/>
+        <source>Add parameter</source>
+        <translation>Добавить параметр</translation>
     </message>
     <message>
-        <location filename="../src/library/ExternalProcessWorkerDialog.ui" line="330"/>
-        <source>Execution string</source>
-        <translation>Строка выполнения</translation>
+        <location filename="../src/library/create_cmdline_based_worker/CreateCmdlineBasedWorkerWizardParametersPage.ui" line="141"/>
+        <source>Delete</source>
+        <translation>Удалить</translation>
+    </message>
+</context>
+<context>
+    <name>CreateCmdlineBasedWorkerWizardSummaryPage</name>
+    <message>
+        <location filename="../src/library/create_cmdline_based_worker/CreateCmdlineBasedWorkerWizardSummaryPage.ui" line="14"/>
+        <source>WizardPage</source>
+        <translation>WizardPage</translation>
     </message>
     <message>
-        <location filename="../src/library/ExternalProcessWorkerDialog.ui" line="342"/>
-        <source>Parameterized description</source>
-        <translation>Описание</translation>
+        <location filename="../src/library/create_cmdline_based_worker/CreateCmdlineBasedWorkerWizardSummaryPage.ui" line="32"/>
+        <source>Summary</source>
+        <translation>Сводный отчёт</translation>
+    </message>
+    <message>
+        <location filename="../src/library/create_cmdline_based_worker/CreateCmdlineBasedWorkerWizardSummaryPage.ui" line="83"/>
+        <source>Element name</source>
+        <translation>Имя элемента</translation>
+    </message>
+    <message>
+        <location filename="../src/library/create_cmdline_based_worker/CreateCmdlineBasedWorkerWizardSummaryPage.ui" line="140"/>
+        <source>Element description on the scene</source>
+        <translation>Описание элемента на сцене</translation>
+    </message>
+    <message>
+        <location filename="../src/library/create_cmdline_based_worker/CreateCmdlineBasedWorkerWizardSummaryPage.ui" line="185"/>
+        <source>Detailed element description</source>
+        <translation>Подробное описание элемента</translation>
+    </message>
+    <message>
+        <location filename="../src/library/create_cmdline_based_worker/CreateCmdlineBasedWorkerWizardSummaryPage.ui" line="230"/>
+        <source>Command</source>
+        <translation>Команда</translation>
     </message>
 </context>
 <context>
@@ -174,7 +288,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/CreateScriptBlockDialog.ui" line="29"/>
         <source>ScriptBlock</source>
-        <translation>Скриптовый блок</translation>
+        <translation>Скрипт</translation>
     </message>
     <message>
         <location filename="../src/CreateScriptBlockDialog.ui" line="38"/>
@@ -186,15 +300,13 @@ p, li { white-space: pre-wrap; }
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Evaluates user&apos;s script&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>
-          &lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-          &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-          p, li { white-space: pre-wrap; }
-          &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-          &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Оценивает скрипт пользователя &lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
-        </translation>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;monospace&apos;; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span&gt;Evaluates user&apos;s script&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;monospace&apos;; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span&gt;Пользовательский скрипт&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../src/CreateScriptBlockDialog.ui" line="58"/>
@@ -249,11 +361,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/CreateScriptBlockDialog.ui" line="164"/>
         <source>Error occured while saving new actor. Can&apos;t write to current directory. Choose another directory for store user&apos;s elements</source>
-        <translation>Произошла ошибка во время сохранения нового актера. Невозможно записать в текущей папке. Выберите другую папку</translation>
-    </message>
-    <message>
-        <source>Error occured while saving new actor. Can&apos;t write to current folder. Choose another folder for store user&apos;s elements</source>
-        <translation type="vanished">Произошла ошибка во время сохранения нового актера. Невозможно записать в текущей папке. Выберите другую папку</translation>
+        <translation>Произошла ошибка во время сохранения. Невозможно записать в текущей папке. Выберите другую папку</translation>
     </message>
     <message>
         <location filename="../src/CreateScriptBlockDialog.ui" line="182"/>
@@ -329,18 +437,6 @@ p, li { white-space: pre-wrap; }
         <translation>Папка Galaxy</translation>
     </message>
     <message>
-        <source>UGENE folder</source>
-        <translation type="vanished">Папка UGENE</translation>
-    </message>
-    <message>
-        <source>Destination folder</source>
-        <translation type="vanished">Расположение папки</translation>
-    </message>
-    <message>
-        <source>Galaxy folder</source>
-        <translation type="vanished">Папка Galaxy</translation>
-    </message>
-    <message>
         <location filename="../src/GalaxyConfigConfigurationDialog.ui" line="119"/>
         <source>Create</source>
         <translation>Создать</translation>
@@ -372,7 +468,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/PortAliasesConfigurationDialog.ui" line="23"/>
         <source>Configure Port and Slot Aliases</source>
-        <translation> Конфигурация интерфейса командной строки для портов и слотов</translation>
+        <translation>Настройка алиасов для портов и слотов</translation>
     </message>
     <message>
         <location filename="../src/PortAliasesConfigurationDialog.ui" line="43"/>
@@ -413,89 +509,69 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../src/DashboardsManagerDialog.cpp" line="30"/>
+        <location filename="../src/DashboardsManagerDialog.cpp" line="173"/>
         <source>Removing Dashboards</source>
         <translation>Удаление панелей</translation>
     </message>
     <message>
-        <location filename="../src/DashboardsManagerDialog.cpp" line="32"/>
+        <location filename="../src/DashboardsManagerDialog.cpp" line="34"/>
         <source>The following dashboards are about to be deleted:</source>
         <translation>Следующие панели будут удалены:</translation>
     </message>
     <message>
-        <location filename="../src/DashboardsManagerDialog.cpp" line="34"/>
+        <location filename="../src/DashboardsManagerDialog.cpp" line="36"/>
         <source>The following dashboard is about to be deleted:</source>
         <translation>Следующие панели будут удалены:</translation>
     </message>
     <message>
-        <location filename="../src/library/ExternalProcessWorker.cpp" line="71"/>
-        <location filename="../src/library/ExternalProcessWorker.cpp" line="123"/>
+        <location filename="../src/library/ExternalProcessWorker.cpp" line="82"/>
+        <location filename="../src/library/ExternalProcessWorker.cpp" line="134"/>
         <source>Empty text slot</source>
         <translation>Слот типа текст пуст</translation>
     </message>
     <message>
-        <location filename="../src/library/ExternalProcessWorker.cpp" line="80"/>
+        <location filename="../src/library/ExternalProcessWorker.cpp" line="91"/>
         <source>Empty sequence slot</source>
         <translation>Слот типа последовательность пуст</translation>
     </message>
     <message>
-        <location filename="../src/library/ExternalProcessWorker.cpp" line="86"/>
+        <location filename="../src/library/ExternalProcessWorker.cpp" line="97"/>
         <source>Error with sequence object</source>
         <translation>Ошибка с объектом типа последовательность</translation>
     </message>
     <message>
-        <location filename="../src/library/ExternalProcessWorker.cpp" line="94"/>
+        <location filename="../src/library/ExternalProcessWorker.cpp" line="105"/>
         <source>Empty annotations slot</source>
         <translation>Слот типа аннотация пуст</translation>
     </message>
     <message>
-        <location filename="../src/library/ExternalProcessWorker.cpp" line="109"/>
+        <location filename="../src/library/ExternalProcessWorker.cpp" line="120"/>
         <source>Empty alignment slot</source>
         <translation>Слот типа выравнивание пуст</translation>
     </message>
     <message>
-        <location filename="../src/library/ExternalProcessWorker.cpp" line="115"/>
-        <location filename="../src/library/ExternalProcessWorker.cpp" line="328"/>
+        <location filename="../src/library/ExternalProcessWorker.cpp" line="126"/>
+        <location filename="../src/library/ExternalProcessWorker.cpp" line="399"/>
         <source>Error with alignment object</source>
         <translation>Ошибка с объектом типа выравнивание</translation>
     </message>
     <message>
-        <location filename="../src/library/ExternalProcessWorker.cpp" line="144"/>
+        <location filename="../src/library/ExternalProcessWorker.cpp" line="155"/>
         <source>Unknown document format: %1</source>
         <translation>Неизвестный формат документа: %1</translation>
     </message>
     <message>
-        <location filename="../src/library/ExternalProcessWorker.cpp" line="316"/>
+        <location filename="../src/library/ExternalProcessWorker.cpp" line="387"/>
         <source>No target objects in the file: %1</source>
         <translation>Требуемых объектов в файле не найдено: %1</translation>
     </message>
     <message>
-        <location filename="../src/library/ExternalProcessWorker.cpp" line="341"/>
+        <location filename="../src/library/ExternalProcessWorker.cpp" line="412"/>
         <source>Error with annotations object</source>
         <translation>Ошибка с объектом типа аннотация</translation>
     </message>
     <message>
-        <location filename="../src/library/FindWorker.cpp" line="74"/>
-        <source>Pattern(s)</source>
-        <translation>Паттерн(ы)</translation>
-    </message>
-    <message>
-        <location filename="../src/library/FindWorker.cpp" line="74"/>
-        <source>Semicolon-separated list of patterns to search for.</source>
-        <translation>Список паттернов для поиска.</translation>
-    </message>
-    <message>
-        <location filename="../src/library/FindWorker.cpp" line="76"/>
-        <source>Pattern file</source>
-        <translation>Файл с паттерном</translation>
-    </message>
-    <message>
-        <location filename="../src/library/FindWorker.cpp" line="76"/>
-        <source>Load pattern from file in any sequence format or in newline-delimited format.</source>
-        <translation>Загружает паттерн из файла в формате последовательности или в формате строк с разделителями.</translation>
-    </message>
-    <message>
-        <location filename="../src/library/FindWorker.cpp" line="86"/>
+        <location filename="../src/library/FindWorker.cpp" line="82"/>
         <source>Patterns are not set. Set the &apos;%1&apos; or &apos;%2&apos; parameter or bind the input text slot</source>
         <translation>Паттерн(ы) не выбраны. Установите &apos;%1&apos; или &apos;%2&apos; параметр parameter или свяжите со входным слотом типа текст</translation>
     </message>
@@ -520,52 +596,55 @@ p, li { white-space: pre-wrap; }
         <translation>Формат %1 не поддерживает аннотации</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="142"/>
+        <location filename="../src/WorkflowViewController.cpp" line="495"/>
+        <location filename="../src/WorkflowViewController.cpp" line="1579"/>
         <source>Breakpoints</source>
         <translation>Точки остановки</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="200"/>
-        <source>Element style</source>
-        <translation>Стиль</translation>
-    </message>
-    <message>
-        <location filename="../src/WorkflowViewController.cpp" line="148"/>
+        <location filename="../src/WorkflowViewController.cpp" line="121"/>
+        <location filename="../src/WorkflowViewController.cpp" line="123"/>
+        <location filename="../src/WorkflowViewController.cpp" line="124"/>
+        <location filename="../src/WorkflowViewController.cpp" line="506"/>
+        <location filename="../src/WorkflowViewController.cpp" line="512"/>
+        <location filename="../src/WorkflowViewController.cpp" line="519"/>
         <source>%</source>
         <translation>%</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="137"/>
+        <location filename="../src/WorkflowViewController.cpp" line="378"/>
+        <location filename="../src/WorkflowViewController.cpp" line="2186"/>
         <source>You opened obsolete workflow in XML format. It is strongly recommended to clear working space and create workflow from scratch.</source>
         <translation>Вы открыли устаревшую схему в XML формате. Рекомендуется очистить рабочее пространство и создайть новую схему.</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="140"/>
+        <location filename="../src/WorkflowViewController.cpp" line="381"/>
+        <location filename="../src/WorkflowViewController.cpp" line="2189"/>
         <source>Sorry! This workflow is obsolete and cannot be opened.</source>
         <translation>Эта схема устарела и не может быть открыта.</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="211"/>
+        <location filename="../src/WorkflowViewController.cpp" line="169"/>
         <source>Scripting mode</source>
         <translation>Скриптинг</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="909"/>
+        <location filename="../src/WorkflowViewController.cpp" line="833"/>
         <source>Can not create the folder: </source>
-        <translation>Невозможно создать папку:</translation>
+        <translation>Невозможно создать папку: </translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="915"/>
+        <location filename="../src/WorkflowViewController.cpp" line="839"/>
         <source>The file &apos;%1&apos; already exists</source>
         <translation>Файл &apos;%1&apos; уже существует</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="920"/>
+        <location filename="../src/WorkflowViewController.cpp" line="844"/>
         <source>Can not copy the file here: </source>
-        <translation>Невозможно скопировать файл:</translation>
+        <translation>Невозможно скопировать файл: </translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="1479"/>
+        <location filename="../src/WorkflowViewController.cpp" line="1385"/>
         <source>Run workflow</source>
         <translation>Запустить схему</translation>
     </message>
@@ -615,9 +694,14 @@ p, li { white-space: pre-wrap; }
         <translation>число оснований</translation>
     </message>
     <message>
-        <location filename="../src/library/WriteAnnotationsWorker.cpp" line="266"/>
+        <location filename="../src/library/WriteAnnotationsWorker.cpp" line="268"/>
         <source>Save annotations</source>
         <translation>Сохранить аннотации</translation>
+    </message>
+    <message>
+        <location filename="../src/util/WriteAnnotationsValidator.cpp" line="54"/>
+        <source>Sequence names were not saved, the input slot &apos;Sequence&apos; is empty.</source>
+        <translation>Имена последовательности не были сохранены, слот &apos;Последовательность&apos; пустой.</translation>
     </message>
 </context>
 <context>
@@ -664,14 +748,6 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>StartupDialog</name>
     <message>
-        <source>Choose Output Folder</source>
-        <translation type="vanished">Выбор папки для сохранения выходных данных</translation>
-    </message>
-    <message>
-        <source>Output Folder</source>
-        <translation type="vanished">Выходная папка</translation>
-    </message>
-    <message>
         <location filename="../src/StartupDialog.ui" line="14"/>
         <source>Choose Output Directory</source>
         <translation>Выбор директории для сохранения выходных данных</translation>
@@ -686,8 +762,7 @@ p, li { white-space: pre-wrap; }
         <source>Note: you can change this option in the UGENE Application Settings
 (Settings &gt; Preferences &gt; Workflow Designer)</source>
         <translation>Замечание: вы можете изменить эти настройки в общих настройках UGENE
-(Настройки &gt; Установки &gt; Дизайнер вычислительных схем)
-        </translation>
+(Настройки &gt; Установки &gt; Дизайнер вычислительных схем)</translation>
     </message>
 </context>
 <context>
@@ -749,60 +824,126 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>U2::CfgExternalToolModel</name>
     <message>
-        <location filename="../src/library/CfgExternalToolModel.cpp" line="211"/>
-        <source>Name for command line parameter</source>
-        <translation>Имя параметра в командной строке</translation>
+        <location filename="../src/library/CfgExternalToolModel.cpp" line="273"/>
+        <source>Display name</source>
+        <translation>Имя</translation>
     </message>
     <message>
-        <location filename="../src/library/CfgExternalToolModel.cpp" line="212"/>
+        <location filename="../src/library/CfgExternalToolModel.cpp" line="275"/>
+        <source>Argument name</source>
+        <translation>Имя агумента</translation>
+    </message>
+    <message>
+        <location filename="../src/library/CfgExternalToolModel.cpp" line="277"/>
         <source>Type</source>
         <translation>Тип</translation>
     </message>
     <message>
-        <location filename="../src/library/CfgExternalToolModel.cpp" line="215"/>
-        <source>Read as</source>
-        <translation>Прочитать как</translation>
+        <location filename="../src/library/CfgExternalToolModel.cpp" line="280"/>
+        <location filename="../src/library/CfgExternalToolModel.cpp" line="282"/>
+        <source>Argument value</source>
+        <translation>Значение аргумента</translation>
     </message>
     <message>
-        <location filename="../src/library/CfgExternalToolModel.cpp" line="218"/>
-        <source>Write as</source>
-        <translation>Записать как</translation>
+        <location filename="../src/library/CfgExternalToolModel.cpp" line="359"/>
+        <source>URL to %1 file with data</source>
+        <translation>URL до файла с данными %1</translation>
     </message>
     <message>
-        <location filename="../src/library/CfgExternalToolModel.cpp" line="220"/>
+        <location filename="../src/library/CfgExternalToolModel.cpp" line="400"/>
+        <source>String data value</source>
+        <translation>Значение строки</translation>
+    </message>
+    <message>
+        <location filename="../src/library/CfgExternalToolModel.cpp" line="402"/>
+        <source>Output URL</source>
+        <translation>Выходной URL</translation>
+    </message>
+    <message>
+        <location filename="../src/library/CfgExternalToolModel.cpp" line="412"/>
+        <source>Annotations</source>
+        <translation>Аннотации</translation>
+    </message>
+    <message>
+        <location filename="../src/library/CfgExternalToolModel.cpp" line="415"/>
+        <source>Alignment</source>
+        <translation>Выравнивание</translation>
+    </message>
+    <message>
+        <location filename="../src/library/CfgExternalToolModel.cpp" line="420"/>
+        <source>Annotated sequence</source>
+        <translation>Аннотированная последовательность</translation>
+    </message>
+    <message>
+        <location filename="../src/library/CfgExternalToolModel.cpp" line="285"/>
         <source>Description</source>
         <translation>Описание</translation>
-    </message>
-    <message>
-        <location filename="../src/library/CfgExternalToolModel.cpp" line="313"/>
-        <source>String value</source>
-        <translation>Строка</translation>
-    </message>
-    <message>
-        <location filename="../src/library/CfgExternalToolModel.cpp" line="315"/>
-        <source>Text file</source>
-        <translation>Текстовый файл</translation>
-    </message>
-    <message>
-        <location filename="../src/library/CfgExternalToolModel.cpp" line="317"/>
-        <source>Output file url</source>
-        <translation>Выходной файл</translation>
     </message>
 </context>
 <context>
     <name>U2::CfgExternalToolModelAttributes</name>
     <message>
-        <location filename="../src/library/CfgExternalToolModel.cpp" line="456"/>
-        <source>Name</source>
+        <location filename="../src/library/CfgExternalToolModel.cpp" line="488"/>
+        <source>Boolean</source>
+        <translation>Логический</translation>
+    </message>
+    <message>
+        <location filename="../src/library/CfgExternalToolModel.cpp" line="489"/>
+        <source>Integer</source>
+        <translation>Целочисленный</translation>
+    </message>
+    <message>
+        <location filename="../src/library/CfgExternalToolModel.cpp" line="490"/>
+        <source>Double</source>
+        <translation>С плавающей точкой</translation>
+    </message>
+    <message>
+        <location filename="../src/library/CfgExternalToolModel.cpp" line="491"/>
+        <source>String</source>
+        <translation>Строка</translation>
+    </message>
+    <message>
+        <location filename="../src/library/CfgExternalToolModel.cpp" line="492"/>
+        <source>Input file URL</source>
+        <translation>URL входного файла</translation>
+    </message>
+    <message>
+        <location filename="../src/library/CfgExternalToolModel.cpp" line="493"/>
+        <source>Input folder URL</source>
+        <translation>URL входной папки</translation>
+    </message>
+    <message>
+        <location filename="../src/library/CfgExternalToolModel.cpp" line="494"/>
+        <source>Output file URL</source>
+        <translation>URL выходного файла</translation>
+    </message>
+    <message>
+        <location filename="../src/library/CfgExternalToolModel.cpp" line="495"/>
+        <source>Output folder URL</source>
+        <translation>URL выходной папки</translation>
+    </message>
+    <message>
+        <location filename="../src/library/CfgExternalToolModel.cpp" line="683"/>
+        <source>Display name</source>
         <translation>Имя</translation>
     </message>
     <message>
-        <location filename="../src/library/CfgExternalToolModel.cpp" line="457"/>
+        <location filename="../src/library/CfgExternalToolModel.cpp" line="685"/>
+        <source>Argument name</source>
+        <translation>Имя аргумента</translation>
+    </message>
+    <message>
+        <location filename="../src/library/CfgExternalToolModel.cpp" line="687"/>
         <source>Type</source>
         <translation>Тип</translation>
     </message>
     <message>
-        <location filename="../src/library/CfgExternalToolModel.cpp" line="458"/>
+        <location filename="../src/library/CfgExternalToolModel.cpp" line="689"/>
+        <source>Default value</source>
+        <translation>Значение по умолчанию</translation>
+    </message>
+    <message>
+        <location filename="../src/library/CfgExternalToolModel.cpp" line="691"/>
         <source>Description</source>
         <translation>Описание</translation>
     </message>
@@ -821,181 +962,162 @@ p, li { white-space: pre-wrap; }
     </message>
 </context>
 <context>
-    <name>U2::CreateExternalProcessDialog</name>
+    <name>U2::CreateCmdlineBasedWorkerWizard</name>
     <message>
-        <location filename="../src/library/CreateExternalProcessDialog.cpp" line="324"/>
+        <location filename="../src/library/create_cmdline_based_worker/CreateCmdlineBasedWorkerWizard.cpp" line="201"/>
         <source>Warning</source>
         <translation>Предупреждение</translation>
     </message>
     <message>
-        <location filename="../src/library/CreateExternalProcessDialog.cpp" line="325"/>
-        <source>You have changed the structure of the element (name, slots, attributes&apos; names and types). All elements on the scene would be removed. Do you really want to change it?
+        <location filename="../src/library/create_cmdline_based_worker/CreateCmdlineBasedWorkerWizard.cpp" line="202"/>
+        <source>You have changed the structure of the element (name, slots, parameters&apos; names and types). All elements on the scene would be removed. Do you really want to change it?
 You could also reset the dialog to the initial state.</source>
-        <translation>Вы изменили структуру элемента (имя, слоты, имена или типы аттрибутов&apos;). Все элементы на сцене будут удалены. Вы действительно хотите сделать это? Также вы можете вернуть диалог к изначальному состоянию.</translation>
+        <translation>Вы изменили структуру элемента (имя, слоты, имена и типы параметров). Все элементы на сцене будут удалены. Вы действительно хотите применить изменения?
+Вы также можете вернуть диалог в исходное состояние.</translation>
     </message>
     <message>
-        <location filename="../src/library/CreateExternalProcessDialog.cpp" line="354"/>
+        <location filename="../src/library/create_cmdline_based_worker/CreateCmdlineBasedWorkerWizard.cpp" line="232"/>
+        <source>Configure Element with External Tool</source>
+        <translation>Создание элемента при помощи внешних инструментов</translation>
+    </message>
+</context>
+<context>
+    <name>U2::CreateCmdlineBasedWorkerWizardCommandPage</name>
+    <message>
+        <location filename="../src/library/create_cmdline_based_worker/CreateCmdlineBasedWorkerWizard.cpp" line="883"/>
         <source>Create Element</source>
         <translation>Создание элемента</translation>
     </message>
     <message>
-        <location filename="../src/library/CreateExternalProcessDialog.cpp" line="356"/>
-        <source>Please set the input/output data.</source>
-        <translation>Установите входные и выходные данные.</translation>
+        <location filename="../src/library/create_cmdline_based_worker/CreateCmdlineBasedWorkerWizard.cpp" line="884"/>
+        <source>You don&apos;t use listed parameters in template string. Continue?</source>
+        <translation>Вы не использовали перечисленные параметры в строке. Продолжить?</translation>
     </message>
     <message>
-        <location filename="../src/library/CreateExternalProcessDialog.cpp" line="361"/>
-        <source>Please set the command line to run external tool.</source>
-        <translation>Установите параметры командной строки чтобы запустить внутренний инструмент.</translation>
-    </message>
-    <message>
-        <location filename="../src/library/CreateExternalProcessDialog.cpp" line="366"/>
-        <location filename="../src/library/CreateExternalProcessDialog.cpp" line="465"/>
-        <source>Please set the name for the new element.</source>
-        <translation>Установите имя для нового элемента.</translation>
-    </message>
-    <message>
-        <location filename="../src/library/CreateExternalProcessDialog.cpp" line="372"/>
-        <location filename="../src/library/CreateExternalProcessDialog.cpp" line="477"/>
-        <source>Invalid symbols in the element name.</source>
-        <translation>Некорректные символы в имени элемента.</translation>
-    </message>
-    <message>
-        <location filename="../src/library/CreateExternalProcessDialog.cpp" line="377"/>
-        <location filename="../src/library/CreateExternalProcessDialog.cpp" line="482"/>
-        <source>Element with this name already exists.</source>
-        <translation>Элемент с таким именем уже существует.</translation>
-    </message>
-    <message>
-        <location filename="../src/library/CreateExternalProcessDialog.cpp" line="385"/>
-        <location filename="../src/library/CreateExternalProcessDialog.cpp" line="396"/>
-        <location filename="../src/library/CreateExternalProcessDialog.cpp" line="407"/>
-        <source>For one or more parameter name was not set.</source>
-        <translation>Для одного или более парваметров не задано имя.</translation>
-    </message>
-    <message>
-        <location filename="../src/library/CreateExternalProcessDialog.cpp" line="389"/>
-        <location filename="../src/library/CreateExternalProcessDialog.cpp" line="400"/>
-        <location filename="../src/library/CreateExternalProcessDialog.cpp" line="411"/>
-        <source>Invalid symbols in a name.</source>
-        <translation>Некорректные символы в имени.</translation>
-    </message>
-    <message>
-        <location filename="../src/library/CreateExternalProcessDialog.cpp" line="418"/>
-        <source>The same name of element parameters was found</source>
-        <translation>Параметр с таким именем уже существует</translation>
-    </message>
-    <message>
-        <location filename="../src/library/CreateExternalProcessDialog.cpp" line="426"/>
-        <source>You don&apos;t use parameter %1 in template string. Continue?</source>
-        <translation>Вы не можете использовать параметр %1 в шаблонной строке. Продолжить?</translation>
-    </message>
-    <message>
-        <location filename="../src/library/CreateExternalProcessDialog.cpp" line="427"/>
+        <location filename="../src/library/create_cmdline_based_worker/CreateCmdlineBasedWorkerWizard.cpp" line="897"/>
         <source>Continue</source>
         <translation>Продолжить</translation>
     </message>
     <message>
-        <location filename="../src/library/CreateExternalProcessDialog.cpp" line="428"/>
+        <location filename="../src/library/create_cmdline_based_worker/CreateCmdlineBasedWorkerWizard.cpp" line="898"/>
         <source>Abort</source>
         <translation>Вернуться</translation>
     </message>
+</context>
+<context>
+    <name>U2::CreateCmdlineBasedWorkerWizardGeneralSettingsPage</name>
     <message>
-        <location filename="../src/library/CreateExternalProcessDialog.cpp" line="471"/>
-        <source>Spaces in the element name.</source>
-        <translation>Пробелы в имени элемента.</translation>
+        <location filename="../src/library/create_cmdline_based_worker/CreateCmdlineBasedWorkerWizard.cpp" line="349"/>
+        <source>Select an executable file</source>
+        <translation>Выбрать исполняемый файл</translation>
     </message>
     <message>
-        <location filename="../src/library/CreateExternalProcessDialog.cpp" line="497"/>
-        <source>It is the correct name</source>
-        <translation>Это корректное имя</translation>
+        <location filename="../src/library/create_cmdline_based_worker/CreateCmdlineBasedWorkerWizard.cpp" line="371"/>
+        <source>Show customs tools only</source>
+        <translation>Показать только пользовательские инструменты</translation>
+    </message>
+    <message>
+        <location filename="../src/library/create_cmdline_based_worker/CreateCmdlineBasedWorkerWizard.cpp" line="376"/>
+        <location filename="../src/library/create_cmdline_based_worker/CreateCmdlineBasedWorkerWizard.cpp" line="400"/>
+        <source>Show all tools</source>
+        <translation>Показать все инструменты</translation>
+    </message>
+    <message>
+        <location filename="../src/library/create_cmdline_based_worker/CreateCmdlineBasedWorkerWizard.cpp" line="395"/>
+        <source>Custom tools</source>
+        <translation>Пользовательские инструменты</translation>
+    </message>
+    <message>
+        <location filename="../src/library/create_cmdline_based_worker/CreateCmdlineBasedWorkerWizard.cpp" line="415"/>
+        <source>Supported tools</source>
+        <translation>Поддерживаемые инструменты</translation>
     </message>
 </context>
 <context>
     <name>U2::CreateScriptElementDialog</name>
     <message>
-        <location filename="../src/CreateScriptWorker.cpp" line="302"/>
+        <location filename="../src/CreateScriptWorker.cpp" line="307"/>
         <source>Name</source>
         <translation>Имя</translation>
     </message>
     <message>
-        <location filename="../src/CreateScriptWorker.cpp" line="303"/>
+        <location filename="../src/CreateScriptWorker.cpp" line="308"/>
         <source>Type</source>
         <translation>Тип</translation>
     </message>
     <message>
-        <location filename="../src/CreateScriptWorker.cpp" line="362"/>
+        <location filename="../src/CreateScriptWorker.cpp" line="367"/>
         <source>OK</source>
         <translation>OK</translation>
     </message>
     <message>
-        <location filename="../src/CreateScriptWorker.cpp" line="363"/>
+        <location filename="../src/CreateScriptWorker.cpp" line="368"/>
         <source>Cancel</source>
         <translation>Отмена</translation>
     </message>
     <message>
-        <location filename="../src/CreateScriptWorker.cpp" line="508"/>
-        <location filename="../src/CreateScriptWorker.cpp" line="522"/>
-        <location filename="../src/CreateScriptWorker.cpp" line="535"/>
-        <location filename="../src/CreateScriptWorker.cpp" line="541"/>
-        <location filename="../src/CreateScriptWorker.cpp" line="559"/>
+        <location filename="../src/CreateScriptWorker.cpp" line="516"/>
+        <location filename="../src/CreateScriptWorker.cpp" line="530"/>
+        <location filename="../src/CreateScriptWorker.cpp" line="543"/>
+        <location filename="../src/CreateScriptWorker.cpp" line="549"/>
         <location filename="../src/CreateScriptWorker.cpp" line="567"/>
         <location filename="../src/CreateScriptWorker.cpp" line="575"/>
+        <location filename="../src/CreateScriptWorker.cpp" line="583"/>
         <source>error</source>
         <translation>ошибка</translation>
     </message>
     <message>
-        <location filename="../src/CreateScriptWorker.cpp" line="508"/>
+        <location filename="../src/CreateScriptWorker.cpp" line="516"/>
         <source>Two identical types for input port</source>
         <translation>Два одинаковых типа для входного порта</translation>
     </message>
     <message>
-        <location filename="../src/CreateScriptWorker.cpp" line="509"/>
+        <location filename="../src/CreateScriptWorker.cpp" line="517"/>
         <source>two identical types for input port</source>
         <translation>два одинаковых типа для входного порта</translation>
     </message>
     <message>
-        <location filename="../src/CreateScriptWorker.cpp" line="522"/>
+        <location filename="../src/CreateScriptWorker.cpp" line="530"/>
         <source>Two identical types for output port</source>
         <translation>Два одинаковых типа для выходного порта</translation>
     </message>
     <message>
-        <location filename="../src/CreateScriptWorker.cpp" line="523"/>
+        <location filename="../src/CreateScriptWorker.cpp" line="531"/>
         <source>two identical types for output port</source>
         <translation>два одинаковых типа для входного порта</translation>
     </message>
     <message>
-        <location filename="../src/CreateScriptWorker.cpp" line="535"/>
-        <location filename="../src/CreateScriptWorker.cpp" line="536"/>
+        <location filename="../src/CreateScriptWorker.cpp" line="543"/>
+        <location filename="../src/CreateScriptWorker.cpp" line="544"/>
         <source>Name for some attributes is empty</source>
         <translation>Имена для некоторых аттрибутов пусты</translation>
     </message>
     <message>
-        <location filename="../src/CreateScriptWorker.cpp" line="541"/>
-        <location filename="../src/CreateScriptWorker.cpp" line="542"/>
+        <location filename="../src/CreateScriptWorker.cpp" line="549"/>
+        <location filename="../src/CreateScriptWorker.cpp" line="550"/>
         <source>Two attributes with name %1</source>
         <translation>Два атрибута с именем %1</translation>
     </message>
     <message>
-        <location filename="../src/CreateScriptWorker.cpp" line="559"/>
-        <location filename="../src/CreateScriptWorker.cpp" line="560"/>
+        <location filename="../src/CreateScriptWorker.cpp" line="567"/>
+        <location filename="../src/CreateScriptWorker.cpp" line="568"/>
         <source>Name for block is empty</source>
         <translation>Имя для блока пусто</translation>
     </message>
     <message>
-        <location filename="../src/CreateScriptWorker.cpp" line="567"/>
-        <location filename="../src/CreateScriptWorker.cpp" line="568"/>
+        <location filename="../src/CreateScriptWorker.cpp" line="575"/>
+        <location filename="../src/CreateScriptWorker.cpp" line="576"/>
         <source>Actor with this name already registered</source>
         <translation>Указатель с этим именем уже зарегистрирован</translation>
     </message>
     <message>
-        <location filename="../src/CreateScriptWorker.cpp" line="575"/>
-        <location filename="../src/CreateScriptWorker.cpp" line="576"/>
+        <location filename="../src/CreateScriptWorker.cpp" line="583"/>
+        <location filename="../src/CreateScriptWorker.cpp" line="584"/>
         <source>Description for block is empty</source>
         <translation>Описание для блока пусто</translation>
     </message>
     <message>
-        <location filename="../src/CreateScriptWorker.cpp" line="630"/>
+        <location filename="../src/CreateScriptWorker.cpp" line="638"/>
         <source>Can&apos;t save user&apos;s workflow element</source>
         <translation>Невозможно сохранить элемент</translation>
     </message>
@@ -1003,12 +1125,12 @@ You could also reset the dialog to the initial state.</source>
 <context>
     <name>U2::DashboardManagerHelper</name>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="240"/>
+        <location filename="../src/WorkflowViewController.cpp" line="213"/>
         <source>No Dashboards Found</source>
         <translation>Не найдено панелей</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="241"/>
+        <location filename="../src/WorkflowViewController.cpp" line="214"/>
         <source>You do not have any dashboards yet. You need to run some workflow to use Dashboards Manager.</source>
         <translation>У вас еще нет ни одной панели. Вам необходимо запустить какую-нибудь схему, чтобы использовать менеджер панелей.</translation>
     </message>
@@ -1016,38 +1138,30 @@ You could also reset the dialog to the initial state.</source>
 <context>
     <name>U2::DashboardsManagerDialog</name>
     <message>
-        <location filename="../src/DashboardsManagerDialog.cpp" line="50"/>
+        <location filename="../src/DashboardsManagerDialog.cpp" line="52"/>
         <source>OK</source>
         <translation>OK</translation>
     </message>
     <message>
-        <location filename="../src/DashboardsManagerDialog.cpp" line="62"/>
+        <location filename="../src/DashboardsManagerDialog.cpp" line="64"/>
         <source>Name</source>
         <translation>Имя</translation>
     </message>
     <message>
-        <location filename="../src/DashboardsManagerDialog.cpp" line="62"/>
+        <location filename="../src/DashboardsManagerDialog.cpp" line="64"/>
         <source>Folder</source>
         <translation>Папка</translation>
     </message>
     <message>
-        <location filename="../src/DashboardsManagerDialog.cpp" line="177"/>
+        <location filename="../src/DashboardsManagerDialog.cpp" line="178"/>
         <source>Confirm</source>
         <translation>Подтвердить</translation>
     </message>
     <message>
-        <location filename="../src/DashboardsManagerDialog.cpp" line="49"/>
-        <location filename="../src/DashboardsManagerDialog.cpp" line="178"/>
+        <location filename="../src/DashboardsManagerDialog.cpp" line="51"/>
+        <location filename="../src/DashboardsManagerDialog.cpp" line="179"/>
         <source>Cancel</source>
         <translation>Отмена</translation>
-    </message>
-</context>
-<context>
-    <name>U2::EstimationDialog</name>
-    <message>
-        <location filename="../src/EstimationDialog.cpp" line="45"/>
-        <source>Workflow Estimation</source>
-        <translation>Оценка времени исполнения схемы</translation>
     </message>
 </context>
 <context>
@@ -1115,6 +1229,11 @@ You could also reset the dialog to the initial state.</source>
         <source>Font</source>
         <translation>Шрифт</translation>
     </message>
+    <message>
+        <location filename="../src/ItemViewStyle.cpp" line="82"/>
+        <source>Characters Font</source>
+        <translation>Шрифт</translation>
+    </message>
 </context>
 <context>
     <name>U2::LoadSamplesTask</name>
@@ -1138,88 +1257,19 @@ You could also reset the dialog to the initial state.</source>
 <context>
     <name>U2::LoadWorkflowSceneTask</name>
     <message>
-        <location filename="../src/WorkflowSceneIOTasks.cpp" line="69"/>
+        <location filename="../src/WorkflowSceneIOTasks.cpp" line="70"/>
         <source>Load workflow scene</source>
         <translation>Загрузить схему</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowSceneIOTasks.cpp" line="87"/>
+        <location filename="../src/WorkflowSceneIOTasks.cpp" line="95"/>
         <source>Undefined format: plain text or xml expected</source>
         <translation>Неизвестный формат: содержится тест или xml</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowSceneIOTasks.cpp" line="117"/>
+        <location filename="../src/WorkflowSceneIOTasks.cpp" line="125"/>
         <source>Error while parsing file: %1</source>
         <translation>Ошибка во время конвертации файла: %1</translation>
-    </message>
-</context>
-<context>
-    <name>U2::LocalWorkflow::AlignToReferencePrompter</name>
-    <message>
-        <source>Input sequence</source>
-        <translation type="vanished">Входная последовательность</translation>
-    </message>
-    <message>
-        <source>Input sequence.</source>
-        <translation type="vanished">Входная последовательность.</translation>
-    </message>
-    <message>
-        <source>Aligned data</source>
-        <translation type="vanished">Выровненные данные</translation>
-    </message>
-    <message>
-        <source>Aligned data.</source>
-        <translation type="vanished">Выровненные данные.</translation>
-    </message>
-    <message>
-        <source>Reference URL</source>
-        <translation type="vanished">Путь до референса</translation>
-    </message>
-    <message>
-        <source>A URL to the file with a reference sequence.</source>
-        <translation type="vanished">Путь до файла с референсной последовательностью.</translation>
-    </message>
-    <message>
-        <source>unset</source>
-        <translation type="vanished">не указан</translation>
-    </message>
-    <message>
-        <source>Aligns each sequence from &lt;u&gt;%1&lt;/u&gt; to the reference sequence from &lt;u&gt;%2&lt;/u&gt;.</source>
-        <translation type="vanished">Выравнивает каждую последовательность из &lt;u&gt;%1&lt;/u&gt; на референсчную последовательность из &lt;u&gt;%2&lt;/u&gt;.</translation>
-    </message>
-</context>
-<context>
-    <name>U2::LocalWorkflow::AlignToReferenceTask</name>
-    <message>
-        <source>Align to reference</source>
-        <translation type="vanished">Выравнивание на референс</translation>
-    </message>
-</context>
-<context>
-    <name>U2::LocalWorkflow::AlignToReferenceWorker</name>
-    <message>
-        <source>Align to Reference</source>
-        <translation type="vanished">Выравнивание на референс</translation>
-    </message>
-    <message>
-        <source>Align input sequences (e.g. Sanger reads) to the reference sequence.</source>
-        <translation type="vanished">Выровнять входные последовательности на референсную последовательность.</translation>
-    </message>
-    <message>
-        <source>Can not read the reference file: </source>
-        <translation type="vanished">Can not read the reference file: </translation>
-    </message>
-    <message>
-        <source>Can&apos;t read the file: </source>
-        <translation type="vanished">Can&apos;t read the file: </translation>
-    </message>
-    <message>
-        <source>No reference sequence in the file: </source>
-        <translation type="vanished">No reference sequence in the file: </translation>
-    </message>
-    <message>
-        <source>More than one sequence in the reference file: </source>
-        <translation type="vanished">More than one sequence in the reference file: </translation>
     </message>
 </context>
 <context>
@@ -1232,7 +1282,7 @@ You could also reset the dialog to the initial state.</source>
     <message>
         <location filename="../src/library/MSA2SequenceWorker.cpp" line="140"/>
         <source> from &lt;u&gt;%1&lt;/u&gt;</source>
-        <translation>из &lt;u&gt;%1&lt;/u&gt;</translation>
+        <translation> из &lt;u&gt;%1&lt;/u&gt;</translation>
     </message>
     <message>
         <location filename="../src/library/MSA2SequenceWorker.cpp" line="141"/>
@@ -1281,80 +1331,80 @@ You could also reset the dialog to the initial state.</source>
 <context>
     <name>U2::LocalWorkflow::AminoTranslationPrompter</name>
     <message>
-        <location filename="../src/library/AminoTranslationWorker.cpp" line="252"/>
+        <location filename="../src/library/AminoTranslationWorker.cpp" line="250"/>
         <source>unset</source>
         <translation>не указан</translation>
     </message>
     <message>
-        <location filename="../src/library/AminoTranslationWorker.cpp" line="253"/>
+        <location filename="../src/library/AminoTranslationWorker.cpp" line="251"/>
         <source> from &lt;u&gt;%1&lt;/u&gt;</source>
-        <translation>из &lt;u&gt;%1&lt;/u&gt;</translation>
+        <translation> из &lt;u&gt;%1&lt;/u&gt;</translation>
     </message>
 </context>
 <context>
     <name>U2::LocalWorkflow::AminoTranslationWorker</name>
     <message>
-        <location filename="../src/library/AminoTranslationWorker.cpp" line="185"/>
+        <location filename="../src/library/AminoTranslationWorker.cpp" line="183"/>
         <source>Input Data</source>
         <translation>Входная последовательность</translation>
     </message>
     <message>
-        <location filename="../src/library/AminoTranslationWorker.cpp" line="186"/>
+        <location filename="../src/library/AminoTranslationWorker.cpp" line="184"/>
         <source>An input sequence to translate in amino.</source>
         <translation>Транслировать входную последовательность в амино.</translation>
     </message>
     <message>
-        <location filename="../src/library/AminoTranslationWorker.cpp" line="189"/>
+        <location filename="../src/library/AminoTranslationWorker.cpp" line="187"/>
         <source>Amino sequence</source>
         <translation>Амино последовательность</translation>
     </message>
     <message>
-        <location filename="../src/library/AminoTranslationWorker.cpp" line="190"/>
+        <location filename="../src/library/AminoTranslationWorker.cpp" line="188"/>
         <source>Sequence has been translated.</source>
         <translation>Последовательности транслированы.</translation>
     </message>
     <message>
-        <location filename="../src/library/AminoTranslationWorker.cpp" line="201"/>
+        <location filename="../src/library/AminoTranslationWorker.cpp" line="199"/>
         <source>Translate from </source>
-        <translation>Транслировать из</translation>
+        <translation>Транслировать из </translation>
     </message>
     <message>
-        <location filename="../src/library/AminoTranslationWorker.cpp" line="201"/>
+        <location filename="../src/library/AminoTranslationWorker.cpp" line="199"/>
         <source>What position would sequence translated from : first, second, third or from all positions.</source>
         <translation>Позиция, с которой будет транслирована последовательность: с первой, второй, третьей или все позиции.</translation>
     </message>
     <message>
-        <location filename="../src/library/AminoTranslationWorker.cpp" line="204"/>
+        <location filename="../src/library/AminoTranslationWorker.cpp" line="202"/>
         <source>Auto selected genetic code</source>
         <translation>Автоматическая установка генетического кода</translation>
     </message>
     <message>
-        <location filename="../src/library/AminoTranslationWorker.cpp" line="204"/>
+        <location filename="../src/library/AminoTranslationWorker.cpp" line="202"/>
         <source>Set if genetic code will be selected automatically.</source>
         <translation>Установить если генетический код будет выбран автоматически.</translation>
     </message>
     <message>
-        <location filename="../src/library/AminoTranslationWorker.cpp" line="208"/>
+        <location filename="../src/library/AminoTranslationWorker.cpp" line="206"/>
         <source>Amino Translation</source>
         <translation>Трансляция</translation>
     </message>
     <message>
-        <location filename="../src/library/AminoTranslationWorker.cpp" line="209"/>
+        <location filename="../src/library/AminoTranslationWorker.cpp" line="207"/>
         <source>Translate sequence into it&apos;s amino translation . Output a sequence.</source>
-        <translation>Транслировать последовательность в аминокислотную последовательность. </translation>
+        <translation>Транслировать последовательность в аминокислотную последовательность.</translation>
     </message>
     <message>
-        <location filename="../src/library/AminoTranslationWorker.cpp" line="212"/>
+        <location filename="../src/library/AminoTranslationWorker.cpp" line="210"/>
         <source>Genetic code</source>
         <translation>Генетический код</translation>
     </message>
     <message>
-        <location filename="../src/library/AminoTranslationWorker.cpp" line="212"/>
+        <location filename="../src/library/AminoTranslationWorker.cpp" line="210"/>
         <source>Which genetic code should be used for translating the input nucleotide sequence.</source>
         <translation>Выбор генетического кода, который будет использован для трансляции входной нуклеотидной последовательности.</translation>
     </message>
     <message>
-        <location filename="../src/library/AminoTranslationWorker.cpp" line="403"/>
+        <location filename="../src/library/AminoTranslationWorker.cpp" line="394"/>
         <source>Error on getting %1 sequence: </source>
         <translation>Error on getting %1 sequence: </translation>
     </message>
@@ -1475,12 +1525,12 @@ You could also reset the dialog to the initial state.</source>
         <translation>Запись сборки: нет сборки</translation>
     </message>
     <message>
-        <location filename="../src/library/WriteAssemblyWorkers.cpp" line="186"/>
+        <location filename="../src/library/WriteAssemblyWorkers.cpp" line="187"/>
         <source>Build index (BAM only)</source>
         <translation>Построение индекса (применимо только к файлам BAM)</translation>
     </message>
     <message>
-        <location filename="../src/library/WriteAssemblyWorkers.cpp" line="187"/>
+        <location filename="../src/library/WriteAssemblyWorkers.cpp" line="188"/>
         <source>Build BAM index for the target BAM file. The file .bai will be created in the same folder.</source>
         <translation>построение индекса для BAM-файла. Файл с расширением .bai будет создан в той же папке.</translation>
     </message>
@@ -1532,7 +1582,8 @@ CTTACATAACTACTGACCATGCTCTCTCTTGTCTGTCTCTTATACACATCT
 @HWI-ST880:181:D1WRUACXX:8:1102:7303:2101 1:Y:0:TAAGGG
 TCCTTACTGTCTGAGCAATGGGATTCCATCTTTTACGATCTAGACATGGCT
 +
-11++4222322&lt;CEE2&lt;:3&lt;3333333&lt;A&lt;CAFE:1?C??::C?00?BD90.</translation>
+11++4222322&lt;CEE2&lt;:3&lt;3333333&lt;A&lt;CAFE:1?C??::C?00?BD90.
+</translation>
     </message>
     <message>
         <location filename="../src/library/FASTQWorkersLibrary.cpp" line="88"/>
@@ -1581,7 +1632,7 @@ TCCTTACTGTCTGAGCAATGGGATTCCATCTTTTACGATCTAGACATGGCT
     </message>
     <message>
         <location filename="../src/library/FASTQWorkersLibrary.cpp" line="113"/>
-        <source>A name of an output file. If default of empty value is provided the output name is the name of the first file with additional extention.</source>
+        <source>A name of an output file. If default of empty value is provided the output name is the name of the first file with additional extension.</source>
         <translation>Имя выходного файла.</translation>
     </message>
     <message>
@@ -1610,7 +1661,7 @@ TCCTTACTGTCTGAGCAATGGGATTCCATCTTTTACGATCTAGACATGGCT
     <message>
         <location filename="../src/library/CDSearchWorker.cpp" line="135"/>
         <source> from &lt;u&gt;%1&lt;/u&gt;</source>
-        <translation>из &lt;u&gt;%1&lt;/u&gt;</translation>
+        <translation> из &lt;u&gt;%1&lt;/u&gt;</translation>
     </message>
     <message>
         <location filename="../src/library/CDSearchWorker.cpp" line="139"/>
@@ -1713,10 +1764,6 @@ TCCTTACTGTCTGAGCAATGGGATTCCATCTTTTACGATCTAGACATGGCT
 </context>
 <context>
     <name>U2::LocalWorkflow::ComposeResultSubTask</name>
-    <message>
-        <source>Compose alignment</source>
-        <translation type="vanished">Составить выравнивание</translation>
-    </message>
 </context>
 <context>
     <name>U2::LocalWorkflow::ConvertFilesFormatPrompter</name>
@@ -1728,7 +1775,7 @@ TCCTTACTGTCTGAGCAATGGGATTCCATCTTTTACGATCTAGACATGGCT
     <message>
         <location filename="../src/library/ConvertFilesFormatWorker.cpp" line="75"/>
         <source> from &lt;u&gt;%1&lt;/u&gt;</source>
-        <translation>из &lt;u&gt;%1&lt;/u&gt;</translation>
+        <translation> из &lt;u&gt;%1&lt;/u&gt;</translation>
     </message>
     <message>
         <location filename="../src/library/ConvertFilesFormatWorker.cpp" line="77"/>
@@ -1960,12 +2007,22 @@ TCCTTACTGTCTGAGCAATGGGATTCCATCTTTTACGATCTAGACATGGCT
 <context>
     <name>U2::LocalWorkflow::ExternalProcessWorker</name>
     <message>
-        <location filename="../src/library/IncludedProtoFactoryImpl.cpp" line="140"/>
+        <location filename="../src/library/IncludedProtoFactoryImpl.cpp" line="144"/>
         <source>output data</source>
         <translation>выходные данные</translation>
     </message>
     <message>
-        <location filename="../src/library/ExternalProcessWorker.cpp" line="372"/>
+        <location filename="../src/library/ExternalProcessWorker.cpp" line="362"/>
+        <source>Some inputs are finished while other still have not processed messages</source>
+        <translation>Некоторые входные данные обработаны, в то время как другие еще не обработали сообщения</translation>
+    </message>
+    <message>
+        <location filename="../src/library/ExternalProcessWorker.cpp" line="368"/>
+        <source>An internal error has been spotted</source>
+        <translation>Обнаружена внутренняя ошибка</translation>
+    </message>
+    <message>
+        <location filename="../src/library/ExternalProcessWorker.cpp" line="463"/>
         <source>%1 file was not created</source>
         <translation>%1 файл не был создан</translation>
     </message>
@@ -1973,15 +2030,15 @@ TCCTTACTGTCTGAGCAATGGGATTCCATCTTTTACGATCTAGACATGGCT
 <context>
     <name>U2::LocalWorkflow::ExternalProcessWorkerPrompter</name>
     <message>
-        <location filename="../src/library/ExternalProcessWorker.cpp" line="632"/>
-        <location filename="../src/library/ExternalProcessWorker.cpp" line="647"/>
+        <location filename="../src/library/ExternalProcessWorker.cpp" line="711"/>
+        <location filename="../src/library/ExternalProcessWorker.cpp" line="726"/>
         <source>unset</source>
         <translation>не указан</translation>
     </message>
     <message>
-        <location filename="../src/library/ExternalProcessWorker.cpp" line="633"/>
-        <location filename="../src/library/ExternalProcessWorker.cpp" line="652"/>
-        <location filename="../src/library/ExternalProcessWorker.cpp" line="656"/>
+        <location filename="../src/library/ExternalProcessWorker.cpp" line="712"/>
+        <location filename="../src/library/ExternalProcessWorker.cpp" line="731"/>
+        <location filename="../src/library/ExternalProcessWorker.cpp" line="735"/>
         <source>&lt;u&gt;%1&lt;/u&gt;</source>
         <translation>&lt;u&gt;%1&lt;/u&gt;</translation>
     </message>
@@ -2300,7 +2357,7 @@ TCCTTACTGTCTGAGCAATGGGATTCCATCTTTTACGATCTAGACATGGCT
     </message>
     <message>
         <location filename="../src/library/FASTQWorkersLibrary.cpp" line="268"/>
-        <source>A name of an output file. If default of empty value is provided the output name is the name of the first file with additional extention.</source>
+        <source>A name of an output file. If default of empty value is provided the output name is the name of the first file with additional extension.</source>
         <translation>Имя выходного файла.</translation>
     </message>
     <message>
@@ -2352,17 +2409,17 @@ TCCTTACTGTCTGAGCAATGGGATTCCATCTTTTACGATCTAGACATGGCT
 <context>
     <name>U2::LocalWorkflow::FetchSequenceByIdFromAnnotationPrompter</name>
     <message>
-        <location filename="../src/library/RemoteDBFetcherWorker.cpp" line="407"/>
+        <location filename="../src/library/RemoteDBFetcherWorker.cpp" line="411"/>
         <source>unset</source>
         <translation>не указан</translation>
     </message>
     <message>
-        <location filename="../src/library/RemoteDBFetcherWorker.cpp" line="408"/>
+        <location filename="../src/library/RemoteDBFetcherWorker.cpp" line="412"/>
         <source>&lt;u&gt;%1&lt;/u&gt;</source>
         <translation>&lt;u&gt;%1&lt;/u&gt;</translation>
     </message>
     <message>
-        <location filename="../src/library/RemoteDBFetcherWorker.cpp" line="410"/>
+        <location filename="../src/library/RemoteDBFetcherWorker.cpp" line="414"/>
         <source>In each annotation from %1 search for accession ID and download the corresponding sequences.</source>
         <translation>В каждой аннотации из %1 ищет доступные идентификаторы и скачивает соответствующие последовательности.</translation>
     </message>
@@ -2370,42 +2427,42 @@ TCCTTACTGTCTGAGCAATGGGATTCCATCTTTTACGATCTAGACATGGCT
 <context>
     <name>U2::LocalWorkflow::FetchSequenceByIdFromAnnotationWorker</name>
     <message>
-        <location filename="../src/library/RemoteDBFetcherWorker.cpp" line="416"/>
+        <location filename="../src/library/RemoteDBFetcherWorker.cpp" line="420"/>
         <source>Cannot create folder &apos;%1&apos;</source>
         <translation>Не удается создать папку &apos;%1&apos;</translation>
     </message>
     <message>
-        <location filename="../src/library/RemoteDBFetcherWorker.cpp" line="470"/>
+        <location filename="../src/library/RemoteDBFetcherWorker.cpp" line="474"/>
         <source>failed to load item &apos;%1&apos; from &apos;%2&apos; DB : %3</source>
         <translation>Не удалось загрузить  &apos;%1&apos; из базы данных &apos;%2&apos;: %3</translation>
     </message>
     <message>
-        <location filename="../src/library/RemoteDBFetcherWorker.cpp" line="533"/>
+        <location filename="../src/library/RemoteDBFetcherWorker.cpp" line="537"/>
         <source>Fetch Sequences by ID from Annotation</source>
         <translation>Извлечение последовательностей по ID в аннотации</translation>
     </message>
     <message>
-        <location filename="../src/library/RemoteDBFetcherWorker.cpp" line="534"/>
+        <location filename="../src/library/RemoteDBFetcherWorker.cpp" line="538"/>
         <source>Parses annotations to find any IDs and fetches corresponding sequences.</source>
         <translation>Разделяет аннотации по поиску идентификаторов и извлекает соответствующие последовательности.</translation>
     </message>
     <message>
-        <location filename="../src/library/RemoteDBFetcherWorker.cpp" line="538"/>
+        <location filename="../src/library/RemoteDBFetcherWorker.cpp" line="542"/>
         <source>Input annotations</source>
         <translation>Входные аннотации</translation>
     </message>
     <message>
-        <location filename="../src/library/RemoteDBFetcherWorker.cpp" line="539"/>
+        <location filename="../src/library/RemoteDBFetcherWorker.cpp" line="543"/>
         <source>The annotations are scanned for accesion ids.</source>
         <translation>Аннотации сканируются для присвоения идентификаторов.</translation>
     </message>
     <message>
-        <location filename="../src/library/RemoteDBFetcherWorker.cpp" line="545"/>
+        <location filename="../src/library/RemoteDBFetcherWorker.cpp" line="549"/>
         <source>Sequence</source>
         <translation>Последовательность</translation>
     </message>
     <message>
-        <location filename="../src/library/RemoteDBFetcherWorker.cpp" line="546"/>
+        <location filename="../src/library/RemoteDBFetcherWorker.cpp" line="550"/>
         <source>The downloaded sequences</source>
         <translation>Скачанные последовательности</translation>
     </message>
@@ -2671,7 +2728,7 @@ TCCTTACTGTCTGAGCAATGGGATTCCATCTTTTACGATCTAGACATGGCT
     </message>
     <message>
         <location filename="../src/library/FilterBamWorker.cpp" line="153"/>
-        <source>A name of an output BAM/SAM file. If default of empty value is provided the output name is the name of the first BAM/SAM file with .filtered extention.</source>
+        <source>A name of an output BAM/SAM file. If default of empty value is provided the output name is the name of the first BAM/SAM file with .filtered extension.</source>
         <translation>Имя выходного BAM/SAM файла.</translation>
     </message>
     <message>
@@ -2691,7 +2748,7 @@ TCCTTACTGTCTGAGCAATGGGATTCCATCTTTTACGATCTAGACATGGCT
     </message>
     <message>
         <location filename="../src/library/FilterBamWorker.cpp" line="159"/>
-        <source>Regions to filter. For BAM output only. chr2 to output the whole chr2. chr2:1000 to output regions of chr 2 starting from 1000. chr2:1000-2000 to ouput regions of chr2 between 1000 and 2000 including the end point. To input multiple regions use the space seprator (e.g. chr1 chr2 chr3:1000-2000).</source>
+        <source>Regions to filter. For BAM output only. chr2 to output the whole chr2. chr2:1000 to output regions of chr 2 starting from 1000. chr2:1000-2000 to output regions of chr2 between 1000 and 2000 including the end point. To input multiple regions use the space separator (e.g. chr1 chr2 chr3:1000-2000).</source>
         <translation>участки для фильтрации. Только в случае выходных файлов в формате BAM. Например, chr2 - для всей chr2. chr2:1000 - для регионов chr 2, начиная с 1000. chr2:1000-2000 - для регионов chr2 между 1000 и 2000, включая конец интервала. Для ввода нескольких участков используйте пробел (напр, chr1 chr2 chr3:1000-2000).</translation>
     </message>
     <message>
@@ -2748,7 +2805,7 @@ TCCTTACTGTCTGAGCAATGGGATTCCATCTTTTACGATCTAGACATGGCT
 <context>
     <name>U2::LocalWorkflow::FindAllRegionsTask</name>
     <message>
-        <location filename="../src/library/FindWorker.cpp" line="537"/>
+        <location filename="../src/library/FindWorker.cpp" line="541"/>
         <source>FindAllRegionsTask</source>
         <translation>FindAllRegionsTask</translation>
     </message>
@@ -2756,52 +2813,52 @@ TCCTTACTGTCTGAGCAATGGGATTCCATCTTTTACGATCTAGACATGGCT
 <context>
     <name>U2::LocalWorkflow::FindPrompter</name>
     <message>
-        <location filename="../src/library/FindWorker.cpp" line="247"/>
+        <location filename="../src/library/FindWorker.cpp" line="251"/>
         <source>unset</source>
         <translation>не указан</translation>
     </message>
     <message>
-        <location filename="../src/library/FindWorker.cpp" line="275"/>
+        <location filename="../src/library/FindWorker.cpp" line="279"/>
         <source>translated</source>
         <translation>транслированной</translation>
     </message>
     <message>
-        <location filename="../src/library/FindWorker.cpp" line="283"/>
+        <location filename="../src/library/FindWorker.cpp" line="287"/>
         <source>A substring must %1.</source>
         <translation>Подстрока обязательна %1.</translation>
     </message>
     <message>
-        <location filename="../src/library/FindWorker.cpp" line="284"/>
+        <location filename="../src/library/FindWorker.cpp" line="288"/>
         <source>match a pattern exactly</source>
         <translation>сопоставить паттерн точно</translation>
     </message>
     <message>
-        <location filename="../src/library/FindWorker.cpp" line="286"/>
+        <location filename="../src/library/FindWorker.cpp" line="290"/>
         <source>Maximum number of mismatches is %1.</source>
         <translation>Максимальное число несовпадений равно %1.</translation>
     </message>
     <message>
-        <location filename="../src/library/FindWorker.cpp" line="294"/>
+        <location filename="../src/library/FindWorker.cpp" line="298"/>
         <source>&lt;u&gt;%1&lt;/u&gt; pattern(s)</source>
         <translation>&lt;u&gt;%1&lt;/u&gt; паттерн(ы)</translation>
     </message>
     <message>
-        <location filename="../src/library/FindWorker.cpp" line="296"/>
+        <location filename="../src/library/FindWorker.cpp" line="300"/>
         <source>patterns from &lt;u&gt;%1&lt;/u&gt;</source>
         <translation>паттерны из &lt;u&gt;%1&lt;/u&gt;</translation>
     </message>
     <message>
-        <location filename="../src/library/FindWorker.cpp" line="304"/>
-        <source> and &lt;u&gt;%1&lt;/u&gt;</source>
-        <translation>и &lt;u&gt;%1&lt;/u&gt;</translation>
-    </message>
-    <message>
         <location filename="../src/library/FindWorker.cpp" line="308"/>
-        <source> using pattern names</source>
-        <translation>использовать имя паттерна</translation>
+        <source> and &lt;u&gt;%1&lt;/u&gt;</source>
+        <translation> и &lt;u&gt;%1&lt;/u&gt;</translation>
     </message>
     <message>
-        <location filename="../src/library/FindWorker.cpp" line="311"/>
+        <location filename="../src/library/FindWorker.cpp" line="312"/>
+        <source> using pattern names</source>
+        <translation> использовать имя паттерна</translation>
+    </message>
+    <message>
+        <location filename="../src/library/FindWorker.cpp" line="315"/>
         <source>Searches regions in each sequence from &lt;u&gt;%1&lt;/u&gt; similar to %2%3.&lt;br/&gt;%4&lt;br/&gt;Searches in &lt;u&gt;%5&lt;/u&gt; of a %6sequence. Outputs the regions found annotated as &lt;u&gt;%7&lt;/u&gt;.</source>
         <translation>Ищет регионы в каждой последовательности начиная с &lt;u&gt;%1&lt;/u&gt; по %2%3.&lt;br/&gt;%4&lt;br/&gt;Ищет в &lt;u&gt;%5&lt;/u&gt; %6 последовательностях. Выходные регионы аннотируются как &lt;u&gt;%7&lt;/u&gt;.</translation>
     </message>
@@ -2809,143 +2866,165 @@ TCCTTACTGTCTGAGCAATGGGATTCCATCTTTTACGATCTAGACATGGCT
 <context>
     <name>U2::LocalWorkflow::FindWorker</name>
     <message>
-        <location filename="../src/library/FindWorker.cpp" line="502"/>
-        <location filename="../src/library/FindWorker.cpp" line="523"/>
+        <location filename="../src/library/FindWorker.cpp" line="506"/>
+        <location filename="../src/library/FindWorker.cpp" line="527"/>
         <source>Found %1 matches of pattern &apos;%2&apos;</source>
         <translation>Найдено %1 вхождений паттерна &quot;%2&quot;</translation>
     </message>
     <message>
-        <location filename="../src/library/FindWorker.cpp" line="131"/>
+        <location filename="../src/library/FindWorker.cpp" line="127"/>
         <source>Input Data</source>
         <translation>Входная последовательность</translation>
     </message>
     <message>
-        <location filename="../src/library/FindWorker.cpp" line="132"/>
+        <location filename="../src/library/FindWorker.cpp" line="83"/>
+        <location filename="../src/library/FindWorker.cpp" line="174"/>
+        <source>Pattern(s)</source>
+        <translation>Паттерн(ы)</translation>
+    </message>
+    <message>
+        <location filename="../src/library/FindWorker.cpp" line="83"/>
+        <location filename="../src/library/FindWorker.cpp" line="178"/>
+        <source>Pattern file</source>
+        <translation>Файл с паттерном</translation>
+    </message>
+    <message>
+        <location filename="../src/library/FindWorker.cpp" line="128"/>
         <source>An input sequence to search in.</source>
         <translation>Последовательность, для которой применяется алгоритм поиска.</translation>
     </message>
     <message>
-        <location filename="../src/library/FindWorker.cpp" line="135"/>
+        <location filename="../src/library/FindWorker.cpp" line="131"/>
         <source>Pattern Annotations</source>
         <translation>Найденные аннотации</translation>
     </message>
     <message>
-        <location filename="../src/library/FindWorker.cpp" line="136"/>
+        <location filename="../src/library/FindWorker.cpp" line="132"/>
         <source>The regions found.</source>
         <translation>Аннотации, найденные для последовательности.</translation>
     </message>
     <message>
-        <location filename="../src/library/FindWorker.cpp" line="147"/>
+        <location filename="../src/library/FindWorker.cpp" line="143"/>
         <source>Name of the result annotations.</source>
         <translation>Имя аннотаций для найденных регионов.</translation>
     </message>
     <message>
-        <location filename="../src/library/FindWorker.cpp" line="150"/>
+        <location filename="../src/library/FindWorker.cpp" line="146"/>
         <source>Use pattern name</source>
         <translation>Использовать имя паттерна</translation>
     </message>
     <message>
-        <location filename="../src/library/FindWorker.cpp" line="151"/>
+        <location filename="../src/library/FindWorker.cpp" line="147"/>
         <source>If patterns are loaded from a file, use names of pattern sequences as annotation names. The name from the parameters is used by default.</source>
         <translation>Если паттерны загружаются из файла, используйте имена паттернов последовательностей как имена аннотаций. Имена из параметров используются по умолчанию.</translation>
     </message>
     <message>
-        <location filename="../src/library/FindWorker.cpp" line="153"/>
+        <location filename="../src/library/FindWorker.cpp" line="149"/>
         <source>Max Mismatches</source>
         <translation>Допустимо несовпадений</translation>
     </message>
     <message>
-        <location filename="../src/library/FindWorker.cpp" line="154"/>
+        <location filename="../src/library/FindWorker.cpp" line="150"/>
         <source>Maximum number of mismatches between a substring and a pattern.</source>
         <translation>Максимальное допустимое число несовпадений между подпоследовательностью и паттерном.</translation>
     </message>
     <message>
-        <location filename="../src/library/FindWorker.cpp" line="158"/>
+        <location filename="../src/library/FindWorker.cpp" line="154"/>
         <source>Allow Insertions/Deletions</source>
         <translation>Разрешить вставки/делеции</translation>
     </message>
     <message>
-        <location filename="../src/library/FindWorker.cpp" line="159"/>
+        <location filename="../src/library/FindWorker.cpp" line="155"/>
         <source>Takes into account possibility of insertions/deletions when searching. By default substitutions are only considered.</source>
         <translation>В случае когда допустимы несовпадения между подпоследовательностью и паттерном учитывает вставки/делеции. По умолчанию учитываются только замены.</translation>
     </message>
     <message>
-        <location filename="../src/library/FindWorker.cpp" line="163"/>
+        <location filename="../src/library/FindWorker.cpp" line="159"/>
         <source>Support ambiguous bases</source>
         <translation>Поддержка неопределенных баз</translation>
     </message>
     <message>
-        <location filename="../src/library/FindWorker.cpp" line="164"/>
+        <location filename="../src/library/FindWorker.cpp" line="160"/>
         <source>Performs correct handling of ambiguous bases. When this option is activated insertions and deletions are not considered. </source>
-        <translation>Выполняет корректную обработку неопределенных баз. Когда эта опция включена вставки и удаления не рассматриваются.</translation>
+        <translation>Выполняет корректную обработку неопределенных баз. Когда эта опция включена вставки и удаления не рассматриваются. </translation>
     </message>
     <message>
-        <location filename="../src/library/FindWorker.cpp" line="168"/>
+        <location filename="../src/library/FindWorker.cpp" line="164"/>
         <source>Search in Translation</source>
         <translation>Искать в трансляции</translation>
     </message>
     <message>
-        <location filename="../src/library/FindWorker.cpp" line="169"/>
+        <location filename="../src/library/FindWorker.cpp" line="165"/>
         <source>Translates a supplied nucleotide sequence to protein and searches in the translated sequence.</source>
         <translation>Указывает транслировать входную нуклеотидную последовательность в протеиновую и искать указанный паттерн в полученной протеиновой последовательности.</translation>
     </message>
     <message>
-        <location filename="../src/library/FindWorker.cpp" line="191"/>
+        <location filename="../src/library/FindWorker.cpp" line="175"/>
+        <source>Semicolon-separated list of patterns to search for.</source>
+        <translation>Список паттернов для поиска.</translation>
+    </message>
+    <message>
+        <location filename="../src/library/FindWorker.cpp" line="179"/>
+        <source>Load pattern from file in any sequence format or in newline-delimited format.</source>
+        <translation>Загружает паттерн из файла в формате последовательности или в формате строк с разделителями.</translation>
+    </message>
+    <message>
+        <location filename="../src/library/FindWorker.cpp" line="195"/>
         <source>Searches regions in a sequence similar to a pattern sequence. Outputs a set of annotations.</source>
         <translation>Поиск подпоследовательностей, похожих на указанный паттерн, в каждой входной последовательности (нуклеотидной или протеиновой).</translation>
     </message>
     <message>
-        <location filename="../src/library/FindWorker.cpp" line="260"/>
+        <location filename="../src/library/FindWorker.cpp" line="264"/>
         <source>both strands</source>
         <translation>в обеих цепях</translation>
     </message>
     <message>
-        <location filename="../src/library/FindWorker.cpp" line="263"/>
+        <location filename="../src/library/FindWorker.cpp" line="267"/>
         <source>direct strand</source>
         <translation>прямой цепи</translation>
     </message>
     <message>
-        <location filename="../src/library/FindWorker.cpp" line="266"/>
+        <location filename="../src/library/FindWorker.cpp" line="270"/>
         <source>complement strand</source>
         <translation>комплементарной цепи</translation>
     </message>
     <message>
-        <location filename="../src/library/FindWorker.cpp" line="351"/>
+        <location filename="../src/library/FindWorker.cpp" line="355"/>
         <source>Load file with patterns</source>
         <translation>Загрузить файл с паттернами</translation>
     </message>
     <message>
-        <location filename="../src/library/FindWorker.cpp" line="421"/>
+        <location filename="../src/library/FindWorker.cpp" line="425"/>
         <source>Empty pattern given</source>
         <translation>Пустой паттерн</translation>
     </message>
     <message>
-        <location filename="../src/library/FindWorker.cpp" line="446"/>
+        <location filename="../src/library/FindWorker.cpp" line="450"/>
         <source>Find algorithm subtasks</source>
         <translation>Подзадача алгоритма поиска</translation>
     </message>
     <message>
-        <location filename="../src/library/FindWorker.cpp" line="146"/>
+        <location filename="../src/library/FindWorker.cpp" line="142"/>
         <source>Annotate as</source>
         <translation>Аннотации</translation>
     </message>
     <message>
-        <location filename="../src/library/FindWorker.cpp" line="173"/>
+        <location filename="../src/library/FindWorker.cpp" line="169"/>
         <source>Qualifier name for pattern name</source>
         <translation>Имя квалифаера для имени паттерна</translation>
     </message>
     <message>
-        <location filename="../src/library/FindWorker.cpp" line="174"/>
+        <location filename="../src/library/FindWorker.cpp" line="170"/>
         <source>Name of qualifier in result annotations which is containing a pattern name.</source>
         <translation>Имя квалифаера в результирующих аннотациях, которое содержит имя паттерна.</translation>
     </message>
     <message>
-        <location filename="../src/library/FindWorker.cpp" line="190"/>
+        <location filename="../src/library/FindWorker.cpp" line="194"/>
         <source>Find Pattern</source>
         <translation>Поиск подстроки</translation>
     </message>
     <message>
-        <location filename="../src/library/FindWorker.cpp" line="375"/>
+        <location filename="../src/library/FindWorker.cpp" line="379"/>
         <source>Null sequence supplied to FindWorker: %1</source>
         <translation>Пустая последовательность для поиска подстрок: %1</translation>
     </message>
@@ -2993,14 +3072,96 @@ TCCTTACTGTCTGAGCAATGGGATTCCATCTTTTACGATCTAGACATGGCT
         <translation>Входной путь</translation>
     </message>
     <message>
-        <location filename="../src/library/GetFileListWorker.cpp" line="110"/>
-        <source>Produces URL(s) to files from specified folders.</source>
-        <translation>этот элемент производит пути до файлов из указанных папок.</translation>
+        <location filename="../src/library/GetFileListWorker.cpp" line="109"/>
+        <source>Read File URL(s)</source>
+        <translation>Чтение списка URL файлов</translation>
     </message>
     <message>
-        <location filename="../src/library/GetFileListWorker.cpp" line="109"/>
-        <source>File List</source>
-        <translation>Получение списка файлов</translation>
+        <location filename="../src/library/GetFileListWorker.cpp" line="110"/>
+        <source>Input one or several files in any format. The element outputs the file(s) URL(s).</source>
+        <translation>Введите один или несколько файлов в любом формате. Этот элемент выдаст URL этих файлов.</translation>
+    </message>
+</context>
+<context>
+    <name>U2::LocalWorkflow::GetReadsListPrompter</name>
+    <message>
+        <location filename="../src/library/GetReadListWorker.cpp" line="208"/>
+        <source>Read and output the files URLs.</source>
+        <translation>Читает и выдаёт URL файлов.</translation>
+    </message>
+</context>
+<context>
+    <name>U2::LocalWorkflow::GetReadsListWorker</name>
+    <message>
+        <location filename="../src/library/GetReadListWorker.cpp" line="55"/>
+        <source>Source URL 1</source>
+        <translation>URL 1</translation>
+    </message>
+    <message>
+        <location filename="../src/library/GetReadListWorker.cpp" line="60"/>
+        <source>Source URL 2</source>
+        <translation>URL 2</translation>
+    </message>
+    <message>
+        <location filename="../src/library/GetReadListWorker.cpp" line="95"/>
+        <source>Missing right PE read for the left read: %1</source>
+        <translation>Пропущен правый PE рид для левого рида: %1</translation>
+    </message>
+    <message>
+        <location filename="../src/library/GetReadListWorker.cpp" line="105"/>
+        <source>Missing left PE read for the right read: %1</source>
+        <translation>Пропущен левый PE рид для правого рида: %1</translation>
+    </message>
+    <message>
+        <location filename="../src/library/GetReadListWorker.cpp" line="130"/>
+        <location filename="../src/library/GetReadListWorker.cpp" line="163"/>
+        <source>Output File</source>
+        <translation>Выходной файл</translation>
+    </message>
+    <message>
+        <location filename="../src/library/GetReadListWorker.cpp" line="131"/>
+        <source>The port outputs one or several URLs.</source>
+        <translation>Порт выдаёт один или несколько URL.</translation>
+    </message>
+    <message>
+        <location filename="../src/library/GetReadListWorker.cpp" line="136"/>
+        <source>Input URL</source>
+        <translation>Входной URL</translation>
+    </message>
+    <message>
+        <location filename="../src/library/GetReadListWorker.cpp" line="141"/>
+        <source>Read FASTQ File with SE Reads</source>
+        <translation>Чтение FASTQ файла с SE ридами</translation>
+    </message>
+    <message>
+        <location filename="../src/library/GetReadListWorker.cpp" line="142"/>
+        <source>Input one or several files with NGS single-end reads in FASTQ format. The element outputs the file(s) URL(s).</source>
+        <translation>Введите один или несколько файлов с односторонними NGS ридами в формате FASTQ. Элемент выведет URL этих файла(ов).</translation>
+    </message>
+    <message>
+        <location filename="../src/library/GetReadListWorker.cpp" line="164"/>
+        <source>The port outputs one or several pairs of URL(s).</source>
+        <translation>Порт выдаёт один или несколько пар URL.</translation>
+    </message>
+    <message>
+        <location filename="../src/library/GetReadListWorker.cpp" line="169"/>
+        <source>Left PE reads</source>
+        <translation>Левые PE риды</translation>
+    </message>
+    <message>
+        <location filename="../src/library/GetReadListWorker.cpp" line="170"/>
+        <source>Right PE reads</source>
+        <translation>Правые PE риды</translation>
+    </message>
+    <message>
+        <location filename="../src/library/GetReadListWorker.cpp" line="176"/>
+        <source>Read FASTQ Files with PE Reads</source>
+        <translation>Чтение FASTQ файлов с PE ридами</translation>
+    </message>
+    <message>
+        <location filename="../src/library/GetReadListWorker.cpp" line="177"/>
+        <source>Input one or several pairs of files with NGS paired-end reads in FASTQ format. The element outputs the corresponding pairs of URLs.</source>
+        <translation>Введите один или несколько пар файлов с парными NGS ридами в формате FASTQ. Элемент выведет пары URL этих файла(ов).</translation>
     </message>
 </context>
 <context>
@@ -3123,38 +3284,19 @@ TCCTTACTGTCTGAGCAATGGGATTCCATCTTTTACGATCTAGACATGGCT
     </message>
 </context>
 <context>
-    <name>U2::LocalWorkflow::KAlignSubTask</name>
-    <message>
-        <source>Max region size: %1</source>
-        <translation type="vanished">Max region size: %1</translation>
-    </message>
-    <message>
-        <source>Core region: %1-%2</source>
-        <translation type="vanished">Core region: %1-%2</translation>
-    </message>
-    <message>
-        <source>The %1 algorithm is not found. Add the %1 plugin.</source>
-        <translation type="vanished">The %1 algorithm is not found. Add the %1 plugin.</translation>
-    </message>
-    <message>
-        <source>The %1 algorithm is not found. Check that the %1 plugin is up to date.</source>
-        <translation type="vanished">The %1 algorithm is not found. Check that the %1 plugin is up to date.</translation>
-    </message>
-</context>
-<context>
     <name>U2::LocalWorkflow::LaunchExternalToolTask</name>
     <message>
-        <location filename="../src/library/ExternalProcessWorker.cpp" line="519"/>
+        <location filename="../src/library/ExternalProcessWorker.cpp" line="637"/>
         <source>Launch external process task</source>
         <translation>Запуск задачи внутреннего процесса</translation>
     </message>
     <message>
-        <location filename="../src/library/ExternalProcessWorker.cpp" line="593"/>
+        <location filename="../src/library/ExternalProcessWorker.cpp" line="671"/>
         <source>Running external process: %1</source>
         <translation>Запускается внутренний процесс: %1</translation>
     </message>
     <message>
-        <location filename="../src/library/ExternalProcessWorker.cpp" line="598"/>
+        <location filename="../src/library/ExternalProcessWorker.cpp" line="676"/>
         <source>Can&apos;t launch %1</source>
         <translation>Невозможно запустить %1</translation>
     </message>
@@ -3349,7 +3491,7 @@ TCCTTACTGTCTGAGCAATGGGATTCCATCTTTTACGATCTAGACATGGCT
     </message>
     <message>
         <location filename="../src/library/MergeBamWorker.cpp" line="115"/>
-        <source>A name of an output BAM file. If default of empty value is provided the output name is the name of the first BAM file with .merged.bam extention.</source>
+        <source>A name of an output BAM file. If default of empty value is provided the output name is the name of the first BAM file with .merged.bam extension.</source>
         <translation>Имя выходного BAM файла.</translation>
     </message>
     <message>
@@ -3383,7 +3525,7 @@ TCCTTACTGTCTGAGCAATGGGATTCCATCTTTTACGATCTAGACATGGCT
     <message>
         <location filename="../src/library/FASTQWorkersLibrary.cpp" line="453"/>
         <source> from &lt;u&gt;%1&lt;/u&gt;</source>
-        <translation>из &lt;u&gt;%1&lt;/u&gt;</translation>
+        <translation> из &lt;u&gt;%1&lt;/u&gt;</translation>
     </message>
     <message>
         <location filename="../src/library/FASTQWorkersLibrary.cpp" line="455"/>
@@ -3450,7 +3592,7 @@ TCCTTACTGTCTGAGCAATGGGATTCCATCTTTTACGATCTAGACATGGCT
     </message>
     <message>
         <location filename="../src/library/FASTQWorkersLibrary.cpp" line="493"/>
-        <source>A name of an output file. If default of empty value is provided the output name is the name of the first file with additional extention.</source>
+        <source>A name of an output file. If default of empty value is provided the output name is the name of the first file with additional extension.</source>
         <translation>Имя выходного файла.</translation>
     </message>
     <message>
@@ -3521,7 +3663,7 @@ TCCTTACTGTCTGAGCAATGGGATTCCATCTTTTACGATCTAGACATGGCT
     </message>
     <message>
         <location filename="../src/library/MultiplexerWorker.cpp" line="272"/>
-        <source>Multiplexed output</source>
+        <source>Multiplexed Output</source>
         <translation>Мультиплексированные сообщения</translation>
     </message>
     <message>
@@ -3553,13 +3695,6 @@ TCCTTACTGTCTGAGCAATGGGATTCCATCTTTTACGATCTAGACATGGCT
         <location filename="../src/library/MultiplexerWorker.cpp" line="305"/>
         <source>The element allows one to join two data flows into a single data flow, i.e. to join messages from two input ports into concatenated messages and send them to the output. The concatenation approach is determined by the &lt;i&gt;Multiplexing rule&lt;/i&gt; parameter.</source>
         <translation>этот элемент позволяет объединять данные из двух различных источников, а именно объединять сообщения, пришедшие во входные порты, в комплексные мультиплексированные сообщения. Способ объединения сообщений задается с помощью параметра &lt;i&gt;Правило мультиплексирования&lt;/i&gt;.</translation>
-    </message>
-</context>
-<context>
-    <name>U2::LocalWorkflow::PairwiseAlignmentTask</name>
-    <message>
-        <source>Can&apos;t translate read sequence to reverse complement</source>
-        <translation type="vanished">Can&apos;t translate read sequence to reverse complement</translation>
     </message>
 </context>
 <context>
@@ -3616,92 +3751,6 @@ TCCTTACTGTCTGAGCAATGGGATTCCATCTTTTACGATCTAGACATGGCT
         <location filename="../src/library/PassFilterWorker.cpp" line="106"/>
         <source>Passes through only data that matches the input filter value (or values).</source>
         <translation>этот элемент отфильтровывает входные данные по заданному значению (или значениям).</translation>
-    </message>
-</context>
-<context>
-    <name>U2::LocalWorkflow::QualityTrimPrompter</name>
-    <message>
-        <source>unset</source>
-        <translation type="vanished">не указан</translation>
-    </message>
-    <message>
-        <source>&lt;u&gt;%1&lt;/u&gt;</source>
-        <translation type="vanished">&lt;u&gt;%1&lt;/u&gt;</translation>
-    </message>
-    <message>
-        <source>Trim input sequence %1 from the end, using the quality threshold.</source>
-        <translation type="vanished">Обрезает входные последовательности %1 от конца, используя порог качества.</translation>
-    </message>
-</context>
-<context>
-    <name>U2::LocalWorkflow::QualityTrimWorker</name>
-    <message>
-        <source>FASTQ Quality Trimmer</source>
-        <translation type="vanished">Обрезание последовательностей в файле FASTQ с учетом качества прочтения</translation>
-    </message>
-    <message>
-        <source>The workflow scans each input sequence from the end to find the first position where the quality is greater or equal to the minimum quality threshold. Then it trims the sequence to that position. If a the whole sequence has quality less than the threshold or the length of the output sequence less than the minimum length threshold then the sequence is skipped.</source>
-        <translation type="vanished">Схема сканирует каждую входную последовательность начиная с конца для поиска первой позиции где качество больше или равно минимальному порогу качества. После этого происходит подрезание до этой позиции.</translation>
-    </message>
-    <message>
-        <source>Input File</source>
-        <translation type="vanished">Входной файл</translation>
-    </message>
-    <message>
-        <source>Set of FASTQ reads files</source>
-        <translation type="vanished">Набор файлов с FASTQ ридами</translation>
-    </message>
-    <message>
-        <source>Output File</source>
-        <translation type="vanished">Выходной файл</translation>
-    </message>
-    <message>
-        <source>Output FASTQ files</source>
-        <translation type="vanished">Выхордные FASTQ файлы</translation>
-    </message>
-    <message>
-        <source>Output folder</source>
-        <translation type="vanished">Выходная папка</translation>
-    </message>
-    <message>
-        <source>Select an output folder. &lt;b&gt;Custom&lt;/b&gt; - specify the output folder in the &apos;Custom folder&apos; parameter. &lt;b&gt;Workflow&lt;/b&gt; - internal workflow folder. &lt;b&gt;Input file&lt;/b&gt; - the folder of the input file.</source>
-        <translation type="vanished">выберите выходную папку. &lt;b&gt;Частная&lt;/b&gt; - укажите папку в параметре &apos;Частная папка&apos;. &lt;b&gt;Заданная&lt;/b&gt; - внутренняя папка дизайнера. &lt;b&gt;Входной файл&lt;/b&gt; - папка входного файла.</translation>
-    </message>
-    <message>
-        <source>Custom folder</source>
-        <translation type="vanished">Частная папка</translation>
-    </message>
-    <message>
-        <source>Select the custom output folder.</source>
-        <translation type="vanished">Укажите частную выходную папку.</translation>
-    </message>
-    <message>
-        <source>Output file name</source>
-        <translation type="vanished">Имя выходного файла</translation>
-    </message>
-    <message>
-        <source>A name of an output file. If default of empty value is provided the output name is the name of the first file with additional extention.</source>
-        <translation type="vanished">Имя выходного файла.</translation>
-    </message>
-    <message>
-        <source>Quality threshold</source>
-        <translation type="vanished">Порог качества</translation>
-    </message>
-    <message>
-        <source>Min Length</source>
-        <translation type="vanished">Минимальная длина</translation>
-    </message>
-    <message>
-        <source>Custom</source>
-        <translation type="vanished">Частная</translation>
-    </message>
-    <message>
-        <source>Input file</source>
-        <translation type="vanished">Входной файл</translation>
-    </message>
-    <message>
-        <source>Workflow</source>
-        <translation type="vanished">Схема</translation>
     </message>
 </context>
 <context>
@@ -3778,7 +3827,7 @@ TCCTTACTGTCTGAGCAATGGGATTCCATCTTTTACGATCTAGACATGGCT
     <message>
         <location filename="../src/library/ReverseComplementWorker.cpp" line="99"/>
         <source> from &lt;u&gt;%1&lt;/u&gt;</source>
-        <translation>из &lt;u&gt;%1&lt;/u&gt;</translation>
+        <translation> из &lt;u&gt;%1&lt;/u&gt;</translation>
     </message>
     <message>
         <location filename="../src/library/ReverseComplementWorker.cpp" line="104"/>
@@ -3826,8 +3875,8 @@ TCCTTACTGTCTGAGCAATGGGATTCCATCTTTTACGATCTAGACATGGCT
     </message>
     <message>
         <location filename="../src/library/ReadAnnotationsWorker.cpp" line="138"/>
-        <source>Reads annotations from files. All annotation file formats supported by UGENE are allowed as input to this element.</source>
-        <translation>этот элемент считывает аннотации из файлов.</translation>
+        <source>Input one or several files with annotations: a file may also contain a sequence (e.g. GenBank format) or contain annotations only (e.g. GTF format). The element outputs message(s) with the annotations data.</source>
+        <translation>Введите один или несколько файлов с аннотациями: файл может также содержать последовательность (например в формате GenBank) или содержать только аннотации (например в формате GTF). Элемент выведет данные аннотаций в виде сообщения(ий).</translation>
     </message>
     <message>
         <location filename="../src/library/ReadAnnotationsWorker.cpp" line="148"/>
@@ -3875,22 +3924,6 @@ TCCTTACTGTCTGAGCAATGGGATTCCATCTTTTACGATCTAGACATGGCT
         <translation>Соединить все таблицы аннотаций в одну</translation>
     </message>
     <message>
-        <source>If the file contains more than one annotation table, &lt;i&gt;Split&lt;/i&gt; mode sends them &quot;as is&quot; to the output, while &lt;i&gt;Merge&lt;/i&gt; appends all the annotation tables and outputs the sole merged annotation table.In &lt;i&gt;Merge files&lt;/i&gt; is the same as &lt;i&gt;Merge&lt;/i&gt; but it operates with all annotation tables from all files of one dataset.</source>
-        <translation type="vanished">Если файл содержит более одной таблицы аннотаций, &lt;i&gt;Разбиение&lt;/i&gt; отправляет все аннотации на выход, &lt;i&gt;Сшивка&lt;/i&gt; добавляет все таблицы и выводит одну объединенную таблицу аннотаций. В &lt;i&gt;Сшивка файлов&lt;/i&gt; одинаково с &lt;i&gt;Сшивка&lt;/i&gt; но работает со всеми таблицами аннотаций из всех файлов одного набора.</translation>
-    </message>
-    <message>
-        <source>Split</source>
-        <translation type="vanished">Разбиение</translation>
-    </message>
-    <message>
-        <source>Merge</source>
-        <translation type="vanished">Сшивка</translation>
-    </message>
-    <message>
-        <source>Merge files</source>
-        <translation type="vanished">Сшивка файлов</translation>
-    </message>
-    <message>
         <location filename="../src/library/ReadAnnotationsWorker.cpp" line="180"/>
         <source>Reads annotations from &lt;u&gt;%1&lt;/u&gt;.</source>
         <translation>Прочитать аннотации из &lt;u&gt;%1&lt;/u&gt;.</translation>
@@ -3900,22 +3933,22 @@ TCCTTACTGTCTGAGCAATGGGATTCCATCTTTTACGATCTAGACATGGCT
     <name>U2::LocalWorkflow::ReadAssemblyWorker</name>
     <message>
         <location filename="../src/library/ReadAssemblyWorker.cpp" line="122"/>
-        <source>Read Assembly</source>
-        <translation>Чтение сборки</translation>
+        <source>Read NGS Reads Assembly</source>
+        <translation>Чтение NGS сборки</translation>
     </message>
     <message>
         <location filename="../src/library/ReadAssemblyWorker.cpp" line="123"/>
-        <source>Reads assembly from files. All assembly file formats supported by UGENE are allowed as input to this element.</source>
-        <translation>этот элемент считывает сборки из файлов.</translation>
+        <source>Input one or several files with assembled NGS reads in SAM, BAM, or UGENEDB format. The element outputs message(s) with the assembled reads data.&lt;br/&gt;&lt;br/&gt;Note that some tools require URL(s) of the files as input, not the assembled reads data.</source>
+        <translation>ВВедите один или несколько файлов с собранными NGS ридами в SAM, BAM или UGENEDB формате. Элемент выведет сообщение(ия) с собранными данными ридов.&lt;br/&gt;&lt;br/&gt;Обратите внимание, что некоторые инструменты требуют URL-адреса файлов в качестве входных данных, а не собранные риды.</translation>
     </message>
     <message>
-        <location filename="../src/library/ReadAssemblyWorker.cpp" line="133"/>
-        <location filename="../src/library/ReadAssemblyWorker.cpp" line="134"/>
+        <location filename="../src/library/ReadAssemblyWorker.cpp" line="135"/>
+        <location filename="../src/library/ReadAssemblyWorker.cpp" line="136"/>
         <source>Assembly</source>
         <translation>Сборка</translation>
     </message>
     <message>
-        <location filename="../src/library/ReadAssemblyWorker.cpp" line="139"/>
+        <location filename="../src/library/ReadAssemblyWorker.cpp" line="141"/>
         <source>Reads assembly from &lt;u&gt;%1&lt;/u&gt;.</source>
         <translation>Прочитать сборку из &lt;u&gt;%1&lt;/u&gt;.</translation>
     </message>
@@ -3952,42 +3985,42 @@ TCCTTACTGTCTGAGCAATGGGATTCCATCTTTTACGATCTAGACATGGCT
     <name>U2::LocalWorkflow::ReadVariationWorker</name>
     <message>
         <location filename="../src/library/ReadVariationWorker.cpp" line="187"/>
-        <source>Read Variations</source>
+        <source>Read Variants</source>
         <translation>Чтение вариаций</translation>
     </message>
     <message>
         <location filename="../src/library/ReadVariationWorker.cpp" line="188"/>
-        <source>Reads variations from files and produces variations tracks. All variation file formats supported by UGENE are allowed as input to this element.</source>
-        <translation>этот элемент читает вариации из файлов и производит наборы вариаций.</translation>
+        <source>Input one or several files with variants in one of the formats, supported by UGENE (e.g. VCF). The element outputs message(s) with the variants data.</source>
+        <translation>Введите один или несколько файлов с вариациями в одном из поддерживаемых форматов. Элемент выведет сообщения с данными вариаций.</translation>
     </message>
     <message>
-        <location filename="../src/library/ReadVariationWorker.cpp" line="197"/>
         <location filename="../src/library/ReadVariationWorker.cpp" line="198"/>
+        <location filename="../src/library/ReadVariationWorker.cpp" line="199"/>
         <source>Variation track</source>
         <translation>Трек вариации</translation>
     </message>
     <message>
-        <location filename="../src/library/ReadVariationWorker.cpp" line="203"/>
+        <location filename="../src/library/ReadVariationWorker.cpp" line="204"/>
         <source>Split Alleles</source>
         <translation>Разбиение аллели</translation>
     </message>
     <message>
-        <location filename="../src/library/ReadVariationWorker.cpp" line="204"/>
+        <location filename="../src/library/ReadVariationWorker.cpp" line="205"/>
         <source>If the file contains variations with multiple alleles (chr1 100 C G,A), &lt;i&gt;No split&lt;/i&gt; mode sends them &quot;as is&quot; to the output, while &lt;i&gt;Split&lt;/i&gt; splits them into two variations (chr1 100 C G and chr1 100 C A).</source>
         <translation>если файл содержит вариации с несколькими аллелями (chr1 100 C G,A), режим &lt;i&gt;без разбиенияа&lt;/i&gt; подает такую строку на выход без изменений, в то время как режим &lt;i&gt;разбиение&lt;/i&gt; разбивает строку на две (chr1 100 C G и chr1 100 C A).</translation>
     </message>
     <message>
-        <location filename="../src/library/ReadVariationWorker.cpp" line="212"/>
+        <location filename="../src/library/ReadVariationWorker.cpp" line="213"/>
         <source>Split</source>
         <translation>Разбиение</translation>
     </message>
     <message>
-        <location filename="../src/library/ReadVariationWorker.cpp" line="213"/>
+        <location filename="../src/library/ReadVariationWorker.cpp" line="214"/>
         <source>No split</source>
         <translation>Не разбивать</translation>
     </message>
     <message>
-        <location filename="../src/library/ReadVariationWorker.cpp" line="219"/>
+        <location filename="../src/library/ReadVariationWorker.cpp" line="220"/>
         <source>Reads variations from &lt;u&gt;%1&lt;/u&gt;.</source>
         <translation>Прочитать вариации из &lt;u&gt;%1&lt;/u&gt;.</translation>
     </message>
@@ -4044,75 +4077,75 @@ TCCTTACTGTCTGAGCAATGGGATTCCATCTTTTACGATCTAGACATGGCT
     </message>
     <message>
         <location filename="../src/library/RemoteDBFetcherWorker.cpp" line="302"/>
-        <source>Read from Remote Database</source>
-        <translation>Чтение из удаленной базы данных</translation>
+        <source>Read Sequence from Remote Database</source>
+        <translation>Чтение последовательности из удаленной базы данных</translation>
     </message>
     <message>
         <location filename="../src/library/RemoteDBFetcherWorker.cpp" line="303"/>
-        <source>Reads sequences and annotations if any from a remote database.</source>
-        <translation>этот элемент загружает последовательности, а также аннотации в случае их наличия, из удаленной базы данных.</translation>
+        <source>Download sequence(s) with the specified ID(s) from one of remote databases: NCBI, Ensembl, PDB, etc. The sequences are downloaded with the associated annotations in a file format, specific for the selected database. The element outputs message(s) with the sequence and annotations data.&lt;br/&gt;&lt;br/&gt;Make sure the Internet connection is active.</source>
+        <translation>Скачивает последовательность(ти) с указанными ID из одной из удалённых баз данных: NCBI, Ensembl, PDB и т. д. Последовательности будут скачаны с ассоциированными аннотациями. Элемент выведет последовательности и аннотации.</translation>
     </message>
     <message>
-        <location filename="../src/library/RemoteDBFetcherWorker.cpp" line="307"/>
+        <location filename="../src/library/RemoteDBFetcherWorker.cpp" line="311"/>
         <source>Sequence</source>
         <translation>Последовательность</translation>
     </message>
     <message>
-        <location filename="../src/library/RemoteDBFetcherWorker.cpp" line="318"/>
+        <location filename="../src/library/RemoteDBFetcherWorker.cpp" line="322"/>
         <source>Database</source>
         <translation>База данных</translation>
     </message>
     <message>
-        <location filename="../src/library/RemoteDBFetcherWorker.cpp" line="319"/>
-        <location filename="../src/library/RemoteDBFetcherWorker.cpp" line="560"/>
+        <location filename="../src/library/RemoteDBFetcherWorker.cpp" line="323"/>
+        <location filename="../src/library/RemoteDBFetcherWorker.cpp" line="564"/>
         <source>The database to read from.</source>
         <translation>выберите удаленную базу данных, из которой требуется загрузить данные.</translation>
     </message>
     <message>
-        <location filename="../src/library/RemoteDBFetcherWorker.cpp" line="323"/>
+        <location filename="../src/library/RemoteDBFetcherWorker.cpp" line="327"/>
         <source>Read resource ID(s) from source</source>
         <translation>Идентификаторы из источника</translation>
     </message>
     <message>
-        <location filename="../src/library/RemoteDBFetcherWorker.cpp" line="324"/>
+        <location filename="../src/library/RemoteDBFetcherWorker.cpp" line="328"/>
         <source>The source to read resource IDs from: the list or a local file.</source>
         <translation>источник идентификаторов (список или локальный файл).</translation>
     </message>
     <message>
-        <location filename="../src/library/RemoteDBFetcherWorker.cpp" line="328"/>
+        <location filename="../src/library/RemoteDBFetcherWorker.cpp" line="332"/>
         <source>File with resource IDs</source>
         <translation>Файл с идентификаторами</translation>
     </message>
     <message>
-        <location filename="../src/library/RemoteDBFetcherWorker.cpp" line="329"/>
+        <location filename="../src/library/RemoteDBFetcherWorker.cpp" line="333"/>
         <source>A file with a list of resource ID`s in the database (one per line).</source>
         <translation>Файл с идентификаторами в базе данных (по одному в строке).</translation>
     </message>
     <message>
-        <location filename="../src/library/RemoteDBFetcherWorker.cpp" line="335"/>
+        <location filename="../src/library/RemoteDBFetcherWorker.cpp" line="339"/>
         <source>Resource ID(s)</source>
         <translation>Идентификаторы</translation>
     </message>
     <message>
-        <location filename="../src/library/RemoteDBFetcherWorker.cpp" line="336"/>
+        <location filename="../src/library/RemoteDBFetcherWorker.cpp" line="340"/>
         <source>Semicolon-separated list of resource ID`s in the database.</source>
         <translation>Список идентификаторов ресурсов в базе данных. Различные значения отделяются друг от друга с помощью &quot;;&quot;.
 &lt;p&gt; Например: &quot;NC_001363;D11266&quot;.</translation>
     </message>
     <message>
-        <location filename="../src/library/RemoteDBFetcherWorker.cpp" line="342"/>
-        <location filename="../src/library/RemoteDBFetcherWorker.cpp" line="554"/>
+        <location filename="../src/library/RemoteDBFetcherWorker.cpp" line="346"/>
+        <location filename="../src/library/RemoteDBFetcherWorker.cpp" line="558"/>
         <source>Save file to folder</source>
         <translation>Сохранить в папку</translation>
     </message>
     <message>
-        <location filename="../src/library/RemoteDBFetcherWorker.cpp" line="343"/>
-        <location filename="../src/library/RemoteDBFetcherWorker.cpp" line="555"/>
+        <location filename="../src/library/RemoteDBFetcherWorker.cpp" line="347"/>
+        <location filename="../src/library/RemoteDBFetcherWorker.cpp" line="559"/>
         <source>The folder to store sequence files loaded from a database.</source>
         <translation>Папка, в которую будут сохранены файлы, загруженные из базы данных.</translation>
     </message>
     <message>
-        <location filename="../src/library/RemoteDBFetcherWorker.cpp" line="559"/>
+        <location filename="../src/library/RemoteDBFetcherWorker.cpp" line="563"/>
         <source>NCBI database</source>
         <translation>База данных NCBI</translation>
     </message>
@@ -4138,72 +4171,72 @@ TCCTTACTGTCTGAGCAATGGGATTCCATCTTTTACGATCTAGACATGGCT
 <context>
     <name>U2::LocalWorkflow::RenameChomosomeInVariationWorker</name>
     <message>
-        <location filename="../src/library/RenameChromosomeInVariationWorker.cpp" line="86"/>
+        <location filename="../src/library/RenameChromosomeInVariationWorker.cpp" line="88"/>
         <source>An unexpected task type</source>
         <translation>An unexpected task type</translation>
     </message>
     <message>
-        <location filename="../src/library/RenameChromosomeInVariationWorker.cpp" line="105"/>
+        <location filename="../src/library/RenameChromosomeInVariationWorker.cpp" line="107"/>
         <source>Source file URL is empty</source>
         <translation>Source file URL is empty</translation>
     </message>
     <message>
-        <location filename="../src/library/RenameChromosomeInVariationWorker.cpp" line="124"/>
+        <location filename="../src/library/RenameChromosomeInVariationWorker.cpp" line="126"/>
         <source>Change Chromosome Notation for VCF</source>
         <translation>Изменение обозначения хромосомы для VCF</translation>
     </message>
     <message>
-        <location filename="../src/library/RenameChromosomeInVariationWorker.cpp" line="125"/>
+        <location filename="../src/library/RenameChromosomeInVariationWorker.cpp" line="127"/>
         <source>Changes chromosome notation for each variant from the input VCF or other variation files.</source>
         <translation>этот элемент изменяет обозначения хромосом для каждой вариации из входного VCF-файла или других файлов.</translation>
     </message>
     <message>
-        <location filename="../src/library/RenameChromosomeInVariationWorker.cpp" line="129"/>
+        <location filename="../src/library/RenameChromosomeInVariationWorker.cpp" line="131"/>
         <source>Input file URL</source>
         <translation>Входной файл</translation>
     </message>
     <message>
-        <location filename="../src/library/RenameChromosomeInVariationWorker.cpp" line="130"/>
+        <location filename="../src/library/RenameChromosomeInVariationWorker.cpp" line="132"/>
         <source>Input files(s) with variations, usually in VCF format.</source>
         <translation>Входные файлы с вариациями, обычно в VCF формате.</translation>
     </message>
     <message>
-        <location filename="../src/library/RenameChromosomeInVariationWorker.cpp" line="131"/>
+        <location filename="../src/library/RenameChromosomeInVariationWorker.cpp" line="133"/>
         <source>Output file URL</source>
         <translation>Выходной файл</translation>
     </message>
     <message>
-        <location filename="../src/library/RenameChromosomeInVariationWorker.cpp" line="132"/>
+        <location filename="../src/library/RenameChromosomeInVariationWorker.cpp" line="134"/>
         <source>Output file(s) with annotated variations.</source>
         <translation>Выходной файл с аннотированными вариациями.</translation>
     </message>
     <message>
-        <location filename="../src/library/RenameChromosomeInVariationWorker.cpp" line="139"/>
+        <location filename="../src/library/RenameChromosomeInVariationWorker.cpp" line="141"/>
         <source>Produced URL</source>
         <translation>Производимые пути</translation>
     </message>
     <message>
-        <location filename="../src/library/RenameChromosomeInVariationWorker.cpp" line="139"/>
+        <location filename="../src/library/RenameChromosomeInVariationWorker.cpp" line="141"/>
         <source>Location of a corresponding produced file.</source>
         <translation>Расположение выходного файла.</translation>
     </message>
     <message>
-        <location filename="../src/library/RenameChromosomeInVariationWorker.cpp" line="146"/>
+        <location filename="../src/library/RenameChromosomeInVariationWorker.cpp" line="148"/>
         <source>Replace prefixes</source>
         <translation>Заменить префиксы</translation>
     </message>
     <message>
-        <location filename="../src/library/RenameChromosomeInVariationWorker.cpp" line="147"/>
+        <location filename="../src/library/RenameChromosomeInVariationWorker.cpp" line="149"/>
         <source>Input the list of chromosome prefixes that you would like to replace, for example &quot;NC_000&quot;. Separate different prefixes by semicolons.</source>
         <translation>введите список префиксов, которые необходимо переписать, например &quot;NC_000&quot;. Разделяйте префиксы точкой с запятой.</translation>
     </message>
     <message>
-        <location filename="../src/library/RenameChromosomeInVariationWorker.cpp" line="149"/>
+        <location filename="../src/library/RenameChromosomeInVariationWorker.cpp" line="151"/>
         <source>Replace by</source>
         <translation>Заменить</translation>
     </message>
     <message>
-        <location filename="../src/library/RenameChromosomeInVariationWorker.cpp" line="150"/>
+        <location filename="../src/library/RenameChromosomeInVariationWorker.cpp" line="152"/>
         <source>Input the prefix that should be set instead, for example &quot;chr&quot;.</source>
         <translation>введите префикс, на который нужно заменить указанные префиксы, например &quot;chr&quot;.</translation>
     </message>
@@ -4285,7 +4318,7 @@ TCCTTACTGTCTGAGCAATGGGATTCCATCTTTTACGATCTAGACATGGCT
     </message>
     <message>
         <location filename="../src/library/RmdupBamWorker.cpp" line="117"/>
-        <source>A name of an output BAM file. If default of empty value is provided the output name is the name of the first BAM file with .nodup.bam extention.</source>
+        <source>A name of an output BAM file. If default of empty value is provided the output name is the name of the first BAM file with .nodup.bam extension.</source>
         <translation>Имя выходного BAM файла.</translation>
     </message>
     <message>
@@ -4332,32 +4365,32 @@ TCCTTACTGTCTGAGCAATGGGATTCCATCTTTTACGATCTAGACATGGCT
 <context>
     <name>U2::LocalWorkflow::SamtoolsRmdupTask</name>
     <message>
-        <location filename="../src/library/RmdupBamWorker.cpp" line="293"/>
+        <location filename="../src/library/RmdupBamWorker.cpp" line="294"/>
         <source>Samtool rmdup for %1 </source>
         <translation>Samtool rmdup для %1 </translation>
     </message>
     <message>
-        <location filename="../src/library/RmdupBamWorker.cpp" line="299"/>
+        <location filename="../src/library/RmdupBamWorker.cpp" line="300"/>
         <source>No assembly URL to filter</source>
         <translation>No assembly URL to filter</translation>
     </message>
     <message>
-        <location filename="../src/library/RmdupBamWorker.cpp" line="305"/>
+        <location filename="../src/library/RmdupBamWorker.cpp" line="306"/>
         <source>Folder does not exist: </source>
         <translation>Folder does not exist: </translation>
     </message>
     <message>
-        <location filename="../src/library/RmdupBamWorker.cpp" line="339"/>
+        <location filename="../src/library/RmdupBamWorker.cpp" line="340"/>
         <source>Can not run %1 tool</source>
         <translation>Can not run %1 tool</translation>
     </message>
     <message>
-        <location filename="../src/library/RmdupBamWorker.cpp" line="345"/>
+        <location filename="../src/library/RmdupBamWorker.cpp" line="346"/>
         <source>%1 tool exited with code %2</source>
         <translation>%1 tool exited with code %2</translation>
     </message>
     <message>
-        <location filename="../src/library/RmdupBamWorker.cpp" line="347"/>
+        <location filename="../src/library/RmdupBamWorker.cpp" line="348"/>
         <source>Tool %1 finished successfully</source>
         <translation>Tool %1 finished successfully</translation>
     </message>
@@ -4419,22 +4452,22 @@ TCCTTACTGTCTGAGCAATGGGATTCCATCTTTTACGATCTAGACATGGCT
 <context>
     <name>U2::LocalWorkflow::ScriptWorker</name>
     <message>
-        <location filename="../src/library/IncludedProtoFactoryImpl.cpp" line="56"/>
+        <location filename="../src/library/IncludedProtoFactoryImpl.cpp" line="60"/>
         <source>For input port was set empty data type</source>
         <translation>Для входного порта указан пустой тип данных</translation>
     </message>
     <message>
-        <location filename="../src/library/IncludedProtoFactoryImpl.cpp" line="70"/>
+        <location filename="../src/library/IncludedProtoFactoryImpl.cpp" line="74"/>
         <source>For output port was set empty data type</source>
         <translation>Для выходного порта указан пустой тип данных</translation>
     </message>
     <message>
-        <location filename="../src/library/IncludedProtoFactoryImpl.cpp" line="79"/>
+        <location filename="../src/library/IncludedProtoFactoryImpl.cpp" line="83"/>
         <source>Input data</source>
         <translation>Входные данные</translation>
     </message>
     <message>
-        <location filename="../src/library/IncludedProtoFactoryImpl.cpp" line="80"/>
+        <location filename="../src/library/IncludedProtoFactoryImpl.cpp" line="84"/>
         <source>Output data</source>
         <translation>Выходные данные</translation>
     </message>
@@ -4450,7 +4483,7 @@ TCCTTACTGTCTGAGCAATGGGATTCCATCTTTTACGATCTAGACATGGCT
     <message>
         <location filename="../src/library/ScriptWorker.cpp" line="83"/>
         <source>Error in line </source>
-        <translation>Ошибка в строке</translation>
+        <translation>Ошибка в строке </translation>
     </message>
     <message>
         <location filename="../src/library/ScriptWorker.cpp" line="63"/>
@@ -4529,10 +4562,6 @@ TCCTTACTGTCTGAGCAATGGGATTCCATCTTTTACGATCTAGACATGGCT
         <translation>Порог качества для обрезания</translation>
     </message>
     <message>
-        <source>Quality threshold</source>
-        <translation type="vanished">Порог качества</translation>
-    </message>
-    <message>
         <location filename="../src/library/SequenceQualityTrimWorker.cpp" line="133"/>
         <source>Quality threshold for trimming.</source>
         <translation>порог качества для подрезания.</translation>
@@ -4541,10 +4570,6 @@ TCCTTACTGTCTGAGCAATGGGATTCCATCTTTTACGATCTAGACATGGCT
         <location filename="../src/library/SequenceQualityTrimWorker.cpp" line="135"/>
         <source>Min length</source>
         <translation>Минимальная длина</translation>
-    </message>
-    <message>
-        <source>Min Length</source>
-        <translation type="vanished">Минимальная длина</translation>
     </message>
     <message>
         <location filename="../src/library/SequenceQualityTrimWorker.cpp" line="136"/>
@@ -4577,7 +4602,7 @@ TCCTTACTGTCTGAGCAATGGGATTCCATCTTTTACGATCTAGACATGGCT
     <message>
         <location filename="../src/library/SequenceSplitWorker.cpp" line="74"/>
         <source>%1 it if annotation marks translated subsequence, </source>
-        <translation>%1 если аннотация маркирует транслированную подпоследовательность</translation>
+        <translation>%1 если аннотация маркирует транслированную подпоследовательность </translation>
     </message>
     <message>
         <location filename="../src/library/SequenceSplitWorker.cpp" line="75"/>
@@ -4587,7 +4612,7 @@ TCCTTACTGTCTGAGCAATGGGATTCCATCTTTTACGATCTAGACATGGCT
     <message>
         <location filename="../src/library/SequenceSplitWorker.cpp" line="82"/>
         <source>make it %1 if annotation is located on complement strand, </source>
-        <translation>%1 аннотация располагается в комплементарной цепи</translation>
+        <translation>%1 аннотация располагается в комплементарной цепи </translation>
     </message>
     <message>
         <location filename="../src/library/SequenceSplitWorker.cpp" line="91"/>
@@ -4764,7 +4789,7 @@ TCCTTACTGTCTGAGCAATGGGATTCCATCTTTTACGATCTAGACATGGCT
     <message>
         <location filename="../src/library/SortBamWorker.cpp" line="71"/>
         <source> from &lt;u&gt;%1&lt;/u&gt;</source>
-        <translation>из &lt;u&gt;%1&lt;/u&gt;</translation>
+        <translation> из &lt;u&gt;%1&lt;/u&gt;</translation>
     </message>
     <message>
         <location filename="../src/library/SortBamWorker.cpp" line="73"/>
@@ -4831,7 +4856,7 @@ TCCTTACTGTCTGAGCAATGGGATTCCATCTTTTACGATCTAGACATGGCT
     </message>
     <message>
         <location filename="../src/library/SortBamWorker.cpp" line="115"/>
-        <source>A name of an output BAM file. If default of empty value is provided the output name is the name of the first BAM file with .sorted.bam extention.</source>
+        <source>A name of an output BAM file. If default of empty value is provided the output name is the name of the first BAM file with .sorted.bam extension.</source>
         <translation>Имя выходного BAM файла.</translation>
     </message>
     <message>
@@ -4875,7 +4900,7 @@ TCCTTACTGTCTGAGCAATGGGATTCCATCTTTTACGATCTAGACATGGCT
     <message>
         <location filename="../src/library/Text2SequenceWorker.cpp" line="211"/>
         <source> from &lt;u&gt;%1&lt;/u&gt;</source>
-        <translation>из &lt;u&gt;%1&lt;/u&gt;</translation>
+        <translation> из &lt;u&gt;%1&lt;/u&gt;</translation>
     </message>
     <message>
         <location filename="../src/library/Text2SequenceWorker.cpp" line="214"/>
@@ -5022,32 +5047,32 @@ TCCTTACTGTCTGAGCAATGGGATTCCATCTTTTACGATCTAGACATGGCT
 <context>
     <name>U2::LocalWorkflow::WriteAnnotationsPrompter</name>
     <message>
-        <location filename="../src/library/WriteAnnotationsWorker.cpp" line="520"/>
+        <location filename="../src/library/WriteAnnotationsWorker.cpp" line="525"/>
         <source>unset</source>
         <translation>не указан</translation>
     </message>
     <message>
-        <location filename="../src/library/WriteAnnotationsWorker.cpp" line="533"/>
+        <location filename="../src/library/WriteAnnotationsWorker.cpp" line="538"/>
         <source>default file</source>
         <translation>файл по умолчанию</translation>
     </message>
     <message>
-        <location filename="../src/library/WriteAnnotationsWorker.cpp" line="554"/>
+        <location filename="../src/library/WriteAnnotationsWorker.cpp" line="559"/>
         <source>Save all annotations from &lt;u&gt;%1&lt;/u&gt; to %2</source>
         <translation>Сохранить все аннотации из &lt;u&gt;%1&lt;/u&gt; в %2</translation>
     </message>
     <message>
-        <location filename="../src/library/WriteAnnotationsWorker.cpp" line="557"/>
+        <location filename="../src/library/WriteAnnotationsWorker.cpp" line="562"/>
         <source> in %1 format.</source>
         <translation> в формат %1.</translation>
     </message>
     <message>
-        <location filename="../src/library/WriteAnnotationsWorker.cpp" line="558"/>
+        <location filename="../src/library/WriteAnnotationsWorker.cpp" line="563"/>
         <source> in the </source>
-        <translation>в</translation>
+        <translation> в </translation>
     </message>
     <message>
-        <location filename="../src/library/WriteAnnotationsWorker.cpp" line="558"/>
+        <location filename="../src/library/WriteAnnotationsWorker.cpp" line="563"/>
         <source> database.</source>
         <translation> базе данных.</translation>
     </message>
@@ -5055,128 +5080,120 @@ TCCTTACTGTCTGAGCAATGGGATTCCATCTTTTACGATCTAGACATGGCT
 <context>
     <name>U2::LocalWorkflow::WriteAnnotationsWorker</name>
     <message>
-        <location filename="../src/library/WriteAnnotationsWorker.cpp" line="109"/>
+        <location filename="../src/library/WriteAnnotationsWorker.cpp" line="111"/>
         <source>Unrecognized formatId: &apos;%1&apos;</source>
         <translation>Unrecognized formatId: &apos;%1&apos;</translation>
     </message>
     <message>
-        <location filename="../src/library/WriteAnnotationsWorker.cpp" line="114"/>
+        <location filename="../src/library/WriteAnnotationsWorker.cpp" line="116"/>
         <source>Invalid shared DB URL</source>
         <translation>Invalid shared DB URL</translation>
     </message>
     <message>
-        <location filename="../src/library/WriteAnnotationsWorker.cpp" line="116"/>
+        <location filename="../src/library/WriteAnnotationsWorker.cpp" line="118"/>
         <source>Invalid path in shared DB</source>
         <translation>Invalid path in shared DB</translation>
     </message>
     <message>
-        <location filename="../src/library/WriteAnnotationsWorker.cpp" line="118"/>
+        <location filename="../src/library/WriteAnnotationsWorker.cpp" line="120"/>
         <source>Unrecognized data storage: &apos;%1&apos;</source>
         <translation>Unrecognized data storage: &apos;%1&apos;</translation>
     </message>
     <message>
-        <location filename="../src/library/WriteAnnotationsWorker.cpp" line="154"/>
+        <location filename="../src/library/WriteAnnotationsWorker.cpp" line="156"/>
         <source>Unspecified URL to write</source>
         <translation>Unspecified URL to write</translation>
     </message>
     <message>
-        <location filename="../src/library/WriteAnnotationsWorker.cpp" line="173"/>
+        <location filename="../src/library/WriteAnnotationsWorker.cpp" line="175"/>
         <source>Unrecognized data storage</source>
         <translation>Unrecognized data storage</translation>
     </message>
     <message>
-        <location filename="../src/library/WriteAnnotationsWorker.cpp" line="212"/>
+        <location filename="../src/library/WriteAnnotationsWorker.cpp" line="214"/>
         <source>Annotations name not specified. Default value used: &apos;%1&apos;</source>
         <translation>Annotations name not specified. Default value used: &apos;%1&apos;</translation>
     </message>
     <message>
-        <location filename="../src/library/WriteAnnotationsWorker.cpp" line="261"/>
+        <location filename="../src/library/WriteAnnotationsWorker.cpp" line="263"/>
         <source>Nothing to write</source>
         <translation>Нет данных для записи</translation>
     </message>
     <message>
-        <location filename="../src/library/WriteAnnotationsWorker.cpp" line="380"/>
+        <location filename="../src/library/WriteAnnotationsWorker.cpp" line="382"/>
         <source>Input annotations</source>
         <translation>Входные аннотации</translation>
     </message>
     <message>
-        <location filename="../src/library/WriteAnnotationsWorker.cpp" line="381"/>
+        <location filename="../src/library/WriteAnnotationsWorker.cpp" line="383"/>
         <source>Input annotations which will be written to output file</source>
         <translation>Входные аннотации, которые будут записаны в выходной файл</translation>
     </message>
     <message>
-        <location filename="../src/library/WriteAnnotationsWorker.cpp" line="420"/>
-        <location filename="../src/library/WriteAnnotationsWorker.cpp" line="447"/>
+        <location filename="../src/library/WriteAnnotationsWorker.cpp" line="422"/>
+        <location filename="../src/library/WriteAnnotationsWorker.cpp" line="449"/>
         <source>Merge annotation tables</source>
         <translation>Соединить таблицы аннотаций</translation>
     </message>
     <message>
-        <location filename="../src/library/WriteAnnotationsWorker.cpp" line="421"/>
+        <location filename="../src/library/WriteAnnotationsWorker.cpp" line="423"/>
         <source>If &lt;i&gt;true&lt;/i&gt; all annotation tables from dataset will be merged into one. The value of &lt;i&gt;Annotation table name&lt;/i&gt; parameter will be used as the name of result annotation table.</source>
         <translation>Если &lt;i&gt;true&lt;/i&gt; все таблицы аннотаций из набора данных будут соединены в один. Значение &lt;i&gt;Имя таблиицы аннотаций&lt;/i&gt; параметра будет использовано как имя результирующей таблицы аннотаций.</translation>
     </message>
     <message>
-        <location filename="../src/library/WriteAnnotationsWorker.cpp" line="433"/>
+        <location filename="../src/library/WriteAnnotationsWorker.cpp" line="435"/>
         <source>Annotation table name</source>
         <translation>Имя таблицы аннотаций</translation>
     </message>
     <message>
-        <location filename="../src/library/WriteAnnotationsWorker.cpp" line="434"/>
+        <location filename="../src/library/WriteAnnotationsWorker.cpp" line="436"/>
         <source>The name for the result annotation table that contains merged annotation data from file or dataset.</source>
         <translation>Имя таблицы аннотаций, которая содержит соединённые аннотации из файла или набора данных.</translation>
     </message>
     <message>
-        <location filename="../src/library/WriteAnnotationsWorker.cpp" line="448"/>
+        <location filename="../src/library/WriteAnnotationsWorker.cpp" line="450"/>
         <source>If &lt;i&gt;true&lt;/i&gt; all annotation tables from dataset will be merged into one annotation object. The value of &lt;i&gt;Annotation object name&lt;/i&gt; parameter will be used as the name of result annotation object.</source>
         <translation>Если &lt;i&gt;true&lt;/i&gt; все таблицы из набора данных будут соединены в одну аннотацию. The value of &lt;i&gt;Annotation object name&lt;/i&gt; parameter will be used as the name of result annotation object.</translation>
     </message>
     <message>
-        <source>Annotations name</source>
-        <translation type="vanished">Имя аннотаций</translation>
+        <location filename="../src/library/WriteAnnotationsWorker.cpp" line="484"/>
+        <source>The element gets message(s) with annotations data and saves the data to the specified file(s) in one of the appropriate formats (GenBank, GTF, etc.).</source>
+        <translation>Этот элемент сохраняет сообщения с данными аннотаций в файл в указанном формате (GenBank, GTF, и т. д.).</translation>
     </message>
     <message>
-        <source>Name of the saved annotations. This option is only available for document formats that support saving of annotations names.</source>
-        <translation type="vanished">имя для сохранения аннотаций. Этот параметр доступен только для форматов, которые поддерживают сохранение имен аннотаций.</translation>
-    </message>
-    <message>
-        <location filename="../src/library/WriteAnnotationsWorker.cpp" line="454"/>
+        <location filename="../src/library/WriteAnnotationsWorker.cpp" line="456"/>
         <source>Annotation object name</source>
         <translation>Имя объекта аннотации</translation>
     </message>
     <message>
-        <location filename="../src/library/WriteAnnotationsWorker.cpp" line="455"/>
+        <location filename="../src/library/WriteAnnotationsWorker.cpp" line="457"/>
         <source>Name of the saved annotation object.</source>
         <translation>Имя аннотаций: имя для сохранения объекта аннотации.</translation>
     </message>
     <message>
-        <location filename="../src/library/WriteAnnotationsWorker.cpp" line="462"/>
+        <location filename="../src/library/WriteAnnotationsWorker.cpp" line="464"/>
         <source>CSV separator</source>
         <translation>Разделитель CSV</translation>
     </message>
     <message>
-        <location filename="../src/library/WriteAnnotationsWorker.cpp" line="463"/>
+        <location filename="../src/library/WriteAnnotationsWorker.cpp" line="465"/>
         <source>String which separates values in CSV files.</source>
         <translation>символ, который разделяет значения в файлах CSV.</translation>
     </message>
     <message>
-        <location filename="../src/library/WriteAnnotationsWorker.cpp" line="469"/>
+        <location filename="../src/library/WriteAnnotationsWorker.cpp" line="471"/>
         <source>Write sequence names</source>
         <translation>Записать имена последовательностей</translation>
     </message>
     <message>
-        <location filename="../src/library/WriteAnnotationsWorker.cpp" line="470"/>
+        <location filename="../src/library/WriteAnnotationsWorker.cpp" line="472"/>
         <source>Add names of sequences into CSV file.</source>
         <translation>добавить имена последовательностей в CSV-файл.</translation>
     </message>
     <message>
-        <location filename="../src/library/WriteAnnotationsWorker.cpp" line="481"/>
+        <location filename="../src/library/WriteAnnotationsWorker.cpp" line="483"/>
         <source>Write Annotations</source>
         <translation>Запись аннотаций</translation>
-    </message>
-    <message>
-        <location filename="../src/library/WriteAnnotationsWorker.cpp" line="482"/>
-        <source>Writes all supplied annotations to file(s) in selected format.</source>
-        <translation>этот элемент записывает все аннотации в файл заданного формата.</translation>
     </message>
 </context>
 <context>
@@ -5189,26 +5206,26 @@ TCCTTACTGTCTGAGCAATGGGATTCCATCTTTTACGATCTAGACATGGCT
     </message>
     <message>
         <location filename="../src/library/WriteAssemblyWorkers.cpp" line="162"/>
-        <source>Write Assembly</source>
-        <translation>Запись сборки</translation>
+        <source>Write NGS Reads Assembly</source>
+        <translation>Запись NGS сборки</translation>
     </message>
     <message>
         <location filename="../src/library/WriteAssemblyWorkers.cpp" line="163"/>
-        <source>Writes all supplied assemblies to file(s) in selected format.</source>
-        <translation>этот элемент записывает все сборки в файл(ы) заданного формата.</translation>
+        <source>The element gets message(s) with assembled reads data and saves the data to the specified file(s) in one of the appropriate formats (SAM, BAM, or UGENEDB).</source>
+        <translation>Этот элемент записывает все сборки в файл(ы) заданного формата.</translation>
     </message>
     <message>
-        <location filename="../src/library/WriteAssemblyWorkers.cpp" line="169"/>
+        <location filename="../src/library/WriteAssemblyWorkers.cpp" line="170"/>
         <source>Location</source>
         <translation>Расположение</translation>
     </message>
     <message>
-        <location filename="../src/library/WriteAssemblyWorkers.cpp" line="170"/>
+        <location filename="../src/library/WriteAssemblyWorkers.cpp" line="171"/>
         <source>Location for writing data</source>
         <translation>Путь к файлу для записи данных</translation>
     </message>
     <message>
-        <location filename="../src/library/WriteAssemblyWorkers.cpp" line="206"/>
+        <location filename="../src/library/WriteAssemblyWorkers.cpp" line="207"/>
         <source>Save all assemblies from &lt;u&gt;%1&lt;/u&gt; to &lt;u&gt;%2&lt;/u&gt;.</source>
         <translation>Сохранить все сборки из &lt;u&gt;%1&lt;/u&gt; в &lt;u&gt;%2&lt;/u&gt;.</translation>
     </message>
@@ -5216,38 +5233,38 @@ TCCTTACTGTCTGAGCAATGGGATTCCATCTTTTACGATCTAGACATGGCT
 <context>
     <name>U2::LocalWorkflow::WriteVariationWorker</name>
     <message>
-        <location filename="../src/library/WriteVariationWorker.cpp" line="60"/>
-        <source>Write variations: internal error</source>
-        <translation>Запись вариаций: внутренняя ошибка</translation>
-    </message>
-    <message>
         <location filename="../src/library/WriteVariationWorker.cpp" line="113"/>
         <location filename="../src/library/WriteVariationWorker.cpp" line="114"/>
         <source>Variation track</source>
         <translation>Изменение вариации</translation>
     </message>
     <message>
+        <location filename="../src/library/WriteVariationWorker.cpp" line="117"/>
+        <source>The element gets message(s) with variations data and saves the data to the specified file(s) in one of the appropriate formats (e.g. VCF).</source>
+        <translation>Этот элемент записывает все прилагаемые вариации в файл(ы) заданного формата.</translation>
+    </message>
+    <message>
+        <location filename="../src/library/WriteVariationWorker.cpp" line="60"/>
+        <source>Write variants: internal error</source>
+        <translation>Запись вариаций: внутренняя ошибка</translation>
+    </message>
+    <message>
         <location filename="../src/library/WriteVariationWorker.cpp" line="116"/>
-        <source>Write Variations</source>
+        <source>Write Variants</source>
         <translation>Запись вариаций</translation>
     </message>
     <message>
-        <location filename="../src/library/WriteVariationWorker.cpp" line="117"/>
-        <source>Writes all supplied variations to file(s) in selected format.</source>
-        <translation>этот элемент записывает все прилагаемые вариации в файл(ы) заданного формата.</translation>
-    </message>
-    <message>
-        <location filename="../src/library/WriteVariationWorker.cpp" line="123"/>
+        <location filename="../src/library/WriteVariationWorker.cpp" line="125"/>
         <source>Location</source>
         <translation>Расположение</translation>
     </message>
     <message>
-        <location filename="../src/library/WriteVariationWorker.cpp" line="124"/>
+        <location filename="../src/library/WriteVariationWorker.cpp" line="126"/>
         <source>Location for writing data</source>
         <translation>Путь к файлу для записи данных</translation>
     </message>
     <message>
-        <location filename="../src/library/WriteVariationWorker.cpp" line="153"/>
+        <location filename="../src/library/WriteVariationWorker.cpp" line="155"/>
         <source>Save all variations from &lt;u&gt;%1&lt;/u&gt; to &lt;u&gt;%2&lt;/u&gt;.</source>
         <translation>Сохранить все вариации из &lt;u&gt;%1&lt;/u&gt; в &lt;u&gt;%2&lt;/u&gt;.</translation>
     </message>
@@ -5320,7 +5337,7 @@ TCCTTACTGTCTGAGCAATGGGATTCCATCTTTTACGATCTAGACATGGCT
 <context>
     <name>U2::SaveWorkflowSceneTask</name>
     <message>
-        <location filename="../src/WorkflowSceneIOTasks.cpp" line="46"/>
+        <location filename="../src/WorkflowSceneIOTasks.cpp" line="47"/>
         <source>Save workflow scene task</source>
         <translation>Сохранить задачу схемы</translation>
     </message>
@@ -5354,108 +5371,118 @@ TCCTTACTGTCTGAGCAATGGGATTCCATCTTTTACGATCTAGACATGGCT
 <context>
     <name>U2::Workflow::CoreLib</name>
     <message>
-        <location filename="../src/library/CoreLib.cpp" line="151"/>
+        <location filename="../src/library/CoreLib.cpp" line="152"/>
         <source>Write FASTA</source>
         <translation>Запись FASTA</translation>
     </message>
     <message>
-        <location filename="../src/library/CoreLib.cpp" line="172"/>
+        <location filename="../src/library/CoreLib.cpp" line="175"/>
         <source>Read Plain Text</source>
         <translation>Чтение текста</translation>
     </message>
     <message>
-        <location filename="../src/library/CoreLib.cpp" line="172"/>
-        <source>Reads text from local or remote files. All text file formats supported by UGENE are allowed as input to this element.</source>
-        <translation>этот элемент считывает текстовые данные из файлов, расположенных локально или удаленно.</translation>
-    </message>
-    <message>
-        <location filename="../src/library/CoreLib.cpp" line="192"/>
+        <location filename="../src/library/CoreLib.cpp" line="195"/>
         <source>Write Plain Text</source>
         <translation>Запись текста</translation>
     </message>
     <message>
-        <location filename="../src/library/CoreLib.cpp" line="192"/>
-        <source>Write strings to a file.</source>
-        <translation>этот элемент записывает текстовые данные в файл.</translation>
-    </message>
-    <message>
-        <location filename="../src/library/CoreLib.cpp" line="249"/>
-        <source>Writes all supplied sequences to file(s) in selected format.</source>
-        <translation>этот элемент записывает последовательности в файл(ы) заданного формата.</translation>
-    </message>
-    <message>
-        <location filename="../src/library/CoreLib.cpp" line="280"/>
+        <location filename="../src/library/CoreLib.cpp" line="291"/>
         <source>Save all sequences from &lt;u&gt;%1&lt;/u&gt; to &lt;u&gt;%2&lt;/u&gt;.</source>
         <translation>Сохранить все последовательности из &lt;u&gt;%1&lt;/u&gt; в &lt;u&gt;%2&lt;/u&gt;.</translation>
     </message>
     <message>
-        <location filename="../src/library/CoreLib.cpp" line="426"/>
+        <location filename="../src/library/CoreLib.cpp" line="442"/>
         <source>Another worker with this name is already registered: %1</source>
         <translation>Другой эелемент с таким именем уже был зарегистрирован: %1</translation>
     </message>
     <message>
-        <location filename="../src/library/CoreLib.cpp" line="428"/>
+        <location filename="../src/library/CoreLib.cpp" line="444"/>
         <source>The actor &apos;%1&apos; has been already registered</source>
         <translation>Метка &apos;%1&apos; уже была зарегистрирована</translation>
     </message>
     <message>
-        <location filename="../src/library/CoreLib.cpp" line="152"/>
-        <location filename="../src/library/CoreLib.cpp" line="250"/>
+        <location filename="../src/library/CoreLib.cpp" line="155"/>
+        <location filename="../src/library/CoreLib.cpp" line="261"/>
         <location filename="../src/library/GenericReadActor.cpp" line="100"/>
         <source>Sequence</source>
         <translation>Последовательность</translation>
     </message>
     <message>
-        <location filename="../src/library/CoreLib.cpp" line="173"/>
-        <location filename="../src/library/CoreLib.cpp" line="193"/>
+        <location filename="../src/library/CoreLib.cpp" line="176"/>
+        <location filename="../src/library/CoreLib.cpp" line="198"/>
         <source>Plain text</source>
         <translation>Текстовые данные</translation>
     </message>
     <message>
-        <location filename="../src/library/CoreLib.cpp" line="124"/>
+        <location filename="../src/library/CoreLib.cpp" line="125"/>
         <source>Location</source>
         <translation>Путь к файлу</translation>
     </message>
     <message>
-        <location filename="../src/library/CoreLib.cpp" line="176"/>
+        <location filename="../src/library/CoreLib.cpp" line="153"/>
+        <source>The element gets message(s) with sequence data and saves the data to the specified file(s) in FASTA format.</source>
+        <translation>Этот элемент записывает последовательности в файл(ы) заданного формата.</translation>
+    </message>
+    <message>
+        <location filename="../src/library/CoreLib.cpp" line="175"/>
+        <source>Input one or several text files. The element outputs text message(s), read from the file(s).</source>
+        <translation>Подайте один или несколько текстовых файлов. Элемент выведет текстовые сообщения, прочитанные из файла(ов).</translation>
+    </message>
+    <message>
+        <location filename="../src/library/CoreLib.cpp" line="179"/>
         <source>Reads text from &lt;u&gt;%1&lt;/u&gt;.</source>
         <translation>Прочитать текст из &lt;u&gt;%1&lt;/u&gt;.</translation>
     </message>
     <message>
-        <location filename="../src/library/CoreLib.cpp" line="199"/>
+        <location filename="../src/library/CoreLib.cpp" line="196"/>
+        <source>The element gets message(s) with text data and saved the data to the specified text file(s).</source>
+        <translation>Этот элемент записывает текстовые данные в файл(ы) заданного формата.</translation>
+    </message>
+    <message>
+        <location filename="../src/library/CoreLib.cpp" line="204"/>
         <source>Save text from &lt;u&gt;%1&lt;/u&gt; to &lt;u&gt;%2&lt;/u&gt;.</source>
         <translation>Сохранить текст из &lt;u&gt;%1&lt;/u&gt; в &lt;u&gt;%2&lt;/u&gt;.</translation>
     </message>
     <message>
-        <location filename="../src/library/CoreLib.cpp" line="214"/>
+        <location filename="../src/library/CoreLib.cpp" line="219"/>
+        <source>The element gets message(s) with alignment data and saves the data to the specified file(s) in one of the multiple sequence alignment formats, supported by UGENE (ClustalW, FASTA, etc.).</source>
+        <translation>Этот элемент записывает выравнивания в файл(ы) заданного формата.</translation>
+    </message>
+    <message>
+        <location filename="../src/library/CoreLib.cpp" line="221"/>
         <location filename="../src/library/GenericReadActor.cpp" line="160"/>
         <source>Multiple sequence alignment</source>
         <translation>Множественное выравнивание</translation>
     </message>
     <message>
-        <location filename="../src/library/CoreLib.cpp" line="227"/>
+        <location filename="../src/library/CoreLib.cpp" line="234"/>
         <source>Save all MSAs from &lt;u&gt;%1&lt;/u&gt; to &lt;u&gt;%2&lt;/u&gt;.</source>
         <translation>Сохранить множественные выравнивания из &lt;u&gt;%1&lt;/u&gt; в &lt;u&gt;%2&lt;/u&gt;.</translation>
     </message>
     <message>
-        <location filename="../src/library/CoreLib.cpp" line="213"/>
+        <location filename="../src/library/CoreLib.cpp" line="257"/>
+        <source>The elements gets message(s) with sequence data and, optionally, associated annotations data and saves the data to the specified file(s) in one of the appropriate formats (GenBank, FASTA, etc.).</source>
+        <translation>Этот элемент записывает последовательности и ассоциированные с ними аннотациями в файл(ы) заданного формата.</translation>
+    </message>
+    <message>
+        <location filename="../src/library/CoreLib.cpp" line="218"/>
         <source>Write Alignment</source>
         <translation>Запись множественного выравнивания</translation>
     </message>
     <message>
-        <location filename="../src/library/CoreLib.cpp" line="213"/>
-        <source>Writes all supplied alignments to file(s) in selected format.</source>
-        <translation>этот элемент записывает все входные выравнивания в файл(ы) заданного формата.</translation>
-    </message>
-    <message>
-        <location filename="../src/library/CoreLib.cpp" line="249"/>
+        <location filename="../src/library/CoreLib.cpp" line="256"/>
         <source>Write Sequence</source>
         <translation>Запись последовательности</translation>
     </message>
     <message>
-        <location filename="../src/library/GenericReadActor.cpp" line="88"/>
+        <location filename="../src/library/GenericReadActor.cpp" line="86"/>
         <source>Read Sequence</source>
         <translation>Чтение последовательности</translation>
+    </message>
+    <message>
+        <location filename="../src/library/GenericReadActor.cpp" line="87"/>
+        <source>Input one or several files with nucleotide or protein sequences. A file may also contain annotations. Any format, supported by UGENE, is allowed (GenBank, FASTA, etc.). The element outputs message(s) with the sequence and annotations data.</source>
+        <translation>Задайте один или несколько файлов с нуклеотидной или протеиновой последовательностью. Файл также может содержать аннотации.</translation>
     </message>
     <message>
         <location filename="../src/library/GenericReadActor.cpp" line="138"/>
@@ -5468,6 +5495,11 @@ TCCTTACTGTCTGAGCAATGGGATTCCATCTTTTACGATCTAGACATGGCT
         <translation>Чтение множественного выравнивания</translation>
     </message>
     <message>
+        <location filename="../src/library/GenericReadActor.cpp" line="149"/>
+        <source>Input one or several files in one of the multiple sequence alignment formats, supported by UGENE (ClustalW, FASTA, etc.). The element outputs message(s) with the alignment data.</source>
+        <translation>Укажите один или несколько файлов со множественными выравниваниями.</translation>
+    </message>
+    <message>
         <location filename="../src/library/GenericReadActor.cpp" line="163"/>
         <source>Reads MSA(s) from &lt;u&gt;%1&lt;/u&gt;.</source>
         <translation>Прочитать множественное(ые) выравнивание(я) из &lt;u&gt;%1&lt;/u&gt;.</translation>
@@ -5478,30 +5510,14 @@ TCCTTACTGTCTGAGCAATGGGATTCCATCTTTTACGATCTAGACATGGCT
         <translation>Биологические последовательности разных видов (ДНК, РНК, протеины).</translation>
     </message>
     <message>
-        <location filename="../src/library/CoreLib.cpp" line="124"/>
+        <location filename="../src/library/CoreLib.cpp" line="125"/>
         <source>Location for writing data</source>
         <translation>Путь к файлу для записи данных</translation>
     </message>
     <message>
-        <location filename="../src/library/CoreLib.cpp" line="152"/>
+        <location filename="../src/library/CoreLib.cpp" line="155"/>
         <source>A sequence along with FASTA header line.</source>
         <translation>Последовательность вместе с заголовком FASTA.</translation>
-    </message>
-    <message>
-        <location filename="../src/library/CoreLib.cpp" line="151"/>
-        <source>Writes all supplied sequences to file(s) in FASTA format.</source>
-        <translation>этот элемент записывает все входные данные в файл(ы) в формате FASTA.</translation>
-    </message>
-    <message>
-        <location filename="../src/library/GenericReadActor.cpp" line="149"/>
-        <source>Reads multiple sequence alignments (MSAs) from local or remote files. All MSA file formats supported by UGENE are allowed as input to this element.&lt;p&gt;Besides recognized alignment formats, it supports aligning from a set of sequences in a corresponding file (e.g. FASTA or Genbank).</source>
-        <translation>этот элемент считывает множественные выравнивания из файлов, расположенных локально или удаленно.
-&lt;p&gt;Помимо чтения готовых выравниваний известных форматов, поддерживается автоматическое составление выравниваний из наборов последовательностей, которые могут быть прочитаны из файла любого подходящего формата (например,  FASTA или Genbank).</translation>
-    </message>
-    <message>
-        <location filename="../src/library/GenericReadActor.cpp" line="89"/>
-        <source>Reads sequences and annotations if any from local or remote files. All sequence file formats supported by UGENE (e.g. GenBank, FASTA) are allowed as input to this element.</source>
-        <translation>этот элемент загружает последовательности, а также аннотации в случае их наличия, из файлов, расположенных локально или удаленно.</translation>
     </message>
 </context>
 <context>
@@ -5575,10 +5591,6 @@ TCCTTACTGTCTGAGCAATGGGATTCCATCTTTTACGATCTAGACATGGCT
         <location filename="../src/tasks/ReadAssemblyTask.cpp" line="149"/>
         <source>Read assembly from %1</source>
         <translation>Прочитать сборку из %1</translation>
-    </message>
-    <message>
-        <source>File &apos;%1&apos; not exists</source>
-        <translation type="vanished">Файл &apos;%1&apos; не существует</translation>
     </message>
     <message>
         <location filename="../src/tasks/ReadAssemblyTask.cpp" line="162"/>
@@ -5687,7 +5699,7 @@ TCCTTACTGTCTGAGCAATGGGATTCCATCTTTTACGATCTAGACATGGCT
     <message>
         <location filename="../src/library/DocActors.cpp" line="264"/>
         <source> in the </source>
-        <translation>в</translation>
+        <translation> в </translation>
     </message>
     <message>
         <location filename="../src/library/DocActors.cpp" line="264"/>
@@ -5713,12 +5725,12 @@ TCCTTACTGTCTGAGCAATGGGATTCCATCTTTTACGATCTAGACATGGCT
     <message>
         <location filename="../src/library/DocActors.cpp" line="161"/>
         <source> sequence from &lt;u&gt;%1&lt;/u&gt;</source>
-        <translation>последовательности из &lt;u&gt;%1&lt;/u&gt;</translation>
+        <translation> последовательности из &lt;u&gt;%1&lt;/u&gt;</translation>
     </message>
     <message>
         <location filename="../src/library/DocActors.cpp" line="164"/>
         <source> set of annotations from &lt;u&gt;%1&lt;/u&gt;</source>
-        <translation>набора аннотаций из &lt;u&gt;%1&lt;/u&gt;</translation>
+        <translation> набора аннотаций из &lt;u&gt;%1&lt;/u&gt;</translation>
     </message>
     <message>
         <location filename="../src/library/DocActors.cpp" line="173"/>
@@ -5733,7 +5745,7 @@ TCCTTACTGTCTGAGCAATGGGATTCCATCTTTTACGATCTAGACATGGCT
     <message>
         <location filename="../src/library/DocActors.cpp" line="178"/>
         <source>each </source>
-        <translation>каждые</translation>
+        <translation>каждые </translation>
     </message>
     <message>
         <location filename="../src/library/DocActors.cpp" line="181"/>
@@ -5744,68 +5756,68 @@ TCCTTACTGTCTGAGCAATGGGATTCCATCTTTTACGATCTAGACATGGCT
 <context>
     <name>U2::WorkflowDesignerPlugin</name>
     <message>
-        <location filename="../src/WorkflowDesignerPlugin.cpp" line="75"/>
+        <location filename="../src/WorkflowDesignerPlugin.cpp" line="77"/>
         <source>Workflow Designer</source>
         <translation>Дизайнер вычислительных схем</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowDesignerPlugin.cpp" line="75"/>
-        <source>Workflow Designer allows to create complex computational workflows.</source>
+        <location filename="../src/WorkflowDesignerPlugin.cpp" line="77"/>
+        <source>Workflow Designer allows one to create complex computational workflows.</source>
         <translation>Дизайнер вычислительных схем позволяет создавать и переиспользовать многоэтапные алгоритмы обработки данных.
 Алгоритмы создаются в виде визуальных диаграмм потоков данных, не требуя навыков программирования или знания языков программирования.</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowDesignerPlugin.cpp" line="157"/>
+        <location filename="../src/WorkflowDesignerPlugin.cpp" line="163"/>
         <source>Runs the specified task.</source>
         <translation>Выполняет указанную задачу.</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowDesignerPlugin.cpp" line="158"/>
+        <location filename="../src/WorkflowDesignerPlugin.cpp" line="164"/>
         <source>Runs the specified task. A path to a user-defined UGENE workflow be used as a task name.</source>
         <translation>Запускает указанную задачу. Путь до пользовательской UGENE схемы будет использован для имени задачи.</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowDesignerPlugin.cpp" line="160"/>
+        <location filename="../src/WorkflowDesignerPlugin.cpp" line="166"/>
         <source>&lt;task_name&gt; [&lt;task_parameter&gt;=value ...]</source>
         <translation>&lt;task_name&gt; [&lt;task_parameter&gt;=value ...]</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowDesignerPlugin.cpp" line="166"/>
+        <location filename="../src/WorkflowDesignerPlugin.cpp" line="172"/>
         <source>Prints the content of the specified slot.</source>
         <translation>Печатает содержимое указанного слота.</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowDesignerPlugin.cpp" line="167"/>
-        <source>Prints the content of the specified slot. The incoming/outcoming content of specified slot is printed to the standart output.</source>
+        <location filename="../src/WorkflowDesignerPlugin.cpp" line="173"/>
+        <source>Prints the content of the specified slot. The incoming/outcoming content of specified slot is printed to the standard output.</source>
         <translation>Печатает содержимое указанного слота. Входное/выходное содержимое указанного слота печатается стандартно.</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowDesignerPlugin.cpp" line="169"/>
+        <location filename="../src/WorkflowDesignerPlugin.cpp" line="175"/>
         <source>&lt;actor_name&gt;.&lt;port_name&gt;.&lt;slot_name&gt;</source>
         <translation>&lt;actor_name&gt;.&lt;port_name&gt;.&lt;slot_name&gt;</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowDesignerPlugin.cpp" line="174"/>
+        <location filename="../src/WorkflowDesignerPlugin.cpp" line="180"/>
         <source>Creates new Galaxy tool config.</source>
         <translation>Создает новую конфигурацию Galaxy-инструмента.</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowDesignerPlugin.cpp" line="175"/>
+        <location filename="../src/WorkflowDesignerPlugin.cpp" line="181"/>
         <source>Creates new Galaxy tool config from existing workflow. Paths to UGENE and Galaxy can be set</source>
         <translation>Создает новую конфигурацию для инструмента Galaxy из существующей схемы. Пути для UGENE и Galaxy могут быть установлены</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowDesignerPlugin.cpp" line="177"/>
+        <location filename="../src/WorkflowDesignerPlugin.cpp" line="183"/>
         <source>&lt;uwl-file&gt; [--ugene-path=value] [--galaxy-path=value]</source>
         <translation>&lt;uwl-file&gt; [--ugene-path=value] [--galaxy-path=value]</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowDesignerPlugin.cpp" line="197"/>
+        <location filename="../src/WorkflowDesignerPlugin.cpp" line="207"/>
         <source>Close Designer</source>
         <translation>Закрытие дизайнера схем</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowDesignerPlugin.cpp" line="206"/>
+        <location filename="../src/WorkflowDesignerPlugin.cpp" line="216"/>
         <source>Close Designer canceled</source>
         <translation>Закрытие дизайнера схем отменено</translation>
     </message>
@@ -5813,103 +5825,99 @@ TCCTTACTGTCTGAGCAATGGGATTCCATCTTTTACGATCTAGACATGGCT
 <context>
     <name>U2::WorkflowDesignerService</name>
     <message>
-        <location filename="../src/WorkflowDesignerPlugin.cpp" line="215"/>
+        <location filename="../src/WorkflowDesignerPlugin.cpp" line="225"/>
         <source>Workflow Designer</source>
         <translation>Дизайнер вычислительных схем</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowDesignerPlugin.cpp" line="255"/>
+        <location filename="../src/WorkflowDesignerPlugin.cpp" line="265"/>
         <source>Workflow Designer...</source>
         <translation>Дизайнер вычислительных схем...</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowDesignerPlugin.cpp" line="265"/>
+        <location filename="../src/WorkflowDesignerPlugin.cpp" line="275"/>
         <source>New workflow...</source>
         <translation>Новая схема...</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowDesignerPlugin.cpp" line="296"/>
+        <location filename="../src/WorkflowDesignerPlugin.cpp" line="306"/>
         <source>Can not open Workflow Designer. Please, try to reload UGENE.</source>
         <translation>Невозможно открыть дизайнер вычислительных схем. Попробуйте перезагрузить UGENE.</translation>
     </message>
     <message>
-        <source>Reads quality control and alignment</source>
-        <translation type="vanished">Контроль качества коротких прочтений и выравнивание</translation>
+        <location filename="../src/WorkflowDesignerPlugin.cpp" line="345"/>
+        <source>Raw DNA-Seq data processing...</source>
+        <translation>Обработка сырых данных секвенирования ДНК...</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowDesignerPlugin.cpp" line="329"/>
+        <location filename="../src/WorkflowDesignerPlugin.cpp" line="347"/>
+        <source>Variant calling...</source>
+        <translation>Поиск вариаций...</translation>
+    </message>
+    <message>
+        <location filename="../src/WorkflowDesignerPlugin.cpp" line="349"/>
+        <source>Annotate variants and predict effects...</source>
+        <translation>Аннотация вариаций и предсказание эффекта...</translation>
+    </message>
+    <message>
+        <location filename="../src/WorkflowDesignerPlugin.cpp" line="351"/>
+        <source>Raw RNA-Seq data processing...</source>
+        <translation>Обработка сырых данных секвенирования РНК...</translation>
+    </message>
+    <message>
+        <location filename="../src/WorkflowDesignerPlugin.cpp" line="353"/>
+        <source>RNA-Seq data analysis...</source>
+        <translation>Анализ данных секвенирования РНК...</translation>
+    </message>
+    <message>
+        <location filename="../src/WorkflowDesignerPlugin.cpp" line="355"/>
+        <source>Extract transcript sequences...</source>
+        <translation>Извлечение последовательности транскриптов...</translation>
+    </message>
+    <message>
+        <location filename="../src/WorkflowDesignerPlugin.cpp" line="357"/>
+        <source>Raw ChIP-Seq data processing...</source>
+        <translation>Обработка сырых данных ChIP-Seq...</translation>
+    </message>
+    <message>
+        <location filename="../src/WorkflowDesignerPlugin.cpp" line="359"/>
+        <source>ChIP-Seq data analysis...</source>
+        <translation>Анализ данных ChIP-Seq...</translation>
+    </message>
+    <message>
+        <location filename="../src/WorkflowDesignerPlugin.cpp" line="361"/>
+        <source>Metagenomics classification...</source>
+        <translation>Метагеномная классификация...</translation>
+    </message>
+    <message>
+        <location filename="../src/WorkflowDesignerPlugin.cpp" line="363"/>
+        <source>Extract coverage from assemblies...</source>
+        <translation>Расчет покрытия по сборке...</translation>
+    </message>
+    <message>
+        <location filename="../src/WorkflowDesignerPlugin.cpp" line="365"/>
+        <source>Extract consensus from assemblies...</source>
+        <translation>Извлечение консенсуса из сборки...</translation>
+    </message>
+    <message>
+        <location filename="../src/WorkflowDesignerPlugin.cpp" line="368"/>
+        <source>Remote NCBI BLAST...</source>
+        <translation>Удаленный поиск с помощью NCBI BLAST...</translation>
+    </message>
+    <message>
+        <location filename="../src/WorkflowDesignerPlugin.cpp" line="339"/>
         <source>Reads quality control...</source>
         <translation>Контроль качества коротких прочтений...</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowDesignerPlugin.cpp" line="331"/>
-        <source>Filter short scaffolds...</source>
-        <translation>Фильтровать короткие каркасы...</translation>
-    </message>
-    <message>
-        <location filename="../src/WorkflowDesignerPlugin.cpp" line="333"/>
-        <source>Raw DNA-Seq data processing</source>
-        <translation>Обработка сырых данных секвенирования ДНК</translation>
-    </message>
-    <message>
-        <location filename="../src/WorkflowDesignerPlugin.cpp" line="335"/>
-        <source>Variant calling</source>
-        <translation>Поиск вариаций</translation>
-    </message>
-    <message>
-        <location filename="../src/WorkflowDesignerPlugin.cpp" line="337"/>
-        <source>Variant calling and effects prediction</source>
-        <translation>Variant calling and effects prediction</translation>
-    </message>
-    <message>
-        <location filename="../src/WorkflowDesignerPlugin.cpp" line="339"/>
-        <source>Annotate variants and predict effects</source>
-        <translation>Аннотация вариаций и предсказание эффекта</translation>
-    </message>
-    <message>
         <location filename="../src/WorkflowDesignerPlugin.cpp" line="341"/>
-        <source>Raw RNA-Seq data processing</source>
-        <translation>Обработка сырых данных секвенирования РНК</translation>
+        <source>Reads de novo assembly (with SPAdes)...</source>
+        <translation>Чтение de novo сборки (при помощи SPAdes)...</translation>
     </message>
     <message>
         <location filename="../src/WorkflowDesignerPlugin.cpp" line="343"/>
-        <source>RNA-Seq data analysis</source>
-        <translation>Анализ данных секвенирования РНК</translation>
-    </message>
-    <message>
-        <location filename="../src/WorkflowDesignerPlugin.cpp" line="345"/>
-        <source>Extract transcript sequences</source>
-        <translation>Извлечение последовательности транскриптов</translation>
-    </message>
-    <message>
-        <location filename="../src/WorkflowDesignerPlugin.cpp" line="347"/>
-        <source>Raw ChIP-Seq data processing</source>
-        <translation>Обработка сырых данных ChIP-Seq</translation>
-    </message>
-    <message>
-        <location filename="../src/WorkflowDesignerPlugin.cpp" line="349"/>
-        <source>ChIP-Seq data analysis</source>
-        <translation>Анализ данных ChIP-Seq</translation>
-    </message>
-    <message>
-        <location filename="../src/WorkflowDesignerPlugin.cpp" line="351"/>
-        <source>ChIP-Seq coverage</source>
-        <translation>Покрытие ChIP-Seq</translation>
-    </message>
-    <message>
-        <location filename="../src/WorkflowDesignerPlugin.cpp" line="353"/>
-        <source>Extract coverage from assemblies</source>
-        <translation>Расчет покрытия по сборке</translation>
-    </message>
-    <message>
-        <location filename="../src/WorkflowDesignerPlugin.cpp" line="355"/>
-        <source>Extract consensus from assemblies</source>
-        <translation>Извлечение консенсуса из сборки</translation>
-    </message>
-    <message>
-        <location filename="../src/WorkflowDesignerPlugin.cpp" line="358"/>
-        <source>Remote NCBI BLAST</source>
-        <translation>Удаленный поиск с помощью NCBI BLAST</translation>
+        <source>Filter short scaffolds...</source>
+        <translation>Фильтровать короткие каркасы...</translation>
     </message>
 </context>
 <context>
@@ -5917,7 +5925,7 @@ TCCTTACTGTCTGAGCAATGGGATTCCATCTTTTACGATCTAGACATGGCT
     <message>
         <location filename="../src/WorkflowDocument.cpp" line="82"/>
         <location filename="../src/WorkflowDocument.cpp" line="90"/>
-        <location filename="../src/WorkflowDocument.cpp" line="115"/>
+        <location filename="../src/WorkflowDocument.cpp" line="116"/>
         <source>Workflow</source>
         <translation>Схема</translation>
     </message>
@@ -5927,7 +5935,7 @@ TCCTTACTGTCTGAGCAATGGGATTCCATCTTTTACGATCTAGACATGGCT
         <translation>Формат схем это формат используемый для создания/редактирования/восстановления схемы с текстовым файлом</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowDocument.cpp" line="107"/>
+        <location filename="../src/WorkflowDocument.cpp" line="108"/>
         <source>Invalid header. %1 expected</source>
         <translation>Неверный заголовок. Ожидается %1</translation>
     </message>
@@ -5935,69 +5943,69 @@ TCCTTACTGTCTGAGCAATGGGATTCCATCTTTTACGATCTAGACATGGCT
 <context>
     <name>U2::WorkflowEditor</name>
     <message>
-        <location filename="../src/WorkflowEditor.cpp" line="271"/>
+        <location filename="../src/WorkflowEditor.cpp" line="381"/>
         <source>Element name:</source>
-        <translation>Имя элемента: </translation>
+        <translation>Имя элемента:</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowEditor.cpp" line="422"/>
+        <location filename="../src/WorkflowEditor.cpp" line="471"/>
         <source>Input data</source>
         <translation>Входные данные</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowEditor.cpp" line="424"/>
+        <location filename="../src/WorkflowEditor.cpp" line="473"/>
         <source>Output data</source>
         <translation>Выходные данные</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowEditor.cpp" line="432"/>
+        <location filename="../src/WorkflowEditor.cpp" line="481"/>
         <source>Select an element to inspect.</source>
         <translation>Выберите элемент для просмотра или редактирования.</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowEditor.cpp" line="274"/>
+        <location filename="../src/WorkflowEditor.cpp" line="384"/>
         <source>To configure the parameters of the element go to &quot;Parameters&quot; area below.</source>
         <translation>Параметры элемента можно отредактировать в таблице, расположенной ниже.</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowEditor.cpp" line="398"/>
+        <location filename="../src/WorkflowEditor.cpp" line="447"/>
         <source>You can observe data slots of the port and configure connections if any in the &quot;Parameters&quot; widget suited below.</source>
         <translation>Слоты данных, входящие в порт, указаны в таблице, расположенной немного ниже.
 &lt;br&gt;Там же можно изменить привязку данных в связях, если они есть.</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowEditor.cpp" line="393"/>
+        <location filename="../src/WorkflowEditor.cpp" line="442"/>
         <source>&lt;b&gt;%1 &quot;%2&quot;&lt;/b&gt; of task &quot;%3&quot;:&lt;br&gt;%4&lt;br&gt;&lt;br&gt;%5</source>
         <translation>&lt;b&gt;%1 &quot;%2&quot;&lt;/b&gt; задачи &quot;%3&quot;:&lt;br&gt;%4&lt;br&gt;&lt;br&gt;%5</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowEditor.cpp" line="205"/>
-        <location filename="../src/WorkflowEditor.cpp" line="344"/>
+        <location filename="../src/WorkflowEditor.cpp" line="302"/>
+        <location filename="../src/WorkflowEditor.cpp" line="396"/>
         <source>Parameters</source>
         <translation>Параметры</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowEditor.cpp" line="394"/>
+        <location filename="../src/WorkflowEditor.cpp" line="443"/>
         <source>Output port</source>
         <translation>Выходной порт</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowEditor.cpp" line="394"/>
+        <location filename="../src/WorkflowEditor.cpp" line="443"/>
         <source>Input port</source>
         <translation>Входной порт</translation>
     </message>
     <message>
-        <location filename="../src/ActorCfgModel.cpp" line="210"/>
+        <location filename="../src/ActorCfgModel.cpp" line="209"/>
         <source>Name</source>
         <translation>Имя</translation>
     </message>
     <message>
-        <location filename="../src/ActorCfgModel.cpp" line="212"/>
+        <location filename="../src/ActorCfgModel.cpp" line="211"/>
         <source>Value</source>
         <translation>Значение</translation>
     </message>
     <message>
-        <location filename="../src/ActorCfgModel.cpp" line="214"/>
+        <location filename="../src/ActorCfgModel.cpp" line="213"/>
         <source>Script</source>
         <translation>Скрипт</translation>
     </message>
@@ -6041,41 +6049,33 @@ TCCTTACTGTCTGAGCAATGGGATTCCATCTTTTACGATCTAGACATGGCT
 <context>
     <name>U2::WorkflowPaletteElements</name>
     <message>
-        <location filename="../src/WorkflowPalette.cpp" line="571"/>
-        <source>Can&apos;t remove element %1</source>
-        <translation>Не могу удалить элемент %1</translation>
-    </message>
-    <message>
-        <location filename="../src/WorkflowPalette.cpp" line="593"/>
+        <location filename="../src/WorkflowPalette.cpp" line="598"/>
         <source>Expand all</source>
         <translation>Развернуть все</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowPalette.cpp" line="594"/>
+        <location filename="../src/WorkflowPalette.cpp" line="599"/>
         <source>Collapse all</source>
         <translation>Свернуть все</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowPalette.cpp" line="597"/>
+        <location filename="../src/WorkflowPalette.cpp" line="602"/>
         <source>Edit</source>
         <translation>Изменить</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowPalette.cpp" line="598"/>
+        <location filename="../src/WorkflowPalette.cpp" line="603"/>
         <source>Remove</source>
         <translation>Удалить</translation>
+    </message>
+    <message>
+        <location filename="../src/WorkflowPalette.cpp" line="702"/>
+        <source>Can&apos;t remove element &apos;%1&apos;</source>
+        <translation>Невозможно удалить элемент &apos;%1&apos;</translation>
     </message>
 </context>
 <context>
     <name>U2::WorkflowRemoteRunFromCMDLineTask</name>
-    <message>
-        <source>%1 parameter expected, but not set</source>
-        <translation type="vanished">Не установлен параметр %1</translation>
-    </message>
-    <message>
-        <source>Cannot read remote machine settings from %2</source>
-        <translation type="vanished">Не удается прочитать настройки удаленной машины из %2</translation>
-    </message>
 </context>
 <context>
     <name>U2::WorkflowRunFromCMDLineBase</name>
@@ -6118,22 +6118,22 @@ TCCTTACTGTCTGAGCAATGGGATTCCATCTTTTACGATCTAGACATGGCT
 <context>
     <name>U2::WorkflowScene</name>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="2547"/>
+        <location filename="../src/WorkflowViewController.cpp" line="2467"/>
         <source>Open document(s)</source>
         <translation>Открыть документы</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="2707"/>
+        <location filename="../src/WorkflowViewController.cpp" line="2627"/>
         <source>Workflow Designer</source>
         <translation>Дизайнер вычислительных схем</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="2707"/>
+        <location filename="../src/WorkflowViewController.cpp" line="2627"/>
         <source>Unable to open specified documents. Watch log for details.</source>
         <translation>Невозможно открыть указанные документы. Посмотрите лог для выяснения деталей.</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="2790"/>
+        <location filename="../src/WorkflowViewController.cpp" line="2711"/>
         <source>Drop an element from the palette here</source>
         <translation>Перенесите сюда элемент из палитры</translation>
     </message>
@@ -6141,7 +6141,7 @@ TCCTTACTGTCTGAGCAATGGGATTCCATCTTTTACGATCTAGACATGGCT
 <context>
     <name>U2::WorkflowSettingsPageController</name>
     <message>
-        <location filename="../src/WorkflowSettingsController.cpp" line="38"/>
+        <location filename="../src/WorkflowSettingsController.cpp" line="40"/>
         <source>Workflow Designer</source>
         <translation>Дизайнер вычислительных схем</translation>
     </message>
@@ -6149,7 +6149,7 @@ TCCTTACTGTCTGAGCAATGGGATTCCATCTTTTACGATCTAGACATGGCT
 <context>
     <name>U2::WorkflowTabView</name>
     <message>
-        <location filename="../src/WorkflowTabView.cpp" line="44"/>
+        <location filename="../src/WorkflowTabView.cpp" line="47"/>
         <source>Close dashboard</source>
         <translation>Закрыть панель</translation>
     </message>
@@ -6164,12 +6164,12 @@ TCCTTACTGTCTGAGCAATGGGATTCCATCTTTTACGATCTAGACATGGCT
         <translation>Имя новой панели:</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowTabView.cpp" line="206"/>
+        <location filename="../src/WorkflowTabView.cpp" line="299"/>
         <source>Run</source>
         <translation>Запуск</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowTabView.cpp" line="229"/>
+        <location filename="../src/WorkflowTabView.cpp" line="322"/>
         <source>Rename</source>
         <translation>Переименовать</translation>
     </message>
@@ -6177,7 +6177,7 @@ TCCTTACTGTCTGAGCAATGGGATTCCATCTTTTACGATCTAGACATGGCT
 <context>
     <name>U2::WorkflowUtils</name>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="928"/>
+        <location filename="../src/WorkflowViewController.cpp" line="852"/>
         <source>UGENE workflow element</source>
         <translation>Элемент схемы</translation>
     </message>
@@ -6185,363 +6185,364 @@ TCCTTACTGTCTGAGCAATGGGATTCCATCTTTTACGATCTAGACATGGCT
 <context>
     <name>U2::WorkflowView</name>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="326"/>
-        <location filename="../src/WorkflowViewController.cpp" line="2344"/>
+        <location filename="../src/WorkflowViewController.cpp" line="263"/>
+        <location filename="../src/WorkflowViewController.cpp" line="2264"/>
         <source>Workflow Designer</source>
         <translation>Дизайнер схем</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="414"/>
-        <location filename="../src/WorkflowViewController.cpp" line="550"/>
+        <location filename="../src/WorkflowViewController.cpp" line="350"/>
+        <location filename="../src/WorkflowViewController.cpp" line="487"/>
         <source>Error list</source>
         <translation>Проблемы</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="442"/>
-        <location filename="../src/WorkflowViewController.cpp" line="444"/>
-        <location filename="../src/WorkflowViewController.cpp" line="2267"/>
-        <location filename="../src/WorkflowViewController.cpp" line="2269"/>
+        <location filename="../src/WorkflowViewController.cpp" line="378"/>
+        <location filename="../src/WorkflowViewController.cpp" line="381"/>
+        <location filename="../src/WorkflowViewController.cpp" line="2186"/>
+        <location filename="../src/WorkflowViewController.cpp" line="2189"/>
         <source>Warning!</source>
         <translation>Предупреждение!</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="447"/>
+        <location filename="../src/WorkflowViewController.cpp" line="384"/>
         <source>Undefined workflow format for %1</source>
         <translation>Неизвестный workflow формат в %1</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="447"/>
+        <location filename="../src/WorkflowViewController.cpp" line="384"/>
         <source>file</source>
         <translation>файл</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="679"/>
+        <location filename="../src/WorkflowViewController.cpp" line="609"/>
         <source>&amp;Save workflow as...</source>
         <translation>&amp;Сохранить схему как...</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="684"/>
+        <location filename="../src/WorkflowViewController.cpp" line="614"/>
         <source>Show wizard</source>
         <translation>Показать визард</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="713"/>
+        <location filename="../src/WorkflowViewController.cpp" line="643"/>
         <source>Delete</source>
         <translation>Удалить</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="933"/>
-        <location filename="../src/WorkflowViewController.cpp" line="958"/>
+        <location filename="../src/WorkflowViewController.cpp" line="757"/>
+        <source>Create element with external tool...</source>
+        <translation>Создать элемент при помощи внешних инструментов...</translation>
+    </message>
+    <message>
+        <location filename="../src/WorkflowViewController.cpp" line="768"/>
+        <source>Add element with external tool...</source>
+        <translation>Добавить элемент при помощи внешних инструментов...</translation>
+    </message>
+    <message>
+        <location filename="../src/WorkflowViewController.cpp" line="857"/>
+        <location filename="../src/WorkflowViewController.cpp" line="885"/>
         <source>Can&apos;t load element.</source>
         <translation>Невозможно загрузить элемент.</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="998"/>
-        <source>Can&apos;t remove element %1</source>
-        <translation>Не могу удалить элемент %1</translation>
-    </message>
-    <message>
-        <location filename="../src/WorkflowViewController.cpp" line="1315"/>
-        <location filename="../src/WorkflowViewController.cpp" line="1376"/>
+        <location filename="../src/WorkflowViewController.cpp" line="1221"/>
+        <location filename="../src/WorkflowViewController.cpp" line="1282"/>
         <source>Element style</source>
         <translation>Стиль</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="1803"/>
-        <location filename="../src/WorkflowViewController.cpp" line="1831"/>
+        <location filename="../src/WorkflowViewController.cpp" line="1715"/>
+        <location filename="../src/WorkflowViewController.cpp" line="1743"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="756"/>
+        <location filename="../src/WorkflowViewController.cpp" line="686"/>
         <source>Select all elements</source>
         <translation>Выбрать все элементы</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="747"/>
+        <location filename="../src/WorkflowViewController.cpp" line="677"/>
         <source>Import workflow to element...</source>
         <translation>Импортировать схему в элемент...</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="751"/>
+        <location filename="../src/WorkflowViewController.cpp" line="681"/>
         <source>Create Galaxy tool config...</source>
         <translation>Создать конфигурацию Galaxy инструмента...</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="759"/>
+        <location filename="../src/WorkflowViewController.cpp" line="689"/>
         <source>&amp;Copy</source>
         <translation>&amp;Копировать</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="767"/>
+        <location filename="../src/WorkflowViewController.cpp" line="697"/>
         <source>Cu&amp;t</source>
         <translation>&amp;Вырезать</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="774"/>
+        <location filename="../src/WorkflowViewController.cpp" line="704"/>
         <source>&amp;Paste</source>
         <translation>&amp;Вставить</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowSettingsController.cpp" line="82"/>
-        <location filename="../src/WorkflowViewController.cpp" line="782"/>
+        <location filename="../src/WorkflowSettingsController.cpp" line="90"/>
+        <location filename="../src/WorkflowViewController.cpp" line="712"/>
         <source>Minimal</source>
         <translation>Упрощённый</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowSettingsController.cpp" line="83"/>
-        <location filename="../src/WorkflowViewController.cpp" line="788"/>
+        <location filename="../src/WorkflowSettingsController.cpp" line="91"/>
+        <location filename="../src/WorkflowViewController.cpp" line="718"/>
         <source>Extended</source>
         <translation>Развёрнутый</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="929"/>
-        <location filename="../src/WorkflowViewController.cpp" line="1282"/>
-        <location filename="../src/WorkflowViewController.cpp" line="1386"/>
+        <location filename="../src/WorkflowViewController.cpp" line="853"/>
+        <location filename="../src/WorkflowViewController.cpp" line="1188"/>
+        <location filename="../src/WorkflowViewController.cpp" line="1292"/>
         <source>Add element</source>
         <translation>Добавить элемент</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="612"/>
+        <location filename="../src/WorkflowViewController.cpp" line="542"/>
         <source>&amp;Run workflow</source>
         <translation>&amp;Запустить схему</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="619"/>
+        <location filename="../src/WorkflowViewController.cpp" line="549"/>
         <source>S&amp;top workflow</source>
         <translation>О&amp;тменить выполнение схемы</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="626"/>
+        <location filename="../src/WorkflowViewController.cpp" line="556"/>
         <source>&amp;Validate workflow</source>
         <translation>&amp;Проверить валидность схемы</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="632"/>
+        <location filename="../src/WorkflowViewController.cpp" line="562"/>
         <source>&amp;Estimate workflow</source>
         <translation>&amp;Оценить время на выполнение схемы</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="638"/>
+        <location filename="../src/WorkflowViewController.cpp" line="568"/>
         <source>&amp;Pause workflow</source>
         <translation>&amp;Остановить схему</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="646"/>
+        <location filename="../src/WorkflowViewController.cpp" line="576"/>
         <source>&amp;Next step</source>
         <translation>&amp;Следующий шаг</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="656"/>
+        <location filename="../src/WorkflowViewController.cpp" line="586"/>
         <source>Process one &amp;message</source>
         <translation>По одному &amp;сообщению</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="666"/>
+        <location filename="../src/WorkflowViewController.cpp" line="596"/>
         <source>&amp;New workflow...</source>
         <translation>&amp;Новая схема...</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="672"/>
+        <location filename="../src/WorkflowViewController.cpp" line="602"/>
         <source>&amp;Save workflow</source>
         <translation>&amp;Сохранить схему</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="702"/>
+        <location filename="../src/WorkflowViewController.cpp" line="632"/>
         <source>&amp;Load workflow</source>
         <translation>&amp;Загрузка схемы</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="708"/>
+        <location filename="../src/WorkflowViewController.cpp" line="638"/>
         <source>&amp;Export workflow as image</source>
         <translation>&amp;Экспорт схемы в изображение</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="717"/>
+        <location filename="../src/WorkflowViewController.cpp" line="647"/>
         <source>Dashboards manager</source>
         <translation>Менеджер панелей</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="738"/>
+        <location filename="../src/WorkflowViewController.cpp" line="668"/>
         <source>Set parameter aliases...</source>
         <translation>Выбрать алиасы параметров...</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="743"/>
+        <location filename="../src/WorkflowViewController.cpp" line="673"/>
         <source>Set port and slot aliases...</source>
         <translation>Выбрать алиасы портов и слотов...</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="796"/>
+        <location filename="../src/WorkflowViewController.cpp" line="726"/>
         <source>Hide scripting options</source>
         <translation>Не показывать опции скриптинга</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="803"/>
+        <location filename="../src/WorkflowViewController.cpp" line="733"/>
         <source>Show scripting options</source>
         <translation>Показывать опции скриптинга</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="816"/>
+        <location filename="../src/WorkflowViewController.cpp" line="746"/>
         <source>Create element with script...</source>
         <translation>Создать элемент при помощи скрипта...</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="821"/>
+        <location filename="../src/WorkflowViewController.cpp" line="751"/>
         <source>Edit script of the element...</source>
         <translation>Изменить скрипт элемента...</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="827"/>
-        <source>Create element with command line tool...</source>
-        <translation>Создать элемент при помощи командной строки...</translation>
-    </message>
-    <message>
-        <location filename="../src/WorkflowViewController.cpp" line="832"/>
+        <location filename="../src/WorkflowViewController.cpp" line="762"/>
         <source>Edit configuration...</source>
         <translation>Изменить конфигурацию...</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="838"/>
-        <source>Add element with command line tool...</source>
-        <translation>Добавить элемент при помощи командной строки...</translation>
-    </message>
-    <message>
-        <location filename="../src/WorkflowViewController.cpp" line="1421"/>
+        <location filename="../src/WorkflowViewController.cpp" line="1327"/>
         <source>Empty workflow!</source>
         <translation>Пустая схема!</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="1421"/>
+        <location filename="../src/WorkflowViewController.cpp" line="1327"/>
         <source>Nothing to run: empty workflow</source>
         <translation>Выполнять нечего: схема пуста</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="1446"/>
+        <location filename="../src/WorkflowViewController.cpp" line="1352"/>
         <source>Workflow cannot be executed</source>
         <translation>Схема не может быть выполнена</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="1447"/>
+        <location filename="../src/WorkflowViewController.cpp" line="1353"/>
         <source>Please fix issues listed in the error list (located under workflow).</source>
         <translation>Исправьте ошибки представленные в списке ошибок (располодженный под схемой).</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="1452"/>
+        <location filename="../src/WorkflowViewController.cpp" line="1356"/>
+        <source>Workflow is valid. 
+</source>
+        <translation>Схема валидна. 
+</translation>
+    </message>
+    <message>
+        <location filename="../src/WorkflowViewController.cpp" line="1358"/>
         <source>Well done!</source>
         <translation>Готово!</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="1454"/>
+        <location filename="../src/WorkflowViewController.cpp" line="1360"/>
         <source>There are non-critical warnings.</source>
         <translation>Нет критических ошибок.</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="1456"/>
+        <location filename="../src/WorkflowViewController.cpp" line="1362"/>
         <source>Workflow is valid</source>
         <translation>Схема валидна</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="1698"/>
+        <location filename="../src/WorkflowViewController.cpp" line="1610"/>
         <source>Aliases for workflow parameters should be different!</source>
         <translation>Алиасы для параметров схемы должны бть разными!</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="1731"/>
+        <location filename="../src/WorkflowViewController.cpp" line="1643"/>
         <source>Workflow does not contain any parameter aliases</source>
         <translation>Схема не содержит алиасов параметров</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="1745"/>
+        <location filename="../src/WorkflowViewController.cpp" line="1657"/>
         <source>Internal error!</source>
         <translation>Веутренняя ошибка!</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="1745"/>
+        <location filename="../src/WorkflowViewController.cpp" line="1657"/>
         <source>Can not create Galaxy config</source>
         <translation>Невозможно создать конфигурацию Galaxy</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="1801"/>
+        <location filename="../src/WorkflowViewController.cpp" line="1713"/>
         <source>The workflow contains a wizard. Sorry, but current version of UGENE doesn&apos;t support of wizards in the includes.</source>
         <translation>Схема содержит визард. Текущая версия UGENE не поддерживает визарды в схемах.</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="2147"/>
+        <location filename="../src/WorkflowViewController.cpp" line="1762"/>
+        <source>Drag an element to the scene to add it to the workflow.</source>
+        <translation>Перенесите элемент на сцену чтобы добавить его в схему.</translation>
+    </message>
+    <message>
+        <location filename="../src/WorkflowViewController.cpp" line="2045"/>
         <source>File is not found: %1</source>
         <translation>Файл не найден: %1</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="2185"/>
+        <location filename="../src/WorkflowViewController.cpp" line="2115"/>
         <source>Show dashboard</source>
         <translation>Показать панель</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="2194"/>
+        <location filename="../src/WorkflowViewController.cpp" line="2111"/>
         <source>Show workflow</source>
         <translation>Показать схему</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="2240"/>
-        <location filename="../src/WorkflowViewController.cpp" line="2243"/>
+        <location filename="../src/WorkflowViewController.cpp" line="881"/>
+        <source>Can&apos;t register element.</source>
+        <translation>Невозможно зарегистрировать элемент.</translation>
+    </message>
+    <message>
+        <location filename="../src/WorkflowViewController.cpp" line="2159"/>
+        <location filename="../src/WorkflowViewController.cpp" line="2162"/>
         <source>Open workflow file</source>
         <translation>Открыть файл схемы</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="2281"/>
+        <location filename="../src/WorkflowViewController.cpp" line="2201"/>
         <source>New workflow</source>
         <translation>Новая схема</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="2345"/>
+        <location filename="../src/WorkflowViewController.cpp" line="2265"/>
         <source>The workflow has been modified.
 Do you want to save changes?</source>
         <translation>Схема была изменена. Вы хотите сохранить изменения?</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="1321"/>
+        <location filename="../src/WorkflowViewController.cpp" line="1227"/>
         <source>Scripting mode</source>
         <translation>Скриптинг</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="1369"/>
+        <location filename="../src/WorkflowViewController.cpp" line="1275"/>
         <source>Element properties</source>
         <translation>Свойства элемента</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="1450"/>
-        <source>Workflow is valid.
-</source>
-        <translation>Схема валидна.</translation>
-    </message>
-    <message>
-        <location filename="../src/WorkflowViewController.cpp" line="1698"/>
-        <location filename="../src/WorkflowViewController.cpp" line="1731"/>
+        <location filename="../src/WorkflowViewController.cpp" line="1610"/>
+        <location filename="../src/WorkflowViewController.cpp" line="1643"/>
         <source>Bad input!</source>
         <translation>Неверные входные данные!</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="2313"/>
+        <location filename="../src/WorkflowViewController.cpp" line="2233"/>
         <source>Workflow Designer - %1</source>
         <translation>Дизайнер схем - %1</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="1850"/>
-        <source>Drag the palette element to the scene or just click on the scene to add the element.</source>
-        <translation>Перетащите элемент из палитры на плоскость или просто кликните мышью в нужном месте схемы.</translation>
-    </message>
-    <message>
-        <location filename="../src/WorkflowViewController.cpp" line="395"/>
+        <location filename="../src/WorkflowViewController.cpp" line="331"/>
         <source>Elements</source>
         <translation>Элементы</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="398"/>
+        <location filename="../src/WorkflowViewController.cpp" line="334"/>
         <source>Samples</source>
         <translation>Примеры</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowViewController.cpp" line="811"/>
+        <location filename="../src/WorkflowViewController.cpp" line="741"/>
         <source>Unlock Scene</source>
         <translation>Разблокировать схему</translation>
     </message>
@@ -6559,12 +6560,12 @@ Do you want to save changes?</source>
 <context>
     <name>U2::WorkflowViewFactory</name>
     <message>
-        <location filename="../src/WorkflowDocument.cpp" line="160"/>
+        <location filename="../src/WorkflowDocument.cpp" line="161"/>
         <source>Open multiple views</source>
         <translation>Открытие нескольких окон</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowDocument.h" line="85"/>
+        <location filename="../src/WorkflowDocument.h" line="82"/>
         <source>Workflow Designer</source>
         <translation>Дизайнер вычислительных схем</translation>
     </message>
@@ -6577,27 +6578,27 @@ Do you want to save changes?</source>
         <translation>Форма</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowEditorWidget.ui" line="65"/>
+        <location filename="../src/WorkflowEditorWidget.ui" line="68"/>
         <source>Property Editor</source>
         <translation>Редактор объектов</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowEditorWidget.ui" line="97"/>
+        <location filename="../src/WorkflowEditorWidget.ui" line="103"/>
         <source>TextLabel</source>
         <translation>Название</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowEditorWidget.ui" line="179"/>
+        <location filename="../src/WorkflowEditorWidget.ui" line="185"/>
         <source>Parameters</source>
         <translation>Параметры</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowEditorWidget.ui" line="276"/>
+        <location filename="../src/WorkflowEditorWidget.ui" line="285"/>
         <source>Input data</source>
         <translation>Входные данные</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowEditorWidget.ui" line="323"/>
+        <location filename="../src/WorkflowEditorWidget.ui" line="342"/>
         <source>Output data</source>
         <translation>Выходные данные</translation>
     </message>
@@ -6643,65 +6644,49 @@ Do you want to save changes?</source>
         <translation>Сцена</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowSettingsWidget.ui" line="42"/>
+        <location filename="../src/WorkflowSettingsWidget.ui" line="40"/>
         <source>Element style</source>
         <translation>Стиль</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowSettingsWidget.ui" line="56"/>
+        <location filename="../src/WorkflowSettingsWidget.ui" line="50"/>
         <source>Element font</source>
         <translation>Шрифт</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowSettingsWidget.ui" line="70"/>
+        <location filename="../src/WorkflowSettingsWidget.ui" line="60"/>
         <source>Element background color</source>
         <translation>Цвет фона</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowSettingsWidget.ui" line="105"/>
+        <location filename="../src/WorkflowSettingsWidget.ui" line="93"/>
         <source>Enable debugger</source>
         <translation>Включить отладку</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowSettingsWidget.ui" line="118"/>
+        <location filename="../src/WorkflowSettingsWidget.ui" line="106"/>
         <source>Directories</source>
         <translation>Директории</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowSettingsWidget.ui" line="124"/>
+        <location filename="../src/WorkflowSettingsWidget.ui" line="112"/>
         <source>Use directory for output files</source>
         <translation>Использовать папку для выходных файлов</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowSettingsWidget.ui" line="145"/>
+        <location filename="../src/WorkflowSettingsWidget.ui" line="133"/>
         <source>Directory for custom elements with scripts</source>
         <translation>Папка для элементов пользователя со скриптами</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowSettingsWidget.ui" line="166"/>
-        <source>Directory for custom elements with command line tools</source>
-        <translation>Папка для элементов пользователя с утилитами командной строки</translation>
+        <location filename="../src/WorkflowSettingsWidget.ui" line="154"/>
+        <source>Directory for custom elements with external tools</source>
+        <translation>Папка для элементов пользователя с внешними инструментами</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowSettingsWidget.ui" line="187"/>
+        <location filename="../src/WorkflowSettingsWidget.ui" line="175"/>
         <source>Directory for included schema elements</source>
         <translation>Папка для включенных элементов схемы</translation>
-    </message>
-    <message>
-        <source>Use folder for output files</source>
-        <translation type="vanished">Использовать папку для выходных файлов</translation>
-    </message>
-    <message>
-        <source>Folder for custom elements with scripts</source>
-        <translation type="vanished">Папка для элементов пользователя со скриптами</translation>
-    </message>
-    <message>
-        <source>Folder for custom elements with command line tools</source>
-        <translation type="vanished">Папка для элементов пользователя с внешними утилитами</translation>
-    </message>
-    <message>
-        <source>Folder for included schema elements</source>
-        <translation type="vanished">Папка для включенных элементов схемы</translation>
     </message>
     <message>
         <location filename="../src/WorkflowSettingsWidget.ui" line="26"/>
@@ -6709,13 +6694,9 @@ Do you want to save changes?</source>
         <translation>Показывать сетку</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowSettingsWidget.ui" line="98"/>
+        <location filename="../src/WorkflowSettingsWidget.ui" line="86"/>
         <source>Track running progress</source>
         <translation>Отображать прогресс выполнения схемы</translation>
-    </message>
-    <message>
-        <source>Folders</source>
-        <translation type="vanished">Папки</translation>
     </message>
     <message>
         <location filename="../src/WorkflowSettingsWidget.ui" line="33"/>
@@ -6723,9 +6704,27 @@ Do you want to save changes?</source>
         <translation>Привязываться к сетке</translation>
     </message>
     <message>
-        <location filename="../src/WorkflowSettingsWidget.ui" line="92"/>
+        <location filename="../src/WorkflowSettingsWidget.ui" line="80"/>
         <source>Runtime settings</source>
         <translation>Исполнение схем</translation>
+    </message>
+</context>
+<context>
+    <name>WriteAnnotationsValidator</name>
+    <message>
+        <location filename="../src/util/WriteAnnotationsValidator.cpp" line="35"/>
+        <source>Input port is NULL</source>
+        <translation>Input port is NULL</translation>
+    </message>
+    <message>
+        <location filename="../src/util/WriteAnnotationsValidator.cpp" line="41"/>
+        <source>IntegralBusPort is NULL</source>
+        <translation>IntegralBusPort is NULL</translation>
+    </message>
+    <message>
+        <location filename="../src/util/WriteAnnotationsValidator.cpp" line="47"/>
+        <source>Attribute is NULL</source>
+        <translation>Attribute is NULL</translation>
     </message>
 </context>
 <context>

@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -166,7 +166,6 @@ void RegisterServiceTask::prepare() {
     }
 
     sr->services.append(s);
-    emit sr->si_serviceRegistered(s);
     addSubTask(new EnableServiceTask(sr, s, false));
 }
 

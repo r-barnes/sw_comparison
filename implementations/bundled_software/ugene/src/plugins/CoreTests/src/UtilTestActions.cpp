@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -36,20 +36,47 @@ namespace U2 {
 /************************************************************************/
 const QString GTest_CopyFile::FROM_URL_ATTR = "from";
 const QString GTest_CopyFile::TO_URL_ATTR ="to";
+const QString GTest_CopyFile::IS_DIRECTORY ="is_dir";
 
 void GTest_CopyFile::init(XMLTestFormat *, const QDomElement &el) {
     fromUrl = el.attribute(FROM_URL_ATTR);
     toUrl = el.attribute(TO_URL_ATTR);
+    isDir = el.attribute(IS_DIRECTORY) == "true";
     XMLTestUtils::replacePrefix(env, fromUrl);
     XMLTestUtils::replacePrefix(env, toUrl);
 }
 
 Task::ReportResult GTest_CopyFile::report() {
     QDir().mkpath(QFileInfo(toUrl).absoluteDir().absolutePath());
-    if (!QFile::copy(fromUrl, toUrl)) {
-        stateInfo.setError(tr("Can't copy file '%1' to '%2'.").arg(fromUrl).arg(toUrl));
+    bool copied = isDir ? copyDirectry(fromUrl, toUrl) : QFile::copy(fromUrl, toUrl);
+    if (!copied) {
+        stateInfo.setError(tr("Can't copy %1 '%2' to '%3'.")
+                           .arg(isDir ? "directory" : "file")
+                           .arg(fromUrl)
+                           .arg(toUrl));
     }
+
     return ReportResult_Finished;
+}
+
+bool GTest_CopyFile::copyDirectry(const QString& from, const QString& to) {
+    QDir dirFrom(from);
+
+    QStringList foldersList = dirFrom.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
+    foreach(const QString& folder, foldersList) {
+        QString subfolder = to + QDir::separator() + folder;
+        dirFrom.mkpath(subfolder);
+        bool copied = copyDirectry(from + QDir::separator() + folder, subfolder);
+        CHECK(copied, false);
+    }
+
+    QStringList filesList = dirFrom.entryList(QDir::Files);
+    foreach(const QString& file, filesList) {
+        bool copied = QFile::copy(from + QDir::separator() + file, to + QDir::separator() + file);
+        CHECK(copied, false);
+    }
+
+    return true;
 }
 
 /************************************************************************/

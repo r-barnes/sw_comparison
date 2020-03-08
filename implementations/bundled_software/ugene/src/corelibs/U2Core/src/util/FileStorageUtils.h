@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -28,6 +28,19 @@ namespace U2 {
 
 class U2CORE_EXPORT FileStorageUtils {
 public:
+    /**
+     * Finds the destination file by @srcUrl and @role.
+     * Checks hash for both destination and source files.
+     * If hashes are ok then returns the destination file.
+     */
+    static QString getFileToFileInfo(const QString &srcUrl, const QString &role, FileStorage::WorkflowProcess &process);
+
+    /**
+     * Adds info about file to file relation to the storage.
+     * Creates hash for both destination and source files.
+     */
+    static void addFileToFileInfo(const FileStorage::FileInfo &fileToFileInfo, FileStorage::WorkflowProcess &process);
+
     /**
      * Returns the url to the sorted BAM file for the source @bamUrl.
      * If this BAM file is not in the file storage then returns empty string.

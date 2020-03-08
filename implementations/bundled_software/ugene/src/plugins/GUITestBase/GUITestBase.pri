@@ -8,15 +8,7 @@ include( ../../ugene_plugin_common.pri )
 QT += testlib webkitwidgets
 
 INCLUDEPATH += ../../corelibs/U2View/_tmp/ ../../libs_3rdparty/QSpec/src
-LIBS +=-L../../_release -lhumimit
-
-!debug_and_release|build_pass {
-
-    CONFIG(debug, debug|release) {
-        LIBS -= -L../../_release -lhumimit
-        LIBS += -L../../_debug -lhumimitd
-    }
-}
+LIBS += -lQSpec$$D
 
 unix {
     !macx {

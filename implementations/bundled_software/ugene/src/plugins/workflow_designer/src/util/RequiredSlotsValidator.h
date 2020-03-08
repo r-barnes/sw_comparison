@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -30,7 +30,7 @@ namespace Workflow {
 class RequiredSlotsValidator : public PortValidator {
 public:
     RequiredSlotsValidator(const QList<Descriptor> &requiredSlots);
-    virtual bool validate(const IntegralBusPort *port, ProblemList &problemList) const;
+    virtual bool validate(const IntegralBusPort *port, NotificationsList &notificationList) const;
 
 private:
     QList<Descriptor> requiredSlots;

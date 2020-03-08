@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -64,7 +64,7 @@ private:
 	MultipleSequenceAlignmentObject*           ma2;
 };
 
-class GTest_Kalign_Load_Align_Compare: public GTest {
+class GTest_Kalign_Load_Align_Compare: public XmlTest {
 	Q_OBJECT
 public:
 	SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_Kalign_Load_Align_Compare, "kalign-load-align-compare");
@@ -77,7 +77,7 @@ private:
 	Kalign_Load_Align_Compare_Task *worker;
 };
 
-class GTest_Kalign_Load_Align_QScore: public GTest {
+class GTest_Kalign_Load_Align_QScore: public XmlTest {
 	Q_OBJECT
 public:
 	SIMPLE_XML_TEST_BODY_WITH_FACTORY_EXT(GTest_Kalign_Load_Align_QScore, "kalign-load-align-qscore", TaskFlags_FOSCOE)

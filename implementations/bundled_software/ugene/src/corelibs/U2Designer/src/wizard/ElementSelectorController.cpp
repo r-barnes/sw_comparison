@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -40,9 +40,9 @@ ElementSelectorController::~ElementSelectorController() {
 }
 
 QWidget * ElementSelectorController::createGUI(U2OpStatus & /*os*/) {
-    QVariantMap values;
+    QList<ComboItem> values;
     foreach (const SelectorValue &value, widget->getValues()) {
-        values[value.getName()] = value.getValue();
+        values.append(qMakePair(value.getName(), value.getValue()));
     }
     ComboBoxWidget *cb = new ComboBoxWidget(values);
     connect(cb, SIGNAL(si_valueChanged(const QVariant &)), SLOT(sl_valueChanged(const QVariant &)));

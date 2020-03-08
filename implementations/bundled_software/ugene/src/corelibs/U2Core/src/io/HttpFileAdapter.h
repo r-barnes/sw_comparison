@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -65,7 +65,7 @@ public:
     virtual IOAdapterId getAdapterId() const { return BaseIOAdapters::GZIPPED_HTTP_FILE; }
 };
 
-class HttpFileAdapter: public IOAdapter {
+class U2CORE_EXPORT HttpFileAdapter : public IOAdapter {
     Q_OBJECT
 public:
     HttpFileAdapter(HttpFileAdapterFactory* f, QObject* o = NULL);
@@ -124,6 +124,7 @@ private:
     QMutex rwmut;
     QEventLoop loop;
     GUrl gurl;
+    QByteArray postData;
 private slots:
     void add_data();
     void done();

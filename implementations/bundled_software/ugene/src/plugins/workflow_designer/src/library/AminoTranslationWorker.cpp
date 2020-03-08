@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -39,12 +39,13 @@
 #include <U2Core/GObjectUtils.h>
 #include <U2Core/AnnotationData.h>
 #include <U2Core/QVariantUtils.h>
+#include <U2Core/U2Attribute.h>
 #include <U2Core/U2OpStatusUtils.h>
 
 const QString OFFSET_DELIMITER(",");
 
-namespace U2{
-namespace LocalWorkflow{
+namespace U2 {
+namespace LocalWorkflow {
 
 const QString AminoTranslationWorkerFactory::ACTOR_ID("sequence-translation");
 
@@ -54,12 +55,11 @@ static const QString POS_2_TRANSLATE_ATTR("pos-2-translate");
 
 TranslateSequence2AminoTask::TranslateSequence2AminoTask(const AminoTranslationSettings& _configs,
     const U2DbiRef &dbiRef)
-    : Task("Translate sequence to amino", TaskFlag_None),configs(_configs), dbiRef(dbiRef)
-{
-    SAFE_POINT_EXT( dbiRef.isValid( ), stateInfo.setError("Invalid DBI reference supplied!"), );
+    : Task("Translate sequence to amino", TaskFlag_None), configs(_configs), dbiRef(dbiRef) {
+    SAFE_POINT_EXT(dbiRef.isValid(), stateInfo.setError("Invalid DBI reference supplied!"), );
 }
 
-void TranslateSequence2AminoTask::run(){
+void TranslateSequence2AminoTask::run() {
     assert(configs.seqObj != NULL);
 
     U2SequenceObject* seqObj = configs.seqObj.data();
@@ -69,28 +69,26 @@ void TranslateSequence2AminoTask::run(){
     QString resultName = configs.resultName;
 
     DNATranslation* aminoTT = configs.aminoTT;
-    SAFE_POINT(aminoTT != NULL, QString("Can't produce amino translation"),);
+    SAFE_POINT(aminoTT != NULL, QString("Can't produce amino translation"), );
 
-    for(QVector<U2Region>::iterator i = regionsDirect.begin(); i != regionsDirect.end();){
-        if(i->startPos >= seqLen){
-            i =  regionsDirect.erase(i);
-        }
-        else{
+    for (QVector<U2Region>::iterator i = regionsDirect.begin(); i != regionsDirect.end();) {
+        if (i->startPos >= seqLen) {
+            i = regionsDirect.erase(i);
+        } else {
             ++i;
         }
     }
 
-    for(QVector<U2Region>::iterator i = regionsComplementary.begin(); i != regionsComplementary.end();){
-        if(i->startPos >= seqLen){
-            i =  regionsComplementary.erase(i);
-        }
-        else{
+    for (QVector<U2Region>::iterator i = regionsComplementary.begin(); i != regionsComplementary.end();) {
+        if (i->startPos >= seqLen) {
+            i = regionsComplementary.erase(i);
+        } else {
             ++i;
         }
     }
 
     DNATranslation* complTT = AppContext::getDNATranslationRegistry()->lookupComplementTranslation(seqObj->getAlphabet());
-    SAFE_POINT(complTT != NULL || regionsComplementary.isEmpty(), QString("Can't support complement mode"),);
+    SAFE_POINT(complTT != NULL || regionsComplementary.isEmpty(), QString("Can't support complement mode"), );
 
     static const int NUM_DB_READ = 3 * 1024;
 
@@ -99,7 +97,7 @@ void TranslateSequence2AminoTask::run(){
     QByteArray seq;
     QByteArray translatedSeq;
     // direct
-    foreach(U2Region directRegion, regionsDirect){
+    foreach(U2Region directRegion, regionsDirect) {
         seq.clear();
         translatedSeq.clear();
 
@@ -107,13 +105,13 @@ void TranslateSequence2AminoTask::run(){
         importer.startSequence(stateInfo, dbiRef, U2ObjectDbi::ROOT_FOLDER, seqObj->getSequenceName() + " " + resultName + QString(" %1").arg(currentSeq) + " direct", false);
 
         int blockCounter = 0;
-        qint64 end = directRegion.startPos +  directRegion.length / 3 * 3;
-        for(qint64 i = directRegion.startPos; i < end ; i+=3, blockCounter += 3){
-            if( (blockCounter % NUM_DB_READ) == 0){
+        qint64 end = directRegion.startPos + directRegion.length / 3 * 3;
+        for (qint64 i = directRegion.startPos; i < end; i += 3, blockCounter += 3) {
+            if ((blockCounter % NUM_DB_READ) == 0) {
                 importer.addBlock(translatedSeq.constData(), translatedSeq.size(), stateInfo);
                 seq.clear();
                 translatedSeq.clear();
-                seq = seqObj->getSequenceData(U2Region(i, qMin(static_cast<qint64>(NUM_DB_READ), end  - i)), stateInfo);
+                seq = seqObj->getSequenceData(U2Region(i, qMin(static_cast<qint64>(NUM_DB_READ), end - i)), stateInfo);
                 CHECK_OP(stateInfo, );
                 blockCounter = 0;
             }
@@ -129,20 +127,20 @@ void TranslateSequence2AminoTask::run(){
     }
     currentSeq = 0;
     // complementary
-    foreach(U2Region complementaryRegion, regionsComplementary){
+    foreach(U2Region complementaryRegion, regionsComplementary) {
         translatedSeq.clear();
 
         U2SequenceImporter importer;
-        importer.startSequence(stateInfo, dbiRef, U2ObjectDbi::ROOT_FOLDER, seqObj->getSequenceName()+ " " + resultName + QString(" %1").arg(currentSeq) + " complementary", false);
+        importer.startSequence(stateInfo, dbiRef, U2ObjectDbi::ROOT_FOLDER, seqObj->getSequenceName() + " " + resultName + QString(" %1").arg(currentSeq) + " complementary", false);
 
         QByteArray complementarySeq;
         char* complSeq = NULL;
 
         int blockCounter = 0;
-        qint64 end = complementaryRegion.endPos() - 1  - complementaryRegion.length / 3 * 3;
+        qint64 end = complementaryRegion.endPos() - 1 - complementaryRegion.length / 3 * 3;
 
-        for(qint64 i = complementaryRegion.endPos() - 1 ; i > end ;i-=3, blockCounter += 3){
-            if( (blockCounter % NUM_DB_READ) == 0 ){
+        for (qint64 i = complementaryRegion.endPos() - 1; i > end;i -= 3, blockCounter += 3) {
+            if ((blockCounter % NUM_DB_READ) == 0) {
                 importer.addBlock(translatedSeq.constData(), translatedSeq.size(), stateInfo);
                 complementarySeq.clear();
                 seq.clear();
@@ -170,7 +168,7 @@ void TranslateSequence2AminoTask::run(){
 }
 
 
-void AminoTranslationWorkerFactory::init(){
+void AminoTranslationWorkerFactory::init() {
 
     QMap<Descriptor, DataTypePtr> m;
     m[BaseSlots::DNA_SEQUENCE_SLOT()] = BaseTypes::DNA_SEQUENCE_TYPE();
@@ -228,17 +226,17 @@ void AminoTranslationWorkerFactory::init(){
     delegates[AUTO_TRANSLATION_ATTR] = new ComboBoxWithBoolsDelegate();
 
     QVariantMap posTransMap;
-    posTransMap["all"]="all";
-    posTransMap["first"]="first";
-    posTransMap["second"]="second";
-    posTransMap["third"]="third";
+    posTransMap["all"] = "all";
+    posTransMap["first"] = "first";
+    posTransMap["second"] = "second";
+    posTransMap["third"] = "third";
     delegates[POS_2_TRANSLATE_ATTR] = new ComboBoxDelegate(posTransMap);
 
     ActorPrototype* proto = new IntegralBusActorPrototype(desc, p, a);
 
     proto->setEditor(new DelegateEditor(delegates));
 
-    proto->setIconPath( ":core/images/show_trans.png" );
+    proto->setIconPath(":core/images/show_trans.png");
     proto->setPrompter(new AminoTranslationPrompter());
     WorkflowEnv::getProtoRegistry()->registerProto(BaseActorCategories::CATEGORY_BASIC(), proto);
 
@@ -246,67 +244,62 @@ void AminoTranslationWorkerFactory::init(){
     localDomain->registerEntry(new AminoTranslationWorkerFactory());
 }
 
-QString AminoTranslationPrompter::composeRichDoc(){
+QString AminoTranslationPrompter::composeRichDoc() {
     IntegralBusPort* input = qobject_cast<IntegralBusPort*>(target->getPort(BasePorts::IN_SEQ_PORT_ID()));
     Actor* producer = input->getProducer(BaseSlots::DNA_SEQUENCE_SLOT().getId());
-    QString unsetStr = "<font color='red'>"+tr("unset")+"</font>";
+    QString unsetStr = "<font color='red'>" + tr("unset") + "</font>";
     QString producerName = tr(" from <u>%1</u>").arg(producer ? producer->getLabel() : unsetStr);
 
     QString offset = getParameter(POS_2_TRANSLATE_ATTR).toString();
     bool autoTranslation = getParameter(AUTO_TRANSLATION_ATTR).toBool();
-    QString translationId ;
+    QString translationId;
     QString usingGenetic;
 
     offset = getHyperlink(POS_2_TRANSLATE_ATTR, offset);
 
-    if(!autoTranslation){
+    if (!autoTranslation) {
         translationId = getParameter(ID_ATTR).toString();
         DNATranslation* aminoTT = AppContext::getDNATranslationRegistry()->
             lookupTranslation(AppContext::getDNAAlphabetRegistry()->findById(BaseDNAAlphabetIds::NUCL_DNA_DEFAULT()), DNATranslationType_NUCL_2_AMINO, translationId);
         QString ttName = aminoTT->getTranslationName();
         usingGenetic = ttName = getHyperlink(ID_ATTR, ttName);
-    }
-    else{
+    } else {
         usingGenetic = getHyperlink(AUTO_TRANSLATION_ATTR, "auto selected genetic code");
     }
 
     QString doc = QString("Translated sequence to amino from %1 position using %2.").
-                    arg(offset). // offset from sequence will be translated
-                    arg(usingGenetic); // genetic code
+        arg(offset). // offset from sequence will be translated
+        arg(usingGenetic); // genetic code
     return doc;
 }
 
-AminoTranslationWorker::AminoTranslationWorker(Actor* a): BaseWorker(a), input(NULL), output(NULL) {}
+AminoTranslationWorker::AminoTranslationWorker(Actor* a) : BaseWorker(a), input(NULL), output(NULL) {}
 
-void AminoTranslationWorker::init(){
+void AminoTranslationWorker::init() {
     input = ports.value(BasePorts::IN_SEQ_PORT_ID());
     output = ports.value(BasePorts::OUT_SEQ_PORT_ID());
 }
 
-static QVector<U2Region> getTranslatedRegions(const QString& attribute, qint64 seqLen){
+static QVector<U2Region> getTranslatedRegions(const QString& attribute, qint64 seqLen) {
     QVector<U2Region> translatedRegions;
 
-    if(attribute == "first"){
+    if (attribute == "first") {
         translatedRegions.append(U2Region(0, seqLen));
-    }
-    else if(attribute == "second"){
+    } else if (attribute == "second") {
         translatedRegions.append(U2Region(1, seqLen - 1));
-    }
-    else if(attribute == "third"){
+    } else if (attribute == "third") {
         translatedRegions.append(U2Region(2, seqLen - 2));
-    }
-    else if(attribute == "all"){
+    } else if (attribute == "all") {
         translatedRegions.append(U2Region(0, seqLen));
         translatedRegions.append(U2Region(1, seqLen - 1));
         translatedRegions.append(U2Region(2, seqLen - 2));
-    }
-    else{
+    } else {
         assert(false);
     }
     return translatedRegions;
 }
 
-Task* AminoTranslationWorker::tick(){
+Task* AminoTranslationWorker::tick() {
     if (input->hasMessage()) {
         Message inputMessage = getMessageAndSetupScriptValues(input);
 
@@ -324,13 +317,13 @@ Task* AminoTranslationWorker::tick(){
             return NULL;
         }
 
-        if(seqObj->getAlphabet() == NULL  ){
+        if (seqObj->getAlphabet() == NULL) {
             algoLog.trace("Alphabet is not found");
             return NULL;
         }
 
 
-        if(!seqObj->getAlphabet()->isNucleic()){
+        if (!seqObj->getAlphabet()->isNucleic()) {
             algoLog.trace("Alphabet is not nucleic");
             return NULL;
             //return new FailTask(tr("Alphabet is not nucleic"));
@@ -344,17 +337,16 @@ Task* AminoTranslationWorker::tick(){
         bool autoTranslation = actor->getParameter(AUTO_TRANSLATION_ATTR)->getAttributeValue<bool>(context);
         DNATranslation* aminoTT = NULL;
 
-        if(autoTranslation ){
+        if (autoTranslation) {
             aminoTT = AppContext::getDNATranslationRegistry()->lookupTranslation(seqObj->getAlphabet(), DNATranslationType_NUCL_2_AMINO, seqObj->getStringAttribute(Translation_Table_Id_Attribute));
-            if(aminoTT == NULL){
-                aminoTT  = GObjectUtils::findAminoTT(seqObj.data(), false);
+            if (aminoTT == NULL) {
+                aminoTT = GObjectUtils::findAminoTT(seqObj.data(), false);
             }
-        }
-        else{
+        } else {
             QString translId = actor->getParameter(ID_ATTR)->getAttributeValue<QString>(context);
             aminoTT = AppContext::getDNATranslationRegistry()->lookupTranslation(seqObj->getAlphabet(), DNATranslationType_NUCL_2_AMINO, translId);
         }
-        if(aminoTT == NULL){
+        if (aminoTT == NULL) {
             return new FailTask("Selected genetic code is not supported ");
         }
 
@@ -366,41 +358,40 @@ Task* AminoTranslationWorker::tick(){
         config.aminoTT = aminoTT;
 
         DbiDataStorage *storage = context->getDataStorage();
-        SAFE_POINT( NULL != storage, "Invalid workflow data storage!", NULL );
+        SAFE_POINT(NULL != storage, "Invalid workflow data storage!", NULL);
         TranslateSequence2AminoTask *transTask = new TranslateSequence2AminoTask(config,
             storage->getDbiRef());
 
-        connect(transTask ,SIGNAL(si_stateChanged()), SLOT(sl_taskFinished()));
+        connect(transTask, SIGNAL(si_stateChanged()), SLOT(sl_taskFinished()));
         return transTask;
-    }
-    else if (input->isEnded()) {
+    } else if (input->isEnded()) {
         setDone();
         output->setEnded();
     }
     return NULL;
 }
 
-void AminoTranslationWorker::cleanup(){
+void AminoTranslationWorker::cleanup() {
 
 }
 
-void AminoTranslationWorker::sl_taskFinished(){
+void AminoTranslationWorker::sl_taskFinished() {
     TranslateSequence2AminoTask* translate2AminoTask = qobject_cast<TranslateSequence2AminoTask*>(sender());
     if (translate2AminoTask->getState() != Task::State_Finished ||
         translate2AminoTask->isCanceled() || translate2AminoTask->hasError()) {
         return;
     }
 
-    if(output){
+    if (output) {
         QVariantMap channelContext = output->getContext();
         int metadataId = output->getContextMetadataId();
 
         QList<U2SequenceObject*> seqObjs = translate2AminoTask->popResults();
-        foreach(U2SequenceObject* seqObj, seqObjs ){
+        foreach(U2SequenceObject* seqObj, seqObjs) {
             QVariantMap msgData;
             U2OpStatusImpl os;
             DNASequence seqData = seqObj->getWholeSequence(os);
-            CHECK_OP_EXT(os, reportError(tr("Error on getting %1 sequence: ").arg(seqObj->getGObjectName()) +  os.getError()), );
+            CHECK_OP_EXT(os, reportError(tr("Error on getting %1 sequence: ").arg(seqObj->getGObjectName()) + os.getError()), );
             SharedDbiDataHandler seqId = context->getDataStorage()->putSequence(seqData);
             msgData[BaseSlots::DNA_SEQUENCE_SLOT().getId()] = qVariantFromValue<SharedDbiDataHandler>(seqId);
             output->setContext(channelContext, metadataId);

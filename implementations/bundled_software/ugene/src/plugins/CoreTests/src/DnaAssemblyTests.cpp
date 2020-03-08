@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -164,12 +164,16 @@ void GTest_DnaAssemblyToReferenceTask::cleanup()
 {
     // cleanup temporary files
 
-     QDir dir(env->getVar("TEMP_DATA_DIR"));
-     QStringList tmpFiles = dir.entryList(QStringList() << "*.sarr" << "*.idx" << "*.ref", QDir::Files);
+    if (!XMLTestUtils::parentTasksHaveError(this)) {
+        QDir dir(env->getVar("TEMP_DATA_DIR"));
+        QStringList tmpFiles = dir.entryList(QStringList() << "*.sarr" << "*.idx" << "*.ref", QDir::Files);
 
-     foreach (const QString& f, tmpFiles) {
-         QFile::remove(dir.absoluteFilePath(f));
-     }
+        foreach (const QString& f, tmpFiles) {
+            QFile::remove(dir.absoluteFilePath(f));
+        }
+    }
+
+     XmlTest::cleanup();
 }
 
 //----------------------------------------------------------

@@ -27,47 +27,47 @@
 <context>
     <name>U2::LocalWorkflow::CallVariantsTask</name>
     <message>
-        <location filename="../src/AssemblySamtoolsMpileup.cpp" line="52"/>
+        <location filename="../src/AssemblySamtoolsMpileup.cpp" line="53"/>
         <source>Call variants for %1</source>
         <translation>Вызов вариантов для %1</translation>
     </message>
     <message>
-        <location filename="../src/AssemblySamtoolsMpileup.cpp" line="65"/>
+        <location filename="../src/AssemblySamtoolsMpileup.cpp" line="66"/>
         <source>reference</source>
         <translation>референс</translation>
     </message>
     <message>
-        <location filename="../src/AssemblySamtoolsMpileup.cpp" line="67"/>
+        <location filename="../src/AssemblySamtoolsMpileup.cpp" line="68"/>
         <source>assembly</source>
         <translation>сборка</translation>
     </message>
     <message>
-        <location filename="../src/AssemblySamtoolsMpileup.cpp" line="75"/>
+        <location filename="../src/AssemblySamtoolsMpileup.cpp" line="76"/>
         <source>The %1 file does not exist: %2</source>
         <translation>The %1 file does not exist: %2</translation>
     </message>
     <message>
-        <location filename="../src/AssemblySamtoolsMpileup.cpp" line="88"/>
+        <location filename="../src/AssemblySamtoolsMpileup.cpp" line="89"/>
         <source>No assembly files</source>
         <translation>No assembly files</translation>
     </message>
     <message>
-        <location filename="../src/AssemblySamtoolsMpileup.cpp" line="93"/>
+        <location filename="../src/AssemblySamtoolsMpileup.cpp" line="94"/>
         <source>No dbi storage</source>
         <translation>No dbi storage</translation>
     </message>
     <message>
-        <location filename="../src/AssemblySamtoolsMpileup.cpp" line="97"/>
+        <location filename="../src/AssemblySamtoolsMpileup.cpp" line="98"/>
         <source>No sequence URL</source>
         <translation>No sequence URL</translation>
     </message>
     <message>
-        <location filename="../src/AssemblySamtoolsMpileup.cpp" line="135"/>
+        <location filename="../src/AssemblySamtoolsMpileup.cpp" line="136"/>
         <source>No document loaded</source>
         <translation>No document loaded</translation>
     </message>
     <message>
-        <location filename="../src/AssemblySamtoolsMpileup.cpp" line="139"/>
+        <location filename="../src/AssemblySamtoolsMpileup.cpp" line="140"/>
         <source>Incorrect variant track object in %1</source>
         <translation>Incorrect variant track object in %1</translation>
     </message>
@@ -642,42 +642,42 @@
 <context>
     <name>U2::LocalWorkflow::SamtoolsMpileupTask</name>
     <message>
-        <location filename="../src/AssemblySamtoolsMpileup.cpp" line="161"/>
+        <location filename="../src/AssemblySamtoolsMpileup.cpp" line="162"/>
         <source>Samtool mpileup for %1 </source>
         <translation>Samtool mpileup для %1 </translation>
     </message>
     <message>
-        <location filename="../src/AssemblySamtoolsMpileup.cpp" line="168"/>
+        <location filename="../src/AssemblySamtoolsMpileup.cpp" line="169"/>
         <source>No reference sequence URL to do pileup</source>
         <translation>No reference sequence URL to do pileup</translation>
     </message>
     <message>
-        <location filename="../src/AssemblySamtoolsMpileup.cpp" line="173"/>
+        <location filename="../src/AssemblySamtoolsMpileup.cpp" line="174"/>
         <source>No assembly URL to do pileup</source>
         <translation>No assembly URL to do pileup</translation>
     </message>
     <message>
-        <location filename="../src/AssemblySamtoolsMpileup.cpp" line="179"/>
+        <location filename="../src/AssemblySamtoolsMpileup.cpp" line="180"/>
         <source>There is an assembly with an empty path</source>
         <translation>There is an assembly with an empty path</translation>
     </message>
     <message>
-        <location filename="../src/AssemblySamtoolsMpileup.cpp" line="188"/>
+        <location filename="../src/AssemblySamtoolsMpileup.cpp" line="189"/>
         <source>Can not create the folder: </source>
         <translation>Can not create the folder: </translation>
     </message>
     <message>
-        <location filename="../src/AssemblySamtoolsMpileup.cpp" line="243"/>
+        <location filename="../src/AssemblySamtoolsMpileup.cpp" line="244"/>
         <source>Can not run %1 tool</source>
         <translation>Can not run %1 tool</translation>
     </message>
     <message>
-        <location filename="../src/AssemblySamtoolsMpileup.cpp" line="249"/>
+        <location filename="../src/AssemblySamtoolsMpileup.cpp" line="250"/>
         <source>%1 tool exited with code %2</source>
         <translation>%1 tool exited with code %2</translation>
     </message>
     <message>
-        <location filename="../src/AssemblySamtoolsMpileup.cpp" line="251"/>
+        <location filename="../src/AssemblySamtoolsMpileup.cpp" line="252"/>
         <source>Tool %1 finished successfully</source>
         <translation>Tool %1 finished successfully</translation>
     </message>

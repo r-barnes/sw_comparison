@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -25,8 +25,6 @@
 #include <U2Core/Task.h>
 #include <U2Core/DocumentModel.h>
 
-#include <QPointer>
-
 namespace U2 {
 
 class Document;
@@ -49,7 +47,7 @@ public:
     ReportResult report();
 
     QList<Task*> onSubTaskFinished(Task* subTask);
-    Document* getDocument() {return document;}
+    Document* getDocument() { return document; }
 private:
 
     Document*               document;

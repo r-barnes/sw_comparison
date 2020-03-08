@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -22,10 +22,6 @@
 #ifndef _U2_FEATURE_H_
 #define _U2_FEATURE_H_
 
-#include <QSharedData>
-#include <QStringList>
-#include <QVector>
-
 #include <U2Core/U2FeatureType.h>
 #include <U2Core/U2Region.h>
 #include <U2Core/U2Type.h>
@@ -34,13 +30,11 @@ namespace U2 {
 
 class U2CORE_EXPORT U2AnnotationTable : public U2Object {
 public:
-    U2AnnotationTable( ) : U2Object( )
-    {
+    U2AnnotationTable() : U2Object() {
 
     }
-    U2AnnotationTable( const U2DataId &id, const QString &dbId, qint64 version )
-        : U2Object( id, dbId, version )
-    {
+    U2AnnotationTable(const U2DataId &id, const QString &dbId, qint64 version)
+        : U2Object(id, dbId, version) {
 
     }
 
@@ -53,13 +47,12 @@ public:
 /** Feature location */
 class U2CORE_EXPORT U2FeatureLocation {
 public:
-    U2FeatureLocation( ) {
+    U2FeatureLocation() {
 
     }
 
-    U2FeatureLocation( const U2Strand &strand_, const U2Region & region_ )
-        : strand( strand_ ), region( region_ )
-    {
+    U2FeatureLocation(const U2Strand &strand_, const U2Region & region_)
+        : strand(strand_), region(region_) {
 
     }
 
@@ -71,7 +64,7 @@ public:
 
     bool operator==(const U2FeatureLocation& l) const;
 
-    bool operator!=(const U2FeatureLocation& l) const {return !(*this == l);}
+    bool operator!=(const U2FeatureLocation& l) const { return !(*this == l); }
 };
 
 inline bool U2FeatureLocation::operator==(const U2FeatureLocation& l) const {
@@ -101,13 +94,12 @@ public:
 
     U2Feature() :
         featureClass(Annotation),
-        featureType(U2FeatureTypes::Invalid)
-    {
+        featureType(U2FeatureTypes::Invalid) {
 
     }
 
-    bool operator== ( const U2Feature &f ) const { return f.id == id; }
-    bool operator!= ( const U2Feature &f ) const { return !( *this == f ); }
+    bool operator== (const U2Feature &f) const { return f.id == id; }
+    bool operator!= (const U2Feature &f) const { return !(*this == f); }
     /**
      * Sequence this annotation is related to
      */
@@ -142,29 +134,28 @@ typedef QFlags<U2Feature::FeatureClass> FeatureFlags;
  */
 class U2CORE_EXPORT U2FeatureKey {
 public:
-    U2FeatureKey( ) {
+    U2FeatureKey() {
 
     }
     /**
      * Constructs new feature key instance with key and value set
      */
-    U2FeatureKey( const QString &_name, const QString &_value)
-        : name( _name ), value( _value )
-    {
+    U2FeatureKey(const QString &_name, const QString &_value)
+        : name(_name), value(_value) {
 
     }
     /**
      * Feature key is valid if  its name is not empty
      */
-    bool isValid( ) const { return !name.isEmpty( ); }
+    bool isValid() const { return !name.isEmpty(); }
     /**
      * Any two keys are equal if their names & values are equal
      */
-    bool operator== ( const U2FeatureKey &k ) const { return k.name == name && k.value == value; }
+    bool operator== (const U2FeatureKey &k) const { return k.name == name && k.value == value; }
     /**
      * Any two keys are not equal if either their names or values are  not equal
      */
-    bool operator!= ( const U2FeatureKey &k ) const { return !( *this == k ); }
+    bool operator!= (const U2FeatureKey &k) const { return !(*this == k); }
 
     /**
      * Feature key name

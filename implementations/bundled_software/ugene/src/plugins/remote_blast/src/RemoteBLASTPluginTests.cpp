@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -234,7 +234,7 @@ Task::ReportResult GTest_RemoteBLAST::report() {
 
     if (simple) {
         if (result.isEmpty()) {
-            stateInfo.setError(QString("Simplified test retuns empty result"));
+            stateInfo.setError(QString("Simplified test returns empty result"));
         }
         return ReportResult_Finished;
     }
@@ -266,6 +266,8 @@ void GTest_RemoteBLAST::cleanup() {
         delete ao;
         ao = NULL;
     }
+
+    XmlTest::cleanup();
 }
 
 }

@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -38,7 +38,7 @@ WriteSequenceValidator::WriteSequenceValidator(const QString &attr, const QStrin
 
 }
 
-bool WriteSequenceValidator::validate(const Configuration *cfg, ProblemList &problemList) const {
+bool WriteSequenceValidator::validate(const Configuration *cfg, NotificationsList &notificationList) const {
     const Actor *actor = dynamic_cast<const Actor*>(cfg);
     SAFE_POINT(NULL != actor, "NULL actor", false);
     if (!isAnnotationsBinded(actor)) {
@@ -49,7 +49,7 @@ bool WriteSequenceValidator::validate(const Configuration *cfg, ProblemList &pro
     CHECK(NULL != format, true);
     if (!isAnnotationsSupported(format)) {
         QString warning = QObject::tr("The format %1 does not support annotations").arg(format->getFormatId().toUpper());
-        problemList << Problem(warning, "", Problem::U2_WARNING);
+        notificationList << WorkflowNotification(warning, "", WorkflowNotification::U2_WARNING);
         cmdLog.trace(warning);
     }
 
@@ -78,7 +78,7 @@ bool WriteSequenceValidator::isAnnotationsSupported(const DocumentFormat *format
     return format->getSupportedObjectTypes().contains(GObjectTypes::ANNOTATION_TABLE);
 }
 
-bool WriteSequencePortValidator::validate(const IntegralBusPort *port, ProblemList &problemList) const {
+bool WriteSequencePortValidator::validate(const IntegralBusPort *port, NotificationsList &notificationList) const {
     bool result = true;
     Actor *actor = port->owner();
 
@@ -91,7 +91,7 @@ bool WriteSequencePortValidator::validate(const IntegralBusPort *port, ProblemLi
             screenedSlots << BaseSlots::ANNOTATION_TABLE_SLOT().getId();
         }
     }
-    result &= ScreenedSlotValidator::validate(screenedSlots, port, problemList);
+    result &= ScreenedSlotValidator::validate(screenedSlots, port, notificationList);
     return result;
 }
 

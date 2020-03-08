@@ -1,6 +1,6 @@
 /**
 * UGENE - Integrated Bioinformatics Tools.
-* Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+* Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
 * http://ugene.net
 *
 * This program is free software; you can redistribute it and/or
@@ -29,19 +29,19 @@
 
 #include "UrlItem.h"
 
-#include "ui_DatasetWidget.h"
-
 class QVBoxLayout;
+class Ui_DatasetWidget;
 
 namespace U2 {
 
 class OptionsPopup;
 class URLListController;
 
-class URLListWidget : public QWidget, public Ui_DatasetWidget {
+class U2DESIGNER_EXPORT URLListWidget : public QWidget {
     Q_OBJECT
 public:
     URLListWidget(URLListController *ctrl);
+    ~URLListWidget();
 
     void addUrlItem(UrlItem *urlItem);
 
@@ -66,6 +66,7 @@ private:
     bool readingFromDbIsSupported() const;
 
 private:
+    Ui_DatasetWidget *ui;
     URLListController *ctrl;
     OptionsPopup *popup;
     QObjectScopedPointer<SharedConnectionsDialog> connectToDbDialog;

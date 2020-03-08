@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -89,6 +89,8 @@ public:
 
     static QString getParamIdFromHref(const QString& href);
 
+    static QString generateIdFromName(const QString &name);
+
     static void print(const QString &slotString, const QVariant &data, DataTypePtr type, WorkflowContext *context);
 
     static bool validateSchemaForIncluding(const Schema &s, QString &error);
@@ -116,10 +118,13 @@ public:
     static QString createUniqueString(const QString &str, const QString &sep, const QStringList &uniqueStrs);
 
     /** if path == "default" then nothing is changed. Returns the new path */
-    static QString updateExternalToolPath(const QString &toolName, const QString &path);
+    static QString updateExternalToolPath(const QString &id, const QString &path);
 
+    static QString getExternalToolPath(const QString &toolId);
+    static QString externalToolIsAbsentError(const QString& toolName);
     static QString externalToolError(const QString &toolName);
     static QString externalToolInvalidError(const QString &toolName);
+    static QString customExternalToolInvalidError(const QString &toolName, const QString& elementName);
 
     static void schemaFromFile(const QString &url, Schema *schema, Metadata *meta, U2OpStatus &os);
 
@@ -137,11 +142,11 @@ public:
      * For each object from a database: DB URL must be available, object must exist
      * For each folder from a database: DB URL must be available, folder must exist
      */
-    static bool validateInputFiles(QString urls, ProblemList &problemList);
-    static bool validateInputDirs(QString urls, ProblemList &problemList);
+    static bool validateInputFiles(QString urls, NotificationsList &notificationList);
+    static bool validateInputDirs(QString urls, NotificationsList &notificationList);
 
-    static bool validateInputDbObject(const QString &url, ProblemList &problemList);
-    static bool validateInputDbFolders(QString urls, ProblemList &problemList);
+    static bool validateInputDbObject(const QString &url, NotificationsList &notificationList);
+    static bool validateInputDbFolders(QString urls, NotificationsList &notificationList);
 
     /**
      * Validation of output file/folder.
@@ -149,17 +154,17 @@ public:
      * For output URL it is verified that it is accessible for
      * writing (the path can be absolute or relative to the Workflow Output Folder).
      */
-    static bool validateOutputFile(const QString &url, ProblemList &problemList);
-    static bool validateOutputDir(const QString &url, ProblemList &problemList);
+    static bool validateOutputFile(const QString &url, NotificationsList &notificationList);
+    static bool validateOutputDir(const QString &url, NotificationsList &notificationList);
 
     static bool isSharedDbUrlAttribute(const Attribute *attr, const Actor *actor);
-    static bool validateSharedDbUrl(const QString &url, ProblemList &problemList);
+    static bool validateSharedDbUrl(const QString &url, NotificationsList &notificationList);
 
     /**
      * Validates input files in datasets are present and readable (i.e.
      * filtered files in input folders are verified).
      */
-    static bool validateDatasets(const QList<Dataset> &sets, ProblemList &problemList);
+    static bool validateDatasets(const QList<Dataset> &sets, NotificationsList &notificationList);
 
     static QScriptValue datasetsToScript(const QList<Dataset> &sets, QScriptEngine &engine);
 
@@ -170,9 +175,19 @@ public:
 
 private:
     static QStringList initExtensions();
-    static bool validate(const Workflow::Schema &s, ProblemList &problemList);
-
+    static bool validate(const Workflow::Schema &s, NotificationsList &notificationList);
 }; // WorkflowUtils
+
+class U2LANG_EXPORT WorkflowEntityValidator {
+public:
+    static const QString NAME_INACCEPTABLE_SYMBOLS_TEMPLATE;
+    static const QString ID_ACCEPTABLE_SYMBOLS_TEMPLATE;
+
+    static const QRegularExpression ACCEPTABLE_NAME;
+    static const QRegularExpression INACCEPTABLE_SYMBOL_IN_NAME;
+    static const QRegularExpression ACCEPTABLE_ID;
+    static const QRegularExpression INACCEPTABLE_SYMBOLS_IN_ID;
+};
 
 /**
  * provides utility functions for ActorDocument purposes
@@ -186,7 +201,7 @@ public:
 
     virtual ActorDocument * createDescription(Actor*) = 0;
 
-    QString getURL(const QString& id, bool * empty = NULL, const QString &onEmpty = "");
+    QString getURL(const QString& id, bool * empty = NULL, const QString &onEmpty = "", const QString &defaultValue = "");
     QString getScreenedURL(IntegralBusPort* input, const QString& id, const QString& slot, const QString &onEmpty = "");
     QString getRequiredParam(const QString& id);
     QVariant getParameter(const QString& id);
@@ -218,6 +233,7 @@ template <typename T>
 class PrompterBase : public PrompterBaseImpl {
 public:
     PrompterBase(Actor* p = 0, bool listenInputs = true) : PrompterBaseImpl(p), listenInputs(listenInputs) {}
+    virtual ~PrompterBase() = default;
     virtual ActorDocument* createDescription(Actor* a) {
         T* doc = new T(a);
         doc->connect(a, SIGNAL(si_labelChanged()), SLOT(sl_actorModified()));

@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -37,7 +37,7 @@ class MultipleSequenceAlignmentObject;
 class MuscleGObjectTask;
 class LoadDocumentTask;
 
-class GTest_uMuscle : public GTest {
+class GTest_uMuscle : public XmlTest {
     Q_OBJECT
 public:
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_uMuscle, "umuscle");
@@ -60,7 +60,7 @@ private:
     bool stable;
 };
 
-class GTest_CompareMAlignment : public GTest {
+class GTest_CompareMAlignment : public XmlTest {
     Q_OBJECT
 public:
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_CompareMAlignment, "compare-malignment");
@@ -72,7 +72,7 @@ private:
     QString doc2CtxName;
 };
 
-class GTest_uMuscleAddUnalignedSequenceToProfile: public GTest {
+class GTest_uMuscleAddUnalignedSequenceToProfile: public XmlTest {
     Q_OBJECT
 public:
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_uMuscleAddUnalignedSequenceToProfile, "umuscle-add-unaligned-seq-to-profile");
@@ -90,7 +90,7 @@ private:
     int                     resultAliSeqs;
 };
 
-class GTest_Muscle_Load_Align_QScore: public GTest {
+class GTest_Muscle_Load_Align_QScore: public XmlTest {
     Q_OBJECT
 public:
 	SIMPLE_XML_TEST_BODY_WITH_FACTORY_EXT(GTest_Muscle_Load_Align_QScore, "umuscle-load-align-qscore", TaskFlags_FOSCOE)
@@ -145,7 +145,7 @@ private:
     MultipleSequenceAlignmentObject*           ma2;
 };
 
-class GTest_Muscle_Load_Align_Compare: public GTest {
+class GTest_Muscle_Load_Align_Compare: public XmlTest {
     Q_OBJECT
 public:
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_Muscle_Load_Align_Compare, "umuscle-load-align-compare");
@@ -158,7 +158,7 @@ private:
     Muscle_Load_Align_Compare_Task *worker;
 };
 
-class GTest_uMusclePacketTest: public GTest {
+class GTest_uMusclePacketTest: public XmlTest {
     Q_OBJECT
 public:
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_uMusclePacketTest, "umuscle-packet-test");

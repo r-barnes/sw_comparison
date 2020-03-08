@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -24,79 +24,56 @@
 
 #include <QBoxLayout>
 #include <QClipboard>
-#include <QCloseEvent>
 #include <QComboBox>
-#include <QFileInfo>
 #include <QGraphicsSceneMouseEvent>
-#include <QGraphicsView>
 #include <QMainWindow>
-#include <QMenu>
-#include <QMessageBox>
 #include <QPainter>
 #include <QPixmap>
-#include <QPrinter>
 #include <QShortcut>
-#include <QSplitter>
 #include <QSvgGenerator>
-#include <QTableWidget>
 #include <QToolBar>
-#include <QToolButton>
 
 #include <U2Core/AppContext.h>
 #include <U2Core/Counter.h>
-#include <U2Core/DocumentModel.h>
-#include <U2Core/ExternalToolRegistry.h>
-#include <U2Core/ExternalToolRunTask.h>
-#include <U2Core/IOAdapter.h>
+#include <U2Core/GUrlUtils.h>
 #include <U2Core/IOAdapterUtils.h>
 #include <U2Core/Log.h>
 #include <U2Core/ProjectService.h>
-#include <U2Core/Settings.h>
+#include <U2Core/QObjectScopedPointer.h>
 #include <U2Core/TaskSignalMapper.h>
 #include <U2Core/U2OpStatusUtils.h>
-#include <U2Core/U2SafePoints.h>
-#include <U2Core/GUrlUtils.h>
 
 #include <U2Designer/Dashboard.h>
-#include <U2Designer/DelegateEditors.h>
+#include <U2Designer/DashboardInfoRegistry.h>
 #include <U2Designer/DesignerUtils.h>
 #include <U2Designer/EstimationReporter.h>
 #include <U2Designer/GrouperEditor.h>
 #include <U2Designer/MarkerEditor.h>
+#include <U2Designer/RemoveDashboardsTask.h>
 #include <U2Designer/WizardController.h>
 
 #include <U2Gui/DialogUtils.h>
 #include <U2Gui/ExportImageDialog.h>
-#include <U2Gui/GlassView.h>
-#include <U2Gui/LastUsedDirHelper.h>
-#include <U2Gui/MainWindow.h>
-#include <U2Core/QObjectScopedPointer.h>
+#include <U2Gui/ScriptEditorDialog.h>
 #include <U2Gui/U2FileDialog.h>
 
 #include <U2Lang/ActorModel.h>
-#include <U2Lang/ActorPrototypeRegistry.h>
 #include <U2Lang/BaseActorCategories.h>
 #include <U2Lang/BaseAttributes.h>
-#include <U2Lang/CoreLibConstants.h>
-#include <U2Lang/ExternalToolCfg.h>
 #include <U2Lang/GrouperSlotAttribute.h>
 #include <U2Lang/HRSchemaSerializer.h>
 #include <U2Lang/IncludedProtoFactory.h>
-#include <U2Lang/IntegralBusModel.h>
 #include <U2Lang/MapDatatypeEditor.h>
 #include <U2Lang/SchemaEstimationTask.h>
-#include <U2Lang/WorkflowDebugStatus.h>
 #include <U2Lang/WorkflowEnv.h>
 #include <U2Lang/WorkflowManager.h>
 #include <U2Lang/WorkflowRunTask.h>
 #include <U2Lang/WorkflowSettings.h>
-#include <U2Lang/WorkflowUtils.h>
 
 #include "BreakpointManagerView.h"
 #include "ChooseItemDialog.h"
 #include "CreateScriptWorker.h"
 #include "DashboardsManagerDialog.h"
-#include "EstimationDialog.h"
 #include "GalaxyConfigConfigurationDialogImpl.h"
 #include "ImportSchemaDialog.h"
 #include "ItemViewStyle.h"
@@ -116,9 +93,9 @@
 #include "WorkflowViewController.h"
 #include "WorkflowViewItems.h"
 #include "debug_messages_translation/WorkflowDebugMessageParserImpl.h"
-#include "library/CreateExternalProcessDialog.h"
 #include "library/ExternalProcessWorker.h"
 #include "library/ScriptWorker.h"
+#include "library/create_cmdline_based_worker/CreateCmdlineBasedWorkerWizard.h"
 
 namespace U2 {
 
@@ -134,24 +111,17 @@ enum {ElementsTab,SamplesTab};
 #define WS 1000
 #define MAX_FILE_SIZE 1000000
 
-static const QString XML_SCHEMA_WARNING = QObject::tr("You opened obsolete workflow in XML format. It is strongly recommended"
-                                                           " to clear working space and create workflow from scratch.");
-
-static const QString XML_SCHEMA_APOLOGIZE = QObject::tr("Sorry! This workflow is obsolete and cannot be opened.");
-
-static const QString BREAKPOINT_MANAGER_LABEL = QObject::tr( "Breakpoints" );
 static const int ABSENT_WIDGET_TAB_NUMBER = -1;
 
 /************************************************************************/
 /* Utilities */
 /************************************************************************/
-static QString percentStr = QObject::tr("%");
 class PercentValidator : public QRegExpValidator {
 public:
-    PercentValidator(QObject* parent) : QRegExpValidator(QRegExp("[1-9][0-9]*"+percentStr), parent) {}
+    PercentValidator(QObject* parent) : QRegExpValidator(QRegExp("[1-9][0-9]*"+QObject::tr("%")), parent) {}
     void fixup(QString& input) const {
-        if (!input.endsWith(percentStr)) {
-            input.append(percentStr);
+        if (!input.endsWith(QObject::tr("%"))) {
+            input.append(QObject::tr("%"));
         }
     }
 }; // PercentValidator
@@ -194,18 +164,6 @@ static void addToggleDashboardAction(QToolBar *toolBar, QAction *action) {
 #endif
 }
 
-static QToolButton * styleMenu(WorkflowView *parent, const QList<QAction*> &actions) {
-    QToolButton *tt = new QToolButton(parent);
-    tt->setObjectName("Element style");
-    QMenu *ttMenu = new QMenu( QObject::tr("Element style"), parent );
-    foreach(QAction *a, actions) {
-        ttMenu->addAction( a );
-    }
-    tt->setDefaultAction(ttMenu->menuAction());
-    tt->setPopupMode(QToolButton::InstantPopup);
-    return tt;
-}
-
 static QToolButton * scriptMenu(WorkflowView *parent, const QList<QAction*> &scriptingActions) {
     QToolButton *scriptingModeButton = new QToolButton(parent);
     QMenu *scriptingModeMenu = new QMenu( QObject::tr( "Scripting mode" ), parent );
@@ -218,55 +176,57 @@ static QToolButton * scriptMenu(WorkflowView *parent, const QList<QAction*> &scr
 }
 
 DashboardManagerHelper::DashboardManagerHelper(QAction *_dmAction, WorkflowView *_parent)
-: dmAction(_dmAction), parent(_parent)
+    : QObject(_parent),
+      dmAction(_dmAction),
+      parent(_parent)
 {
-    connect(dmAction, SIGNAL(triggered()), SLOT(sl_runScanTask()));
+    connect(dmAction, SIGNAL(triggered()), SLOT(sl_showDashboardsManagerDialog()));
+
+    DashboardInfoRegistry *dashboardInfoRegistry = AppContext::getDashboardInfoRegistry();
+    connect(dashboardInfoRegistry, SIGNAL(si_scanningStarted()), SLOT(sl_dashboardsScanningStarted()));
+    connect(dashboardInfoRegistry, SIGNAL(si_scanningFinished()), SLOT(sl_dashboardsScanningFinished()));
 }
 
-void DashboardManagerHelper::sl_runScanTask() {
-    dmAction->setEnabled(false);
-    ScanDashboardsDirTask *t = new ScanDashboardsDirTask();
-    connect(t, SIGNAL(si_stateChanged()), SLOT(sl_scanTaskFinished()));
-    AppContext::getTaskScheduler()->registerTopLevelTask(t);
+void DashboardManagerHelper::sl_result(int result) {
+    DashboardsManagerDialog *d = qobject_cast<DashboardsManagerDialog *>(sender());
+    if (QDialog::Accepted == result) {
+        DashboardInfoRegistry *dashboardInfoRegistry = AppContext::getDashboardInfoRegistry();
+
+        const QMap<QString, bool> dashboardsVisibility = d->getDashboardsVisibility();
+        QList<DashboardInfo> newDashboardInfos;
+        foreach (const QString &dashboardId, dashboardsVisibility.keys()) {
+            DashboardInfo newDashboardInfo = dashboardInfoRegistry->getById(dashboardId);
+            newDashboardInfo.opened = dashboardsVisibility[dashboardId];
+            newDashboardInfos << newDashboardInfo;
+        }
+        dashboardInfoRegistry->updateDashboardInfos(newDashboardInfos);
+
+        const QStringList dashboardsToRemove = d->removedDashboards();
+        if (!dashboardsToRemove.isEmpty()) {
+            dashboardInfoRegistry->removeDashboards(dashboardsToRemove);
+        }
+    }
 }
 
-void DashboardManagerHelper::sl_scanTaskFinished() {
-    ScanDashboardsDirTask *t = dynamic_cast<ScanDashboardsDirTask*>(sender());
-    CHECK(NULL != t, );
-    CHECK(t->isFinished(), );
-
-    if (t->getResult().isEmpty()) {
-        dmAction->setEnabled(true);
+void DashboardManagerHelper::sl_showDashboardsManagerDialog() {
+    if (AppContext::getDashboardInfoRegistry()->isEmpty()) {
         QMessageBox *d = new QMessageBox(QMessageBox::Information, tr("No Dashboards Found"),
             tr("You do not have any dashboards yet. You need to run some workflow to use Dashboards Manager."), QMessageBox::NoButton, parent);
         d->show();
         return;
     }
 
-    DashboardsManagerDialog *d = new DashboardsManagerDialog(t, parent);
+    DashboardsManagerDialog *d = new DashboardsManagerDialog(parent);
     connect(d, SIGNAL(finished(int)), SLOT(sl_result(int)));
     d->setWindowModality(Qt::ApplicationModal);
     d->show();
 }
 
-void DashboardManagerHelper::sl_result(int result) {
-    DashboardsManagerDialog *d = dynamic_cast<DashboardsManagerDialog*>(sender());
-    if (QDialog::Accepted == result) {
-        parent->tabView->updateDashboards(d->selectedDashboards());
-        if (!d->removedDashboards().isEmpty()) {
-            RemoveDashboardsTask *rt = new RemoveDashboardsTask(d->removedDashboards());
-            connect(rt, SIGNAL(si_stateChanged()), SLOT(sl_removeTaskFinished()));
-            AppContext::getTaskScheduler()->registerTopLevelTask(rt);
-            return;
-        }
-    }
-    dmAction->setEnabled(true);
+void DashboardManagerHelper::sl_dashboardsScanningStarted() {
+    dmAction->setEnabled(false);
 }
 
-void DashboardManagerHelper::sl_removeTaskFinished() {
-    RemoveDashboardsTask *t = dynamic_cast<RemoveDashboardsTask*>(sender());
-    CHECK(NULL != t, );
-    CHECK(t->isFinished(), );
+void DashboardManagerHelper::sl_dashboardsScanningFinished() {
     dmAction->setEnabled(true);
 }
 
@@ -297,29 +257,6 @@ WorkflowView * WorkflowView::openWD(WorkflowGObject *go) {
         return createInstance(go);
     }
     return NULL;
-}
-
-void WorkflowView::openSample(const SampleAction &action) {
-    WorkflowView *wd = openWD(NULL);
-    CHECK(NULL != wd, );
-    int slashPos = action.samplePath.indexOf("/");
-    CHECK(-1 != slashPos, );
-    const QString category = action.samplePath.left(slashPos);
-    const QString id = action.samplePath.mid(slashPos + 1);
-
-    switch (action.mode) {
-        case SampleAction::Select:
-            wd->tabs->setCurrentIndex(SamplesTab);
-            wd->samples->activateSample(category, id);
-            break;
-        case SampleAction::Load:
-            wd->samples->loadSample(category, id);
-            break;
-        case SampleAction::OpenWizard:
-            wd->samples->loadSample(category, id);
-            wd->sl_showWizard();
-            break;
-    }
 }
 
 WorkflowView::WorkflowView(WorkflowGObject* go)
@@ -362,6 +299,9 @@ WorkflowView::~WorkflowView() {
         AppContext::getProjectService()->enableSaveAction(true);
     }
     WorkflowSettings::setScriptingMode(scriptingMode);
+    delete currentActor;
+    delete scene;
+    delete schema;
 }
 
 void WorkflowView::setupScene() {
@@ -374,7 +314,6 @@ void WorkflowView::setupScene() {
 
     scene->views().at(0)->setDragMode(QGraphicsView::RubberBandDrag);
 
-    connect(scene, SIGNAL(processItemAdded()), SLOT(sl_procItemAdded()));
     connect(scene, SIGNAL(processDblClicked()), SLOT(sl_toggleStyle()));
     connect(scene, SIGNAL(selectionChanged()), SLOT(sl_editItem()));
     connect(scene, SIGNAL(selectionChanged()), SLOT(sl_onSelectionChanged()));
@@ -383,11 +322,12 @@ void WorkflowView::setupScene() {
 }
 
 void WorkflowView::setupPalette() {
-    palette = new WorkflowPalette(WorkflowEnv::getProtoRegistry());
+    palette = new WorkflowPalette(WorkflowEnv::getProtoRegistry(), this);
     palette->setSizePolicy(QSizePolicy(QSizePolicy::Preferred, QSizePolicy::Ignored));
     connect(palette, SIGNAL(processSelected(Workflow::ActorPrototype*, bool)), SLOT(sl_selectPrototype(Workflow::ActorPrototype*, bool)));
-    connect(palette, SIGNAL(si_protoDeleted(const QString&)), SLOT(sl_protoDeleted(const QString&)));
+    connect(palette, SIGNAL(si_prototypeIsAboutToBeRemoved(Workflow::ActorPrototype *)), SLOT(sl_prototypeIsAboutToBeRemoved(Workflow::ActorPrototype *)));
     connect(palette, SIGNAL(si_protoListModified()), SLOT(sl_protoListModified()));
+    connect(palette, SIGNAL(si_protoChanged()), SLOT(sl_editItem()));
     connect(palette, SIGNAL(si_protoChanged()), scene, SLOT(sl_updateDocs()));
 
     tabs = new QTabWidget(this);
@@ -439,9 +379,10 @@ void WorkflowView::loadSceneFromObject() {
         SchemaSerializer::readMeta(&meta, xml.documentElement());
         scene->setModified(false);
         if(err.isEmpty()) {
-            QMessageBox::warning(this, tr("Warning!"), XML_SCHEMA_WARNING);
+            QMessageBox::warning(this, tr("Warning!"), QObject::tr("You opened obsolete workflow in XML format. It is strongly recommended"
+                                                                   " to clear working space and create workflow from scratch."));
         } else {
-            QMessageBox::warning(this, tr("Warning!"), XML_SCHEMA_APOLOGIZE);
+            QMessageBox::warning(this, tr("Warning!"), QObject::tr("Sorry! This workflow is obsolete and cannot be opened."));
         }
     } else {
         coreLog.error(tr("Undefined workflow format for %1").arg(go->getDocument() ? go->getDocument()->getURLString() : tr("file")));
@@ -478,7 +419,7 @@ void WorkflowView::loadUiSettings() {
 
 void WorkflowView::setupMainSplitter() {
     splitter = new QSplitter(this);
-    splitter->setObjectName("splitter");
+    splitter->setObjectName("WorkflowViewMainSplitter");
     {
         splitter->addWidget(tabs);
         splitter->addWidget(infoSplitter);
@@ -555,7 +496,7 @@ void WorkflowView::addBottomWidgetsToInfoSplitter() {
     connect(scene, SIGNAL(si_itemDeleted(const ActorId &)),
             breakpointView, SLOT(sl_breakpointRemoved(const ActorId &)));
     if ( WorkflowSettings::isDebuggerEnabled( ) ) {
-        bottomTabs->addTab( breakpointView, BREAKPOINT_MANAGER_LABEL );
+        bottomTabs->addTab( breakpointView, QObject::tr( "Breakpoints" ) );
     }
 
     investigationWidgets = new WorkflowInvestigationWidgetsController(bottomTabs);
@@ -566,20 +507,20 @@ void WorkflowView::addBottomWidgetsToInfoSplitter() {
 
 void WorkflowView::sl_rescaleScene(const QString &scale)
 {
-    int percentPos = scale.indexOf(percentStr);
+    int percentPos = scale.indexOf(QObject::tr("%"));
     meta.scalePercent = scale.left(percentPos).toInt();
     rescale(false);
 }
 
 static void updateComboBox(QComboBox *scaleComboBox, int scalePercent) {
-    QString value = QString("%1%2").arg(scalePercent).arg(percentStr);
+    QString value = QString("%1%2").arg(scalePercent).arg(QObject::tr("%"));
     bool isOk = true;
     for (int i=0; i<scaleComboBox->count(); i++) {
         if (scaleComboBox->itemText(i) == value) {
             scaleComboBox->setCurrentIndex(i);
             return;
         } else{
-            QString itemText = scaleComboBox->itemText(i).mid(0, scaleComboBox->itemText(i).size() - percentStr.size());
+            QString itemText = scaleComboBox->itemText(i).mid(0, scaleComboBox->itemText(i).size() - QObject::tr("%").size());
             if (itemText.toInt(&isOk) > scalePercent && isOk){
                 scaleComboBox->insertItem(i, value);
                 scaleComboBox->setCurrentIndex(i);
@@ -593,16 +534,9 @@ static void updateComboBox(QComboBox *scaleComboBox, int scalePercent) {
 
 void WorkflowView::rescale(bool updateGui) {
     double newScale = meta.scalePercent / 100.0;
-    QMatrix oldMatrix = scene->views().at(0)->matrix();
-    scene->views().at(0)->resetMatrix();
-    scene->views().at(0)->translate(oldMatrix.dx(), oldMatrix.dy());
-    scene->views().at(0)->scale(newScale, newScale);
-    QRectF rect = scene->sceneRect();
-    qreal w = rect.width()/newScale;
-    qreal h = rect.height()/newScale;
-    rect.setWidth(w);
-    rect.setHeight(h);
-    scene->setSceneRect(rect);
+    QGraphicsView* elementsView = scene->views().at(0);
+    elementsView->resetMatrix();
+    elementsView->scale(newScale, newScale);
     if (updateGui) {
         updateComboBox(scaleComboBox, meta.scalePercent);
     }
@@ -824,10 +758,10 @@ void WorkflowView::createActions() {
     editScriptAction->setEnabled(false); // because user need to select actor with script to enable it
     connect(editScriptAction, SIGNAL(triggered()), SLOT(sl_editScript()));
 
-    externalToolAction = new QAction(tr("Create element with command line tool..."), this);
-    externalToolAction->setObjectName("createElementWithCommandLineTool");
-    externalToolAction->setIcon(QIcon(":workflow_designer/images/external_cmd_tool.png"));
-    connect(externalToolAction, SIGNAL(triggered()), SLOT(sl_externalAction()));
+    createCmdlineBasedWorkerAction = new QAction(tr("Create element with external tool..."), this);
+    createCmdlineBasedWorkerAction->setObjectName("createElementWithCommandLineTool");
+    createCmdlineBasedWorkerAction->setIcon(QIcon(":workflow_designer/images/external_cmd_tool.png"));
+    connect(createCmdlineBasedWorkerAction, SIGNAL(triggered()), SLOT(sl_createCmdlineBasedWorkerAction()));
 
     editExternalToolAction = new QAction(tr("Edit configuration..."),this);
     editExternalToolAction->setObjectName("editConfiguration");
@@ -835,7 +769,7 @@ void WorkflowView::createActions() {
     editExternalToolAction->setEnabled(false); // because user need to select actor with script to enable it
     connect(editExternalToolAction, SIGNAL(triggered()), SLOT(sl_editExternalTool()));
 
-    appendExternalTool = new QAction(tr("Add element with command line tool..."), this);
+    appendExternalTool = new QAction(tr("Add element with external tool..."), this);
     appendExternalTool->setObjectName("AddElementWithCommandLineTool");
     appendExternalTool->setIcon(QIcon(":workflow_designer/images/external_cmd_tool_add.png"));
     connect(appendExternalTool, SIGNAL(triggered()), SLOT(sl_appendExternalToolWorker()));
@@ -885,19 +819,13 @@ void WorkflowView::sl_createScript() {
     }
 }
 
-void WorkflowView::sl_externalAction() {
-    QObjectScopedPointer<CreateExternalProcessDialog> dlg = new CreateExternalProcessDialog(this);
-    dlg->exec();
-    CHECK(!dlg.isNull(), );
+void WorkflowView::sl_createCmdlineBasedWorkerAction() {
+    QString id = palette->createPrototype();
+    CHECK(!id.isEmpty(), );
 
-    if (dlg->result() == QDialog::Accepted) {
-        ExternalProcessConfig *cfg = dlg->config();
-        if(LocalWorkflow::ExternalProcessWorkerFactory::init(cfg)) {
-            ActorPrototype *proto = WorkflowEnv::getProtoRegistry()->getProto(cfg->name);
-            QRectF rect = scene->sceneRect();
-            addProcess(createActor(proto, QVariantMap()), rect.center());
-        }
-    }
+    ActorPrototype *proto = WorkflowEnv::getProtoRegistry()->getProto(id);
+    QRectF rect = scene->sceneRect();
+    addProcess(createActor(proto, QVariantMap()), rect.center());
 }
 
 namespace {
@@ -910,7 +838,7 @@ namespace {
                 return "";
             }
         }
-        QString filePath = dir.absolutePath() + "/" + QFileInfo(url).fileName();
+        QString filePath = GUrlUtils::rollFileName(dir.absolutePath() + "/" + QFileInfo(url).fileName(), "_");
         if (QFile::exists(filePath)) {
             os.setError(QObject::tr("The file '%1' already exists").arg(filePath));
             return "";
@@ -941,18 +869,21 @@ void WorkflowView::sl_appendExternalToolWorker() {
 
         QScopedPointer<ExternalProcessConfig> cfg(HRSchemaSerializer::string2Actor(data.data()));
         if(cfg.data()) {
-            if (WorkflowEnv::getProtoRegistry()->getProto(cfg->name)) {
-                coreLog.error("Element with this name already exists");
+            if (WorkflowEnv::getProtoRegistry()->getProto(cfg->id)) {
+                coreLog.error(QString("Element with ID '%1' already exists").arg(cfg->id));
             } else {
                 U2OpStatus2Log os;
                 QString internalUrl = copyIntoUgene(url, os);
                 CHECK_OP(os, );
                 cfg->filePath = internalUrl;
-                LocalWorkflow::ExternalProcessWorkerFactory::init(cfg.data());
-                ActorPrototype *proto = WorkflowEnv::getProtoRegistry()->getProto(cfg->name);
-                QRectF rect = scene->sceneRect();
-                addProcess(createActor(proto, QVariantMap()), rect.center());
-                cfg.take();
+                if (LocalWorkflow::ExternalProcessWorkerFactory::init(cfg.data())) {
+                    ActorPrototype *proto = WorkflowEnv::getProtoRegistry()->getProto(cfg->id);
+                    QRectF rect = scene->sceneRect();
+                    addProcess(createActor(proto, QVariantMap()), rect.center());
+                    cfg.take();
+                } else {
+                    coreLog.error(tr("Can't register element."));
+                }
             }
         } else {
             coreLog.error(tr("Can't load element."));
@@ -982,41 +913,23 @@ void WorkflowView::sl_editExternalTool() {
     QList<Actor *> selectedActors = scene->getSelectedActors();
     if (selectedActors.size() == 1) {
         ActorPrototype *proto = selectedActors.first()->getProto();
-
-        ExternalProcessConfig *oldCfg = WorkflowEnv::getExternalCfgRegistry()->getConfigByName(proto->getId());
-        ExternalProcessConfig *cfg = new ExternalProcessConfig(*oldCfg);
-        QObjectScopedPointer<CreateExternalProcessDialog> dlg = new CreateExternalProcessDialog(this, cfg, true);
-        dlg->exec();
-        CHECK(!dlg.isNull(), );
-
-        if(dlg->result() == QDialog::Accepted) {
-            cfg = dlg->config();
-
-            if (!(*oldCfg == *cfg)) {
-                if (oldCfg->name != cfg->name) {
-                    if (!QFile::remove(proto->getFilePath())) {
-                        uiLog.error(tr("Can't remove element %1").arg(proto->getDisplayName()));
-                    }
-                }
-                sl_protoDeleted(proto->getId());
-                WorkflowEnv::getProtoRegistry()->unregisterProto(proto->getId());
-                delete proto;
-
-                LocalWorkflow::ExternalProcessWorkerFactory::init(cfg);
-            }
-            WorkflowEnv::getExternalCfgRegistry()->unregisterConfig(oldCfg->name);
-            WorkflowEnv::getExternalCfgRegistry()->registerExternalTool(cfg);
+        const bool edited = palette->editPrototype(proto);
+        if (edited) {
             scene->sl_updateDocs();
         }
     }
 }
 
-void WorkflowView::sl_protoDeleted(const QString &id) {
+void WorkflowView::sl_prototypeIsAboutToBeRemoved(Workflow::ActorPrototype *proto) {
+    if (currentProto == proto) {
+        currentProto = nullptr;
+    }
+
     QList<WorkflowProcessItem*> deleteList;
     foreach(QGraphicsItem *i, scene->items()) {
         if(i->type() == WorkflowProcessItemType) {
             WorkflowProcessItem *wItem = static_cast<WorkflowProcessItem *>(i);
-            if(wItem->getProcess()->getProto()->getId() == id) {
+            if(wItem->getProcess()->getProto()->getId() == proto->getId()) {
                 deleteList << wItem;
             }
         }
@@ -1046,13 +959,13 @@ void WorkflowView::addProcess(Actor *proc, const QPointF &pos) {
     if (NULL != editor) {
         connect(editor, SIGNAL(si_configurationChanged()), scene, SIGNAL(configurationChanged()));
     }
-    GrouperEditor *g = dynamic_cast<GrouperEditor*>(editor);
-    MarkerEditor *m = dynamic_cast<MarkerEditor*>(editor);
-    if (NULL != g || NULL != m) {
-        connect(editor, SIGNAL(si_configurationChanged()), scene, SLOT(sl_refreshBindings()));
+    procItemAdded();
+    ActorPrototype *addedProto = it->getProcess()->getProto();
+    uiLog.trace(addedProto->getDisplayName() + " added");
+    if (WorkflowEnv::getExternalCfgRegistry()->getConfigById(addedProto->getId()) != nullptr) {
+        GCOUNTER(cvar, tvar, "Element with external tool is added to the scene");
     }
 
-    sl_procItemAdded();
     update();
 }
 
@@ -1214,27 +1127,20 @@ void WorkflowView::setupMDIToolbar(QToolBar* tb) {
     runSep = tb->addSeparator();
     tb->addAction(configureParameterAliasesAction);
     confSep = tb->addSeparator();
-    tb->addAction(createScriptAction);
-    tb->addAction(editScriptAction);
-    scriptSep = tb->addSeparator();
-    tb->addAction(externalToolAction);
+    tb->addAction(createCmdlineBasedWorkerAction);
     tb->addAction(appendExternalTool);
     extSep = tb->addSeparator();
-    tb->addAction(copyAction);
-    tb->addAction(pasteAction);
-    pasteAction->setEnabled(!lastPaste.isEmpty());
-    tb->addAction(cutAction);
     tb->addAction(deleteAction);
-    editSep = tb->addSeparator();
+    scaleSep = tb->addSeparator();
     scaleAction = tb->addWidget(scaleComboBox);
     scaleSep = tb->addSeparator();
-    styleAction = tb->addWidget(styleMenu(this, styleActions));
     scriptAction = tb->addWidget(scriptMenu(this, scriptingActions));
     tb->addAction(dmAction);
 
     addToggleDashboardAction(tb, toggleDashboard);
 
     sl_dashboardCountChanged();
+    setDashboardActionDecoration(tabView->isVisible());
     setupActions();
 }
 
@@ -1259,9 +1165,8 @@ void WorkflowView::setupActions() {
 
     createScriptAction->setVisible(editMode);
     editScriptAction->setVisible(editMode);
-    scriptSep->setVisible(editMode);
 
-    externalToolAction->setVisible(editMode);
+    createCmdlineBasedWorkerAction->setVisible(editMode);
     appendExternalTool->setVisible(editMode);
     extSep->setVisible(editMode);
 
@@ -1269,12 +1174,10 @@ void WorkflowView::setupActions() {
     pasteAction->setVisible(editMode);
     cutAction->setVisible(editMode);
     deleteAction->setVisible(editMode);
-    editSep->setVisible(editMode);
 
     scaleAction->setVisible(!dashboard);
     scaleSep->setVisible(!dashboard);
 
-    styleAction->setVisible(!dashboard);
     scriptAction->setVisible(editMode);
 }
 
@@ -1304,11 +1207,10 @@ void WorkflowView::setupViewMenu(QMenu* m) {
     m->addAction(configurePortAliasesAction);
     m->addAction(importSchemaToElement);
     m->addSeparator();
-    m->addSeparator();
     m->addAction(createScriptAction);
     m->addAction(editScriptAction);
     m->addSeparator();
-    m->addAction(externalToolAction);
+    m->addAction(createCmdlineBasedWorkerAction);
     m->addAction(appendExternalTool);
     m->addSeparator();
 
@@ -1395,7 +1297,7 @@ void WorkflowView::setupContextMenu(QMenu* m) {
 }
 
 void WorkflowView::sl_pickInfo(QListWidgetItem* info) {
-    ActorId id = info->data(ACTOR_REF).value<ActorId>();
+    ActorId id = info->data(ACTOR_ID_REF).value<ActorId>();
     foreach(QGraphicsItem* it, scene->items()) {
         if (it->type() == WorkflowProcessItemType)
         {
@@ -1447,7 +1349,7 @@ bool WorkflowView::sl_validate(bool notify) {
             tr("Please fix issues listed in the error list (located under workflow)."));
     } else {
         if (notify) {
-            QString message = tr("Workflow is valid.\n");
+            QString message = tr("Workflow is valid. \n");
             if (lst.isEmpty()) {
                 message += tr("Well done!");
             } else {
@@ -1499,6 +1401,12 @@ void WorkflowView::localHostLaunch() {
     }
 
     const Schema *s = getSchema();
+    foreach(const Actor* actor, schema->getProcesses()) {
+        if (WorkflowEnv::getExternalCfgRegistry()->getConfigById(actor->getId()) != nullptr) {
+            GCOUNTER(cvar, tvar, "Element(s) with command line tool is present in the launched workflow");
+            break;
+        }
+    }
     debugInfo->setMessageParser( new WorkflowDebugMessageParserImpl( ) );
     WorkflowAbstractRunner * t = new WorkflowRunTask(*s, ActorMap(), debugInfo);
 
@@ -1664,7 +1572,7 @@ void WorkflowView::paintEvent(QPaintEvent *event) {
     const bool isWorkflowRunning = ( NULL != scene->getRunner( ) );
     const bool isDebuggerEnabled = WorkflowSettings::isDebuggerEnabled( );
     if ( isDebuggerEnabled && ABSENT_WIDGET_TAB_NUMBER == bottomTabs->indexOf( breakpointView ) ) {
-        bottomTabs->addTab( breakpointView, BREAKPOINT_MANAGER_LABEL );
+        bottomTabs->addTab( breakpointView, QObject::tr( "Breakpoints" ) );
     } else if ( !isDebuggerEnabled
         && ABSENT_WIDGET_TAB_NUMBER != bottomTabs->indexOf( breakpointView ) )
     {
@@ -1686,7 +1594,6 @@ void WorkflowView::paintEvent(QPaintEvent *event) {
     }
     MWMDIWindow::paintEvent(event);
 }
-
 void WorkflowView::sl_configureParameterAliases() {
     QObjectScopedPointer<SchemaAliasesConfigurationDialogImpl> dlg = new SchemaAliasesConfigurationDialogImpl(*schema, this );
     int ret = QDialog::Accepted;
@@ -1847,7 +1754,7 @@ void WorkflowView::sl_selectPrototype(Workflow::ActorPrototype* p, bool putToSce
         if (putToScene) {
             addProcess(currentActor, scene->getLastMousePressPoint());
         } else {
-            propertyEditor->setDescriptor(p, tr("Drag the palette element to the scene or just click on the scene to add the element."));
+            propertyEditor->setDescriptor(p, tr("Drag an element to the scene to add it to the workflow."));
             scene->views().at(0)->setCursor(Qt::CrossCursor);
         }
     }
@@ -1879,6 +1786,7 @@ void WorkflowView::sl_cutItems() {
 
 void WorkflowView::sl_pasteSample(const QString& s) {
     tabs->setCurrentIndex(ElementsTab);
+    infoList->clear();
     if (scene->items().isEmpty()) {
         // fixing bug with pasting same schema 2 times
         {
@@ -1990,21 +1898,6 @@ void WorkflowView::recreateScene() {
     SceneCreator sc(schema, meta);
     sc.recreateScene(scene);
     sceneRecreation = false;
-}
-
-void WorkflowView::sl_procItemAdded() {
-    currentActor = NULL;
-    propertyEditor->setEditable(true);
-    scene->invalidate(QRectF(), QGraphicsScene::BackgroundLayer);
-    if (!currentProto) {
-        return;
-    }
-
-    uiLog.trace(currentProto->getDisplayName() + " added");
-    palette->resetSelection();
-    currentProto = NULL;
-    assert(scene->views().size() == 1);
-    scene->views().at(0)->unsetCursor();
 }
 
 void WorkflowView::sl_showEditor() {
@@ -2154,9 +2047,22 @@ void WorkflowView::loadWizardResult(const QString &result) {
     WorkflowUtils::schemaFromFile(url, schema, &meta, os);
     recreateScene();
     sl_onSceneLoaded();
-    if (!schema->getWizards().isEmpty()) {
+    if (!schema->getWizards().isEmpty() && !schema->getWizards().first()->isAutoRun()) {
         runWizard(schema->getWizards().first());
     }
+}
+
+void WorkflowView::procItemAdded() {
+    currentActor = NULL;
+    propertyEditor->setEditable(true);
+    scene->invalidate(QRectF(), QGraphicsScene::BackgroundLayer);
+    if (!currentProto) {
+        return;
+    }
+    palette->resetSelection();
+    currentProto = NULL;
+    assert(scene->views().size() == 1);
+    scene->views().at(0)->unsetCursor();
 }
 
 void WorkflowView::checkAutoRunWizard() {
@@ -2180,21 +2086,29 @@ static QIcon getToolbarIcon(const QString &srcPath) {
 }
 
 void WorkflowView::hideDashboards() {
-    toggleDashboard->setIconText("Go to Dashboard");
-    toggleDashboard->setIcon(getToolbarIcon("dashboard.png"));
-    toggleDashboard->setToolTip(tr("Show dashboard"));
+    setDashboardActionDecoration(false);
     tabView->setVisible(false);
     splitter->setVisible(true);
     setupActions();
 }
 
 void WorkflowView::showDashboards() {
-    toggleDashboard->setIconText("To Workflow Designer");
-    toggleDashboard->setIcon(getToolbarIcon("wd.png"));
-    toggleDashboard->setToolTip(tr("Show workflow"));
+    setDashboardActionDecoration(true);
     splitter->setVisible(false);
     tabView->setVisible(true);
     setupActions();
+}
+
+void WorkflowView::setDashboardActionDecoration(bool isDashboardsViewActive) {
+    if (isDashboardsViewActive) {
+        toggleDashboard->setIconText("To Workflow Designer");
+        toggleDashboard->setIcon(getToolbarIcon("wd.png"));
+        toggleDashboard->setToolTip(tr("Show workflow"));
+    } else {
+        toggleDashboard->setIconText("Go to Dashboard");
+        toggleDashboard->setIcon(getToolbarIcon("dashboard.png"));
+        toggleDashboard->setToolTip(tr("Show dashboard"));
+    }
 }
 
 void WorkflowView::setDashboardActionVisible(bool visible) {
@@ -2206,7 +2120,7 @@ void WorkflowView::commitWarningsToMonitor(WorkflowAbstractRunner* t) {
         QListWidgetItem* warning = infoList->item(i);
         foreach (WorkflowMonitor* monitor, t->getMonitors()) {
             monitor->addError(warning->data(TEXT_REF).toString(),
-                              warning->data(ACTOR_REF).toString(),
+                              warning->data(ACTOR_ID_REF).toString(),
                               warning->data(TYPE_REF).toString());
         }
     }
@@ -2252,7 +2166,7 @@ void WorkflowView::sl_loadScene(const QString &url, bool fromDashboard) {
     if (fromDashboard && !confirmModified()) {
         return;
     }
-    Task* t = new LoadWorkflowSceneTask(schema, &meta, scene, url, fromDashboard); //FIXME unsynchronized meta usage
+    Task* t = new LoadWorkflowSceneTask(schema, &meta, scene, url, fromDashboard, fromDashboard); //FIXME unsynchronized meta usage
     TaskSignalMapper* m = new TaskSignalMapper(t);
     connect(m, SIGNAL(si_taskFinished(Task*)), SLOT(sl_onSceneLoaded()));
     if(LoadWorkflowTask::detectFormat(IOAdapterUtils::readFileHeader(url)) == LoadWorkflowTask::XML) {
@@ -2264,9 +2178,10 @@ void WorkflowView::sl_loadScene(const QString &url, bool fromDashboard) {
 void WorkflowView::sl_xmlSchemaLoaded(Task* t) {
     assert(t != NULL);
     if(!t->hasError()) {
-        QMessageBox::warning(this, tr("Warning!"), XML_SCHEMA_WARNING);
+        QMessageBox::warning(this, tr("Warning!"), QObject::tr("You opened obsolete workflow in XML format. It is strongly recommended"
+                                                               " to clear working space and create workflow from scratch."));
     } else {
-        QMessageBox::warning(this, tr("Warning!"), XML_SCHEMA_APOLOGIZE);
+        QMessageBox::warning(this, tr("Warning!"), QObject::tr("Sorry! This workflow is obsolete and cannot be opened."));
     }
 }
 
@@ -2296,8 +2211,8 @@ void WorkflowView::sl_onSceneLoaded() {
     scene->setModified(false);
     rescale();
     sl_refreshActorDocs();
-    checkAutoRunWizard();
     hideDashboards();
+    checkAutoRunWizard();
     tabs->setCurrentIndex(ElementsTab);
 }
 
@@ -2664,6 +2579,21 @@ void WorkflowScene::dropEvent(QGraphicsSceneDragDropEvent * event) {
     QGraphicsScene::dropEvent(event);
 }
 
+void WorkflowScene::keyPressEvent (QKeyEvent* event) {
+    if (event->key() == Qt::Key_Shift) {
+        views().at(0)->setDragMode(QGraphicsView::ScrollHandDrag);
+    }
+    QGraphicsScene::keyPressEvent(event);
+}
+
+void WorkflowScene::keyReleaseEvent (QKeyEvent* event) {
+    QGraphicsView* v = views().at(0);
+    if (v->dragMode() == QGraphicsView::ScrollHandDrag) {
+        v->setDragMode(QGraphicsView::RubberBandDrag);
+    }
+    QGraphicsScene::keyReleaseEvent(event);
+}
+
 void WorkflowScene::clearScene() {
     sl_reset();
 }
@@ -2745,6 +2675,7 @@ void WorkflowScene::sl_reset() {
 
 void WorkflowScene::setModified(bool b) {
     modified = b;
+    update();
 }
 
 void WorkflowScene::setModified() {
@@ -2864,8 +2795,8 @@ WorkflowScene * SceneCreator::createScene(WorkflowView *controller) {
     scene = new WorkflowScene(controller);
     scene->setSceneRect(QRectF(-3*WS, -3*WS, 5*WS, 5*WS));
     scene->setItemIndexMethod(QGraphicsScene::NoIndex);
-    return createScene();
     scene->setObjectName("scene");
+    return createScene();
 }
 
 WorkflowScene * SceneCreator::createScene() {

@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -37,7 +37,7 @@ class SaveDocumentInFolderController;
 class SaveSelectedSequenceFromMSADialogController : public QDialog {
     Q_OBJECT
 public:
-    SaveSelectedSequenceFromMSADialogController(const QString& defaultDir, QWidget* p, const QStringList& seqNames, const QString& defaultCustomFilename);
+    SaveSelectedSequenceFromMSADialogController(QWidget* p, const QString& defaultCustomFilename);
     ~SaveSelectedSequenceFromMSADialogController();
 
     virtual void accept();
@@ -53,7 +53,6 @@ private:
     QString             url;
     QString             defaultDir;
     DocumentFormatId    formatId;
-    QStringList         seqNames;
     QString             customFileName;
     bool                trimGapsFlag;
     bool                addToProjectFlag;

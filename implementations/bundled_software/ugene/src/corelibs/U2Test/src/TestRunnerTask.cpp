@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -23,6 +23,7 @@
 #include <QFileInfo>
 
 #include <U2Core/AppContext.h>
+#include <U2Core/GUrlUtils.h>
 #include <U2Core/Log.h>
 #include <U2Core/Timer.h>
 
@@ -71,6 +72,9 @@ QList<Task*> TestRunnerTask::onSubTaskFinished(Task* subTask) {
         GTest* test = qobject_cast<GTest*>(subTask);
         assert(test);
         test->cleanup();
+        if (!test->hasError()) {
+            test->removeTempDir();
+        }
         GTestState* testState = stateByTest.value(test);
         assert(testState!=NULL);
         assert(testState->isNew());
@@ -129,16 +133,34 @@ QList<Task*> TestRunnerTask::onSubTaskFinished(Task* subTask) {
                 }
 
                 if (newEnv->getVars().contains("TEMP_DATA_DIR")) {
-                    newEnv->setVar("TEMP_DATA_DIR", suiteDir + newEnv->getVar("TEMP_DATA_DIR"));
+                    const QString suiteName = testState->getTestRef()->getSuite()->getName();
+                    const QString testName = testState->getTestRef()->getShortName();
+                    const QString tempDir = suiteDir +
+                                            newEnv->getVar("TEMP_DATA_DIR") + "/" +
+                                            GUrlUtils::fixFileName(suiteName) + "/" +
+                                            GUrlUtils::fixFileName(testName);
+                    newEnv->setVar("TEMP_DATA_DIR", tempDir);
+                }
+
+                if (!newEnv->getVars().contains("WORKFLOW_OUTPUT_DIR") || newEnv->getVar("WORKFLOW_OUTPUT_DIR").isEmpty()) {
+                    newEnv->setVar("WORKFLOW_OUTPUT_DIR", newEnv->getVar("TEMP_DATA_DIR"));
+                } else {
+                    newEnv->setVar("WORKFLOW_OUTPUT_DIR", suiteDir + "/" + newEnv->getVar("WORKFLOW_OUTPUT_DIR"));
                 }
 
                 QDir tmpDir(newEnv->getVar("TEMP_DATA_DIR"));
                 if (!tmpDir.exists()) {
                     tmpDir.mkpath(tmpDir.absolutePath());
+                } else {
+                    taskLog.info(QString("Warning: the test temp dir already exists: %1").arg(tmpDir.path()));
                 }
 
-                QString workflowSamplePath = QDir::searchPaths(PATH_PREFIX_DATA).first() + "/workflow_samples/";
+                QString ugeneDataPath = QDir::searchPaths(PATH_PREFIX_DATA).first();
+                QString workflowSamplePath = ugeneDataPath + "/workflow_samples/";
                 newEnv->setVar("WORKFLOW_SAMPLES_DIR", workflowSamplePath);
+
+                QString ugeneSamplesPath = ugeneDataPath + "/samples/";
+                newEnv->setVar("SAMPLE_DATA_DIR", ugeneSamplesPath);
 
                 const QString& testCaseDir = QFileInfo(testState->getTestRef()->getURL()).absoluteDir().absolutePath();
                 newEnv->setVar("LOCAL_DATA_DIR", testCaseDir + "/_input/");

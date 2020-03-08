@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -63,7 +63,7 @@ DigestSequenceTask::DigestSequenceTask(U2SequenceObject* so, AnnotationTableObje
     SAFE_POINT_EXT(sourceObj != NULL, setError(L10N::nullPointerError("source object")), );
     SAFE_POINT_EXT(destObj != NULL, setError(L10N::nullPointerError("destination object")), );
     SAFE_POINT_EXT(dnaObj != NULL, setError(L10N::nullPointerError("sequence object")), );
-    isCircular = dnaObj->isCircular() || cfg.forceCircular;
+    isCircular = cfg.forceCircular;
 }
 
 void DigestSequenceTask::prepare() {
@@ -81,11 +81,27 @@ void DigestSequenceTask::prepare() {
 
 SharedAnnotationData DigestSequenceTask::createFragment(int pos1, const DNAFragmentTerm& leftTerm, int pos2, const DNAFragmentTerm& rightTerm) {
     SharedAnnotationData ad(new AnnotationData);
-    if (pos1  < pos2) {
-        ad->location->regions.append(U2Region(pos1, pos2 - pos1));
+    if (pos1 < pos2) {
+        U2Region reg(pos1, pos2 - pos1);
+        assert(reg.length > 0);
+
+        ad->location->regions.append(reg);
     } else {
-        ad->location->regions.append(U2Region(pos1, seqRange.endPos() - pos1));
-        ad->location->regions.append(U2Region(seqRange.startPos, pos2 - seqRange.startPos));
+        U2Region reg1(pos1, seqRange.endPos() - pos1);
+        if (pos2 < 0) {
+            reg1.length += pos2;
+            pos2 = 0;
+        }
+        U2Region reg2(seqRange.startPos, pos2 - seqRange.startPos);
+        assert(reg1.length >= 0 && reg2.length >= 0);
+        assert(!reg1.isEmpty() || !reg2.isEmpty());
+
+        if (!reg1.isEmpty()){
+            ad->location->regions.append(reg1);
+        }
+        if (!reg2.isEmpty()) {
+            ad->location->regions.append(reg2);
+        }
     }
 
     ad->qualifiers.append(U2Qualifier(QUALIFIER_LEFT_TERM, leftTerm.enzymeId));
@@ -222,9 +238,9 @@ void DigestSequenceTask::run()
         bool leftStrandDirect = prev.key().directStrand;
         int leftCutDirect = leftStrandDirect ? enzyme1->cutDirect : len1 - enzyme1->cutDirect;
         int leftCutCompl = leftStrandDirect ? len1 - enzyme1->cutComplement : enzyme1->cutComplement;
-        int leftCutPos = pos1 + qMax(leftCutDirect, leftCutCompl);
-        int leftOverhangStart = pos1 + qMin(leftCutDirect, leftCutCompl);
-        leftTerm.overhang = dnaObj->getSequenceData(U2Region(leftOverhangStart, leftCutPos - leftOverhangStart));
+        int leftCutPos = correctPos(pos1 + qMax(leftCutDirect, leftCutCompl));
+        int leftOverhangStart = correctPos(pos1 + qMin(leftCutDirect, leftCutCompl));
+        leftTerm.overhang = getOverhang(U2Region(leftOverhangStart, leftCutPos - leftOverhangStart));
         leftTerm.enzymeId = enzyme1->id.toLatin1();
         leftTerm.isDirect = leftStrandDirect ? leftCutDirect < leftCutCompl : leftCutDirect > leftCutCompl;
 
@@ -232,14 +248,14 @@ void DigestSequenceTask::run()
         bool rightStrandDirect = current.key().directStrand;
         int rightCutDirect = rightStrandDirect ? enzyme2->cutDirect : len2 - enzyme2->cutDirect;
         int rightCutCompl = rightStrandDirect ? len2 - enzyme2->cutComplement : enzyme2->cutComplement;
-        int rightCutPos = pos2 + qMin(rightCutDirect, rightCutCompl);
-        int rightOverhangStart = pos2 + qMax(rightCutDirect, rightCutCompl);
-        rightTerm.overhang = dnaObj->getSequenceData(U2Region(rightCutPos, rightOverhangStart - rightCutPos));
+        int rightCutPos = correctPos(pos2 + qMin(rightCutDirect, rightCutCompl));
+        int rightOverhangStart = correctPos(pos2 + qMax(rightCutDirect, rightCutCompl));
+        rightTerm.overhang = getOverhang(U2Region(rightCutPos, rightOverhangStart - rightCutPos));
         rightTerm.enzymeId = enzyme2->id.toLatin1();
         rightTerm.isDirect = rightStrandDirect ? rightCutDirect > rightCutCompl : rightCutDirect < rightCutCompl;
         if (rightOverhangStart > seqLen) {
             int leftCutPos = rightOverhangStart - seqLen;
-            rightTerm.overhang  += dnaObj->getSequenceData(U2Region(0, leftCutPos));
+            rightTerm.overhang  += getOverhang(U2Region(0, leftCutPos));
         }
         SharedAnnotationData ad = createFragment(leftCutPos, leftTerm, rightCutPos, rightTerm);
         results.append(ad);
@@ -255,45 +271,50 @@ void DigestSequenceTask::run()
     bool fcStrandDirect = first.key().directStrand;
     int fcDirectStrandCut = fcStrandDirect ? firstCutter->cutDirect : fcLen - firstCutter->cutDirect;
     int fcComplementStrandCut = fcStrandDirect ? fcLen - firstCutter->cutComplement : firstCutter->cutComplement;
-    int firstCutPos = first.key().coord + qMin(fcDirectStrandCut, fcComplementStrandCut);
-    int rightOverhangStart = first.key().coord + qMax(fcDirectStrandCut, fcComplementStrandCut);
+    int firstCutPos = correctPos(first.key().coord + qMin(fcDirectStrandCut, fcComplementStrandCut));
+    int rightOverhangStart = correctPos(first.key().coord + qMax(fcDirectStrandCut, fcComplementStrandCut));
     bool rightOverhangIsDirect = fcStrandDirect ? fcDirectStrandCut > fcComplementStrandCut :
         fcDirectStrandCut < fcComplementStrandCut;
-    QByteArray firstRightOverhang = dnaObj->getSequenceData(U2Region(firstCutPos, rightOverhangStart - firstCutPos));
+    QByteArray firstRightOverhang = getOverhang(U2Region(firstCutPos, rightOverhangStart - firstCutPos));
 
     const SEnzymeData& lastCutter = prev.value();
     int lcLen = lastCutter->seq.length();
     bool lcStrandDirect = prev.key().directStrand;
     int lcDirectStrandCut = lcStrandDirect ? lastCutter->cutDirect : lcLen - lastCutter->cutDirect;
     int lcComplementStrandCut = lcStrandDirect ? lcLen - lastCutter->cutComplement : lastCutter->cutComplement;
-    int lastCutPos = prev.key().coord + qMax(lcDirectStrandCut, lcComplementStrandCut);
-    int leftOverhangStart = prev.key().coord + qMin(lcDirectStrandCut, lcComplementStrandCut);
+    int lastCutPos = correctPos(prev.key().coord + qMax(lcDirectStrandCut, lcComplementStrandCut));
+    int leftOverhangStart = correctPos(prev.key().coord + qMin(lcDirectStrandCut, lcComplementStrandCut));
     bool leftOverhangIsDirect = lcStrandDirect ? lcDirectStrandCut < lcComplementStrandCut :
         lcDirectStrandCut > lcComplementStrandCut;
 
-    if (lastCutPos >= seqLen) {
+    if (lastCutPos > seqLen) {
         // last restriction site is situated between sequence start and end
         assert(isCircular);
         int leftCutPos = lastCutPos - seqLen;
-        QByteArray leftOverhang = dnaObj->getSequenceData(U2Region(leftOverhangStart, seqLen - leftOverhangStart))
-            + dnaObj->getSequenceData(U2Region(0, leftCutPos));
+        QByteArray leftOverhang = getOverhang(U2Region(leftOverhangStart, seqLen - leftOverhangStart))
+            + getOverhang(U2Region(0, leftCutPos));
         QByteArray rightOverhang = first == prev ? leftOverhang : firstRightOverhang;
         SharedAnnotationData ad1 = createFragment(leftCutPos, DNAFragmentTerm(lastCutter->id, leftOverhang, leftOverhangIsDirect),
             firstCutPos, DNAFragmentTerm(firstCutter->id, rightOverhang, rightOverhangIsDirect));
         results.append(ad1);
     } else {
-        QByteArray lastLeftOverhang = dnaObj->getSequenceData(U2Region(leftOverhangStart, lastCutPos - leftOverhangStart));
+        QByteArray lastLeftOverhang = getOverhang(U2Region(leftOverhangStart, lastCutPos - leftOverhangStart));
         if (isCircular) {
             SharedAnnotationData ad = createFragment(lastCutPos, DNAFragmentTerm(lastCutter->id, lastLeftOverhang, leftOverhangIsDirect),
                 firstCutPos, DNAFragmentTerm(firstCutter->id, firstRightOverhang,rightOverhangIsDirect));
+
             results.append(ad);
         } else {
-            SharedAnnotationData ad1 = createFragment(seqRange.startPos, DNAFragmentTerm(),
-                firstCutPos, DNAFragmentTerm(firstCutter->id, firstRightOverhang, rightOverhangIsDirect));
-            SharedAnnotationData ad2 = createFragment(lastCutPos, DNAFragmentTerm(lastCutter->id, lastLeftOverhang, leftOverhangIsDirect),
-                seqRange.endPos(), DNAFragmentTerm());
-            results.append(ad1);
-            results.append(ad2);
+            if (firstCutPos != 0) {
+                SharedAnnotationData ad1 = createFragment(seqRange.startPos, DNAFragmentTerm(),
+                    firstCutPos, DNAFragmentTerm(firstCutter->id, firstRightOverhang, rightOverhangIsDirect));
+                results.append(ad1);
+            }
+            if (lastCutPos != dnaObj->getSequenceLength()) {
+                SharedAnnotationData ad2 = createFragment(lastCutPos, DNAFragmentTerm(lastCutter->id, lastLeftOverhang, leftOverhangIsDirect),
+                    seqRange.endPos(), DNAFragmentTerm());
+                results.append(ad2);
+            }
         }
     }
     qSort(results.begin(), results.end(), compareAnnotationsbyLength);
@@ -360,6 +381,26 @@ void DigestSequenceTask::checkForConservedAnnotations()
     }
 }
 
+qint64 DigestSequenceTask::correctPos(const qint64 pos) const {
+    qint64 res = pos;
+    if (!isCircular) {
+        res = qBound<qint64>(0, pos, dnaObj->getSequenceLength());
+    }
+    return res;
+}
+
+QByteArray DigestSequenceTask::getOverhang(const U2Region& region) const {
+    QByteArray result;
+    if (region.startPos < 0 && isCircular) {
+        result = dnaObj->getSequenceData(U2Region(dnaObj->getSequenceLength() + region.startPos, qAbs(region.startPos)));
+        result += dnaObj->getSequenceData(U2Region(0, region.length + region.startPos));
+    } else {
+        result = dnaObj->getSequenceData(region);
+    }
+
+    return result;
+}
+
 //////////////////////////////////////////////////////////////////////////
 
 LigateFragmentsTask::LigateFragmentsTask(const QList<DNAFragment>& fragments, const LigateFragmentsTaskConfig& config)
@@ -420,6 +461,13 @@ void LigateFragmentsTask::prepare()
     DNAFragment prevFragment;
     assert(prevFragment.isEmpty());
 
+
+    if (!cfg.makeCircular && cfg.checkOverhangs) {
+        const DNAFragment& first = fragmentList.first();
+        QByteArray leftOverhangAddition = first.getLeftTerminus().overhang;
+        resultSeq.append(leftOverhangAddition);
+    }
+
     foreach (const DNAFragment& dnaFragment, fragmentList) {
 
         QVector<U2Region> location = dnaFragment.getFragmentRegions();
@@ -467,15 +515,21 @@ void LigateFragmentsTask::prepare()
         CHECK_OP(stateInfo, );
     }
 
-    if (cfg.makeCircular && cfg.checkOverhangs) {
-        const DNAFragment& first = fragmentList.first();
-        const DNAFragment& last = fragmentList.last();
-        QByteArray overhangAddition;
-        processOverhangs(last, first, overhangAddition);
-        if (stateInfo.hasError()) {
-            return;
+    if (cfg.checkOverhangs) {
+        if (cfg.makeCircular) {
+            const DNAFragment& first = fragmentList.first();
+            const DNAFragment& last = fragmentList.last();
+            QByteArray overhangAddition;
+            processOverhangs(last, first, overhangAddition);
+            if (stateInfo.hasError()) {
+                return;
+            }
+            resultSeq.append(overhangAddition);
+        } else {
+            const DNAFragment& last = fragmentList.last();
+            QByteArray rightOverhangAddition = last.getRightTerminus().overhang;
+            resultSeq.append(rightOverhangAddition);
         }
-        resultSeq.append(overhangAddition);
     }
 
     // create comment
@@ -568,8 +622,7 @@ static bool fragmentContainsRegion(const DNAFragment& fragment, const U2Region r
     return result;
 }
 
-static int getRelativeStartPos(const DNAFragment& fragment, const U2Region region)
-{
+static int getRelativeStartPos(const DNAFragment& fragment, const U2Region region) {
     QVector<U2Region> fragmentRegions = fragment.getFragmentRegions();
 
     int offset = 0;

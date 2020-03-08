@@ -1,4 +1,3 @@
-cmake_minimum_required(VERSION 3.4)
 project(U2Private)
 
 set(CMAKE_AUTOMOC ON)

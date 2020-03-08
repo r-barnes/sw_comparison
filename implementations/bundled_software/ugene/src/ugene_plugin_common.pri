@@ -1,26 +1,26 @@
 MODULE_ID=$${PLUGIN_ID}
+
 include (ugene_lib_common.pri)
 
 # This file is common for all UGENE plugins
 
-UGENE_RELATIVE_DESTDIR = 'plugins'
-QT += network xml webkit svg
-LIBS += -L../../_release -lU2Core -lU2Algorithm -lU2Formats -lU2Gui -lU2View -lU2Test -lU2Lang -lU2Designer
+QT += network xml svg
+
+useWebKit() {
+    QT += webkit
+} else {
+    QT += webengine
+}
+
+LIBS += -L../../$$out_dir()
+LIBS += -lU2Core$$D -lU2Algorithm$$D -lU2Formats$$D -lU2Gui$$D -lU2View$$D -lU2Test$$D -lU2Lang$$D -lU2Designer$$D
+
+DESTDIR=../../$$out_dir()/plugins
+PLUGIN_ID=$$join(PLUGIN_ID, "", "", $$D)
 
 !debug_and_release|build_pass {
-    CONFIG(debug, debug|release) {
-        PLUGIN_ID=$$join(PLUGIN_ID, "", "", "d")
-        DESTDIR=../../_debug/plugins
-        LIBS -= -L../../_release -lU2Core -lU2Algorithm -lU2Formats -lU2Gui -lU2View -lU2Test -lU2Lang -lU2Designer
-        LIBS += -L../../_debug -lU2Cored -lU2Algorithmd -lU2Formatsd -lU2Guid -lU2Viewd -lU2Testd -lU2Langd -lU2Designerd
-    }
-    CONFIG(release, debug|release) {
-        DESTDIR=../../_release/plugins
-    }
-
     # Plugin output dir must exist before *.plugin/*.license files generation
     mkpath($$OUT_PWD)
-
     include (./ugene_plugin_descriptor.pri)
 }
 
@@ -32,6 +32,10 @@ win32 {
 }
 
 unix {
-    target.path = $$UGENE_INSTALL_DIR/$$UGENE_RELATIVE_DESTDIR
+    target.path = $$UGENE_INSTALL_DIR/plugins
     INSTALLS += target
+}
+
+macx {
+    QMAKE_RPATHDIR += @executable_path/plugins/
 }

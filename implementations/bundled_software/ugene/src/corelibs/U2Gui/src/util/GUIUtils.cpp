@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -221,14 +221,12 @@ void GUIUtils::setMutedLnF( QTreeWidgetItem* item, bool enableMute, bool recursi
     }
 }
 
-static const QColor warningColor(255,200,200);
-static const QColor okColor(255,255,255);
+const QColor GUIUtils::WARNING_COLOR = QColor(255,200,200);
+const QColor GUIUtils::OK_COLOR = QColor(255,255,255);
 
 void GUIUtils::setWidgetWarning(QWidget *widget, bool value) {
-    QColor color = value ? warningColor : okColor;
-    QPalette p = widget->palette();
-    p.setColor(QPalette::Active, QPalette::Base, color);
-    widget->setPalette(p);
+    QColor color = value ? WARNING_COLOR : OK_COLOR;
+    widget->setStyleSheet("background-color: " + color.name() + ";");
 }
 
 void GUIUtils::showMessage(QWidget *widgetToPaintOn, QPainter& painter, const QString& message) {

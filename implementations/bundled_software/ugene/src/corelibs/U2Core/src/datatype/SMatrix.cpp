@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -19,10 +19,7 @@
  * MA 02110-1301, USA.
  */
 
-#include <QVariant>
-
 #include <U2Core/AppContext.h>
-#include <U2Core/Log.h>
 #include <U2Core/TextUtils.h>
 
 #include "SMatrix.h"
@@ -32,11 +29,10 @@ namespace U2 {
 #define DEFAULT_FILL_VALUE -1000000.0f
 
 SMatrix::SMatrix(const QString& _name, const DNAAlphabet* _alphabet, const QList<SScore>& rawMatrix, const QString& _description)
-: name(_name), description(_description), alphabet(_alphabet)
-{
+    : name(_name), description(_description), alphabet(_alphabet) {
     validCharacters = alphabet->getAlphabetChars();
     TextUtils::charBounds(validCharacters.constData(), validCharacters.size(), minChar, maxChar);
-    charsInRow  = maxChar - minChar + 1;
+    charsInRow = maxChar - minChar + 1;
 
     scores.resize(charsInRow*charsInRow);
     qFill(scores.data(), scores.data() + scores.size(), -1000000);
@@ -72,7 +68,7 @@ SMatrix::SMatrix(const QString& _name, const DNAAlphabet* _alphabet, const QList
 }
 
 void SMatrix::copyCharValues(char srcChar, char dstChar) {
-    for (int i=0; i < validCharacters.size(); i++) {
+    for (int i = 0; i < validCharacters.size(); i++) {
         char c = validCharacters.at(i);
         float scoreSrc1 = getScore(srcChar, c);
         setScore(dstChar, c, scoreSrc1);
@@ -94,7 +90,7 @@ QVariant SMatrix::toQVariant() const {
     res.append(double(maxScore));
 
     res.append(scores.size());
-    for (int i=0; i< scores.size(); i++) {
+    for (int i = 0; i < scores.size(); i++) {
         res.append(double(scores[i]));
     }
 
@@ -120,14 +116,13 @@ SMatrix SMatrix::fromQVariant(const QVariant& v) {
 
     int nScores = list.at(n++).toInt();
     m.scores.resize(nScores);
-    for(int i = 0; i< nScores; i++) {
+    for (int i = 0; i < nScores; i++) {
         m.scores[i] = float(list.at(n++).toDouble());
     }
 
     if (m.name.isEmpty() || m.alphabet == NULL || m.validCharacters.isEmpty()
         || !m.validCharacters.contains(m.minChar) || !m.validCharacters.contains(m.maxChar)
-        || m.maxChar - m.minChar + 1 != m.charsInRow)
-    {
+        || m.maxChar - m.minChar + 1 != m.charsInRow) {
         coreLog.error("Error during substitution matrix deserialization!");
         return SMatrix();
     }

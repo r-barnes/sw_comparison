@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -33,10 +33,27 @@ using namespace WorkflowSerialize;
 /*************************************
  *  Attribute
  *************************************/
-Attribute::Attribute(const Descriptor& d, const DataTypePtr t, bool req, const QVariant & defaultValue )
-: Descriptor(d), type(t), required(req), defaultValue(defaultValue) {
+Attribute::Attribute(const Descriptor &_descriptor, const DataTypePtr _type, const Flags _flags, const QVariant &_defaultValue)
+    : Descriptor(_descriptor),
+      type(_type),
+      flags(_flags),
+      defaultValue(_defaultValue)
+{
     value = defaultValue;
     debugCheckAttributeId();
+}
+
+Attribute::Attribute(const Descriptor& d, const DataTypePtr t, bool req, const QVariant & defaultValue )
+: Descriptor(d), type(t), defaultValue(defaultValue) {
+    flags |= req ? Required : None;
+    value = defaultValue;
+    debugCheckAttributeId();
+}
+
+Attribute::~Attribute() {
+    qDeleteAll(relations);
+    qDeleteAll(portRelations);
+    qDeleteAll(slotRelations);
 }
 
 void Attribute::debugCheckAttributeId() const {
@@ -47,12 +64,64 @@ void Attribute::debugCheckAttributeId() const {
     assert(id != Constants::ELEM_ID_ATTR);
 }
 
+void Attribute::copy(const Attribute &other) {
+    this->Descriptor::operator =(other);
+
+    type = other.type;
+    flags = other.flags;
+    value = other.value;
+    defaultValue = other.defaultValue;
+    scriptData = other.scriptData;
+
+    qDeleteAll(relations);
+    relations.clear();
+    foreach (const AttributeRelation *relation, other.relations) {
+        relations << relation->clone();
+    }
+
+    qDeleteAll(portRelations);
+    portRelations.clear();
+    foreach(const PortRelationDescriptor* portRelation, other.portRelations) {
+        portRelations << portRelation->clone();
+    }
+
+    qDeleteAll(slotRelations);
+    slotRelations.clear();
+    foreach(const SlotRelationDescriptor* slotRelation, other.slotRelations) {
+        slotRelations << slotRelation->clone();
+    }
+}
+
+Attribute::Attribute(const Attribute &other)
+    : Descriptor(other)
+{
+    copy(other);
+}
+
+Attribute &Attribute::operator =(const Attribute &other) {
+    CHECK(this != &other, *this);
+    copy(other);
+    return *this;
+}
+
 const DataTypePtr Attribute::getAttributeType()const {
     return type;
 }
 
 bool Attribute::isRequiredAttribute() const {
-    return required;
+    return flags.testFlag(Required);
+}
+
+bool Attribute::canBeEmpty() const {
+    return flags.testFlag(CanBeEmpty);
+}
+
+bool Attribute::needValidateEncoding() const {
+    return flags.testFlag(NeedValidateEncoding);
+}
+
+Attribute::Flags Attribute::getFlags() const {
+    return flags;
 }
 
 void Attribute::setAttributeValue(const QVariant & newVal) {
@@ -137,14 +206,21 @@ QVector<const AttributeRelation*> &Attribute::getRelations() {
     return relations;
 }
 
-void Attribute::addPortRelation(const PortRelationDescriptor& relationDesc) {
+void Attribute::addPortRelation(PortRelationDescriptor* relationDesc) {
     portRelations << relationDesc;
 }
 
-const QList<PortRelationDescriptor>& Attribute::getPortRelations() const {
+const QList<PortRelationDescriptor*>& Attribute::getPortRelations() const {
     return portRelations;
 }
 
+void Attribute::addSlotRelation(SlotRelationDescriptor *relationDesc) {
+    slotRelations << relationDesc;
+}
+
+const QList<SlotRelationDescriptor *>& Attribute::getSlotRelations() const {
+    return slotRelations;
+}
 
 Attribute *Attribute::clone() {
     return new Attribute(*this);
@@ -158,12 +234,12 @@ void Attribute::updateActorIds(const QMap<ActorId, ActorId> &actorIdsMap) {
     Q_UNUSED(actorIdsMap);
 }
 
-bool Attribute::validate(ProblemList &problemList) {
-    if(!isRequiredAttribute()) {
+bool Attribute::validate(NotificationsList &notificationList) {
+    if(!isRequiredAttribute() || canBeEmpty()) {
         return true;
     }
     if( (isEmpty() || isEmptyString()) && getAttributeScript().isEmpty()) {
-        problemList.append(Problem(U2::WorkflowUtils::tr("Required parameter is not set: %1").arg(getDisplayName())));
+        notificationList.append(WorkflowNotification(U2::WorkflowUtils::tr("Required parameter is not set: %1").arg(getDisplayName())));
         return false;
     }
     return true;

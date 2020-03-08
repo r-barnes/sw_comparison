@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -23,12 +23,9 @@
 #include <U2Core/AppContext.h>
 #include <U2Core/AssemblyObject.h>
 #include <U2Core/BioStruct3DObject.h>
-#include <U2Core/BioStruct3DObject.h>
 #include <U2Core/DNAAlphabet.h>
-#include <U2Core/DNAChromatogramObject.h>
 #include <U2Core/DNASequenceObject.h>
 #include <U2Core/DNATranslation.h>
-#include <U2Core/DocumentModel.h>
 #include <U2Core/GHints.h>
 #include <U2Core/GObjectRelationRoles.h>
 #include <U2Core/GObjectTypes.h>
@@ -40,7 +37,6 @@
 #include <U2Core/PhyTreeObject.h>
 #include <U2Core/ProjectModel.h>
 #include <U2Core/TextObject.h>
-#include <U2Core/U2DbiUtils.h>
 #include <U2Core/U2ObjectRelationsDbi.h>
 #include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2SafePoints.h>
@@ -75,15 +71,15 @@ GObject* GObjectUtils::selectOne(const QList<GObject*>& objects, GObjectType typ
 
 QList<GObject*> GObjectUtils::findAllObjects(UnloadedObjectFilter f, GObjectType t) {
     QList<GObject*> res;
-    SAFE_POINT(AppContext::getProject()!=NULL, "No active project found", res);
+    SAFE_POINT(AppContext::getProject() != NULL, "No active project found", res);
 
     foreach(Document* doc, AppContext::getProject()->getDocuments()) {
         if (t.isEmpty()) {
             if (doc->isLoaded() || f == UOF_LoadedAndUnloaded) {
-                res+=doc->getObjects();
+                res += doc->getObjects();
             }
         } else {
-            res+=doc->findGObjectByType(t, f);
+            res += doc->findGObjectByType(t, f);
         }
     }
     return res;
@@ -92,16 +88,15 @@ QList<GObject*> GObjectUtils::findAllObjects(UnloadedObjectFilter f, GObjectType
 
 QList<GObject*> GObjectUtils::selectRelations(GObject* obj, GObjectType type,
     GObjectRelationRole relationRole, const QList<GObject*>& fromObjects,
-    UnloadedObjectFilter f)
-{
+    UnloadedObjectFilter f) {
     QList<GObject*> res;
     QList<GObjectRelation> relations = obj->getObjectRelations();
     foreach(const GObjectRelation& r, relations) {
-        if (r.role != relationRole || (!type.isEmpty() && r.ref.objType!=type)) {
+        if (r.role != relationRole || (!type.isEmpty() && r.ref.objType != type)) {
             continue;
         }
         GObject* obj = selectObjectByReference(r.ref, fromObjects, f);
-        if (obj!=NULL) {
+        if (obj != NULL) {
             res.append(obj);
         }
     }
@@ -121,7 +116,7 @@ QList<GObject *> GObjectUtils::selectRelationsFromParentDoc(const GObject* obj, 
 
     const QList<U2ObjectRelation> relations = relationsDbi->getObjectRelations(obj->getEntityRef().entityId, os);
     CHECK_OP(os, result);
-    foreach (const U2ObjectRelation &relation, relations) {
+    foreach(const U2ObjectRelation &relation, relations) {
         if (type == relation.referencedType && relationRole == relation.relationRole) {
             GObject *referenceObj = parentDoc->getObjectById(relation.referencedObject);
             if (NULL != referenceObj) {
@@ -162,7 +157,7 @@ QList<GObject *> findRelatedObjectsForLoadedObjects(const GObjectReference &obj,
 
     const GObjectRelation objRelation(obj, role);
     QHash<Document *, U2DbiRef> doc2DbiRef;
-    foreach (GObject *object, fromObjects) {
+    foreach(GObject *object, fromObjects) {
         Document *doc = object->getDocument();
         SAFE_POINT(NULL != doc, "Invalid parent document detected", res);
         if (!doc->isDatabaseConnection()) {
@@ -180,7 +175,7 @@ QList<GObject *> findRelatedObjectsForLoadedObjects(const GObjectReference &obj,
     }
 
     U2OpStatusImpl os;
-    foreach (Document *doc, doc2DbiRef.keys()) {
+    foreach(Document *doc, doc2DbiRef.keys()) {
         const U2DbiRef dbiRef = doc2DbiRef.value(doc);
         if (!dbiRef.isValid()) {
             coreLog.error("Invalid DBI reference detected");
@@ -193,7 +188,7 @@ QList<GObject *> findRelatedObjectsForLoadedObjects(const GObjectReference &obj,
         const QList<U2DataId> relatedIds = relationsDbi->getReferenceRelatedObjects(obj.entityRef.entityId, role, os);
         SAFE_POINT_OP(os, res);
 
-        foreach (const U2DataId &objId, relatedIds) {
+        foreach(const U2DataId &objId, relatedIds) {
             GObject *object = doc->getObjectById(objId);
             if (fromObjects.contains(object)) {
                 res.append(object);
@@ -207,14 +202,12 @@ QList<GObject *> findRelatedObjectsForLoadedObjects(const GObjectReference &obj,
 }
 
 QList<GObject*> GObjectUtils::findObjectsRelatedToObjectByRole(const GObject* obj, GObjectType resultObjType, GObjectRelationRole role,
-    const QList<GObject*>& fromObjects, UnloadedObjectFilter f)
-{
+    const QList<GObject*>& fromObjects, UnloadedObjectFilter f) {
     return findObjectsRelatedToObjectByRole(GObjectReference(obj), resultObjType, role, fromObjects, f);
 }
 
 QList<GObject*> GObjectUtils::findObjectsRelatedToObjectByRole(const GObjectReference &obj, GObjectType resultObjType, GObjectRelationRole role,
-    const QList<GObject*>& fromObjects, UnloadedObjectFilter f)
-{
+    const QList<GObject*>& fromObjects, UnloadedObjectFilter f) {
     QList<GObject *> res;
     QSet<GObject *> loadedObjs;
     QSet<GObject *> unloadedObjs;
@@ -247,13 +240,12 @@ QList<GObject*> GObjectUtils::findObjectsRelatedToObjectByRole(const GObjectRefe
 }
 
 QList<GObject*> GObjectUtils::selectObjectsWithRelation(const QList<GObject*>& objs, GObjectType type, GObjectRelationRole relationRole,
-    UnloadedObjectFilter f, bool availableObjectsOnly)
-{
+    UnloadedObjectFilter f, bool availableObjectsOnly) {
     QList<GObject*> res;
     foreach(GObject* obj, objs) {
         QList<GObjectRelation> relations = obj->getObjectRelations();
         foreach(const GObjectRelation& r, relations) {
-            if (r.role != relationRole || (!type.isEmpty() && r.ref.objType!=type)) {
+            if (r.role != relationRole || (!type.isEmpty() && r.ref.objType != type)) {
                 continue;
             }
             if (availableObjectsOnly) {
@@ -274,9 +266,10 @@ GObject* GObjectUtils::selectObjectByReference(const GObjectReference& r, Unload
 }
 
 GObject* GObjectUtils::selectObjectByReference(const GObjectReference& r, const QList<GObject*>& fromObjects, UnloadedObjectFilter f) {
+    GObject* firstMatchedByName = NULL;
     foreach(GObject* o, fromObjects) {
         Document *parentDoc = o->getDocument();
-        if (r.entityRef.isValid() && !(r.entityRef == o->getEntityRef()) && (NULL == parentDoc || parentDoc->isDatabaseConnection())) {
+        if (r.entityRef.isValid() && !(r.entityRef == o->getEntityRef()) && (parentDoc == NULL || parentDoc->isDatabaseConnection())) {
             continue;
         }
         if (o->getGObjectName() != r.objName) {
@@ -289,13 +282,22 @@ GObject* GObjectUtils::selectObjectByReference(const GObjectReference& r, const 
             if (f != UOF_LoadedAndUnloaded) {
                 continue;
             }
-            if (o->getGObjectType()!=GObjectTypes::UNLOADED || r.objType != qobject_cast<UnloadedObject*>(o)->getLoadedObjectType()) {
+            if (o->getGObjectType() != GObjectTypes::UNLOADED) {
+                continue;
+            }
+            GObjectType oLoadedType = qobject_cast<UnloadedObject*>(o)->getLoadedObjectType();
+            if (r.objType != oLoadedType) {
                 continue;
             }
         }
-        return o;
+        if (r.entityRef.isValid() && r.entityRef == o->getEntityRef()) {
+            return o; // matched by entityRef
+        } else if (firstMatchedByName == NULL) {
+            firstMatchedByName = o;
+        }
     }
-    return NULL;
+
+    return firstMatchedByName;
 }
 
 DNATranslation* GObjectUtils::findComplementTT(const DNAAlphabet* al) {
@@ -363,7 +365,7 @@ void GObjectUtils::updateRelationsURL(GObject* o, const GUrl& fromURL, const GUr
 void GObjectUtils::updateRelationsURL(GObject* o, const QString& fromURL, const QString& toURL) {
     QList<GObjectRelation> relations = o->getObjectRelations();
     bool changed = false;
-    for(int i=0; i<relations.size(); i++) {
+    for (int i = 0; i < relations.size(); i++) {
         GObjectRelation& r = relations[i];
         if (r.ref.docUrl == fromURL) {
             r.ref.docUrl = toURL;
@@ -380,7 +382,7 @@ void GObjectUtils::replaceAnnotationQualfier(SharedAnnotationData &a, const QStr
     a->findQualifiers(name, quals);
     QList<U2Qualifier> qualifiersList = a->qualifiers.toList();
 
-    foreach (const U2Qualifier &q, quals) {
+    foreach(const U2Qualifier &q, quals) {
         qualifiersList.removeAll(q);
     }
     a->qualifiers = qualifiersList.toVector();

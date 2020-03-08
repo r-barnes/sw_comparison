@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -56,7 +56,7 @@ QString DownloadRemoteFileDialog::defaultDB("");
 DownloadRemoteFileDialog::DownloadRemoteFileDialog(QWidget *p):QDialog(p), isQueryDB(false) {
     ui = new Ui_DownloadRemoteFileDialog;
     ui->setupUi(this);
-    new HelpButton(this, ui->buttonBox, "21433140");
+    new HelpButton(this, ui->buttonBox, "24742339");
     ui->buttonBox->button(QDialogButtonBox::Ok)->setText(tr("OK"));
     ui->buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
 
@@ -93,7 +93,7 @@ DownloadRemoteFileDialog::DownloadRemoteFileDialog( const QString& id, const QSt
 {
     ui = new Ui_DownloadRemoteFileDialog;
     ui->setupUi(this);
-    new HelpButton(this, ui->buttonBox, "21433152");
+    new HelpButton(this, ui->buttonBox, "24742351");
 
     ui->formatBox->addItem(GENBANK_FORMAT);
     ui->formatBox->addItem(FASTA_FORMAT);

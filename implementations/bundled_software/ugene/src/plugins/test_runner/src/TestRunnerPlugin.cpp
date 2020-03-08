@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -81,7 +81,7 @@ void TestRunnerPlugin::sl_startTestRunner() {
 
     foreach(const QString &param, suiteUrls) {
         QString dir;
-        if(param.contains(":")||param[0]=='.') {
+        if(param.contains(":")||param[0]=='.'||param[0]=='/') {
             dir = param;
         }
         else {
@@ -130,9 +130,6 @@ void TestRunnerPlugin::sl_startTestRunner() {
 
     TestViewController *view = new TestViewController(srv,true);
     AppContext::getMainWindow()->getMDIManager()->addMDIWindow(view);
-    //AppContext::getMainWindow()->getMDIManager()->activateWindow(view);
-    //view->addTestSuite(suite);
-    //view->reporterForm = new TestViewReporter(view,view->tree,view->time);
     view->sl_runAllSuitesAction();
 }
 
@@ -176,6 +173,9 @@ void TestRunnerService::serviceStateChangedCallback(ServiceState oldState, bool 
         readBuiltInVars();
 
         windowAction = new QAction(tr("Test runner"), this);
+#ifdef _DEBUG
+        windowAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_H));
+#endif
         windowAction->setObjectName("action__testrunner");
         connect(windowAction, SIGNAL(triggered()), SLOT(sl_showWindow()));
         AppContext::getMainWindow()->getTopLevelMenu(MWMENU_TOOLS)->addAction(windowAction);
@@ -192,7 +192,6 @@ void TestRunnerService::serviceStateChangedCallback(ServiceState oldState, bool 
 
 
         if (view!=NULL) {
-            view->killAllChildForms();
             AppContext::getMainWindow()->getMDIManager()->closeMDIWindow(view);
             assert(view == NULL);
         }
@@ -213,7 +212,6 @@ void TestRunnerService::sl_showWindow() {
 
 bool TestRunnerService::eventFilter(QObject *obj, QEvent *event) {
     if (event->type() == QEvent::Close && obj == view) {
-        view->killAllChildForms();
         view = NULL;
     }
     return QObject::eventFilter(obj, event);

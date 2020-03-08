@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -21,8 +21,6 @@
 
 #include <U2Core/AnnotationTableObject.h>
 #include <U2Core/AppContext.h>
-#include <U2Core/AppSettings.h>
-#include <U2Core/U2DbiUtils.h>
 #include <U2Core/U2ObjectDbi.h>
 #include <U2Core/U2OpStatus.h>
 #include <U2Core/U2OpStatusUtils.h>
@@ -33,7 +31,7 @@
 
 namespace U2 {
 
-void U2VariationUtils::addVariationsToTrack( const U2EntityRef& ref, const QList<U2Variant>& variants, U2OpStatus& os ){
+void U2VariationUtils::addVariationsToTrack(const U2EntityRef& ref, const QList<U2Variant>& variants, U2OpStatus& os) {
     DbiConnection con(ref.dbiRef, os);
     CHECK_OP(os, );
 
@@ -47,7 +45,7 @@ void U2VariationUtils::addVariationsToTrack( const U2EntityRef& ref, const QList
     vdbi->addVariantsToTrack(track, &bufIter, os);
 }
 
-U2VariantTrack U2VariationUtils::createVariantTrack( const U2DbiRef &dbiRef, const QString& seqName, U2OpStatus& os ){
+U2VariantTrack U2VariationUtils::createVariantTrack(const U2DbiRef &dbiRef, const QString& seqName, U2OpStatus& os) {
     DbiConnection con(dbiRef, os);
     CHECK_OP(os, U2VariantTrack());
 
@@ -61,7 +59,7 @@ U2VariantTrack U2VariationUtils::createVariantTrack( const U2DbiRef &dbiRef, con
     return track;
 }
 
-AnnotationData U2VariationUtils::variantToAnnotation( const U2Variant &var ) {
+AnnotationData U2VariationUtils::variantToAnnotation(const U2Variant &var) {
     AnnotationData d;
 
     U2Region varRegion;
@@ -69,15 +67,15 @@ AnnotationData U2VariationUtils::variantToAnnotation( const U2Variant &var ) {
     varRegion.length = var.endPos - var.startPos + 1;
 
     d.location->regions << varRegion;
-    d.qualifiers << U2Qualifier( "public_id", var.publicId );
-    d.qualifiers << U2Qualifier( "ref_data", var.refData );
-    d.qualifiers << U2Qualifier( "obs_data", var.obsData );
+    d.qualifiers << U2Qualifier("public_id", var.publicId);
+    d.qualifiers << U2Qualifier("ref_data", var.refData);
+    d.qualifiers << U2Qualifier("obs_data", var.obsData);
     d.name = "variation";
 
     return d;
 }
 
-U2Feature U2VariationUtils::variantToFeature( const U2Variant& var ){
+U2Feature U2VariationUtils::variantToFeature(const U2Variant& var) {
     U2Feature res;
 
     res.id = var.id;
@@ -87,38 +85,38 @@ U2Feature U2VariationUtils::variantToFeature( const U2Variant& var ){
     return res;
 }
 
-QList<U2Variant> U2VariationUtils::getSNPFromSequences( const QByteArray& refSeq, const QByteArray& varSeq, CallVariationsMode mode, bool ignoreGaps,
-                                                       const QString& namePrefix, int nameStartIdx){
+QList<U2Variant> U2VariationUtils::getSNPFromSequences(const QByteArray& refSeq, const QByteArray& varSeq, CallVariationsMode mode, bool ignoreGaps,
+    const QString& namePrefix, int nameStartIdx) {
     QList<U2Variant> res;
     qint64 len = qMin(refSeq.size(), varSeq.size());
 
-    for(qint64 i = 0; i < len; i++){
+    for (qint64 i = 0; i < len; i++) {
         char refChar = refSeq.at(i);
         char obsChar = varSeq.at(i);
 
         bool addVariation = false;
 
-        if( ! ( ignoreGaps && (refChar == '-' || obsChar == '-') ) ){
+        if (!(ignoreGaps && (refChar == '-' || obsChar == '-'))) {
 
-            switch(mode){
-                case Mode_Variations:
-                    addVariation = (refChar != obsChar);
-                    break;
-                case Mode_Similar:
-                    addVariation = (refChar == obsChar);
-                    break;
-                case Mode_All:
-                    addVariation = true;
+            switch (mode) {
+            case Mode_Variations:
+                addVariation = (refChar != obsChar);
+                break;
+            case Mode_Similar:
+                addVariation = (refChar == obsChar);
+                break;
+            case Mode_All:
+                addVariation = true;
             }
         }
 
-        if (addVariation){
-           U2Variant var;
-           var.refData = QByteArray(1, refChar);
-           var.obsData = QByteArray(1, obsChar);
-           var.startPos = i+nameStartIdx;
-           var.publicId = (QString(namePrefix+"%1").arg(i+nameStartIdx));
-           res.append(var);
+        if (addVariation) {
+            U2Variant var;
+            var.refData = QByteArray(1, refChar);
+            var.obsData = QByteArray(1, obsChar);
+            var.startPos = i + nameStartIdx;
+            var.publicId = (QString(namePrefix + "%1").arg(i + nameStartIdx));
+            res.append(var);
         }
     }
 

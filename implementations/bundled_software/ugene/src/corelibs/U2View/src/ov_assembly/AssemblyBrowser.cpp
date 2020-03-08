@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -33,6 +33,7 @@
 #include <QVBoxLayout>
 
 #include <U2Core/AppContext.h>
+#include <U2Core/DNAAlphabet.h>
 #include <U2Core/DNASequenceObject.h>
 #include <U2Core/DocumentModel.h>
 #include <U2Core/FormatUtils.h>
@@ -219,50 +220,29 @@ QString AssemblyBrowser::tryAddObject(GObject * obj) {
     Document * objDoc = obj->getDocument();
     SAFE_POINT(NULL != objDoc, "", tr("Internal error: only object with document can be added to browser"));
 
+    static const QString unacceptableObjectError = tr("Only a nucleotide sequence or a variant track objects can be added to the Assembly Browser.");
+
     if (GObjectTypes::SEQUENCE == obj->getGObjectType()) {
         U2SequenceObject * seqObj = qobject_cast<U2SequenceObject*>(obj);
         CHECK(NULL != seqObj, tr("Internal error: broken sequence object"));
         SAFE_POINT(NULL != objDoc->getDocumentFormat(), "", tr("Internal error: empty document format"));
 
-        U2OpStatus2Log os;
-        qint64 seqLen = seqObj->getSequenceLength();
-        QStringList errs;
-        qint64 modelLen = model->getModelLength(os);
-        if (seqLen != modelLen) {
-            errs << tr("The lengths of the sequence and assembly are different.");
-        }
-        if (seqObj->getGObjectName() != gobject->getGObjectName()) {
-            errs << tr("The sequence and assembly names are different.");
-        }
-
-        // commented: waiting for fix
-        //QByteArray refMd5 = model->getReferenceMd5();
-        //if(!refMd5.isEmpty()) {
-        //    //QByteArray data = QString(seqObj->getSequence()).remove("-").toUpper().toUtf8();
-        //    QByteArray data = QString(seqObj->getSequence()).toUpper().toUtf8();
-        //    QByteArray seqObjMd5 = QCryptographicHash::hash(data, QCryptographicHash::Md5).toHex();
-        //    if(seqObjMd5 != refMd5) {
-        //        errs << tr("- Reference MD5 not match with MD5 written in assembly");
-        //    }
-        //}
-
         bool setRef = !isAssemblyObjectLocked(true) && !model->isLoadingReference();
         setRef &= model->checkPermissions(QFile::WriteUser, setRef);
-        if(!errs.isEmpty() && setRef) {
-            const NotificationStack *notificationStack = AppContext::getMainWindow()->getNotificationStack();
-            const QString message = tr("It seems that sequence \"%1\", set as reference to assembly \"%2\", does not match it.").arg(seqObj->getGObjectName()).arg(gobject->getGObjectName())
-                + "\n- " + errs.join("\n- ");
-            notificationStack->addNotification(message, Warning_Not);
-        }
-        if(setRef) {
+        if (setRef) {
+            const DNAAlphabet* alphabet = seqObj->getAlphabet();
+            if (!alphabet->isNucleic()) {
+                return unacceptableObjectError;
+            }
             if(model->isDbLocked(100)){
-                return tr("Internal error: database is busy");
+                return tr("Internal error: database is locked");
             }
             model->setReference(seqObj);
 
             U2Assembly assembly = model->getAssembly();
             U2DataId refId;
             QString folder;
+            U2OpStatus2Log os;
             const QStringList folders = model->getDbiConnection().dbi->getObjectDbi()->getObjectFolders(assembly.id, os);
             if (folders.isEmpty() || os.isCoR()) {
                 folder = U2ObjectDbi::ROOT_FOLDER;
@@ -297,7 +277,7 @@ QString AssemblyBrowser::tryAddObject(GObject * obj) {
         addObjectToView(obj);
         connect(model.data(), SIGNAL(si_trackRemoved(VariantTrackObject *)), SLOT(sl_trackRemoved(VariantTrackObject *)));
     } else {
-        return tr("Only sequence or variant track  objects can be added to assembly browser");
+        return unacceptableObjectError;
     }
 
     return "";

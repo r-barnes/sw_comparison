@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -184,20 +184,17 @@ void RemoteBlastHttpRequestTask::prepare() {
 
 void RemoteBlastHttpRequestTask::run() {
     for(int i = 0;i < queries.count();i++) {
-        bool error = true;
         if(isCanceled()) {
             return;
         }
 
         httpRequest[i]->sendRequest(cfg.params,QString(queries[i].seq.data()));
-        error = httpRequest[i]->connectionError;
-        if(error) {
+        if (!httpRequest[i]->getError().isEmpty()) {
             stateInfo.setError(httpRequest[i]->getError());
             return;
         }
 
-        resultList << HttpBlastRequestTaskResult(httpRequest[i],
-                                                 queries[i]);
+        resultList << HttpBlastRequestTaskResult(httpRequest[i], queries[i]);
     }
 }
 

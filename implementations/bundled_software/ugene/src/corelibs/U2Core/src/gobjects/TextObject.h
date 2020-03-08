@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -26,8 +26,6 @@
 #include <U2Core/U2RawData.h>
 #include <U2Core/UdrRecord.h>
 
-#include "GObjectTypes.h"
-
 namespace U2 {
 
 class U2CORE_EXPORT U2Text : public U2RawData {
@@ -38,7 +36,7 @@ public:
     U2DataType getType() const;
 };
 
-class U2CORE_EXPORT TextObject: public GObject {
+class U2CORE_EXPORT TextObject : public GObject {
     Q_OBJECT
 public:
     static TextObject * createInstance(const QString &text, const QString &objectName,

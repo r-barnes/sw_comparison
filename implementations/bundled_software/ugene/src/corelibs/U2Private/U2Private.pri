@@ -1,28 +1,17 @@
 # include (U2Private.pri)
 
-UGENE_RELATIVE_DESTDIR = ''
 MODULE_ID=U2Private
 include( ../../ugene_lib_common.pri )
 
 QT += xml widgets network
 DEFINES += QT_FATAL_ASSERT BUILDING_U2PRIVATE_DLL
-LIBS += -L../../_release -lU2Core -lU2Formats -lbreakpad
+LIBS += -L../../$$out_dir()
+LIBS += -lU2Core$$D -lU2Formats$$D -lbreakpad$$D
 INCLUDEPATH += ../../libs_3rdparty/breakpad/src
-
-!debug_and_release|build_pass {
-    CONFIG(debug, debug|release) {
-        DESTDIR = ../../_debug
-        LIBS -= -L../../_release -lU2Core -lU2Formats -lbreakpad
-        LIBS += -L../../_debug -lU2Cored -lU2Formatsd -lbreakpadd
-    }
-
-    CONFIG(release, debug|release) {
-        DESTDIR = ../../_release
-    }
-}
+DESTDIR = ../../$$out_dir()
 
 unix {
-    target.path = $$UGENE_INSTALL_DIR/$$UGENE_RELATIVE_DESTDIR
+    target.path = $$UGENE_INSTALL_DIR/
     INSTALLS += target
 }
 

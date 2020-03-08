@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -43,41 +43,27 @@
 
 namespace U2 {
 
-PrepareSequenceObjectsTask::PrepareSequenceObjectsTask(const MultipleSequenceAlignment& msa, const QStringList& seqNames, bool trimGaps) : Task(tr("Prepare sequences"), TaskFlag_None),
+PrepareSequenceObjectsTask::PrepareSequenceObjectsTask(const MultipleSequenceAlignment& msa, const QSet<qint64>& rowIds, bool trimGaps)
+    : Task(tr("Prepare sequences"), TaskFlag_None),
     msa(msa),
-    seqNames(seqNames),
+    rowIds(rowIds),
     trimGaps(trimGaps)
 {}
 
 void PrepareSequenceObjectsTask::run() {
-    foreach(const DNASequence &s, MSAUtils::ma2seq(msa,trimGaps)) {
-        if (!seqNames.contains(s.getName())) {
-            continue;
-        }
-        CHECK_OP(stateInfo, );
-        sequences.append(s);
-    }
+    sequences = MSAUtils::ma2seq(msa, trimGaps, rowIds);
 }
 
-QList<DNASequence> PrepareSequenceObjectsTask::getSequences() const {
-    return sequences;
-}
-
-ExportSequencesTask::ExportSequencesTask(const MultipleSequenceAlignment& msa, const QStringList& seqNames, bool trimGaps, bool addToProjectFlag,
+ExportSequencesTask::ExportSequencesTask(const MultipleSequenceAlignment& msa, const QSet<qint64>& rowIds, bool trimGaps, bool addToProjectFlag,
     const QString& dirUrl, const DocumentFormatId& format, const QString& extension, const QString& customFileName) : Task(tr("Export selected sequences from alignment"), TaskFlags_NR_FOSE_COSC),
-    msa(msa),
-    seqNames(seqNames),
-    trimGaps(trimGaps),
     addToProjectFlag(addToProjectFlag),
     dirUrl(dirUrl),
     format(format),
     extension(extension),
     customFileName(customFileName),
     prepareObjectsTask(NULL)
-{}
-
-void ExportSequencesTask::prepare() {
-    prepareObjectsTask = new PrepareSequenceObjectsTask(msa, seqNames, trimGaps);
+{
+    prepareObjectsTask = new PrepareSequenceObjectsTask(msa, rowIds, trimGaps);
     addSubTask(prepareObjectsTask);
 }
 
@@ -88,7 +74,7 @@ QList<Task*> ExportSequencesTask::onSubTaskFinished(Task* subTask) {
     if (subTask == prepareObjectsTask) {
         QList<Task*> tasks;
         QSet<QString> existingFilenames;
-        foreach(DNASequence s, prepareObjectsTask->getSequences()) {
+        foreach(const DNASequence& s, prepareObjectsTask->getSequences()) {
             CHECK_OP(stateInfo, res);
             QString filename;
             if (customFileName.isEmpty()) {

@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -29,13 +29,12 @@ namespace U2 {
 
     class LoadRemoteDocumentTask;
 
-    class GTest_LoadRemoteDocumentTask : public GTest {
+    class GTest_LoadRemoteDocumentTask : public XmlTest {
         Q_OBJECT
     public:
         SIMPLE_XML_TEST_BODY_WITH_FACTORY_EXT(GTest_LoadRemoteDocumentTask, "load-remote-document", TaskFlags_NR_FOSCOE);
 
         void prepare();
-        void cleanup();
         ReportResult report();
     private:
         LoadRemoteDocumentTask *t;

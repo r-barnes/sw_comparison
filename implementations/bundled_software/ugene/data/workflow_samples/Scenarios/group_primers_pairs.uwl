@@ -64,6 +64,7 @@ workflow "Group primer pairs"{
         wizard {
             name:"Group Primer Pairs";
             help-page-id:16122701;
+            auto-run: true;
             page {
                 id:1;
                 next:2;

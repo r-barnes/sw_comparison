@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -33,9 +33,6 @@
 #include <U2Lang/WorkflowRunTask.h>
 
 #include <U2Gui/MainWindow.h>
-#include <U2Gui/ScriptEditorDialog.h>
-
-#include "SampleActionsManager.h"
 
 class QComboBox;
 class QSplitter;
@@ -118,6 +115,9 @@ protected:
     void dragEnterEvent(QGraphicsSceneDragDropEvent * event);
     void dragMoveEvent(QGraphicsSceneDragDropEvent * event);
     void dropEvent(QGraphicsSceneDragDropEvent * event);
+    void keyPressEvent (QKeyEvent* event);
+    void keyReleaseEvent (QKeyEvent* event);
+
 
     void drawBackground(QPainter * painter, const QRectF & rect );
 
@@ -145,7 +145,6 @@ class WorkflowView : public MWMDIWindow, public SchemaConfig {
 
 public:
     static WorkflowView * openWD(WorkflowGObject *go);
-    static void openSample(const SampleAction &action);
     ~WorkflowView();
 
     WorkflowEditor* getPropertyEditor() const { return propertyEditor; }
@@ -196,7 +195,6 @@ private slots:
     void sl_onSelectionChanged();
     void sl_showEditor();
     void sl_selectPrototype(Workflow::ActorPrototype*, bool);
-    void sl_procItemAdded();
     void sl_exportScene();
     void sl_saveScene();
     void sl_saveSceneAs();
@@ -232,9 +230,9 @@ private slots:
     void sl_toggleLock(bool = true);
     void sl_createScript();
     void sl_editScript();
-    void sl_externalAction();
+    void sl_createCmdlineBasedWorkerAction();
     void sl_appendExternalToolWorker();
-    void sl_protoDeleted(const QString& id);
+    void sl_prototypeIsAboutToBeRemoved(Workflow::ActorPrototype *proto);
     void sl_xmlSchemaLoaded(Task*);
     void sl_editExternalTool();
     void sl_findPrototype();
@@ -292,12 +290,14 @@ private:
     void setupActions();
     void hideDashboards();
     void showDashboards();
+    void setDashboardActionDecoration(bool isDashboardsViewActive);
     void setDashboardActionVisible(bool visible);
     void commitWarningsToMonitor(WorkflowAbstractRunner *t);
 
     void runWizard(Wizard *w);
     void checkAutoRunWizard();
     void loadWizardResult(const QString &result);
+    void procItemAdded();
 
     DashboardManagerHelper * getDMHInstance();
 
@@ -315,7 +315,7 @@ private:
 
     bool scriptingMode;
 
-    QMenu *elementsMenu;
+    QPointer<QMenu> elementsMenu;
 
     QAction* deleteAction;
     QAction* deleteShortcut;
@@ -330,7 +330,7 @@ private:
     QAction* newAction;
     QAction* createScriptAction;
     QAction* editScriptAction;
-    QAction* externalToolAction;
+    QAction* createCmdlineBasedWorkerAction;
     QAction* appendExternalTool;
     QAction* editExternalToolAction;
     QAction* configureParameterAliasesAction;
@@ -353,12 +353,9 @@ private:
     QAction* loadSep;
     QAction* runSep;
     QAction* confSep;
-    QAction* scriptSep;
     QAction* extSep;
-    QAction* editSep;
     QAction* scaleSep;
     QAction* scaleAction;
-    QAction* styleAction;
     QAction* scriptAction;
     QAction* dmAction;
     QList<QAction*> styleActions;
@@ -413,10 +410,10 @@ public:
     DashboardManagerHelper(QAction *dmAction, WorkflowView *parent);
 
 private slots:
-    void sl_runScanTask();
     void sl_result(int result);
-    void sl_scanTaskFinished();
-    void sl_removeTaskFinished();
+    void sl_showDashboardsManagerDialog();
+    void sl_dashboardsScanningStarted();
+    void sl_dashboardsScanningFinished();
 
 private:
     QAction *dmAction;

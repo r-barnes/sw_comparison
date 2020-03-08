@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -90,7 +90,7 @@ void BedGraphToBigWigFactory::init() {
     U2DataPath* dataPath = NULL;
     U2DataPathRegistry* dpr =  AppContext::getDataPathRegistry();
     if (dpr){
-        U2DataPath* dp = dpr->getDataPathByName(GENOMES_DATA_NAME);
+        U2DataPath* dp = dpr->getDataPathByName(BigWigSupport::GENOMES_DATA_NAME);
         if (dp && dp->isValid()){
             dataPath = dp;
         }
@@ -126,7 +126,7 @@ void BedGraphToBigWigFactory::init() {
             BedGraphToBigWigWorker::tr("Select the custom output folder."));
 
         Descriptor outName(BedGraphToBigWigWorker::OUT_NAME_ID, BedGraphToBigWigWorker::tr("Output name"),
-            BedGraphToBigWigWorker::tr("A name of an output file. If default of empty value is provided the output name is the name of the first BAM file with an extention."));
+            BedGraphToBigWigWorker::tr("A name of an output file. If default of empty value is provided the output name is the name of the first BAM file with an extension."));
 
         Descriptor blockSize(BedGraphToBigWigWorker::BLOCK_SIZE, BedGraphToBigWigWorker::tr("Block size"),
             BedGraphToBigWigWorker::tr("Number of items to bundle in r-tree (-blockSize)."));
@@ -139,6 +139,7 @@ void BedGraphToBigWigFactory::init() {
 
         Descriptor genomeAttrDesc(BedGraphToBigWigWorker::GENOME, BedGraphToBigWigWorker::tr("Genome"),
             BedGraphToBigWigWorker::tr("File with genome length."));
+
 
         a << new Attribute(outDir, BaseTypes::NUM_TYPE(), false, QVariant(FileAndDirectoryUtils::WORKFLOW_INTERNAL));
         Attribute* customDirAttr = new Attribute(customDir, BaseTypes::STRING_TYPE(), false, QVariant(""));
@@ -161,7 +162,6 @@ void BedGraphToBigWigFactory::init() {
         a << new Attribute( blockSize, BaseTypes::NUM_TYPE(), false, QVariant(256));
         a << new Attribute( itemsPerSlot, BaseTypes::NUM_TYPE(), false, QVariant(1024));
         a << new Attribute( unc, BaseTypes::BOOL_TYPE(), false, QVariant(false));
-
     }
 
     QMap<QString, PropertyDelegate*> delegates;
@@ -187,13 +187,12 @@ void BedGraphToBigWigFactory::init() {
             vm = dataPath->getDataItemsVariantMap();
         }
         delegates[BedGraphToBigWigWorker::GENOME] = new ComboBoxWithUrlsDelegate(vm);
-
     }
 
     ActorPrototype* proto = new IntegralBusActorPrototype(desc, p, a);
     proto->setEditor(new DelegateEditor(delegates));
     proto->setPrompter(new BedGraphToBigWigPrompter());
-    proto->addExternalTool(ET_BIGWIG);
+    proto->addExternalTool(BigWigSupport::ET_BIGWIG_ID);
 
     WorkflowEnv::getProtoRegistry()->registerProto(BaseActorCategories::CATEGORY_CONVERTERS(), proto);
     DomainFactory *localDomain = WorkflowEnv::getDomainRegistry()->getById(LocalDomainFactory::ID);

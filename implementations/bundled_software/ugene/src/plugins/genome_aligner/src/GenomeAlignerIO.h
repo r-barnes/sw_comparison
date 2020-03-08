@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -53,6 +53,10 @@ public:
     virtual SearchQuery *read() = 0;
     virtual bool isEnd() = 0;
     virtual int getProgress() = 0;
+    //It's better to make this function pure virtual,
+    //so if you need it in an inherited class, where it isn't overloaded yet,
+    //you need to overload the needed func
+    virtual QString getMemberError() { assert(false); return QString(); }
 };
 
 class GenomeAlignerWriter {
@@ -98,6 +102,8 @@ public:
     inline SearchQuery *read();
     inline bool isEnd();
     int getProgress();
+    QString getMemberError();
+
 private:
     bool initOk;
     StreamSequenceReader reader;
@@ -169,7 +175,9 @@ private:
 
 class GenomeAlignerDbiWriter : public GenomeAlignerWriter {
 public:
-    GenomeAlignerDbiWriter(const QString &dbiFilePath, const QString &refName, int refLength);
+    GenomeAlignerDbiWriter(const QString &dbiFilePath, const QString &assemblyName, int refLength,
+                           const QString& referenceObjectName = QString(),
+                           const QString& referenceUrlForCrossLink = QString());
     inline void write(SearchQuery *seq, SAType offset);
     void close();
     void setReferenceName(const QString &) {}
@@ -181,6 +189,7 @@ private:
     U2AssemblyDbi *wDbi;
     U2Assembly assembly;
     QList<U2AssemblyRead> reads;
+    QMutex writeLock;
 
     static const qint64 readBunchSize;
 };

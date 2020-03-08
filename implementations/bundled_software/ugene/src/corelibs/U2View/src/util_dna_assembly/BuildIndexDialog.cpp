@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -48,12 +48,12 @@ BuildIndexDialog::BuildIndexDialog(const DnaAssemblyAlgRegistry* registry, QWidg
 {
     setupUi(this);
     QMap<QString,QString> helpPagesMap;
-    helpPagesMap.insert("BWA","21433406");
-    helpPagesMap.insert("BWA-MEM","21433440");
-    helpPagesMap.insert("BWA-SW","21433434");
-    helpPagesMap.insert("Bowtie","21433403");
-    helpPagesMap.insert("Bowtie2","21433431");
-    helpPagesMap.insert("UGENE Genome Aligner","21433409");
+    helpPagesMap.insert("BWA","24742605");
+    helpPagesMap.insert("BWA-MEM","24742639");
+    helpPagesMap.insert("BWA-SW","24742633");
+    helpPagesMap.insert("Bowtie","24742602");
+    helpPagesMap.insert("Bowtie2","24742630");
+    helpPagesMap.insert("UGENE Genome Aligner","24742608");
     new ComboboxDependentHelpButton(this, buttonBox, methodNamesBox, helpPagesMap);
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Start"));
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
@@ -174,24 +174,24 @@ void BuildIndexDialog::accept()
 {
 
     if ((getAlgorithmName() == "Bowtie") || (getAlgorithmName() == "Bowtie2") || (getAlgorithmName() == "BWA") || (getAlgorithmName() == "BWA-MEM") || (getAlgorithmName() == "BWA-SW")) {
-        QString externalToolName;
+        QString externalToolId;
         
         if (getAlgorithmName() == "Bowtie2") {
-            externalToolName = "Bowtie 2 build indexer";
+            externalToolId = "USUPP_BOWTIE2_BUILD";
         } 
         if (getAlgorithmName() == "Bowtie"){
-            externalToolName = "Bowtie build indexer";
+            externalToolId = "USUPP_BOWTIE_BUILD";
         }
         if ((getAlgorithmName() == "BWA") || (getAlgorithmName() == "BWA-MEM") || (getAlgorithmName() == "BWA-SW")){
-            externalToolName = "BWA";
+            externalToolId = "USUPP_BWA";
         }
-        if(AppContext::getExternalToolRegistry()->getByName(externalToolName)->getPath().isEmpty()) {
+        if(AppContext::getExternalToolRegistry()->getById(externalToolId)->getPath().isEmpty()) {
             QObjectScopedPointer<QMessageBox> msgBox = new QMessageBox(this);
             msgBox->setWindowTitle(tr("DNA Assembly"));
             msgBox->setInformativeText(tr("Do you want to select it now?"));
             msgBox->setStandardButtons(QMessageBox::Yes | QMessageBox::No);
             msgBox->setDefaultButton(QMessageBox::Yes);
-            msgBox->setText(tr(QString("Path for <i>" + externalToolName + "</i> tool is not selected.").toLatin1().data()));
+            msgBox->setText(tr(QString("Path for <i>" + AppContext::getExternalToolRegistry()->getToolNameById(externalToolId) + "</i> tool is not selected.").toLatin1().data()));
             const int ret = msgBox->exec();
             CHECK(!msgBox.isNull(), );
 
@@ -206,7 +206,7 @@ void BuildIndexDialog::accept()
                 assert(false);
                 break;
             }
-            if(AppContext::getExternalToolRegistry()->getByName(externalToolName)->getPath().isEmpty()) {
+            if(AppContext::getExternalToolRegistry()->getById(externalToolId)->getPath().isEmpty()) {
                 return;
             }
         }

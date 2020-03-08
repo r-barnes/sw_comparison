@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -49,9 +49,9 @@
 namespace U2 {
 
 ETSProjectViewItemsContoller::ETSProjectViewItemsContoller(QObject* p) : QObject(p) {
-    formatDBOnSelectionAction=new ExternalToolSupportAction(tr("FormatDB..."), this, QStringList(ET_FORMATDB));
-    makeBLASTDBOnSelectionAction=new ExternalToolSupportAction(tr("BLAST+ make DB..."), this, QStringList(ET_MAKEBLASTDB));
-    formatDBOnSelectionAction->setObjectName(ET_FORMATDB);
+    formatDBOnSelectionAction = new ExternalToolSupportAction(tr("FormatDB..."), this, QStringList(FormatDBSupport::ET_FORMATDB_ID));
+    makeBLASTDBOnSelectionAction = new ExternalToolSupportAction(tr("BLAST+ make DB..."), this, QStringList(FormatDBSupport::ET_MAKEBLASTDB_ID));
+    formatDBOnSelectionAction->setObjectName(FormatDBSupport::ET_FORMATDB_ID);
     connect(formatDBOnSelectionAction,SIGNAL(triggered()), SLOT(sl_runFormatDBOnSelection()));
     connect(makeBLASTDBOnSelectionAction,SIGNAL(triggered()), SLOT(sl_runFormatDBOnSelection()));
 
@@ -87,16 +87,17 @@ void ETSProjectViewItemsContoller::sl_addToProjectViewMenu(QMenu& m) {
 void ETSProjectViewItemsContoller::sl_runFormatDBOnSelection(){
     ExternalToolSupportAction* s = qobject_cast<ExternalToolSupportAction*>(sender());
     assert(s != NULL);
-    assert((s->getToolNames().contains(ET_FORMATDB))||(s->getToolNames().contains(ET_MAKEBLASTDB)));
+    assert((s->getToolIds().contains(FormatDBSupport::ET_FORMATDB_ID))||(s->getToolIds().contains(FormatDBSupport::ET_MAKEBLASTDB_ID)));
     //Check that formatDB and temporary folder path defined
-    if (AppContext::getExternalToolRegistry()->getByName(s->getToolNames().at(0))->getPath().isEmpty()){
+    if (AppContext::getExternalToolRegistry()->getById(s->getToolIds().at(0))->getPath().isEmpty()){
         QObjectScopedPointer<QMessageBox> msgBox = new QMessageBox;
-        if(s->getToolNames().at(0) == ET_FORMATDB){
-            msgBox->setWindowTitle("BLAST "+s->getToolNames().at(0));
-            msgBox->setText(tr("Path for BLAST %1 tool not selected.").arg(s->getToolNames().at(0)));
+        QString toolName = AppContext::getExternalToolRegistry()->getById(s->getToolIds().at(0))->getName();
+        if(s->getToolIds().at(0) == FormatDBSupport::ET_FORMATDB_ID){
+            msgBox->setWindowTitle("BLAST " + toolName);
+            msgBox->setText(tr("Path for BLAST %1 tool not selected.").arg(toolName));
         }else{
-            msgBox->setWindowTitle("BLAST+ "+s->getToolNames().at(0));
-            msgBox->setText(tr("Path for BLAST+ %1 tool not selected.").arg(s->getToolNames().at(0)));
+            msgBox->setWindowTitle("BLAST+ "+s->getToolIds().at(0));
+            msgBox->setText(tr("Path for BLAST+ %1 tool not selected.").arg(toolName));
         }
         msgBox->setInformativeText(tr("Do you want to select it now?"));
         msgBox->setStandardButtons(QMessageBox::Yes | QMessageBox::No);
@@ -116,7 +117,7 @@ void ETSProjectViewItemsContoller::sl_runFormatDBOnSelection(){
                break;
          }
     }
-    if (AppContext::getExternalToolRegistry()->getByName(s->getToolNames().at(0))->getPath().isEmpty()){
+    if (AppContext::getExternalToolRegistry()->getById(s->getToolIds().at(0))->getPath().isEmpty()){
         return;
     }
     U2OpStatus2Log os(LogLevel_DETAILS);
@@ -145,14 +146,16 @@ void ETSProjectViewItemsContoller::sl_runFormatDBOnSelection(){
             }
         }
     }
-    QObjectScopedPointer<FormatDBSupportRunDialog> formatDBRunDialog = new FormatDBSupportRunDialog(s->getToolNames().at(0), settings, AppContext::getMainWindow()->getQMainWindow());
+    QString toolId = s->getToolIds().at(0);
+    QString toolName = AppContext::getExternalToolRegistry()->getById(toolId)->getName();
+    QObjectScopedPointer<FormatDBSupportRunDialog> formatDBRunDialog = new FormatDBSupportRunDialog(toolName, settings, AppContext::getMainWindow()->getQMainWindow());
     formatDBRunDialog->exec();
     CHECK(!formatDBRunDialog.isNull(), );
 
     if (formatDBRunDialog->result() != QDialog::Accepted){
         return;
     }
-    FormatDBSupportTask* formatDBSupportTask=new FormatDBSupportTask(s->getToolNames().at(0), settings);
+    FormatDBSupportTask* formatDBSupportTask = new FormatDBSupportTask(toolId, settings);
     AppContext::getTaskScheduler()->registerTopLevelTask(formatDBSupportTask);
 }
 

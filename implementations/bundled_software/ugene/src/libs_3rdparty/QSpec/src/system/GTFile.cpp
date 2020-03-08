@@ -314,8 +314,9 @@ void GTFile::removeDir(QString dirName)
 
 #define GT_METHOD_NAME "backup"
 void GTFile::backup(GUITestOpStatus &os, const QString& path) {
-
-    copy(os, path, path + backupPostfix);
+    if (QFile(path).exists()) {
+        copy(os, path, path + backupPostfix);
+    }
 }
 #undef GT_METHOD_NAME
 

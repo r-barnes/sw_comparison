@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -48,14 +48,14 @@ void FormatDBSupportTaskSettings::reset() {
     outputPath = "";
     databaseTitle = "";
     isInputAmino = true;
-    tempDirPath = AppContext::getAppSettings()->getUserAppsSettings()->getCurrentProcessTemporaryDirPath(FORMATDB_TMP_DIR);
+    tempDirPath = AppContext::getAppSettings()->getUserAppsSettings()->getCurrentProcessTemporaryDirPath(FormatDBSupport::FORMATDB_TMP_DIR);
 }
 
-FormatDBSupportTask::FormatDBSupportTask(const QString& name, const FormatDBSupportTaskSettings& _settings) :
+FormatDBSupportTask::FormatDBSupportTask(const QString& id, const FormatDBSupportTaskSettings& _settings) :
         Task(tr("Run NCBI FormatDB task"), TaskFlags_NR_FOSE_COSC | TaskFlag_ReportingIsSupported | TaskFlag_ReportingIsEnabled),
         prepareTask(NULL),
         formatDBTask(NULL),
-        toolName(name),
+        toolId(id),
         settings(_settings)
 {
     GCOUNTER(cvar, tvar, "FormatDBSupportTask");
@@ -168,8 +168,8 @@ void FormatDBSupportTask::createFormatDbTask() {
     SAFE_POINT_EXT(formatDBTask == NULL, setError(tr("Trying to initialize Format DB task second time")), );
 
     QStringList arguments;
-    assert((toolName == ET_FORMATDB)||(toolName == ET_MAKEBLASTDB));
-    if(toolName == ET_FORMATDB){
+    assert((toolId == FormatDBSupport::ET_FORMATDB_ID)||(toolId == FormatDBSupport::ET_MAKEBLASTDB_ID));
+    if(toolId == FormatDBSupport::ET_FORMATDB_ID) {
         for (int i = 0; i < inputFastaFiles.length(); i++){
             if (inputFastaFiles[i].contains(" ")) {
                 stateInfo.setError(tr("Input files paths contain space characters."));
@@ -181,7 +181,7 @@ void FormatDBSupportTask::createFormatDbTask() {
         arguments <<"-n"<< settings.outputPath;
         arguments <<"-p"<< (settings.isInputAmino ? "T" : "F");
         externalToolLog = settings.outputPath + "formatDB.log";
-    }else if (toolName == ET_MAKEBLASTDB){
+    } else if (toolId == FormatDBSupport::ET_MAKEBLASTDB_ID) {
         for (int i = 0; i < inputFastaFiles.length(); i++){
             inputFastaFiles[i] = "\"" + inputFastaFiles[i] + "\"";
         }
@@ -196,7 +196,7 @@ void FormatDBSupportTask::createFormatDbTask() {
         arguments <<"-dbtype"<< (settings.isInputAmino ? "prot" : "nucl");
     }
 
-    formatDBTask = new ExternalToolRunTask(toolName, arguments, new ExternalToolLogParser());
+    formatDBTask = new ExternalToolRunTask(toolId, arguments, new ExternalToolLogParser());
     formatDBTask->setSubtaskProgressWeight(95);
 }
 

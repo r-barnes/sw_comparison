@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -77,7 +77,7 @@ GUI_TEST_CLASS_DEFINITION(test_0002){
 //1. {Tools -> Align to reference -> Align short reads}
 
 //2. Fill the dialog:
-//    {Alignment method} : Bowtie2
+//    {Mapping tool} : Bowtie2
 //    {Reference sequence} : _common_data/fasta/human_T1_cutted.fa
 //    {Result file name} : _tmp/bowtie2/human_T1_cutted.sam
 //    {Library} : single-end
@@ -132,7 +132,7 @@ GUI_TEST_CLASS_DEFINITION(test_0003) {
 //    File will be copied to the sandbox
 //    1. {Tools -> Align to reference -> Align short reads}
 //    2. Fill the dialog:
-//        {Alignment method} : Bowtie2
+//        {Mapping tool} : Bowtie2
 //        {Reference sequence} : _common_data/bowtie2/index/human_T1_cutted.fa
 //        {Result file name} : _tmp/bowtie2/human_T1_cutted.sam (in current test result path is default)
 //        {Library} : single-end
@@ -198,7 +198,7 @@ GUI_TEST_CLASS_DEFINITION(test_0004) {
 //    File will be copied to the sandbox
 //    1. {Tools -> Align to reference -> Align short reads}
 //    2. Fill the dialog:
-//        {Alignment method} : Bowtie2
+//        {Mapping tool} : Bowtie2
 //        {Reference sequence} : _common_data/bowtie2/index/human_T1_cutted.fa
 //        {Library} : single-end
 //        {Prebuilt index} : unchecked

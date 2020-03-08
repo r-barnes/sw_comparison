@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -84,7 +84,7 @@ public:
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // BedToolsIntersectTask & BedtoolsIntersectLogParser
-class BedtoolsIntersectTask : public Task {
+class BedtoolsIntersectTask : public ExternalToolSupportTask {
     Q_OBJECT
 public:
     BedtoolsIntersectTask(const BedtoolsIntersectFilesSettings &settings);
@@ -112,7 +112,7 @@ private:
 class SaveMultipleDocuments;
 class LoadDocumentTask;
 
-class BedtoolsIntersectAnnotationsByEntityTask : public Task {
+class BedtoolsIntersectAnnotationsByEntityTask : public ExternalToolSupportTask {
     Q_OBJECT
 public:
     BedtoolsIntersectAnnotationsByEntityTask(const BedtoolsIntersectByEntityRefSettings& settings);

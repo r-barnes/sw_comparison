@@ -124,6 +124,7 @@ url_out = dir + "homologous.gb"
         wizard {
             name:"Remote BLASTing Wizard";
             help-page-id:16122736;
+            auto-run: true;
             page {
                 id:1;
                 next:2;

@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -719,6 +719,8 @@ GUI_TEST_CLASS_DEFINITION(test_0015) {
 
     // 5. Set the primers from the library
     GTUtilsOptionPanelSequenceView::openTab(os, GTUtilsOptionPanelSequenceView::InSilicoPcr);
+    GTUtilsTaskTreeView::waitTaskFinished(os);
+    GTGlobals::sleep();
 
     GTUtilsDialog::waitForDialog(os, new PrimerLibrarySelectorFiller(os, 0, true));
     GTWidget::click(os, GTUtilsPcr::browseButton(os, U2Strand::Direct));
@@ -726,13 +728,14 @@ GUI_TEST_CLASS_DEFINITION(test_0015) {
 
     GTUtilsDialog::waitForDialog(os, new PrimerLibrarySelectorFiller(os, 1, true));
     GTWidget::click(os, GTUtilsPcr::browseButton(os, U2Strand::Complementary));
+    GTGlobals::sleep();
 
     // 4. Find the product
     GTWidget::click(os, GTWidget::findWidget(os, "findProductButton"));
     GTUtilsTaskTreeView::waitTaskFinished(os);
 
-    // Expected: 3 results were found
-    CHECK_SET_ERR(3 == GTUtilsPcr::productsCount(os), "Wrong results count");
+    // Expected: 2 results were found
+    CHECK_SET_ERR(2 == GTUtilsPcr::productsCount(os), "Wrong results count");
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0016) {

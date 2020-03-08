@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -27,6 +27,7 @@
 #include <U2Core/CMDLineHelpProvider.h>
 #include <U2Core/CMDLineRegistry.h>
 #include <U2Core/CMDLineUtils.h>
+#include <U2Core/FileAndDirectoryUtils.h>
 #include <U2Core/GAutoDeleteList.h>
 #include <U2Core/L10n.h>
 #include <U2Core/ServiceTypes.h>
@@ -35,10 +36,13 @@
 #include <U2Core/TaskStarter.h>
 #include <U2Core/U2SafePoints.h>
 
+#include <U2Designer/DashboardInfoRegistry.h>
+
 #include <U2Gui/ToolsMenu.h>
 
 #include <U2Lang/IncludedProtoFactory.h>
 #include <U2Lang/WorkflowEnv.h>
+#include <U2Lang/WorkflowSettings.h>
 #include <U2Lang/WorkflowTasksRegistry.h>
 
 #include <U2Test/GTest.h>
@@ -67,12 +71,16 @@ extern "C" Q_DECL_EXPORT Plugin* U2_PLUGIN_INIT_FUNC() {
 
 #define PLUGIN_SETTINGS QString("workflowview/")
 
-const QString WorkflowDesignerPlugin::RUN_WORKFLOW              = "task";
-const QString WorkflowDesignerPlugin::REMOTE_MACHINE            = "task-remote-machine";
-const QString WorkflowDesignerPlugin::PRINT                     = "print";
+const QString WorkflowDesignerPlugin::RUN_WORKFLOW               = "task";
+const QString WorkflowDesignerPlugin::REMOTE_MACHINE             = "task-remote-machine";
+const QString WorkflowDesignerPlugin::PRINT                      = "print";
+const QString WorkflowDesignerPlugin::CUSTOM_EL_WITH_SCRIPTS_DIR = "custom-element-script-dir";
+const QString WorkflowDesignerPlugin::CUSTOM_EXTERNAL_TOOL_DIR   = "custom-element-external-tool-dir";
+const QString WorkflowDesignerPlugin::INCLUDED_ELEMENTS_DIR      = "imported-workflow-element-dir";
+const QString WorkflowDesignerPlugin::WORKFLOW_OUTPUT_DIR        = "workfow-output-dir";
 
 WorkflowDesignerPlugin::WorkflowDesignerPlugin()
-: Plugin(tr("Workflow Designer"), tr("Workflow Designer allows to create complex computational workflows.")){
+: Plugin(tr("Workflow Designer"), tr("Workflow Designer allows one to create complex computational workflows.")){
     if (AppContext::getMainWindow()) {
         services << new WorkflowDesignerService();
         AppContext::getAppSettingsGUI()->registerPage(new WorkflowSettingsPageController());
@@ -103,24 +111,40 @@ WorkflowDesignerPlugin::WorkflowDesignerPlugin()
 
     CHECK(AppContext::getPluginSupport(), );
     connect(AppContext::getPluginSupport(), SIGNAL(si_allStartUpPluginsLoaded()), SLOT(sl_initWorkers()));
+
+    DashboardInfoRegistry *dashboardsInfoRegistry = AppContext::getDashboardInfoRegistry();
+    SAFE_POINT(nullptr != dashboardsInfoRegistry, "dashboardsInfoRegistry is nullptr", );
+    AppContext::getDashboardInfoRegistry()->scanDashboardsDir();
 }
 
 void WorkflowDesignerPlugin::processCMDLineOptions() {
     CMDLineRegistry * cmdlineReg = AppContext::getCMDLineRegistry();
-    assert(cmdlineReg != NULL);
+    assert(cmdlineReg != nullptr);
+
+    if (cmdlineReg->hasParameter(CUSTOM_EL_WITH_SCRIPTS_DIR)) {
+        WorkflowSettings::setUserDirectory(FileAndDirectoryUtils::getAbsolutePath(cmdlineReg->getParameterValue(CUSTOM_EL_WITH_SCRIPTS_DIR)));
+    }
+    if (cmdlineReg->hasParameter(CUSTOM_EXTERNAL_TOOL_DIR)) {
+        WorkflowSettings::setExternalToolDirectory(FileAndDirectoryUtils::getAbsolutePath(cmdlineReg->getParameterValue(CUSTOM_EXTERNAL_TOOL_DIR)));
+    }
+    if (cmdlineReg->hasParameter(INCLUDED_ELEMENTS_DIR)) {
+        WorkflowSettings::setIncludedElementsDirectory(FileAndDirectoryUtils::getAbsolutePath(cmdlineReg->getParameterValue(INCLUDED_ELEMENTS_DIR)));
+    }
+    if (cmdlineReg->hasParameter(WORKFLOW_OUTPUT_DIR)) {
+        WorkflowSettings::setWorkflowOutputDirectory(FileAndDirectoryUtils::getAbsolutePath(cmdlineReg->getParameterValue(WORKFLOW_OUTPUT_DIR)));
+    }
 
     bool consoleMode = !AppContext::isGUIMode(); // only in console mode we run workflows by default. Otherwise we show them
     if (cmdlineReg->hasParameter( RUN_WORKFLOW ) || (consoleMode && !CMDLineRegistryUtils::getPureValues().isEmpty()) ) {
         Task * t = new WorkflowRunFromCMDLineTask();
-        connect(AppContext::getPluginSupport(), SIGNAL(si_allStartUpPluginsLoaded()), new TaskStarter(t), SLOT(registerTask()));
-    }
-    else{
+        connect(AppContext::getTaskScheduler(), SIGNAL(si_ugeneIsReadyToWork()), new TaskStarter(t), SLOT(registerTask()));
+    } else {
         if( cmdlineReg->hasParameter(GalaxyConfigTask::GALAXY_CONFIG_OPTION) && consoleMode ) {
-            Task *t = NULL;
+            Task *t = nullptr;
             const QString schemePath =  cmdlineReg->getParameterValue( GalaxyConfigTask::GALAXY_CONFIG_OPTION );
             const QString ugenePath = cmdlineReg->getParameterValue( GalaxyConfigTask::UGENE_PATH_OPTION );
             const QString galaxyPath = cmdlineReg->getParameterValue( GalaxyConfigTask::GALAXY_PATH_OPTION );
-            const QString destinationPath = NULL;
+            const QString destinationPath = nullptr;
             t = new GalaxyConfigTask( schemePath, ugenePath, galaxyPath, destinationPath );
             connect(AppContext::getPluginSupport(), SIGNAL(si_allStartUpPluginsLoaded()), new TaskStarter(t), SLOT(registerTask()));
         }
@@ -165,7 +189,7 @@ void WorkflowDesignerPlugin::registerCMDLineHelp() {
         PRINT,
         tr("Prints the content of the specified slot."),
         tr("Prints the content of the specified slot. The incoming/outcoming content of"
-        " specified slot is printed to the standart output."),
+        " specified slot is printed to the standard output."),
         tr("<actor_name>.<port_name>.<slot_name>"));
     Q_UNUSED(printSection);
 
@@ -189,6 +213,10 @@ void WorkflowDesignerPlugin::sl_initWorkers() {
     Workflow::CoreLib::init();
     registerWorkflowTasks();
     Workflow::CoreLib::initIncludedWorkers();
+}
+
+WorkflowDesignerPlugin::~WorkflowDesignerPlugin() {
+    Workflow::CoreLib::cleanup();
 }
 
 class CloseDesignerTask : public Task {
@@ -306,7 +334,11 @@ void WorkflowDesignerService::sl_showDesignerWindow() {
 
 void WorkflowDesignerService::sl_sampleActionClicked(const SampleAction &action) {
     CHECK(checkServiceState(), );
-    WorkflowView::openSample(action);
+
+    WorkflowView *view = WorkflowView::openWD(NULL);
+    CHECK(nullptr != view, );
+
+    view->sl_loadScene(QDir("data:workflow_samples").path() + "/" + action.samplePath, false);
 }
 
 void WorkflowDesignerService::sl_showManagerWindow() {
@@ -326,51 +358,51 @@ void WorkflowDesignerService::initSampleActions() {
 
     const QString externalToolsPlugin = "external_tool_support";
 
-    SampleAction ngsControl(ToolsMenu::NGS_CONTROL, ToolsMenu::NGS_MENU, "NGS/fastqc.uwl", SampleAction::OpenWizard, tr("Reads quality control..."));
+    SampleAction ngsControl(ToolsMenu::NGS_CONTROL, ToolsMenu::NGS_MENU, "NGS/fastqc.uwl", tr("Reads quality control..."));
     ngsControl.requiredPlugins << externalToolsPlugin;
-    SampleAction ngsScaffold(ToolsMenu::NGS_SCAFFOLD, ToolsMenu::NGS_MENU, "Scenarios/length_filter.uwl", SampleAction::OpenWizard, tr("Filter short scaffolds..."));
+    SampleAction ngsDenovo(ToolsMenu::NGS_DENOVO, ToolsMenu::NGS_MENU, "NGS/from_tools_menu_only/ngs_assembly.uwl", tr("Reads de novo assembly (with SPAdes)..."));
+    ngsDenovo.requiredPlugins << externalToolsPlugin;
+    SampleAction ngsScaffold(ToolsMenu::NGS_SCAFFOLD, ToolsMenu::NGS_MENU, "Scenarios/length_filter.uwl", tr("Filter short scaffolds..."));
     ngsScaffold.requiredPlugins << externalToolsPlugin;
-    SampleAction ngsRawDna(ToolsMenu::NGS_RAW_DNA, ToolsMenu::NGS_MENU, "NGS/raw_dna.uwl", SampleAction::Select, tr("Raw DNA-Seq data processing"));
+    SampleAction ngsRawDna(ToolsMenu::NGS_RAW_DNA, ToolsMenu::NGS_MENU, "NGS/raw_dna.uwl", tr("Raw DNA-Seq data processing..."));
     ngsRawDna.requiredPlugins << externalToolsPlugin;
-    SampleAction ngsVariants(ToolsMenu::NGS_CALL_VARIANTS, ToolsMenu::NGS_MENU, "NGS/call_variants.uwl", SampleAction::Select, tr("Variant calling"));
+    SampleAction ngsVariants(ToolsMenu::NGS_CALL_VARIANTS, ToolsMenu::NGS_MENU, "NGS/ngs_variant_calling.uwl", tr("Variant calling..."));
     ngsVariants.requiredPlugins << externalToolsPlugin;
-    SampleAction ngsVariantsAndEffect(ToolsMenu::NGS_CALL_VARIANTS_AND_EFFECT, ToolsMenu::NGS_MENU, "NGS/call_variants_full.uwl", SampleAction::Select, tr("Variant calling and effects prediction"));
-    ngsVariantsAndEffect.requiredPlugins << externalToolsPlugin;
-    SampleAction ngsEffect(ToolsMenu::NGS_VARIANT_EFFECT, ToolsMenu::NGS_MENU, "NGS/variation_annotation.uwl", SampleAction::Select, tr("Annotate variants and predict effects"));
+    SampleAction ngsEffect(ToolsMenu::NGS_VARIANT_EFFECT, ToolsMenu::NGS_MENU, "NGS/ngs_variant_annotation.uwl", tr("Annotate variants and predict effects..."));
     ngsEffect.requiredPlugins << externalToolsPlugin;
-    SampleAction ngsRawRna(ToolsMenu::NGS_RAW_RNA, ToolsMenu::NGS_MENU, "NGS/raw_rna.uwl", SampleAction::Select, tr("Raw RNA-Seq data processing"));
+    SampleAction ngsRawRna(ToolsMenu::NGS_RAW_RNA, ToolsMenu::NGS_MENU, "NGS/raw_rna.uwl", tr("Raw RNA-Seq data processing..."));
     ngsRawRna.requiredPlugins << externalToolsPlugin;
-    SampleAction ngsRna(ToolsMenu::NGS_RNA, ToolsMenu::NGS_MENU, "NGS/tuxedo.uwl", SampleAction::Select, tr("RNA-Seq data analysis"));
+    SampleAction ngsRna(ToolsMenu::NGS_RNA, ToolsMenu::NGS_MENU, "NGS/ngs_transcriptomics_tophat_stringtie.uwl", tr("RNA-Seq data analysis..."));
     ngsRna.requiredPlugins << externalToolsPlugin;
-    SampleAction ngsTranscript(ToolsMenu::NGS_TRANSCRIPT, ToolsMenu::NGS_MENU, "NGS/extract_transcript_seq.uwl", SampleAction::Select, tr("Extract transcript sequences"));
+    SampleAction ngsTranscript(ToolsMenu::NGS_TRANSCRIPT, ToolsMenu::NGS_MENU, "NGS/extract_transcript_seq.uwl", tr("Extract transcript sequences..."));
     ngsTranscript.requiredPlugins << externalToolsPlugin;
-    SampleAction ngsRawChip(ToolsMenu::NGS_RAW_CHIP, ToolsMenu::NGS_MENU, "NGS/raw_chip.uwl", SampleAction::Select, tr("Raw ChIP-Seq data processing"));
+    SampleAction ngsRawChip(ToolsMenu::NGS_RAW_CHIP, ToolsMenu::NGS_MENU, "NGS/raw_chip.uwl", tr("Raw ChIP-Seq data processing..."));
     ngsRawChip.requiredPlugins << externalToolsPlugin;
-    SampleAction ngsChip(ToolsMenu::NGS_CHIP, ToolsMenu::NGS_MENU, "NGS/cistrome.uwl", SampleAction::Select, tr("ChIP-Seq data analysis"));
+    SampleAction ngsChip(ToolsMenu::NGS_CHIP, ToolsMenu::NGS_MENU, "NGS/cistrome.uwl", tr("ChIP-Seq data analysis..."));
     ngsChip.requiredPlugins << externalToolsPlugin;
-    SampleAction ngsChipCov(ToolsMenu::NGS_CHIP_COVERAGE, ToolsMenu::NGS_MENU, "NGS/chipseq_coverage.uwl", SampleAction::Select, tr("ChIP-Seq coverage"));
-    ngsChipCov.requiredPlugins << externalToolsPlugin;
-    SampleAction ngsCovegare(ToolsMenu::NGS_COVERAGE, ToolsMenu::NGS_MENU, "NGS/extract_coverage.uwl", SampleAction::Select, tr("Extract coverage from assemblies"));
-    ngsCovegare.requiredPlugins << externalToolsPlugin;
-    SampleAction ngsConsensus(ToolsMenu::NGS_CONSENSUS, ToolsMenu::NGS_MENU, "NGS/consensus.uwl", SampleAction::Select, tr("Extract consensus from assemblies"));
+    SampleAction ngsClassification(ToolsMenu::NGS_CLASSIFICATION, ToolsMenu::NGS_MENU, "NGS/from_tools_menu_only/ngs_classification.uwl", tr("Metagenomics classification..."));
+    ngsChip.requiredPlugins << externalToolsPlugin << "kraken_support" << "clark_support" << "diamond_support" << "wevote_support" << "ngs_reads_classification";
+    SampleAction ngsCoverage(ToolsMenu::NGS_COVERAGE, ToolsMenu::NGS_MENU, "NGS/extract_coverage.uwl", tr("Extract coverage from assemblies..."));
+    ngsCoverage.requiredPlugins << externalToolsPlugin;
+    SampleAction ngsConsensus(ToolsMenu::NGS_CONSENSUS, ToolsMenu::NGS_MENU, "NGS/consensus.uwl", tr("Extract consensus from assemblies..."));
     ngsConsensus.requiredPlugins << externalToolsPlugin;
 
-    SampleAction blastNcbi(ToolsMenu::BLAST_NCBI, ToolsMenu::BLAST_MENU, "Scenarios/remote_blasting.uwl", SampleAction::Select, tr("Remote NCBI BLAST"));
+    SampleAction blastNcbi(ToolsMenu::BLAST_NCBI, ToolsMenu::BLAST_MENU, "Scenarios/remote_blasting.uwl", tr("Remote NCBI BLAST..."));
     blastNcbi.requiredPlugins << "remote_blast";
 
     samples->registerAction(ngsControl);
+    samples->registerAction(ngsDenovo);
     samples->registerAction(ngsScaffold);
     samples->registerAction(ngsRawDna);
     samples->registerAction(ngsVariants);
-    samples->registerAction(ngsVariantsAndEffect);
     samples->registerAction(ngsEffect);
     samples->registerAction(ngsRawRna);
     samples->registerAction(ngsRna);
     samples->registerAction(ngsTranscript);
     samples->registerAction(ngsRawChip);
     samples->registerAction(ngsChip);
-    samples->registerAction(ngsChipCov);
-    samples->registerAction(ngsCovegare);
+    samples->registerAction(ngsClassification);
+    samples->registerAction(ngsCoverage);
     samples->registerAction(ngsConsensus);
     samples->registerAction(blastNcbi);
 }

@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -22,14 +22,11 @@
 #ifndef _U2_DBI_H_
 #define _U2_DBI_H_
 
-#include <U2Core/U2Type.h>
 #include <U2Core/U2FormatCheckResult.h>
 #include <U2Core/U2Feature.h>
 #include <U2Core/U2Assembly.h>
-#include <U2Core/U2Attribute.h>
 #include <U2Core/U2Mod.h>
 #include <U2Core/U2Msa.h>
-#include <U2Core/U2Sequence.h>
 #include <U2Core/GUrl.h>
 
 #include <QHash>
@@ -56,7 +53,7 @@ class UdrDbi;
 class Version;
 
 class U2CORE_EXPORT U2DbiOptions {
-public :
+public:
     /** Application version number that is supposed to be minimum version required to make use of the database */
     static const QString APP_MIN_COMPATIBLE_VERSION;
 
@@ -81,7 +78,7 @@ public :
 
 /**
     Operational state of the database.
-*/
+    */
 enum U2DbiState {
     U2DbiState_Void = 1,
     U2DbiState_Starting = 2,
@@ -91,72 +88,72 @@ enum U2DbiState {
 
 /**
     DBI feature flags
-*/
+    */
 enum U2DbiFeature {
 
     /** DBI supports sequence reading methods */
-    U2DbiFeature_ReadSequence                   = 1,
+    U2DbiFeature_ReadSequence = 1,
     /** DBI supports MSA reading methods */
-    U2DbiFeature_ReadMsa                        = 2,
+    U2DbiFeature_ReadMsa = 2,
     /** DBI supports Assembly reading methods */
-    U2DbiFeature_ReadAssembly                   = 3,
+    U2DbiFeature_ReadAssembly = 3,
     /** DBI supports sequence annotations reading methods */
-    U2DbiFeature_ReadFeatures                   = 4,
+    U2DbiFeature_ReadFeatures = 4,
     /** DBI supports read methods for attributes */
-    U2DbiFeature_ReadAttributes                 = 5,
+    U2DbiFeature_ReadAttributes = 5,
     /** DBI supports read methods for remote objects  */
-    U2DbiFeature_ReadCrossDatabaseReferences    = 6,
+    U2DbiFeature_ReadCrossDatabaseReferences = 6,
     /** DBI supports readings Variants and VariantTracks */
-    U2DbiFeature_ReadVariant                    = 7,
+    U2DbiFeature_ReadVariant = 7,
     /** DBI supports readings of custom properties */
-    U2DbiFeature_ReadProperties                 = 8,
+    U2DbiFeature_ReadProperties = 8,
     /** DBI supports reading of objects modification tracks */
-    U2DbiFeature_ReadModifications              = 9,
+    U2DbiFeature_ReadModifications = 9,
     /** DBI supports UDR reading methods */
-    U2DbiFeature_ReadUdr                        = 10,
+    U2DbiFeature_ReadUdr = 10,
     /** DBI supports reading of object relations */
-    U2DbiFeature_ReadRelations                  = 11,
+    U2DbiFeature_ReadRelations = 11,
 
     /** DBI supports changing/storing sequences */
-    U2DbiFeature_WriteSequence                  = 101,
+    U2DbiFeature_WriteSequence = 101,
     /** DBI supports changing/storing multiple sequence alignments */
-    U2DbiFeature_WriteMsa                       = 102,
+    U2DbiFeature_WriteMsa = 102,
     /** DBI supports changing/storing assemblies */
-    U2DbiFeature_WriteAssembly                  = 103
+    U2DbiFeature_WriteAssembly = 103
     /** DBI supports changing/storing sequence annotations */,
-    U2DbiFeature_WriteFeatures                  = 104,
+    U2DbiFeature_WriteFeatures = 104,
     /** DBI supports changing/storing attributes */
-    U2DbiFeature_WriteAttributes                = 105,
+    U2DbiFeature_WriteAttributes = 105,
     /** DBI supports cross database references */
-    U2DbiFeature_WriteCrossDatabaseReferences   = 106,
+    U2DbiFeature_WriteCrossDatabaseReferences = 106,
     /** DBI supports changing/storing Variants and VariantTracks */
-    U2DbiFeature_WriteVariant                   = 107,
+    U2DbiFeature_WriteVariant = 107,
     /** DBI supports changing/storing custom properties */
-    U2DbiFeature_WriteProperties                = 108,
+    U2DbiFeature_WriteProperties = 108,
     /** DBI supports changing/storing of objects modification tracks */
-    U2DbiFeature_WriteModifications             = 109,
+    U2DbiFeature_WriteModifications = 109,
     /** DBI supports changing/storing UDR */
-    U2DbiFeature_WriteUdr                       = 110,
+    U2DbiFeature_WriteUdr = 110,
     /** DBI supports writing of object relations */
-    U2DbiFeature_WriteRelations                 = 111,
+    U2DbiFeature_WriteRelations = 111,
 
     /** DBI supports removal of objects */
-    U2DbiFeature_RemoveObjects                  = 200,
+    U2DbiFeature_RemoveObjects = 200,
     /** DBI supports set folder modification operations */
-    U2DbiFeature_ChangeFolders                  = 201,
+    U2DbiFeature_ChangeFolders = 201,
 
     /** DBI provides optimized algorithm for assembly reads packing */
-    U2DbiFeature_AssemblyReadsPacking           = 300,
+    U2DbiFeature_AssemblyReadsPacking = 300,
     /** DBI provides optimized algorithm for coverage calculation */
-    U2DbiFeature_AssemblyCoverageStat           = 301,
+    U2DbiFeature_AssemblyCoverageStat = 301,
 
     /** DBI provides optimized algorithm for sorting attributes */
-    U2DbiFeature_AttributeSorting               = 400,
+    U2DbiFeature_AttributeSorting = 400,
 
     /** DBI supports undo/redo of changing operations */
-    U2DbiFeature_UndoRedo                       = 500,
+    U2DbiFeature_UndoRedo = 500,
 
-    U2DbiFeature_GlobalReadOnly                 = 600
+    U2DbiFeature_GlobalReadOnly = 600
 };
 
 /** Indicates object life-cycle and storage location */
@@ -172,7 +169,7 @@ enum U2DbiObjectRank {
 /**
     DBI factory provides functions to create new DBI instances
     and check file content to ensure that file is a valid database file
-*/
+    */
 class U2CORE_EXPORT U2DbiFactory {
 public:
     U2DbiFactory();
@@ -188,7 +185,7 @@ public:
         Checks that data pointed by properties is a valid DBI resource
         rawData param is used for compatibility with UGENE 1.x format detection
         and can be used by factory directly to check database header
-    */
+        */
     virtual FormatCheckResult isValidDbi(const QHash<QString, QString>& properties, const QByteArray& rawData, U2OpStatus& os) const = 0;
 
     virtual GUrl id2Url(const U2DbiId& id) const = 0;
@@ -200,7 +197,7 @@ public:
 /**
     Database access interface.
     Database examples: fasta file, genbank file, BAM file, SQLite file
-*/
+    */
 class U2CORE_EXPORT U2Dbi {
 public:
     virtual ~U2Dbi();
@@ -211,13 +208,13 @@ public:
     /**
         Boots the database up to functional state.
         Some property names are reserved:
-            'url' - url of the DBI
-            'create'  - '1' or '0'- if DBI does not exist, asks to create instance if possible
-            'user', 'password' - user and password to access to the DBI
+        'url' - url of the DBI
+        'create'  - '1' or '0'- if DBI does not exist, asks to create instance if possible
+        'user', 'password' - user and password to access to the DBI
         The 'persistentData' parameter provides database state saved from previous session in a project or workspace, if any.
 
         @see shutdown()
-    */
+        */
     virtual void init(const QHash<QString, QString>& properties, const QVariantMap& persistentData, U2OpStatus& os) = 0;
 
     /** Stops the database and frees up used resources.
@@ -233,25 +230,25 @@ public:
     /**
         Ensures that dbi state is synchronized with storage
         Return 'true' of operation is successful
-    */
+        */
     virtual bool flush(U2OpStatus& os) = 0;
 
     /**  Unique database id. Usually is an URL of the database */
     virtual U2DbiId getDbiId() const = 0;
 
     /** Return factory instance for this DBI */
-    virtual U2DbiFactoryId getFactoryId() const  = 0;
+    virtual U2DbiFactoryId getFactoryId() const = 0;
 
     virtual U2DbiRef getDbiRef() const;
 
     /** Returning result specifies whether the database internal structure is ready for work,
         namely, the database schema is created correctly.
-    */
+        */
     virtual bool isInitialized(U2OpStatus &);
 
     /** Performs initialization of the database schema. The database is supposed to be available
         for use after this function returns if @os has no error.
-    */
+        */
     virtual void populateDefaultSchema(U2OpStatus &os);
 
     /** Returns all features supported by this DBI instance */
@@ -272,83 +269,83 @@ public:
     /**
         Database interface to access objects
         All dbi implementations must support a subset of this interface
-    */
+        */
     virtual U2ObjectDbi* getObjectDbi() = 0;
 
     /**
         Database interface to access object relations.
-    */
+        */
     virtual U2ObjectRelationsDbi* getObjectRelationsDbi();
 
     /**
         U2Sequence related DBI routines
         Not NULL only if U2DbiFeature_ReadSequences supported
-    */
+        */
     virtual U2SequenceDbi* getSequenceDbi() = 0;
 
     /**
         U2Feature related DBI routines
         Not NULL only if U2DbiFeature_ReadFeatures supported
-    */
+        */
     virtual U2FeatureDbi* getFeatureDbi() = 0;
 
     /**
         U2Annotation related DBI routines
         Not NULL only if U2DbiFeature_ReadMsa supported
-    */
+        */
     virtual U2MsaDbi* getMsaDbi() = 0;
 
     /**
         U2Annotation related DBI routines
         Not NULL only if U2DbiFeature_ReadAssembly supported
-    */
-    virtual U2AssemblyDbi* getAssemblyDbi()  = 0;
+        */
+    virtual U2AssemblyDbi* getAssemblyDbi() = 0;
 
     /**
         U2Attribute related DBI routines
         Not NULL only if U2DbiFeature_ReadAttributes supported
-    */
-    virtual U2AttributeDbi* getAttributeDbi()  = 0;
+        */
+    virtual U2AttributeDbi* getAttributeDbi() = 0;
 
     /**
         U2Variant related DBI routines
         Not NULL only if U2DbiFeature_ReadVariants supported
-    */
-    virtual U2VariantDbi* getVariantDbi()  = 0;
+        */
+    virtual U2VariantDbi* getVariantDbi() = 0;
 
     /**
         Cross database references handling routines
         Not NULL only if U2DbiFeature_ReadCrossDatabaseReferences supported
-    */
+        */
     virtual U2CrossDatabaseReferenceDbi* getCrossDatabaseReferenceDbi() = 0;
 
     /**
         U2Mod related DBI routines
         Not NULL only if U2DbiFeature_ReadModifications supported
-    */
+        */
     virtual U2ModDbi* getModDbi() = 0;
 
     /**
         UdrRecord related DBI routines
         Not NULL only if U2DbiFeature_ReadUdr supported
-    */
+        */
     virtual UdrDbi* getUdrDbi() = 0;
 
     /**
         Reads database global properties.
         Requires U2DbiFeature_ReadProperties support
-    */
+        */
     virtual QString getProperty(const QString& name, const QString& defaultValue, U2OpStatus& os) = 0;
 
     /**
         Sets database global properties.
         Requires U2DbiFeature_WriteProperties support
-    */
+        */
     virtual void setProperty(const QString& name, const QString& value, U2OpStatus& os) = 0;
 
     /**
         Initializes execution of the block of operation through the one transaction
-    */
+        */
     virtual void startOperationsBlock(U2OpStatus &os);
 
     virtual void stopOperationBlock(U2OpStatus &os);
@@ -356,7 +353,7 @@ public:
     /** Returns a mutex that synchronizes access to internal database handler.
         This method is supposed to be used by caching DBIs
         in order to prevent cache inconsistency. */
-    virtual QMutex * getDbMutex( ) const;
+    virtual QMutex * getDbMutex() const;
 
     virtual bool isReadOnly() const = 0;
 
@@ -371,7 +368,7 @@ protected:
 /**
     Base class for all *Dbi classes provided by U2Dbi
     Contains reference to root-level dbi
-*/
+    */
 class U2CORE_EXPORT U2ChildDbi {
 protected:
     U2ChildDbi(U2Dbi* _rootDbi);

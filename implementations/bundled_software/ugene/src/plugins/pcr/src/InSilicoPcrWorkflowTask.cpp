@@ -1,6 +1,6 @@
 /**
 * UGENE - Integrated Bioinformatics Tools.
-* Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+* Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
 * http://ugene.net
 *
 * This program is free software; you can redistribute it and/or
@@ -28,7 +28,7 @@ InSilicoPcrWorkflowTask::InSilicoPcrWorkflowTask(const InSilicoPcrTaskSettings &
 {
     pcrTask = new InSilicoPcrTask(pcrSettings);
     addSubTask(pcrTask);
-    pcrTask->setSubtaskProgressWeight(0.7);
+    pcrTask->setSubtaskProgressWeight((float)0.7);
 }
 
 QList<Task*> InSilicoPcrWorkflowTask::onSubTaskFinished(Task *subTask) {

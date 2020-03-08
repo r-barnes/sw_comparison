@@ -1,13 +1,13 @@
 include(../ugene_globals.pri)
-UGENE_RELATIVE_DESTDIR = ''
 
-QT += xml network webkit
-equals(QT_MAJOR_VERSION, 5): QT -= webkit
-equals(QT_MAJOR_VERSION, 5): QT += widgets webkitwidgets
+QT += xml network widgets
 TEMPLATE = app
 CONFIG += qt thread debug_and_release
+macx : CONFIG -= app_bundle
 DEFINES+= QT_DLL QT_FATAL_ASSERT
 INCLUDEPATH += src _tmp
+
+DESTDIR = ../$$out_dir()
 
 !debug_and_release|build_pass {
 
@@ -15,14 +15,12 @@ INCLUDEPATH += src _tmp
         TARGET = ugenem
         DEFINES+=_DEBUG
         CONFIG +=console
-        DESTDIR=../_debug
         MOC_DIR=_tmp/moc/debug
         OBJECTS_DIR=_tmp/obj/debug
     }
 
     CONFIG(release, debug|release) {
         TARGET = ugenem
-        DESTDIR=../_release
         DEFINES+=NDEBUG
         MOC_DIR=_tmp/moc/release
         OBJECTS_DIR=_tmp/obj/release
@@ -43,7 +41,7 @@ win32 {
 }
 
 unix {
-    target.path = $$UGENE_INSTALL_DIR/$$UGENE_RELATIVE_DESTDIR
+    target.path = $$UGENE_INSTALL_DIR/
     INSTALLS += target
 }
 

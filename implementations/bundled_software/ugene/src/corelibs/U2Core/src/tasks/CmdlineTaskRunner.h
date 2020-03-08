@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -42,6 +42,12 @@ public:
 class U2CORE_EXPORT CmdlineTaskRunner : public Task {
     Q_OBJECT
 public:
+    static QList<long> getChildrenProcesses(qint64 processId, bool fullTree=true);
+    static int killChildrenProcesses(qint64 processId, bool fullTree=true);
+    static int killProcessTree(QProcess *process);
+    static int killProcessTree(qint64 processId);
+    static int killProcess(qint64 processId);
+
     CmdlineTaskRunner(const CmdlineTaskConfig &config);
 
     void prepare();

@@ -1,10 +1,19 @@
 PRODUCT_NAME="ugeneui"
 PRODUCT_DISPLAY_NAME="Unipro UGENE"
 
-VERSION=`cat ../../src/ugene_version.pri | grep UGENE_VERSION | awk -F'=' '{print $2}'`
+if [ -z "${SOURCE_DIR}" ]; then SOURCE_DIR=../..; fi
+
+echo Source: $SOURCE_DIR
+
+VERSION_MAJOR=`cat ${SOURCE_DIR}/src/ugene_version.pri | grep 'UGENE_VER_MAJOR=' | awk -F'=' '{print $2}'`
+VERSION_MINOR=`cat ${SOURCE_DIR}/src/ugene_version.pri | grep 'UGENE_VER_MINOR=' | awk -F'=' '{print $2}'`
+UGENE_VERSION=`cat ${SOURCE_DIR}/src/ugene_version.pri | grep UGENE_VERSION | awk -F'=' '{print $2}' | \
+               sed -e 's/$${UGENE_VER_MAJOR}/'"$VERSION_MAJOR"'/g' \
+                   -e 's/$${UGENE_VER_MINOR}/'"$VERSION_MINOR"'/g'`
+
 ARCHITECTURE=`uname -m`
 BUILD_DIR=./release_bundle
-RELEASE_DIR=../../src/_release
+RELEASE_DIR=${SOURCE_DIR}/src/_release
 TARGET_APP_DIR="$BUILD_DIR/${PRODUCT_NAME}.app/"
 TARGET_APP_DIR_RENAMED="$BUILD_DIR/${PRODUCT_DISPLAY_NAME}.app/"
 TARGET_EXE_DIR="${TARGET_APP_DIR}/Contents/MacOS"
@@ -24,15 +33,19 @@ rm -f "${SYMBOLS_DIR}.tar.gz"
 mkdir "${SYMBOLS_DIR}"
 
 echo
-echo copying UGENE bundle 
-cp -R $RELEASE_DIR/ugeneui.app/ "$TARGET_APP_DIR"
+echo creating UGENE bundle
+
+mkdir "${TARGET_APP_DIR}"
+mkdir "${TARGET_APP_DIR}/Contents"
+mkdir "${TARGET_APP_DIR}/Contents/Frameworks"
+mkdir "${TARGET_APP_DIR}/Contents/MacOS"
+mkdir "${TARGET_APP_DIR}/Contents/Resources"
+mkdir "${TARGET_EXE_DIR}/plugins"
 
 echo copying icons
-cp ../../src/ugeneui/images/ugene-doc.icns "$TARGET_APP_DIR/Contents/Resources"
-
-mkdir "${TARGET_EXE_DIR}/../Frameworks"
-mkdir "${TARGET_EXE_DIR}/plugins"
-mkdir "${TARGET_EXE_DIR}/data"
+cp ${SOURCE_DIR}/src/ugeneui/images/ugene-doc.icns "$TARGET_APP_DIR/Contents/Resources"
+cp ${SOURCE_DIR}/src/ugeneui/images/ugeneui.icns "$TARGET_APP_DIR/Contents/Resources"
+cp ${SOURCE_DIR}/installer/macosx/Info.plist "$TARGET_APP_DIR/Contents"
 
 echo copying translations
 cp $RELEASE_DIR/transl_*.qm "$TARGET_EXE_DIR"
@@ -73,7 +86,7 @@ add-library ugenedb
 add-library breakpad
 if [ "$1" == "-test" ]
    then
-      add-library humimit
+      add-library QSpec
 fi
 
 echo Copying plugins
@@ -83,10 +96,11 @@ echo Copying plugins
 PLUGIN_LIST="annotator \
             ball \
             biostruct3d_view \
-            browser_support \
             chroma_view \
             circular_view \
+            clark_support \
             dbi_bam \
+            diamond_support \
             dna_export \
             dna_flexibility \
             dna_graphpack \
@@ -98,7 +112,10 @@ PLUGIN_LIST="annotator \
             gor4 \
             hmm2 \
             kalign \
+            kraken_support \
             linkdata_support \
+            metaphlan2_support \
+            ngs_reads_classification \
             opencl_support \
             orf_marker \
             pcr \
@@ -114,6 +131,7 @@ PLUGIN_LIST="annotator \
             umuscle \
             variants \
             weight_matrix \
+            wevote_support \
             workflow_designer"
 
 if [ "$1" == "-test" ]
@@ -134,16 +152,6 @@ echo
 echo macdeployqt running...
 macdeployqt "$TARGET_APP_DIR" -no-strip -executable="$TARGET_EXE_DIR"/ugenecl -executable="$TARGET_EXE_DIR"/ugenem -executable="$TARGET_EXE_DIR"/plugins_checker
 
-# Do not use @loader_path that produced by macdeployqt with "-executable" argument,
-# it cause a crash with plugins loading (UGENE-2994)
-# Restore @executable_path:
-echo
-echo @executable_path restoring...
-for PLUGIN in $PLUGIN_LIST
-do
-    restorePluginsQtInstallNames $PLUGIN
-done
-
 mv "$TARGET_APP_DIR" "$TARGET_APP_DIR_RENAMED"
 
 cd  $BUILD_DIR 
@@ -160,5 +168,5 @@ if [ ! "$1" ]; then
 
     echo
     echo pkg-dmg running...
-    ./pkg-dmg --source $BUILD_DIR --target ugene-${VERSION}-mac-${ARCHITECTURE}-r${BUILD_VCS_NUMBER_new_trunk} --license ./LICENSE.with_3rd_party --volname "Unipro UGENE $VERSION" --symlink /Applications
+    ./pkg-dmg --source $BUILD_DIR --target ugene-${UGENE_VERSION}-mac-${ARCHITECTURE}-r${BUILD_VCS_NUMBER_new_trunk}.dmg --license ./LICENSE.with_3rd_party --volname "Unipro UGENE $UGENE_VERSION" --symlink /Applications
 fi

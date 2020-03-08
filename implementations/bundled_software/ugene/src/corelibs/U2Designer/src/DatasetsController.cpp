@@ -1,6 +1,6 @@
 /**
 * UGENE - Integrated Bioinformatics Tools.
-* Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+* Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
 * http://ugene.net
 *
 * This program is free software; you can redistribute it and/or
@@ -147,8 +147,9 @@ private:
 /************************************************************************/
 /* Controller */
 /************************************************************************/
-DatasetsController::DatasetsController(const QSet<GObjectType> &compatibleObjTypes)
-    : compatibleObjTypes(compatibleObjTypes)
+DatasetsController::DatasetsController(const QSet<GObjectType> &compatibleObjTypes, QObject *parent)
+    : QObject(parent),
+      compatibleObjTypes(compatibleObjTypes)
 {
 
 }

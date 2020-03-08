@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -46,7 +46,7 @@ public:
     virtual void accept(URLContainerVisitor *visitor) = 0;
 
     /** Validate the URL is present and readable */
-    virtual bool validateUrl(ProblemList &problemList) = 0;
+    virtual bool validateUrl(NotificationsList &notificationList) = 0;
 
 protected:
     QString url;
@@ -66,7 +66,7 @@ public:
     virtual URLContainer * clone();
     virtual void accept(URLContainerVisitor *visitor);
 
-    virtual bool validateUrl(ProblemList &problemList);
+    virtual bool validateUrl(NotificationsList &notificationList);
 };
 
 class U2LANG_EXPORT DbObjUrlContainer : public URLContainer {
@@ -77,7 +77,7 @@ public:
     virtual URLContainer * clone();
     virtual void accept(URLContainerVisitor *visitor);
 
-    virtual bool validateUrl(ProblemList &problemList);
+    virtual bool validateUrl(NotificationsList &notificationList);
 };
 
 class U2LANG_EXPORT DirUrlContainer : public URLContainer {
@@ -93,7 +93,7 @@ public:
     * Validates filtered files inside the folder
     * are present and accessible for reading.
     */
-    virtual bool validateUrl(ProblemList &problemList);
+    virtual bool validateUrl(NotificationsList &notificationList);
 
     const QString & getIncludeFilter() const;
     const QString & getExcludeFilter() const;
@@ -118,7 +118,7 @@ public:
     virtual URLContainer * clone();
     virtual void accept(URLContainerVisitor *visitor);
 
-    virtual bool validateUrl(ProblemList &problemList);
+    virtual bool validateUrl(NotificationsList &notificationList);
 
     void setSequenceAccFilter(const QString &acc);
     void setObjNameFilter(const QString &name);
@@ -138,6 +138,8 @@ private:
 ////////////////////////////////////////////////////////////////////////////////
 class U2LANG_EXPORT URLContainerVisitor {
 public:
+    virtual ~URLContainerVisitor();
+
     virtual void visit(FileUrlContainer *) = 0;
     virtual void visit(DirUrlContainer *) = 0;
     virtual void visit(DbObjUrlContainer *) = 0;

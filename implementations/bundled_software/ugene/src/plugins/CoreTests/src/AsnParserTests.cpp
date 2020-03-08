@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -81,6 +81,8 @@ void GTest_LoadAsnTree::cleanup()
         removeContext(asnTreeContextName);
         delete rootElem;
     }
+
+    XmlTest::cleanup();
 }
 
 Task::ReportResult GTest_LoadAsnTree::report() {
@@ -125,6 +127,8 @@ void GTest_FindFirstNodeByName::cleanup()
     if (contextAdded) {
         removeContext(nodeContextName);
     }
+
+    XmlTest::cleanup();
 }
 
 Task::ReportResult GTest_FindFirstNodeByName::report() {

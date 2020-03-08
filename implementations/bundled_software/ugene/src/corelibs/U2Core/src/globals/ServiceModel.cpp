@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -22,7 +22,6 @@
 #include "PluginModel.h"
 #include "ServiceModel.h"
 
-#include <algorithm>
 #include <U2Core/AppContext.h>
 #include <U2Core/AppSettings.h>
 #include <U2Core/AppResources.h>
@@ -32,34 +31,31 @@ namespace U2 {
 
 
 Service::Service(ServiceType t, const QString& _name, const QString& _desc, const QList<ServiceType>& _parentServices, ServiceFlags f)
-: type(t), name(_name), description(_desc), parentServices(_parentServices), state(ServiceState_Disabled_New), flags(f)
-{
+    : type(t), name(_name), description(_desc), parentServices(_parentServices), state(ServiceState_Disabled_New), flags(f) {
     //Register service resource
     AppSettings* settings = AppContext::getAppSettings();
-    SAFE_POINT(NULL != settings, "Can not get application settings",);
+    SAFE_POINT(NULL != settings, "Can not get application settings", );
     AppResourcePool* resourcePool = settings->getAppResourcePool();
-    SAFE_POINT(NULL != resourcePool, "Can not get resource pool",);
+    SAFE_POINT(NULL != resourcePool, "Can not get resource pool", );
 
     AppResource* resource = resourcePool->getResource(t.id);
 
-    if(NULL == resource) {
+    if (NULL == resource) {
         AppResourceSemaphore* serviceResource = new AppResourceSemaphore(t.id, 1, _name);
         resourcePool->registerResource(serviceResource);
-    }
-    else {
-        SAFE_POINT(resource->name == _name, QString("Resources %1 and %2 have the same identifiers").arg(resource->name).arg(_name),);
+    } else {
+        SAFE_POINT(resource->name == _name, QString("Resources %1 and %2 have the same identifiers").arg(resource->name).arg(_name), );
     }
 }
 
-void ServiceRegistry::_setServiceState(Service* s, ServiceState state)
-{
-    assert(s->state!=state);
+void ServiceRegistry::_setServiceState(Service* s, ServiceState state) {
+    assert(s->state != state);
 
     ServiceState oldState = s->state;
     bool enabledBefore = s->isEnabled();
     s->state = state;
     bool enabledAfter = s->isEnabled();
-    s->serviceStateChangedCallback(oldState, enabledBefore!=enabledAfter);
+    s->serviceStateChangedCallback(oldState, enabledBefore != enabledAfter);
     emit si_serviceStateChanged(s, oldState);
 }
 

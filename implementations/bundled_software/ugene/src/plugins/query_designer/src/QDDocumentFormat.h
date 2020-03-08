@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -23,8 +23,11 @@
 #define _U2_QD_DOC_FORMAT_H_
 
 #include <U2Core/DocumentModel.h>
-#include <U2Gui/ObjectViewModel.h>
 #include <U2Core/GObject.h>
+
+#include <U2Formats/TextDocumentFormat.h>
+
+#include <U2Gui/ObjectViewModel.h>
 #include <U2Gui/ObjectViewTasks.h>
 
 #include "QueryDesignerPlugin.h"
@@ -32,27 +35,19 @@
 
 namespace U2 {
 
-class QDDocFormat : public DocumentFormat {
+class QDDocFormat : public TextDocumentFormat {
     Q_OBJECT
 public:
     QDDocFormat(QObject* p);
-
-    static const DocumentFormatId FORMAT_ID;
-    virtual DocumentFormatId getFormatId() const {return FORMAT_ID;}
-
-    virtual const QString& getFormatName() const {return formatName;}
 
     virtual Document* createNewLoadedDocument(IOAdapterFactory* io, const GUrl& url, U2OpStatus& os, const QVariantMap& fs = QVariantMap());
 
     virtual void storeDocument( Document* d, IOAdapter* io, U2OpStatus& os);
 
-    virtual FormatCheckResult checkRawData(const QByteArray& rawData, const GUrl& = GUrl()) const;
-
 protected:
-    virtual Document* loadDocument(IOAdapter* io, const U2DbiRef& targetDb, const QVariantMap& hints, U2OpStatus& os);
+    virtual FormatCheckResult checkRawTextData(const QByteArray& rawData, const GUrl& = GUrl()) const;
 
-private:
-    QString formatName;
+    virtual Document* loadTextDocument(IOAdapter* io, const U2DbiRef& targetDb, const QVariantMap& hints, U2OpStatus& os);
 };
 
 class QueryScene;

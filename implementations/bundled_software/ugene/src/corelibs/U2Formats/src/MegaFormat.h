@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -26,25 +26,24 @@
 #include <U2Core/DocumentModel.h>
 #include <U2Core/MultipleSequenceAlignmentObject.h>
 
+#include "TextDocumentFormat.h"
+
 namespace U2 {
 
-class U2FORMATS_EXPORT MegaFormat : public DocumentFormat {
+class U2FORMATS_EXPORT MegaFormat : public TextDocumentFormat {
 Q_OBJECT
 public:
     MegaFormat(QObject* p);
 
-    virtual DocumentFormatId getFormatId() const { return BaseDocumentFormats::MEGA; }
-    virtual const QString& getFormatName() const { return formatName; }
     virtual void storeDocument(Document* d, IOAdapter* io, U2OpStatus& os);
     virtual void storeEntry(IOAdapter *io, const QMap< GObjectType, QList<GObject*> > &objectsMap, U2OpStatus &ti);
-    virtual FormatCheckResult checkRawData(const QByteArray& rawData, const GUrl& = GUrl()) const;
 protected:
-    virtual Document* loadDocument(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& fs, U2OpStatus& os);
+    virtual FormatCheckResult checkRawTextData(const QByteArray& rawData, const GUrl& = GUrl()) const;
+    virtual Document* loadTextDocument(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& fs, U2OpStatus& os);
 
 private:
-    QString formatName;
     void load(IOAdapter* io, const U2DbiRef& dbiRef, QList<GObject*>& objects, const QVariantMap& fs, U2OpStatus& ti);
-    static void skipWhites(IOAdapter *io, QByteArray &line);
+    static void skipWhites(IOAdapter *io, QByteArray &line, U2::U2OpStatus &ti);
     static void readHeader(IOAdapter* io, QByteArray &line, U2OpStatus &ti);
     static void readTitle(IOAdapter* io, QByteArray &line, U2OpStatus &ti);
     static bool readName(IOAdapter* io, QByteArray &line, QByteArray &name, U2OpStatus &ti);
@@ -52,7 +51,7 @@ private:
                              QByteArray &value, bool *lastIteration);
 
     static void workUpIndels(MultipleSequenceAlignment & al);
-    static bool getNextLine(IOAdapter* io, QByteArray& line);
+    static bool getNextLine(IOAdapter* io, QByteArray& line, U2OpStatus &ti);
     static bool skipComments(IOAdapter* io, QByteArray &line, U2OpStatus &ti);
     static bool checkName(QByteArray &name);
     static const QByteArray MEGA_HEADER;

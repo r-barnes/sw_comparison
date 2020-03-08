@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -34,11 +34,22 @@ namespace U2{
 class U2ALGORITHM_EXPORT CreateSubalignmentSettings {
 public:
     CreateSubalignmentSettings(){}
+
     CreateSubalignmentSettings(const U2Region& w, const QStringList& sNames, const GUrl& path, bool save, bool add, DocumentFormatId formatId)
-        : window(w), seqNames(sNames), url(path), saveImmediately(save), addToProject(add), formatIdToSave(formatId) {}
+        : window(w), sequenceNames(sNames), url(path), saveImmediately(save), addToProject(add), formatIdToSave(formatId) {}
+
+    CreateSubalignmentSettings(const U2Region& w, const QList<qint64>& rIds, const GUrl& path, bool save, bool add, DocumentFormatId formatId)
+        : window(w), rowIds(rIds), url(path), saveImmediately(save), addToProject(add), formatIdToSave(formatId) {}
 
     U2Region         window;
-    QStringList      seqNames;
+
+    // Row ids to export
+    QList<qint64>    rowIds;
+
+    // Sequence names to export. Ignored if rowIds is not empty!
+    // This field may be removed after all code is migrated to row ids.
+    QStringList      sequenceNames;
+
     GUrl             url;
     bool             saveImmediately;
     bool             addToProject;
@@ -49,7 +60,7 @@ public:
 class U2ALGORITHM_EXPORT CreateSubalignmentTask : public DocumentProviderTask {
     Q_OBJECT
 public:
-    CreateSubalignmentTask(MultipleSequenceAlignmentObject* _maObj, const CreateSubalignmentSettings& settings );
+    CreateSubalignmentTask(MultipleSequenceAlignmentObject* _maObj, const CreateSubalignmentSettings& settings);
 
     virtual void prepare();
     const CreateSubalignmentSettings& getSettings() { return cfg; }

@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -55,6 +55,7 @@ path(_path), name(_name), useMethod(method), format(_format), compressFile(compr
     comboBoxItems[GFF] = "GFF";
     comboBoxItems[Genbank] = "GenBank";
     comboBoxItems[MEGA] = "Mega";
+    comboBoxItems[MSF] = "MSF";
     comboBoxItems[NWK] = "Newick Standard";
     comboBoxItems[TEXT] = "Plain text";
     comboBoxItems[UGENEDB] = "UGENE Database";

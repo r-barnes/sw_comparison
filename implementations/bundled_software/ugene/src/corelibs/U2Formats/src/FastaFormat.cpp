@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -52,7 +52,7 @@ const char FastaFormat::FASTA_HEADER_START_SYMBOL = '>';
 const char FastaFormat::FASTA_COMMENT_START_SYMBOL = ';';
 
 FastaFormat::FastaFormat(QObject* p)
-: DocumentFormat(p, DocumentFormatFlags_SW, QStringList()<<"fa"<<"mpfa"<<"fna"<<"fsa"<<"fas"<<"fasta"<<"sef"<<"seq"<<"seqs")
+: TextDocumentFormat(p, BaseDocumentFormats::FASTA, DocumentFormatFlags_SW, QStringList()<<"fa"<<"mpfa"<<"fna"<<"fsa"<<"fas"<<"fasta"<<"sef"<<"seq"<<"seqs")
 {
     formatName = tr("FASTA");
     supportedObjectTypes+=GObjectTypes::SEQUENCE;
@@ -103,7 +103,7 @@ static QVariantMap analyzeRawData(const QByteArray& data) {
     return res;
 }
 
-FormatCheckResult FastaFormat::checkRawData(const QByteArray& rawData, const GUrl&) const {
+FormatCheckResult FastaFormat::checkRawTextData(const QByteArray& rawData, const GUrl&) const {
     const char* data = rawData.constData();
     int size = rawData.size();
 
@@ -153,6 +153,7 @@ static void load(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& fs, Q
     bool lineOk = true;
     static QBitArray nonWhites = ~TextUtils::WHITES;
     io->readUntil(buff, DocumentFormat::READ_BUFF_SIZE, nonWhites, IOAdapter::Term_Exclude, &lineOk);
+    CHECK_EXT(!io->hasError(), os.setError(io->errorString()), );
 
     U2SequenceImporter seqImporter(fs, true);
     const QString folder = fs.value(DocumentFormat::DBI_FOLDER_HINT, U2ObjectDbi::ROOT_FOLDER).toString();
@@ -170,12 +171,14 @@ static void load(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& fs, Q
         if(!headerReaded){
             do{
                 len = io->readLine(buff, DocumentFormat::READ_BUFF_SIZE);
+                CHECK_EXT(!io->hasError(), os.setError(io->errorString()), );
             }while(buff[0] == fastaCommentStartChar && len > 0);
         }
 
         if (len == 0 && io->isEof()) { //end if stream
             break;
         }
+        CHECK_EXT(!io->hasError(), os.setError(io->errorString()), );
         CHECK_EXT_BREAK(lineOk, os.setError(FastaFormat::tr("Line is too long")));
 
         QString headerLine = QString(QByteArray(buff+1, len-1)).trimmed();
@@ -206,13 +209,17 @@ static void load(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& fs, Q
         }
         int sequenceLen = 0;
         while (!os.isCoR()) {
-            do{
+            do {
                 len = io->readLine(buff, DocumentFormat::READ_BUFF_SIZE);
-            }while(len <= 0 && !io->isEof());
+                CHECK_EXT(!io->hasError(), os.setError(io->errorString()), );
+            } while (len <= 0 && !io->isEof());
+            CHECK_EXT(!io->hasError(), os.setError(io->errorString()), );
 
             if (len <= 0 && io->isEof()) {
                 break;
             }
+            CHECK_EXT(!io->hasError(), os.setError(io->errorString()), );
+
             buff[len] = 0;
 
             if(buff[0] != fastaCommentStartChar && buff[0] != FastaFormat::FASTA_HEADER_START_SYMBOL){
@@ -265,7 +272,11 @@ static void load(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& fs, Q
         }
         sequenceStart += sequenceLen;
         sequenceNumber++;
-        ioLog.trace(QString("Sequence #%1 is processed").arg(sequenceNumber));
+        ioLog.trace(FastaFormat::tr("Sequence #%1 is processed").arg(sequenceNumber));
+    }
+
+    if (fs.value(DocumentFormat::STRONG_FORMAT_ACCORDANCE, QVariant(false)).toBool() && !emptySeqNames.isEmpty()) {
+        os.setError(FastaFormat::tr("The file format is invalid."));
     }
 
     CHECK_OP_EXT(os, qDeleteAll(objects); objects.clear(), );
@@ -275,9 +286,9 @@ static void load(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& fs, Q
 
     if (!emptySeqNames.isEmpty()) {
         QString warningMessage;
-        warningMessage.append(FastaFormat::tr("Loaded sequences: %1.\n").arg(sequenceNumber));
-        warningMessage.append(FastaFormat::tr("Skipped sequences: %1.\n").arg(emptySeqNames.size()));
-        warningMessage.append(FastaFormat::tr("The following sequences are empty:\n%1").arg(emptySeqNames.join(",\n")));
+        warningMessage.append(FastaFormat::tr("Loaded sequences: %1. \n").arg(sequenceNumber));
+        warningMessage.append(FastaFormat::tr("Skipped sequences: %1. \n").arg(emptySeqNames.size()));
+        warningMessage.append(FastaFormat::tr("The following sequences are empty: \n%1").arg(emptySeqNames.join(", \n")));
         os.addWarning(warningMessage);
     }
 
@@ -293,12 +304,12 @@ static void load(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& fs, Q
     objects << new U2SequenceObject(seq.visualName, U2EntityRef(dbiRef, seq.id));
     objects << DocumentFormatUtils::addAnnotationsForMergedU2Sequence( sequenceRef, dbiRef, headers, mergedMapping, fs );
     if (headers.size() > 1) {
-        writeLockReason = DocumentFormat::MERGED_SEQ_LOCK;
+        writeLockReason = QObject::tr("Document sequences were merged");
     }
 }
 
 
-Document* FastaFormat::loadDocument(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& fs, U2OpStatus& os) {
+Document* FastaFormat::loadTextDocument(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& fs, U2OpStatus& os) {
     CHECK_EXT(io!=NULL && io->isOpen(), os.setError(L10N::badArgument("IO adapter")), NULL);
 
     QList<GObject*> objects;
@@ -385,7 +396,7 @@ void FastaFormat::storeEntry( IOAdapter *io, const QMap<GObjectType, QList<GObje
     saveSequence(io, seq, os);
 }
 
-DNASequence *FastaFormat::loadSequence(IOAdapter* io, U2OpStatus& os) {
+DNASequence *FastaFormat::loadTextSequence(IOAdapter* io, U2OpStatus& os) {
     try {
         MemoryLocker l(os);
         CHECK_OP(os, NULL);
@@ -402,9 +413,11 @@ DNASequence *FastaFormat::loadSequence(IOAdapter* io, U2OpStatus& os) {
         //skip leading whites if present
         bool lineOk = true;
         io->readUntil(buff, READ_BUFF_SIZE, nonWhites, IOAdapter::Term_Exclude, &lineOk);
+        CHECK_EXT(!io->hasError(), os.setError(io->errorString()), NULL);
 
         //read header
         len = io->readUntil(buff, READ_BUFF_SIZE, TextUtils::LINE_BREAKS, IOAdapter::Term_Include, &lineOk);
+        CHECK_EXT(!io->hasError(), os.setError(io->errorString()), NULL);
         CHECK(len > 0, NULL); //end of stream
         CHECK_EXT(lineOk, os.setError(FastaFormat::tr("Line is too long")), NULL);
         QByteArray headerLine = QByteArray(buff + 1, len-1).trimmed();
@@ -420,9 +433,9 @@ DNASequence *FastaFormat::loadSequence(IOAdapter* io, U2OpStatus& os) {
 
         do {
             len = io->readUntil(buff, READ_BUFF_SIZE, fastaHeaderStart, IOAdapter::Term_Exclude);
-            if (len <= 0) {
-                break;
-            }
+            CHECK_EXT(!io->hasError(), os.setError(io->errorString()), NULL);
+            CHECK_BREAK(len > 0);
+
             len = TextUtils::remove(buff, len, TextUtils::WHITES);
             buff[len] = 0;
 

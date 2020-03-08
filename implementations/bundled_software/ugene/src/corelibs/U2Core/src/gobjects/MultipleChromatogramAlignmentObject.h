@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -22,7 +22,6 @@
 #ifndef _U2_MULTIPLE_CHROMATOGRAM_ALIGNMENT_OBJECT_H_
 #define _U2_MULTIPLE_CHROMATOGRAM_ALIGNMENT_OBJECT_H_
 
-#include <U2Core/MaModificationInfo.h>
 #include <U2Core/MultipleAlignmentObject.h>
 #include <U2Core/MultipleChromatogramAlignment.h>
 #include <U2Core/GObject.h>
@@ -44,9 +43,9 @@ public:
     static const QString MCAOBJECT_REFERENCE;
 
     MultipleChromatogramAlignmentObject(const QString &name,
-                                        const U2EntityRef &mcaRef,
-                                        const QVariantMap &hintsMap = QVariantMap(),
-                                        const MultipleChromatogramAlignment &mca = MultipleChromatogramAlignment());
+        const U2EntityRef &mcaRef,
+        const QVariantMap &hintsMap = QVariantMap(),
+        const MultipleChromatogramAlignment &mca = MultipleChromatogramAlignment());
 
     virtual ~MultipleChromatogramAlignmentObject();
 
@@ -77,7 +76,7 @@ private:
     void updateDatabase(U2OpStatus &os, const MultipleAlignment &ma);
     void removeRowPrivate(U2OpStatus &os, const U2EntityRef &mcaRef, qint64 rowId);
     void removeRegionPrivate(U2OpStatus &os, const U2EntityRef &maRef, const QList<qint64> &rows,
-                             int startPos, int nBases);
+        int startPos, int nBases);
     virtual void insertGap(const U2Region &rows, int pos, int nGaps);
     QList<U2Region> getColumnsWithGaps(int requiredGapsCount) const;
     U2MsaRowGapModel getReferenceGapModel() const;

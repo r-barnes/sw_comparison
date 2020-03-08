@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -20,6 +20,8 @@
  */
 
 #include <U2Core/U2OpStatusUtils.h>
+#include <U2Core/U2SafePoints.h>
+
 #include "SchemeSimilarityUtils.h"
 
 #include "CInterfaceManualTests.h"
@@ -653,7 +655,7 @@ IMPLEMENT_TEST( CInterfaceManualTests, call_variants ) {
 
     U2OpStatusImpl stateInfo;
     SchemeSimilarityUtils::checkSchemesSimilarity( scheme,
-        PROPER_WD_SCHEMES_PATH + "/NGS/call_variants.uwl", stateInfo );
+        PROPER_WD_SCHEMES_PATH + "/NGS/ngs_variant_calling.uwl", stateInfo );
     CHECK_NO_ERROR( stateInfo );
 
     releaseScheme( scheme );
@@ -1055,6 +1057,7 @@ IMPLEMENT_TEST( CInterfaceManualTests, tuxedo_main_paired ) {
     CHECK_U2_ERROR( error );
     error = addSchemeActorsBinding( scheme, getFileList2, L"url", filesConversion2,
         L"in-file.url" );
+    CHECK_U2_ERROR( error );
     error = addSchemeActorsBinding( scheme, getFileList1, L"dataset", topHat,
         L"in-sequence.dataset" );
     CHECK_U2_ERROR( error );

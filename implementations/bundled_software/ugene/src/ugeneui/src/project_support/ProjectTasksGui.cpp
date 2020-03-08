@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -463,6 +463,7 @@ QList<Task*> GTest_LoadProject::onSubTaskFinished( Task* subTask ){
 
 void GTest_LoadProject::cleanup(){
     AppContextImpl::getApplicationContext()->setProject(NULL);
+    XmlTest::cleanup();
 }
 
 
@@ -514,6 +515,8 @@ void GTest_ExportProject::cleanup(){
             coreLog.info(tr("GTest_ExportProject::cleanup unable to delete exported files"));
         }
     }
+
+    XmlTest::cleanup();
 }
 
 bool GTest_ExportProject::removeDir( const QDir &aDir ){
@@ -604,6 +607,8 @@ void GTest_LoadDocumentFromProject::cleanup(){
             AppContext::getTaskScheduler()->registerTopLevelTask(new UnloadDocumentTask(loadedDoc, false));
         }
     }
+
+    XmlTest::cleanup();
 }
 
 Task::ReportResult GTest_LoadDocumentFromProject::report(){

@@ -1,18 +1,18 @@
 <!--
  UGENE - Integrated Bioinformatics Tools.
- Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  http://ugene.net
- 
+
  This program is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public License
  as published by the Free Software Foundation; either version 2
  of the License, or (at your option) any later version.
- 
+
  This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  GNU General Public License for more details.
- 
+
  You should have received a copy of the GNU General Public License
  along with this program; if not, write to the Free Software
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
@@ -20,19 +20,28 @@
 -->
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="utf-8">
+  <head>
+    <meta charset="utf-8" />
     <title>Dashboard</title>
-    <link rel="stylesheet" type="text/css" href="qrc:javascript/bootstrap/css/bootstrap.min.css"/>
-    <link rel="stylesheet" type="text/css" href="qrc:U2Designer/html/Dashboard.css"/>
-    <script type="text/javascript" src="qrc:javascript/jquery/jquery.js"></script>
-    <script type="text/javascript" src="qrc:javascript/bootstrap/js/bootstrap.js"></script>
-    <script type="text/javascript" src="qrc:U2Designer/javascript/Common.js"></script>
-    <script type="text/javascript" src="qrc:U2Designer/javascript/ContextMenu.js"></script>
-    <script type="text/javascript" src="qrc:U2Designer/javascript/ParametersWidget.js"></script>
-    <script type="text/javascript" src="qrc:U2Designer/javascript/ExternalToolsWidget.js"></script>
-    <script type="text/javascript" language="javascript">
-        var sec = 0;
+
+    <link rel="stylesheet" type="text/css" href="qrc:///javascript/bootstrap/css/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" href="qrc:///U2Designer/html/Dashboard.css"/>
+    <script type="text/javascript" src="qrc:///javascript/jquery/jquery.js"></script>
+    <script type="text/javascript" src="qrc:///javascript/bootstrap/js/bootstrap.js"></script>
+    <script type="text/javascript" src="qrc:///U2Designer/javascript/Common.js"></script>
+    <script type="text/javascript" src="qrc:///U2Designer/javascript/ContextMenu.js"></script>
+    <script type="text/javascript" src="qrc:///U2Designer/javascript/TableWidget.js"></script>
+    <script type="text/javascript" src="qrc:///U2Designer/javascript/ParametersWidget.js"></script>
+    <script type="text/javascript" src="qrc:///U2Designer/javascript/ExternalToolsWidget.js"></script>
+    <script type="text/javascript" src="qrc:///U2Designer/javascript/ProblemsWidget.js"></script>
+    <script type="text/javascript" src="qrc:///U2Designer/javascript/StatisticsWidget.js"></script>
+    <script type="text/javascript" src="qrc:///U2Designer/javascript/StatusWidget.js"></script>
+  </head>
+
+  <body>
+    <script>
+    "use strict";
+    var sec = 0;
         var min = 0;
         var hour = 0;
         var paused = true;
@@ -66,42 +75,70 @@
                 min = 0;
                 hour++;
             }
-
             document.getElementById("timer").innerHTML = timeToString(hour, min, sec);
             sec++;
         }
+        function containerSize(insideElt, name) {
+            var cont = document.getElementById(name);
+            if (tabContainer == null) {
+                agent.sl_onJsError("NULL container");
+                return;
+            }
+            return cont.getElementsByName(".widget").length;
+        }
         addEventListeners();
+        var externalToolsWidget = null;
+        var outputWidget;
+        var parametersWidget;
+        var problemWidget = null;
+        var statisticsWidget;
+        var statusWidget;
     </script>
-</head>
-<body>
-
-<div id="wrapper">
-    <div class="tabbable">
+    <div id="wrapper">
+      <div class="tabbable">
         <div class="dash-menu-line">
-            <ul class="nav nav-pills dash-nav">
-              <li class="active"><a href="#overview_tab" data-toggle="tab" class="dash-tab-name">Overview</a></li>
-              <li class=""><a href="#input_tab" data-toggle="tab" class="dash-tab-name">Input</a></li>
-              <!--<li class=""><a href="#output_tab" data-toggle="tab" class="dash-tab-name">Output</a></li>-->
-            </ul>
+          <ul class="nav nav-pills dash-nav">
+            <li class="active">
+              <a href="#overview_tab" data-toggle="tab" class="dash-tab-name"><span lang="en" class="translatable">Overview</span><span lang="ru" class="translatable">Обзор</span></a>
+            </li>
+            <li class="">
+              <a href="#input_tab" data-toggle="tab" class="dash-tab-name"><span lang="en" class="translatable">Input</span><span lang="ru" class="translatable">Параметры схемы</span></a>
+            </li>
+            <li id="ext_tools_tab_menu" class="" style="display: none;">
+              <a href="#ext_tools_tab" data-toggle="tab" class="dash-tab-name"><span lang="en" class="translatable">External Tools</span><span lang="ru" class="translatable">Внешние инструменты</span></a>
+            </li>
+          </ul>
         </div>
         <div class="dash-outer-tab-content">
-            <div class="tab-content dash-tab-content">
-                <div class="tab-pane active" id="overview_tab">
-                    <div class="left-container"></div>
-                    <div class="right-container"></div>
-                </div>
-                <div class="tab-pane" id="input_tab">
-                </div>
-                <div class="tab-pane" id="ext_tools_tab">
-                </div>
-                <!--<div class="tab-pane" id="output_tab">
-                    <div class="left-container"></div>
-                    <div class="right-container"></div>
-                </div>-->
+          <div class="tab-content dash-tab-content">
+            <div class="tab-pane active" id="overview_tab">
+              <div class="left-container"></div>
+              <div class="right-container"></div>
             </div>
+            <div class="tab-pane" id="input_tab">
+              <div class="widget">
+                <div class="title">
+                  <div class="title-content"><span lang="en" class="translatable">Parameters</span><span lang="ru" class="translatable">Параметры</span></div>
+                </div>
+                <div class="widget-content" id="parametersWidget"></div>
+              </div>
+              
+          </div>
+            <div class="tab-pane" id="ext_tools_tab">
+              <div class="widget">
+                <div class="title">
+                  <div class="title-content"><span lang="en" class="translatable">External Tools</span><span lang="ru" class="translatable">Внешние инструменты</span></div>
+                </div>
+                <div class="widget-content" id="externalToolsWidget"></div>
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
     </div>
-</div>
+    </div>
+    <!--For debug purposes-->
+    <div id="log_messages" style="position: fixed; top: 10%; left: 2%;"></div>
+  </body>
 
-</body>
 </html>

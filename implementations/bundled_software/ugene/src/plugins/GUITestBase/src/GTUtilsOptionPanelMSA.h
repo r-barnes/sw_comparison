@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -68,7 +68,7 @@ public:
     static int getLength(HI::GUITestOpStatus &os);
     static int getHeight(HI::GUITestOpStatus &os);
 
-    static void setColorScheme(HI::GUITestOpStatus &os, const QString &colorSchemeName);
+    static void setColorScheme(HI::GUITestOpStatus &os, const QString &colorSchemeName, GTGlobals::UseMethod method = GTGlobals::UseKeyBoard);
     static QString getColorScheme(HI::GUITestOpStatus &os);
 
     static void setHighlightingScheme(HI::GUITestOpStatus &os, const QString &highlightingSchemeName);

@@ -115,6 +115,7 @@ workflow "Intersect annotations"{
         wizard {
             name:"Intersect Annotations Wizard";
             help-page-id:16123490;
+            auto-run: true;
             page {
                 id:1;
                 title:"Intersect annotations parameters";

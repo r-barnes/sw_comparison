@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -53,25 +53,25 @@ struct DNAStatistics {
 class U2VIEW_EXPORT DNAStatisticsTask : public BackgroundTask< DNAStatistics > {
     Q_OBJECT
 public:
-    DNAStatisticsTask(const DNAAlphabet* alphabet, const U2EntityRef seqRef, const U2Region& region = U2Region());
+    DNAStatisticsTask(const DNAAlphabet* alphabet, const U2EntityRef seqRef, const QVector<U2Region>& regions);
     virtual void run();
 private:
     const DNAAlphabet*          alphabet;
     U2EntityRef                 seqRef;
-    U2Region                    region;
+    QVector<U2Region>           regions;
 
     qint64 nA;
     qint64 nC;
     qint64 nG;
     qint64 nT;
 
-    static QMap<char,double> pMWMap; // protein molecular weight
-    static QMap<char,double> pKaMap; // pKa values
-    static QMap<char,int> pChargeMap; // protein charges
+    static QVector<double> pMWMap; // protein molecular weight
+    static QVector<double> pKaMap; // pKa values
+    static QVector<int> pChargeMap; // protein charges
 
     void computeStats();
     double calcPi(U2SequenceDbi* sequenceDbi);
-    double calcChargeState(const QMap<char,int>& countMap, double pH );
+    double calcChargeState(const QVector<qint64>& countMap, double pH );
 };
 
 } // namespace

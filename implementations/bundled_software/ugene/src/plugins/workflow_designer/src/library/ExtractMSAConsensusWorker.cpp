@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -423,6 +423,10 @@ QString ExtractMSAConsensusWorkerPrompter::composeRichDoc() {
     QString algorithm = getParameter(ALGO_ATTR_ID).toString();
     QString link = getHyperlink(ALGO_ATTR_ID, algorithm);
     return ExtractMSAConsensusSequenceWorker::tr("Extracts the consensus sequence from the incoming alignment(s) using the %1 algorithm.").arg(link);
+}
+
+SpinBoxDelegatePropertyRelation *SpinBoxDelegatePropertyRelation::clone() const {
+    return new SpinBoxDelegatePropertyRelation(*this);
 }
 
 QVariant SpinBoxDelegatePropertyRelation::getAffectResult( const QVariant &influencingValue, const QVariant &dependentValue, DelegateTags * /*infTags*/, DelegateTags *depTags ) const {

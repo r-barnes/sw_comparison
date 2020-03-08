@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -99,7 +99,7 @@ void PrimerGroupBox::sl_browse() {
 }
 
 void PrimerGroupBox::sl_findPrimerTaskStateChanged() {
-    SAFE_POINT(findPrimerTask != NULL, "Catched the taskStateChanged of unknown task", );
+    SAFE_POINT(findPrimerTask != NULL, "Caught the taskStateChanged of unknown task", );
 
     CHECK(findPrimerTask->isFinished() || findPrimerTask->isCanceled() || findPrimerTask->hasError(), );
 

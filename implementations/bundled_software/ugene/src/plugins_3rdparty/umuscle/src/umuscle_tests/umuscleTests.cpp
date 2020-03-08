@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -208,8 +208,11 @@ Task::ReportResult GTest_uMuscle::report() {
 void GTest_uMuscle::cleanup() {
     //if(ma_result!=NULL)
     //    delete ma_result;
-    if(ctxAdded)
+    if(ctxAdded) {
         removeContext(resultCtxName);
+    }
+
+    XmlTest::cleanup();
 }
 
 void GTest_CompareMAlignment::init(XMLTestFormat *tf, const QDomElement& el) {

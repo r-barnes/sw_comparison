@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -30,11 +30,11 @@ RequiredSlotsValidator::RequiredSlotsValidator(const QList<Descriptor> &_require
 
 }
 
-bool RequiredSlotsValidator::validate(const IntegralBusPort *port, ProblemList &problemList) const {
+bool RequiredSlotsValidator::validate(const IntegralBusPort *port, NotificationsList &notificationList) const {
     bool noErrors = true;
     foreach (const Descriptor &d, requiredSlots) {
         if (!isBinded(port, d.getId())) {
-            problemList << Problem(QObject::tr("Input '%1' slot is not supplied").arg(d.getDisplayName()));
+            notificationList << WorkflowNotification(QObject::tr("Input '%1' slot is not supplied").arg(d.getDisplayName()));
             noErrors = false;
         }
     }

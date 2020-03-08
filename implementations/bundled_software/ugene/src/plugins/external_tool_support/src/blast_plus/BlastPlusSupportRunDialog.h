@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -38,16 +38,16 @@ class BlastPlusSupportRunDialog : public BlastRunCommonDialog {
     Q_OBJECT
 public:
     BlastPlusSupportRunDialog(ADVSequenceObjectContext* seqCtx, QString &lastDBPath, QString &lastDBName, QWidget *parent);
-    
+
     U2Region getSelectedRegion() const;
-    
+
 protected slots:
     virtual void sl_runQuery();
     virtual void sl_lineEditChanged();
 
 private:
     bool checkToolPath();
-    
+
     U2SequenceObject*  dnaso;
     QString &lastDBPath;
     QString &lastDBName;

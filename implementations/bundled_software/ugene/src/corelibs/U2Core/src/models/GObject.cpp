@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -26,20 +26,17 @@
 #include "GHints.h"
 
 #include <U2Core/GObjectTypes.h>
-#include <U2Core/GObjectUtils.h>
 #include <U2Core/U2DbiUtils.h>
 #include <U2Core/U2ObjectDbi.h>
 #include <U2Core/U2ObjectRelationsDbi.h>
 #include <U2Core/U2ObjectTypeUtils.h>
 #include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2SafePoints.h>
-#include <U2Core/UnloadedObject.h>
 
 namespace U2 {
 
 GObject::GObject(QString _type, const QString& _name, const QVariantMap& hintsMap)
-    : dataLoaded(false), type (_type), name(_name), arePermanentRelationsFetched(false)
-{
+    : dataLoaded(false), type(_type), name(_name), arePermanentRelationsFetched(false) {
     SAFE_POINT(!name.isEmpty(), "Invalid object name detected", );
     setupHints(hintsMap);
 }
@@ -123,7 +120,7 @@ void GObject::fetchPermanentGObjectRelations(QList<GObjectRelation> &res) const 
 
     const QString docUrl = parentDoc->getURLString();
     QList<GObjectRelation> dbRelations;
-    foreach (const U2ObjectRelation &relation, rawDbRelations) {
+    foreach(const U2ObjectRelation &relation, rawDbRelations) {
         if (NULL != parentDoc->findGObjectByName(relation.referencedName)) {
             GObjectReference reference(docUrl, relation.referencedName, relation.referencedType);
             reference.entityRef = U2EntityRef(entityRef.dbiRef, relation.referencedObject);
@@ -137,7 +134,7 @@ void GObject::fetchPermanentGObjectRelations(QList<GObjectRelation> &res) const 
     }
 
     QList<GObjectRelation> relationsMissedFromDb;
-    foreach (const GObjectRelation &relation, res) {
+    foreach(const GObjectRelation &relation, res) {
         if (!dbRelations.contains(relation)) {
             relationsMissedFromDb.append(relation);
         }
@@ -168,7 +165,7 @@ void GObject::setRelationsInDb(QList<GObjectRelation>& list) const {
     U2ObjectDbi *oDbi = con.dbi->getObjectDbi();
 
     QList<U2ObjectRelation> dbRelations;
-    for (int i = 0, n = list.size(); i < n; ++i ) {
+    for (int i = 0, n = list.size(); i < n; ++i) {
         GObjectRelation &relation = list[i];
         const U2DataType refType = U2ObjectTypeUtils::toDataType(relation.ref.objType);
         const bool relatedObjectDbReferenceValid = relation.ref.entityRef.dbiRef.isValid();
@@ -243,7 +240,7 @@ void GObject::addObjectRelation(const GObjectRelation& rel) {
 
 void GObject::removeObjectRelation(const GObjectRelation& ref) {
     QList<GObjectRelation> list = getObjectRelations();
-    bool ok  = list.removeOne(ref);
+    bool ok = list.removeOne(ref);
     if (ok) {
         setObjectRelations(list);
     }
@@ -266,7 +263,7 @@ bool relationsAreEqualExceptDbId(const GObjectRelation &f, const GObjectRelation
 bool GObject::hasObjectRelation(const GObjectRelation& r) const {
     Document *parentDoc = getDocument();
     if (NULL != parentDoc && !parentDoc->isDatabaseConnection()) {
-        foreach (const GObjectRelation &rel, getObjectRelations()) {
+        foreach(const GObjectRelation &rel, getObjectRelations()) {
             if (relationsAreEqualExceptDbId(rel, r)) {
                 return true;
             }
@@ -379,7 +376,7 @@ void GObject::checkIfBelongToSharedDatabase(StateLockableTreeItem *parent) {
 }
 
 void GObject::removeAllLocks() {
-    foreach (StateLock* lock, modLocks.values()) {
+    foreach(StateLock* lock, modLocks.values()) {
         unlockState(lock);
     }
     qDeleteAll(modLocks.values());

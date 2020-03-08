@@ -1,4 +1,3 @@
-cmake_minimum_required(VERSION 3.4)
 project(U2Designer)
 
 set(CMAKE_AUTOUIC ON)
@@ -23,5 +22,5 @@ add_library(U2Designer SHARED ${HDRS} ${SRCS} ${RCC_SRCS})
 
 target_link_libraries(U2Designer
         Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Xml Qt5::Svg Qt5::Script Qt5::WebKit Qt5::WebKitWidgets
-        U2Core U2Algorithm U2Gui)
+        U2Core U2Lang U2Gui)
 

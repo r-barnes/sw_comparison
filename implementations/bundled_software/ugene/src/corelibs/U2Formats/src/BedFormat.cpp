@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -81,8 +81,6 @@ FormatDetectionScore BEDLineValidateFlags::getFormatDetectionScore()
 //-------------------------------------------------------------------
 //  BedFormat
 //-------------------------------------------------------------------
-const QString BedFormat::FORMAT_NAME = QObject::tr("BED");
-
 //Names of supported qualifier names
 namespace {
     const QString TRACK_NAME_QUALIFIER_NAME = "track_name";
@@ -100,14 +98,15 @@ namespace {
 }
 
 BedFormat::BedFormat(QObject* p)
-    : DocumentFormat(p, DocumentFormatFlag_SupportWriting, QStringList("bed"))
+    : TextDocumentFormat(p, BaseDocumentFormats::BED, DocumentFormatFlag_SupportWriting, QStringList("bed"))
 {
+    formatName = tr("BED");
     formatDescription = tr("The BED (Browser Extensible Data) format was developed by UCSC for displaying transcript structures in the genome browser.");
-    supportedObjectTypes+=GObjectTypes::ANNOTATION_TABLE;
+    supportedObjectTypes += GObjectTypes::ANNOTATION_TABLE;
 }
 
 
-Document* BedFormat::loadDocument(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& fs, U2OpStatus& os)
+Document* BedFormat::loadTextDocument(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& fs, U2OpStatus& os)
 {
     CHECK_EXT(io != NULL && io->isOpen(), os.setError(L10N::badArgument("IO adapter")), NULL);
     QList<GObject*> objects;
@@ -271,7 +270,7 @@ bool validateBlocks(const QString& blockCountStr, const QString& blockSizesStr, 
 }
 
 
-FormatCheckResult BedFormat::checkRawData(const QByteArray& rawData, const GUrl& /* = GUrl */) const
+FormatCheckResult BedFormat::checkRawTextData(const QByteArray& rawData, const GUrl& /* = GUrl */) const
 {
     const char* data = rawData.constData();
     int size = rawData.size();
@@ -1014,6 +1013,8 @@ int BedFormatParser::readLine() {
     curLine.clear();
     do {
         len = io->readLine(buff.data(), BufferSize - 1);
+        CHECK_EXT(!io->hasError(), os.setError(io->errorString()), -1);
+
         buff.data()[len] = '\0';
         curLine.append(QString(buff.data()));
     } while (len == BufferSize - 1);

@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -458,7 +458,7 @@ void ConvertToSQLiteTask::run() {
 
         time_t totalTime = time(0) - startTime;
 
-        taskLog.info(QString("Converting assembly from %1 to %2 succesfully finished: imported %3 reads, total time %4 s, pack time %5 s")
+        taskLog.info(QString("Converting assembly from %1 to %2 successfully finished: imported %3 reads, total time %4 s, pack time %5 s")
                      .arg(sourceUrl.fileName())
                      .arg(getDestinationUrl().fileName())
                      .arg(totalReadsImported)

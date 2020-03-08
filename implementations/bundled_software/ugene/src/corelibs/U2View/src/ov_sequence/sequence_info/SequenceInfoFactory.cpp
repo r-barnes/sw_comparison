@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -33,7 +33,7 @@ namespace U2 {
 
 const QString SequenceInfoFactory::GROUP_ID = "OP_SEQ_INFO";
 const QString SequenceInfoFactory::GROUP_ICON_STR = ":core/images/chart_bar.png";
-const QString SequenceInfoFactory::GROUP_DOC_PAGE = "21433163";
+const QString SequenceInfoFactory::GROUP_DOC_PAGE = "24742362";
 
 SequenceInfoFactory::SequenceInfoFactory() {
     objectViewOfWidget = ObjViewType_SequenceView;

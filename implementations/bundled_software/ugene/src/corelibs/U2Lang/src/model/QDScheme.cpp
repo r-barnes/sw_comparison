@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -42,7 +42,7 @@ const int QDActor::DEFAULT_MAX_RESULT_LENGTH(10000);
 QDActor::QDActor(QDActorPrototype const* _proto) : scheme(NULL), proto(_proto), strand(QDStrand_Both), simmetric(false) {
     cfg = new QDActorParameters;
     foreach(Attribute* a, proto->getParameters()) {
-        cfg->addParameter(a->getId(), new Attribute(*a));
+        cfg->addParameter(a->getId(), a->clone());
     }
     ConfigurationEditor* ed = proto->getEditor();
 
@@ -680,11 +680,11 @@ bool QDScheme::isValid() const {
     bool res = true;
     foreach(QDActor* actor, getActors()) {
         QDActorParameters* cfg = actor->getParameters();
-        ProblemList problemList;
-        if (!cfg->validate(problemList)) {
+        NotificationsList notificationList;
+        if (!cfg->validate(notificationList)) {
             res = false;
-            foreach(const Problem& problem, problemList) {
-                coreLog.error(QObject::tr("%1. %2").arg(cfg->getLabel()).arg(problem.message));
+            foreach(const WorkflowNotification& notification, notificationList) {
+                coreLog.error(QObject::tr("%1. %2").arg(cfg->getLabel()).arg(notification.message));
             }
         }
     }

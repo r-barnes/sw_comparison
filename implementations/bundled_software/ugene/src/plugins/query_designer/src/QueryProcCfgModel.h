@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -105,12 +105,13 @@ public:
             case Qt::ToolTipRole: return item->getDocumentation();
             case Qt::FontRole:
                 if (item->isRequiredAttribute()) {
-                    QFont fnt; fnt.setBold(true);
+                    QFont fnt;
+                    fnt.setBold(true);
                     return QVariant(fnt);
                 }
+                return QVariant();
             default:
                 return QVariant();
-
             }
         }
         QVariant val = item->getAttributePureValue();

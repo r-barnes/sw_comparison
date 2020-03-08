@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -20,12 +20,12 @@
  */
 
 body {
-    background: url("qrc:U2Designer/images/background.png") repeat scroll 0% 0% transparent;
+    background: url("qrc:///U2Designer/images/background.png") repeat scroll 0% 0% transparent;
 }
 
 #wrapper {
     /** Fill the whole horizontal space */
-    display: table; 
+    display: table;
     width: 100%;
 }
 
@@ -77,14 +77,14 @@ body {
 }
 
 .dash-menu-line {
-    background: url("qrc:U2Designer/images/background-menu.png") repeat scroll 0% 0% transparent;
+    background: url("qrc:///U2Designer/images/background-menu.png") repeat scroll 0% 0% transparent;
     padding-left: 20px;
     margin-bottom: 30px;
     min-width: 500px;
 }
 
 .dash-nav > .active > a, .dash-nav > .active > a:hover, .dash-nav > .active > a:focus {
-    background: url("qrc:U2Designer/images/background-menu-button.png") repeat scroll 0% 0% transparent;
+    background: url("qrc:///U2Designer/images/background-menu-button.png") repeat scroll 0% 0% transparent;
     color: white;
 }
 
@@ -209,7 +209,7 @@ table.table-fixed {
 .load-btn div {
     width: 16px;
     height: 16px;
-    background-image: url("qrc:U2Designer/images/load_schema.png");
+    background-image: url("qrc:///U2Designer/images/load_schema.png");
     background-repeat: no-repeat;
 }
 
@@ -285,7 +285,11 @@ span.badge
     word-break: break-all;
     -webkit-hyphens: auto;
 }
-span.badge.program-path
+span.badge.command
+{
+    background-color:#79ACAC;
+}
+span.badge.program-path     /* deprecated: new dashboards won't contain elements of this class, it was replaced with 'span.badge.command' */
 {
     background-color:#BCBC90;
 }
@@ -293,7 +297,7 @@ span.badge.tool-info
 {
     background-color:#9999CC;
 }
-span.badge.tool-args
+span.badge.tool-args        /* deprecated: new dashboards won't contain elements of this class, it was replaced with 'span.badge.command' */
 {
     background-color:#79ACAC;
 }
@@ -305,6 +309,14 @@ span.badge.badge-success
 span.badge.badge-important
 {
     background-color:#CC6666;
+}
+span.badge.actor-node
+{
+    background-color:#92939E;
+}
+span.badge.actor-tick-node
+{
+    background-color:#bdb0a0;
 }
 span.badge.tool-node
 {
@@ -325,6 +337,20 @@ span.content
     -webkit-hyphens: auto;
     width: 830px;
 }
+span.badge.limitation-message
+{
+    background-color: #CC6666;
+}
+a.log-folder-link
+{
+    text-decoration: underline;
+    color: inherit;
+}
+a.log-file-link
+{
+    text-decoration: underline;
+    color: inherit;
+}
 .dropdown-menu.context
 {
     display: block; 
@@ -336,12 +362,12 @@ span.content
 {
     position: absolute; 
     display: inline-block;
-    background-image: url("qrc:U2Designer/images/copy.png");
+    background-image: url("qrc:///U2Designer/images/copy.png");
     background-repeat: no-repeat;
     background-position:center;
     border: 1px solid #999;
-    border-left: 2px solid white;
-    height: inherit;
+    border-left: 1px solid white;
+    height: 22px;
     width: 22px;
     -webkit-border-radius: 0 6px 6px 0;
     margin-top: -4px;

@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -46,7 +46,11 @@
 
 namespace U2 {
 
-CAP3Support::CAP3Support(const QString& name, const QString& path) : ExternalTool(name, path)
+const QString CAP3Support::ET_CAP3 = "CAP3";
+const QString CAP3Support::ET_CAP3_ID = "USUPP_CAP3";
+const QString CAP3Support::CAP3_TMP_DIR = "cap3";
+
+CAP3Support::CAP3Support(const QString& id, const QString& name, const QString& path) : ExternalTool(id, name, path)
 {
     if (AppContext::getMainWindow()) {
         viewCtx = NULL; //new CAP3SupportContext(this);
@@ -63,7 +67,7 @@ CAP3Support::CAP3Support(const QString& name, const QString& path) : ExternalToo
 #endif
     validMessage="cap3 File_of_reads \\[options\\]";
     description=tr("<i>CAP3</i> is a contig assembly program. \
-                   <br>It allows to assembly long DNA reads (up to 1000 bp). \
+                   <br>It allows one to assembly long DNA reads (up to 1000 bp). \
                    <br>Binaries can be downloaded from http://seq.cs.iastate.edu/cap3.html");
     description+=tr("<br><br> Huang, X. and Madan, A.  (1999)");
     description+=tr("<br>CAP3: A DNA Sequence Assembly Program,");

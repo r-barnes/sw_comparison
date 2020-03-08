@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -35,7 +35,7 @@
 
 namespace U2 {
 
-AppSettingsDialogController::AppSettingsDialogController(const QString& pageId, QWidget *p):QDialog(p) {
+AppSettingsDialogController::AppSettingsDialogController(const QString& pageId, QWidget *p) :QDialog(p) {
     setupUi(this);
 
     currentPage = NULL;
@@ -54,10 +54,10 @@ AppSettingsDialogController::AppSettingsDialogController(const QString& pageId, 
         registerPage(page);
     }
 
-    if (tree->topLevelItemCount() >  0) {
+    if (tree->topLevelItemCount() > 0) {
         if (!pageId.isEmpty()) {
             AppSettingsTreeItem* item = findPageItem(pageId);
-            if (item!=NULL) {
+            if (item != NULL) {
                 tree->setCurrentItem(item);
             }
         }
@@ -96,18 +96,18 @@ bool AppSettingsDialogController::turnPage(AppSettingsTreeItem* page) {
     assert(page == NULL || page->pageWidget == NULL);
 
     if (currentPage != NULL) {
-        assert(currentPage->pageWidget!=NULL);
-        assert(currentPage->pageState ==NULL);
+        assert(currentPage->pageWidget != NULL);
+        assert(currentPage->pageState == NULL);
         if (!checkCurrentState(true, false)) {
             return false;
         }
-        assert(currentPage->pageState!=NULL);
+        assert(currentPage->pageState != NULL);
         settingsBox->setTitle("");
         delete currentPage->pageWidget;
         currentPage->pageWidget = NULL;
         currentPage = NULL;
     }
-    if (page!=NULL) {
+    if (page != NULL) {
         assert(currentPage == NULL);
         settingsBox->setTitle(page->pageController->getPageName());
         page->pageState = page->pageState == NULL ? page->pageController->getSavedState() : page->pageState;
@@ -118,7 +118,8 @@ bool AppSettingsDialogController::turnPage(AppSettingsTreeItem* page) {
         page->pageState = NULL;
 
         currentPage = page;
-        helpButton->updatePageId(currentPage->pageController->getHelpPageId()) ;
+        helpButton->updatePageId(currentPage->pageController->getHelpPageId());
+        connect(currentPage->pageWidget, SIGNAL(si_setLockState(bool)), SLOT(sl_setLockState(bool)));
     }
     return true;
 }
@@ -129,7 +130,7 @@ void AppSettingsDialogController::registerPage(AppSettingsGUIPageController* pag
 }
 
 AppSettingsTreeItem* AppSettingsDialogController::findPageItem(const QString& id) const {
-    for(int i=0, n = tree->topLevelItemCount(); i < n; i++) {
+    for (int i = 0, n = tree->topLevelItemCount(); i < n; i++) {
         AppSettingsTreeItem* item = static_cast<AppSettingsTreeItem*>(tree->topLevelItem(i));
         if (item->pageController->getPageId() == id) {
             return item;
@@ -144,9 +145,9 @@ void AppSettingsDialogController::accept() {
     }
 
     turnPage(NULL);//make current state saved in item
-    for(int i=0, n = tree->topLevelItemCount(); i < n; i++) {
+    for (int i = 0, n = tree->topLevelItemCount(); i < n; i++) {
         AppSettingsTreeItem* item = static_cast<AppSettingsTreeItem*>(tree->topLevelItem(i));
-        if (item->pageState!=NULL) {
+        if (item->pageState != NULL) {
             item->pageController->saveState(item->pageState);
         }
     }
@@ -163,6 +164,11 @@ void AppSettingsDialogController::timerEvent(QTimerEvent* te) {
     tree->setCurrentItem(currentPage);
 }
 
+void AppSettingsDialogController::sl_setLockState(bool lockState) {
+    buttonBox->button(QDialogButtonBox::Ok)->setDisabled(lockState);
+    tree->setDisabled(lockState);
+}
+
 void AppSettingsDialogController::sl_currentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous) {
     Q_UNUSED(previous);
     AppSettingsTreeItem* page = static_cast<AppSettingsTreeItem*>(current);
@@ -177,7 +183,7 @@ void AppSettingsDialogController::sl_currentItemChanged(QTreeWidgetItem* current
 }
 
 AppSettingsTreeItem::AppSettingsTreeItem(AppSettingsGUIPageController* p) :pageController(p), pageState(NULL), pageWidget(NULL) {
-    setText(0, "  "  + p->getPageName());
+    setText(0, "  " + p->getPageName());
 }
 
 }//namespace

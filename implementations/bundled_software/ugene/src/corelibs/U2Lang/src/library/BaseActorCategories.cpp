@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -59,8 +59,8 @@ const Descriptor BaseActorCategories::CATEGORY_NGS_BASIC() {
     return Descriptor("ngs_base", tr("NGS: Basic Functions"), "");
 }
 
-const Descriptor BaseActorCategories::CATEGORY_NGS_ALIGN_SHORT_READS() {
-    return Descriptor("ngs_align", tr("NGS: Align Short Reads"), "");
+const Descriptor BaseActorCategories::CATEGORY_NGS_MAP_ASSEMBLE_READS() {
+    return Descriptor("ngs_align", tr("NGS: Map/Assemble Reads"), "");
 }
 
 const Descriptor BaseActorCategories::CATEGORY_RNA_SEQ() {
@@ -80,7 +80,7 @@ const Descriptor BaseActorCategories::CATEGORY_SCRIPT() {
 }
 
 const Descriptor BaseActorCategories::CATEGORY_EXTERNAL() {
-    return Descriptor("ex", tr("Custom Elements with CMD Tools"),"");
+    return Descriptor("ex", tr("Custom Elements with External Tools"),"");
 }
 
 const Descriptor BaseActorCategories::CATEGORY_DATAFLOW() {

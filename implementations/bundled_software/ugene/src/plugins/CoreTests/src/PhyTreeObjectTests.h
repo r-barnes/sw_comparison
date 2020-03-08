@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -31,7 +31,7 @@ namespace U2 {
 class Document;
 class PhyTreeGeneratorLauncherTask;
 
-class GTest_CalculateTreeFromAligment : public GTest {
+class GTest_CalculateTreeFromAligment : public XmlTest {
     Q_OBJECT
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_CalculateTreeFromAligment, "calc-tree-from-alignment");
 
@@ -41,10 +41,10 @@ class GTest_CalculateTreeFromAligment : public GTest {
     PhyTreeGeneratorLauncherTask* task;
     QString objContextName;
     QString treeObjContextName;
-    QString algName;
+    QString algId;
 };
 
-class GTest_CheckPhyNodeHasSibling : public GTest {
+class GTest_CheckPhyNodeHasSibling : public XmlTest {
     Q_OBJECT
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_CheckPhyNodeHasSibling, "check-phynode-has-sibling");
 
@@ -56,7 +56,7 @@ class GTest_CheckPhyNodeHasSibling : public GTest {
 
 };
 
-class GTest_CheckPhyNodeBranchDistance : public GTest {
+class GTest_CheckPhyNodeBranchDistance : public XmlTest {
     Q_OBJECT
         SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_CheckPhyNodeBranchDistance, "check-phynode-branch-distance");
 
@@ -68,7 +68,7 @@ class GTest_CheckPhyNodeBranchDistance : public GTest {
 
 };
 
-class GTest_CompareTreesInTwoObjects : public GTest {
+class GTest_CompareTreesInTwoObjects : public XmlTest {
     Q_OBJECT
         SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_CompareTreesInTwoObjects, "compare-trees-in-two-objects");
 

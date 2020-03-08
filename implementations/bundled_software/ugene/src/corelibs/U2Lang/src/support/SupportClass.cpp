@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -26,18 +26,18 @@ namespace U2 {
 /************************************************************************/
 /* Problem */
 /************************************************************************/
-const QString Problem::U2_ERROR = "error";
-const QString Problem::U2_WARNING = "warning";
-const QString Problem::U2_INFO = "info";
+const QString WorkflowNotification::U2_ERROR = "error";
+const QString WorkflowNotification::U2_WARNING = "warning";
+const QString WorkflowNotification::U2_INFO = "info";
 
-Problem::Problem(const QString &_message, const QString &_actor, const QString& _type)
+WorkflowNotification::WorkflowNotification(const QString &_message, const QString &_actorId, const QString& _type)
     : message(_message),
-      actor(_actor),
+      actorId(_actorId),
       type(_type) {
 }
 
-bool Problem::operator== (const Problem &other) const {
-    return (actor == other.actor) &&
+bool WorkflowNotification::operator== (const WorkflowNotification &other) const {
+    return (actorId == other.actorId) &&
             (message == other.message) &&
             (type == other.type);
 }

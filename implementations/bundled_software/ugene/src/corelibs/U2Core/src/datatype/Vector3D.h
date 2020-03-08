@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -23,11 +23,9 @@
 #define _U2_VECTOR_MATH_H_
 
 #include <QtGlobal>
-#include <math.h>
 #include <U2Core/global.h>
 
-namespace U2
-{
+namespace U2 {
 
 class Matrix44;
 

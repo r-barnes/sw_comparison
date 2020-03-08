@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -21,8 +21,6 @@
 
 #ifndef _MA_ITERATOR_H_
 #define _MA_ITERATOR_H_
-
-#include <QPoint>
 
 #include <U2Core/MultipleAlignment.h>
 

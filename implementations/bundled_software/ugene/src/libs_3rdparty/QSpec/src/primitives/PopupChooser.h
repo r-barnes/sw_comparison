@@ -69,7 +69,8 @@ public:
         IsDisabled = 4 | Exists,
         IsChecable = 8 | Exists,
         IsChecked = 16 | Exists | IsChecable,
-        IsUnchecked = 32 | Exists | IsChecable
+        IsUnchecked = 32 | Exists | IsChecable,
+        isNotVisible = 64 | Exists
     };
     Q_DECLARE_FLAGS(CheckOptions, CheckOption)
 
@@ -101,6 +102,11 @@ public:
                        PopupChecker::CheckOptions options = PopupChecker::CheckOptions(PopupChecker::IsEnabled),
                        GTGlobals::UseMethod useMethod = GTGlobals::UseKey);
     PopupCheckerByText(GUITestOpStatus &os,
+                       const QStringList &menuPath,
+                       const QMap<QString, QKeySequence> &namesAndShortcuts,
+                       PopupChecker::CheckOptions options = PopupChecker::CheckOptions(PopupChecker::IsEnabled),
+                       GTGlobals::UseMethod useMethod = GTGlobals::UseKey);
+    PopupCheckerByText(GUITestOpStatus &os,
                        const QList<QStringList> &itemsPaths,
                        PopupChecker::CheckOptions options = PopupChecker::CheckOptions(PopupChecker::IsEnabled),
                        GTGlobals::UseMethod useMethod = GTGlobals::UseKey);
@@ -110,6 +116,7 @@ public:
 protected:
     QStringList menuPath;
     QStringList itemsNames;
+    QList<QKeySequence> itemsShortcuts;
     PopupChecker::CheckOptions options;
     GTGlobals::UseMethod useMethod;
 };

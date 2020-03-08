@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -112,7 +112,7 @@ void MergeBamWorkerFactory::init() {
             MergeBamWorker::tr("Select the custom output folder."));
 
         Descriptor outName(OUT_NAME_ID, MergeBamWorker::tr("Output BAM name"),
-            MergeBamWorker::tr("A name of an output BAM file. If default of empty value is provided the output name is the name of the first BAM file with .merged.bam extention."));
+            MergeBamWorker::tr("A name of an output BAM file. If default of empty value is provided the output name is the name of the first BAM file with .merged.bam extension."));
 
 
         a << new Attribute(outDir, BaseTypes::NUM_TYPE(), false, QVariant(FileAndDirectoryUtils::WORKFLOW_INTERNAL));

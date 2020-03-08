@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -37,8 +37,8 @@ class U2Region;
 class U2CORE_EXPORT MultipleSequenceAlignment : public MultipleAlignment {
 public:
     MultipleSequenceAlignment(const QString &name = QString(),
-                              const DNAAlphabet *alphabet = NULL,
-                              const QList<MultipleSequenceAlignmentRow> &rows = QList<MultipleSequenceAlignmentRow>());
+        const DNAAlphabet *alphabet = NULL,
+        const QList<MultipleSequenceAlignmentRow> &rows = QList<MultipleSequenceAlignmentRow>());
     MultipleSequenceAlignment(const MultipleAlignment &ma);
     MultipleSequenceAlignment(MultipleSequenceAlignmentData *msaData);
 
@@ -72,8 +72,8 @@ protected:
      * The name must be provided if this is not default alignment.
      */
     MultipleSequenceAlignmentData(const QString &name = QString(),
-                                  const DNAAlphabet *alphabet = NULL,
-                                  const QList<MultipleSequenceAlignmentRow> &rows = QList<MultipleSequenceAlignmentRow>());
+        const DNAAlphabet *alphabet = NULL,
+        const QList<MultipleSequenceAlignmentRow> &rows = QList<MultipleSequenceAlignmentRow>());
     MultipleSequenceAlignmentData(const MultipleSequenceAlignmentData &msaData);
 
 public:
@@ -97,10 +97,13 @@ public:
     bool simplify();
 
     /**
-     * Sorts rows by similarity making identical rows sequential.
-     * Returns 'true' if the rows were resorted, and 'false' otherwise.
+     * Sorts rows by similarity making identical rows sequential. Sets MSA rows to the sorted rows.
+     * Returns 'true' if the rows were resorted and MSA is changed, and 'false' otherwise.
      */
     bool sortRowsBySimilarity(QVector<U2Region> &united);
+
+    /** Returns rows sorted by similarity. Does not update MSA. */
+    QList<MultipleSequenceAlignmentRow> getRowsSortedBySimilarity(QVector<U2Region> &united) const;
 
     /** Returns row of the alignment */
     inline MultipleSequenceAlignmentRow getMsaRow(int row);

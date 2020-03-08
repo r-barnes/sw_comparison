@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -141,6 +141,8 @@ void GTest_FindAnnotationByNum::cleanup() {
     if (result != NULL && !annotationContextName.isEmpty()) {
         removeContext(annotationContextName);
     }
+
+    XmlTest::cleanup();
 }
 
 //---------------------------------------------------------------
@@ -221,6 +223,8 @@ void GTest_FindAnnotationByName::cleanup() {
     if (result != NULL && !annotationContextName.isEmpty()) {
         removeContext(annotationContextName);
     }
+
+    XmlTest::cleanup();
 }
 
 //---------------------------------------------------------------
@@ -462,24 +466,7 @@ Task::ReportResult GTest_CheckAnnotationQualifierIsAbsent::report() {
     }
     const SharedAnnotationData a = annCtx->getAnnotation();
     QVector<U2Qualifier> res;
-    if (res.isEmpty()) {
-        int i = 0;
-        i++;
-    }
-    else {
-        int j = 0;
-        j++;
-    }
     a->findQualifiers(qName, res);
-    if (res.isEmpty()) {
-        int i = 0;
-        i++;
-    }
-    else {
-        int j = 0;
-        j++;
-        stateInfo.setError(QString("An annotation has qualifier %1, but it shouldn't!").arg(qName));
-    }
     if (!res.isEmpty()) {
         stateInfo.setError(QString("An annotation has qualifier %1, but it shouldn't!").arg(qName));
     }
@@ -1063,6 +1050,8 @@ void GTest_FindAnnotationByLocation::cleanup() {
     if (result != NULL && !annotationContextName.isEmpty()) {
         removeContext(annotationContextName);
     }
+
+    XmlTest::cleanup();
 }
 
 //---------------------------------------------------------------
@@ -1099,6 +1088,8 @@ void GTest_CreateTmpAnnotationObject::cleanup() {
         removeContext(objContextName);
     }
     delete aobj;
+
+    XmlTest::cleanup();
 }
 
 //---------------------------------------------------------------

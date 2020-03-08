@@ -6,37 +6,34 @@ use_opencl(){
     DEFINES += OPENCL_SUPPORT
 }
 
-UGENE_RELATIVE_DESTDIR = ''
-
-QT += xml network script webkit widgets
+QT += xml network script widgets
 TEMPLATE = app
 CONFIG +=qt dll thread debug_and_release console
+macx : CONFIG -= app_bundle
 DEFINES+= QT_DLL QT_FATAL_ASSERT
 INCLUDEPATH += src _tmp ../include ../corelibs/U2Private/src
 
-LIBS += -L../_release -lU2Core -lU2Algorithm -lU2Formats -lU2Gui -lU2Test -lU2Lang -lU2Private -lugenedb -lbreakpad -lhumimit
-if(exclude_list_enabled()|!exists( ../libs_3rdparty/QSpec/QSpec.pro )) {
-    LIBS -= -lhumimit
+LIBS += -L../$$out_dir()
+LIBS += -lU2Core$$D -lU2Algorithm$$D -lU2Designer$$D -lU2Formats$$D -lU2Gui$$D -lU2Test$$D -lU2Lang$$D -lU2Private$$D -lbreakpad$$D -lQSpec$$D
+LIBS += $$add_sqlite_lib()
+
+if (contains(DEFINES, HI_EXCLUDED)) {
+    LIBS -= -lQSpec$$D
 }
+
+DESTDIR = ../$$out_dir()
+TARGET = ugenecl$$D
+QMAKE_PROJECT_NAME = ugenecl
+
 !debug_and_release|build_pass {
 
     CONFIG(debug, debug|release) {
-        TARGET = ugenecld
         DEFINES+=_DEBUG
-        DESTDIR=../_debug
         MOC_DIR=_tmp/moc/debug
         OBJECTS_DIR=_tmp/obj/debug
-        LIBS -= -L../_release -lU2Core -lU2Algorithm -lU2Formats -lU2Gui -lU2Test -lU2Lang -lU2Private -lugenedb -lbreakpad -lhumimit
-        LIBS += -L../_debug -lU2Cored -lU2Algorithmd -lU2Formatsd -lU2Guid -lU2Testd -lU2Langd -lU2Privated -lugenedbd -lbreakpadd -lhumimitd
-        if(exclude_list_enabled()|!exists( ../libs_3rdparty/QSpec/QSpec.pro )) {
-            LIBS -= -lhumimitd
-        }
-
     }
 
     CONFIG(release, debug|release) {
-        TARGET = ugenecl
-        DESTDIR=../_release
         DEFINES+=NDEBUG
         MOC_DIR=_tmp/moc/release
         OBJECTS_DIR=_tmp/obj/release
@@ -57,11 +54,10 @@ win32 {
 
 macx {
     RC_FILE = images/ugenecl_mac.icns
+    QMAKE_RPATHDIR += @executable_path/
 }
 
-
-
 unix {
-    target.path = $$UGENE_INSTALL_DIR/$$UGENE_RELATIVE_DESTDIR
+    target.path = $$UGENE_INSTALL_DIR/
     INSTALLS += target
 }

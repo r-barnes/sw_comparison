@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -23,10 +23,6 @@
 #define _U2_ATTRIBUTE_H_
 
 #include <U2Core/U2Type.h>
-#include <U2Core/U2Region.h>
-
-#include <QDateTime>
-#include <QVector>
 
 namespace U2 {
 
@@ -35,7 +31,7 @@ namespace U2 {
 /**
     Attribute for any top-level object record.
     Some name/value are supported internally and must be tracked by the system on sequence modification
-*/
+    */
 class U2CORE_EXPORT U2Attribute : public U2Entity {
 public:
     U2Attribute(const U2DataId& o = U2DataId(), const QString& n = QString()) : objectId(o), version(0), name(n) {}
@@ -77,7 +73,7 @@ public:
 };
 
 /** Byte array attribute */
-class U2CORE_EXPORT U2ByteArrayAttribute: public U2Attribute {
+class U2CORE_EXPORT U2ByteArrayAttribute : public U2Attribute {
 public:
     U2ByteArrayAttribute(const U2DataId& o = U2DataId(), const QString& n = QString(), const QByteArray& val = QByteArray())
         : U2Attribute(o, n), value(val) {}

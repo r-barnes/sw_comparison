@@ -127,12 +127,12 @@ Section "Build"
     # Remove old install
     RMDir /r "$INSTDIR\plugins"
     Delete "$INSTDIR\ugene.exe"
+    Delete "$INSTDIR\ugenecl.exe"
 
     !insertmacro AddExecutable ugeneui
     !insertmacro AddExecutable ugenecl
     !insertmacro AddExecutable ugenem
     !insertmacro AddExecutable plugins_checker
-    Rename ugenecl.exe ugene.exe
 
     !insertmacro AddLibrary U2Algorithm
     !insertmacro AddLibrary U2Core
@@ -201,11 +201,12 @@ Section "Build"
     !insertmacro AddPlugin annotator
     !insertmacro AddPlugin ball
     !insertmacro AddPlugin biostruct3d_view
-    !insertmacro AddPlugin browser_support
     !insertmacro AddPlugin chroma_view
     !insertmacro AddPlugin circular_view
+    !insertmacro AddPlugin clark_support
     !insertmacro AddPlugin cuda_support
     !insertmacro AddPlugin dbi_bam
+    !insertmacro AddPlugin diamond_support
     !insertmacro AddPlugin dna_export
     !insertmacro AddPlugin dna_flexibility
     !insertmacro AddPlugin dna_graphpack
@@ -217,7 +218,10 @@ Section "Build"
     !insertmacro AddPlugin gor4
     !insertmacro AddPlugin hmm2
     !insertmacro AddPlugin kalign
+    !insertmacro AddPlugin kraken_support
     !insertmacro AddPlugin linkdata_support
+    !insertmacro AddPlugin metaphlan2_support
+    !insertmacro AddPlugin ngs_reads_classification
     !insertmacro AddPlugin opencl_support
     !insertmacro AddPlugin orf_marker
     !insertmacro AddPlugin pcr
@@ -228,12 +232,13 @@ Section "Build"
     !insertmacro AddPlugin query_designer
     !insertmacro AddPlugin remote_blast
     !insertmacro AddPlugin repeat_finder
-    !insertmacro AddPlugin smith_waterman
     !insertmacro AddPlugin sitecon
+    !insertmacro AddPlugin smith_waterman
     !insertmacro AddPlugin umuscle
-    !insertmacro AddPlugin weight_matrix
-    !insertmacro AddPlugin workflow_designer
     !insertmacro AddPlugin variants
+    !insertmacro AddPlugin weight_matrix
+    !insertmacro AddPlugin wevote_support
+    !insertmacro AddPlugin workflow_designer
 
     SetOutPath $INSTDIR
     

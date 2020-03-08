@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -147,12 +147,12 @@ bool SearchQuery::haveMCount() const {
 }
 
 void SearchQuery::addResult(SAType result, quint32 mCount) {
-    results.append(result); results.squeeze();
-    mismatchCounts.append(mCount); mismatchCounts.squeeze();
+    results.append(result);
+    mismatchCounts.append(mCount);
 }
 
 void SearchQuery::addOveplapResult(SAType result) {
-    overlapResults.append(result); overlapResults.squeeze();
+    overlapResults.append(result);
 }
 
 void SearchQuery::onPartChanged() {
@@ -162,8 +162,10 @@ void SearchQuery::onPartChanged() {
 }
 
 void SearchQuery::clear() {
-    results.clear(); results.squeeze();
-    mismatchCounts.clear(); mismatchCounts.squeeze();
+    results.clear();
+    results.squeeze();
+    mismatchCounts.clear();
+    mismatchCounts.squeeze();
 }
 
 SAType SearchQuery::firstResult() const {
@@ -181,7 +183,7 @@ bool SearchQuery::contains(SAType result) const {
     return (results.contains(result) || overlapResults.contains(result));
 }
 
-QVector<SAType> &SearchQuery::getResults() {
+const QVector<SAType>& SearchQuery::getResults() const {
     return results;
 }
 

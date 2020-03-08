@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -19,12 +19,11 @@
  * MA 02110-1301, USA.
  */
 
-#include <QDomDocument>
-#include <QPrinter>
-#include <QLabel>
 #include <QCheckBox>
 #include <QComboBox>
-#include <QVBoxLayout>
+#include <QDomDocument>
+#include <QLabel>
+#include <QPrinter>
 #include <QSvgGenerator>
 
 #include <U2Core/U2SafePoints.h>
@@ -148,7 +147,7 @@ void CircularViewImageExportController::initSettingsWidget() {
         sequenceComboBox = new QComboBox();
         foreach(CircularView* cv, cvList) {
             SAFE_POINT( cv->getSequenceContext() != NULL, tr("Sequence context is NULL!"), );
-            SAFE_POINT( cv->getSequenceContext()->getSequenceGObject() != NULL, tr("Sequece Gobject is NULL"), );
+            SAFE_POINT( cv->getSequenceContext()->getSequenceGObject() != NULL, tr("Sequence Gobject is NULL"), );
             QString seqName = cv->getSequenceContext()->getSequenceGObject()->getGObjectName();
             sequenceComboBox->addItem(seqName);
             if (cv == cvWidget) {

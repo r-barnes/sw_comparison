@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -23,7 +23,6 @@
 #define _U2_ESTIMATION_REPORTER_H_
 
 #include <QMessageBox>
-#include <QWebView>
 
 #include <U2Core/global.h>
 #include <U2Lang/SchemaEstimationTask.h>
@@ -32,22 +31,7 @@ namespace U2 {
 
 class U2DESIGNER_EXPORT EstimationReporter {
 public:
-    static QWebView * generateReport(const Workflow::EstimationResult &er);
     static QMessageBox * createTimeMessage(const Workflow::EstimationResult &er);
-};
-
-class ReportGenerationHelper : public QObject {
-    Q_OBJECT
-public:
-    ReportGenerationHelper(QWebView *view);
-    void waitLoading();
-    bool loadedOk;
-
-public slots:
-    void sl_loadFinished(bool ok);
-
-private:
-    bool loaded;
 };
 
 } //U2

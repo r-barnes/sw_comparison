@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -193,6 +193,15 @@ QList<Task*> AlignToReferenceBlastCmdlineTask::onSubTaskFinished(Task *subTask) 
     CHECK(subTask != NULL, result);
     CHECK(!subTask->isCanceled() && !subTask->hasError(), result);
     if (loadRef == subTask) {
+        QFileInfo resultFile(settings.resultAlignmentFile);
+        QDir resultDir = resultFile.dir();
+        if (!resultDir.exists()) {
+            bool mkDirResult = QDir().mkpath(resultDir.absolutePath());
+            if (!mkDirResult) {
+                setError(tr("Failed to create output folder: %1.").arg(resultDir.absolutePath()));
+                return result;
+            }
+        }
         CmdlineInOutTaskConfig config;
 
         config.command = "--task=" + ALIGN_TO_REF_CMDLINE;
@@ -204,23 +213,25 @@ QList<Task*> AlignToReferenceBlastCmdlineTask::onSubTaskFinished(Task *subTask) 
         config.arguments << argString.arg(MIN_LEN_ARG).arg(settings.minLength);
         config.arguments << argString.arg(THRESHOLD_ARG).arg(settings.qualityThreshold);
         config.arguments << argString.arg(TRIM_ARG).arg(true);
-        config.arguments << argString.arg(RESULT_ALIGNMENT_ARG).arg(QFileInfo(settings.outAlignment).absoluteFilePath());
+        config.arguments << argString.arg(RESULT_ALIGNMENT_ARG).arg(QFileInfo(settings.resultAlignmentFile).absoluteFilePath());
 
         config.reportFile = reportFile.fileName();
         config.emptyOutputPossible = true;
+
+        config.logLevel = LogLevel_TRACE;
 
         cmdlineTask = new CmdlineInOutTaskRunner(config);
         result.append(cmdlineTask);
     } else if (subTask == cmdlineTask && settings.addResultToProject) {
         // add load document task
         FormatDetectionConfig config;
-        QList<FormatDetectionResult> formats = DocumentUtils::detectFormat(settings.outAlignment, config);
+        QList<FormatDetectionResult> formats = DocumentUtils::detectFormat(settings.resultAlignmentFile, config);
         CHECK_EXT(!formats.isEmpty() && (NULL != formats.first().format), setError(tr("wrong output format")), result);
 
         DocumentFormat *format = formats.first().format;
         CHECK_EXT(format->getSupportedObjectTypes().contains(GObjectTypes::MULTIPLE_CHROMATOGRAM_ALIGNMENT), setError(tr("wrong output format")), result);
 
-        Task *loadTask = AppContext::getProjectLoader()->openWithProjectTask(settings.outAlignment);
+        Task *loadTask = AppContext::getProjectLoader()->openWithProjectTask(settings.resultAlignmentFile);
         AppContext::getTaskScheduler()->registerTopLevelTask(loadTask);
     }
 
@@ -248,7 +259,7 @@ AlignToReferenceBlastDialog::AlignToReferenceBlastDialog(QWidget *parent)
     setupUi(this);
     GCOUNTER(cvar, tvar, "'Map reads to reference' dialog opening");
 
-    new HelpButton(this, buttonBox, "21433523");
+    new HelpButton(this, buttonBox, "24742722");
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Map"));
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
 
@@ -314,11 +325,10 @@ void AlignToReferenceBlastDialog::accept() {
     settings.rowNaming = static_cast<AlignToReferenceBlastCmdlineTask::Settings::RowNaming>(cbRowNaming->currentData().toInt());
 
     if (outputLineEdit->text().isEmpty()) {
-        QMessageBox::warning(this, tr("Error"),
-                             tr("Output file is not set."));
+        QMessageBox::warning(this, tr("Error"), tr("Output file is not set."));
         return;
     }
-    settings.outAlignment = outputLineEdit->text();
+    settings.resultAlignmentFile = outputLineEdit->text();
     settings.addResultToProject = addToProjectCheckbox->isChecked();
 
     QString outUrl = saveController->getSaveFileName();

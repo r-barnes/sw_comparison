@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -21,14 +21,11 @@
 
 #include <U2Core/ChromatogramUtils.h>
 #include <U2Core/DatatypeSerializeUtils.h>
-#include <U2Core/DbiConnection.h>
 #include <U2Core/DNAAlphabet.h>
 #include <U2Core/DNAChromatogram.h>
 #include <U2Core/DNASequence.h>
-#include <U2Core/McaRowInnerData.h>
 #include <U2Core/MsaDbiUtils.h>
 #include <U2Core/MultipleChromatogramAlignment.h>
-#include <U2Core/RawDataUdrSchema.h>
 #include <U2Core/U2AttributeDbi.h>
 #include <U2Core/U2ObjectDbi.h>
 #include <U2Core/U2OpStatus.h>
@@ -88,7 +85,7 @@ void McaDbiUtils::updateMca(U2OpStatus &os, const U2EntityRef &mcaRef, const Mul
     // TODO: get the mca folder and create child objects there
     const QString dbFolder = U2ObjectDbi::ROOT_FOLDER;
 
-    foreach (const U2McaRow &currentRow, currentRows) {
+    foreach(const U2McaRow &currentRow, currentRows) {
         currentRowIds << currentRow.rowId;
 
         // Update data for rows with the same row and child objects IDs
@@ -163,7 +160,7 @@ void McaDbiUtils::updateMca(U2OpStatus &os, const U2EntityRef &mcaRef, const Mul
     //// UPDATE ALIGNMENT ATTRIBUTES
     QVariantMap info = mca->getInfo();
 
-    foreach (const QString &key, info.keys()) {
+    foreach(const QString &key, info.keys()) {
         QString value = info.value(key).toString();
         U2StringAttribute attribute(mcaRef.entityId, key, value);
 
@@ -204,7 +201,7 @@ QList<U2McaRow> McaDbiUtils::getMcaRows(U2OpStatus &os, const U2EntityRef &mcaRe
     const QList<U2MsaRow> msaRows = msaDbi->getRows(mcaRef.entityId, os);
     CHECK_OP(os, mcaRows);
 
-    foreach (const U2MsaRow &msaRow, msaRows) {
+    foreach(const U2MsaRow &msaRow, msaRows) {
         U2McaRow mcaRow(msaRow);
         mcaRow.chromatogramId = ChromatogramUtils::getChromatogramIdByRelatedSequenceId(os, U2EntityRef(mcaRef.dbiRef, msaRow.sequenceId)).entityId;
         CHECK_OP(os, mcaRows);
@@ -259,7 +256,7 @@ void McaDbiUtils::removeCharacters(const U2EntityRef &mcaRef, const QList<qint64
     CHECK_OP(os, );
 
     // Remove region for each row from the list
-    foreach (qint64 rowId, rowIds) {
+    foreach(qint64 rowId, rowIds) {
         U2McaRow row = getMcaRow(os, mcaRef, rowId);
         SAFE_POINT_OP(os, );
 
@@ -269,10 +266,10 @@ void McaDbiUtils::removeCharacters(const U2EntityRef &mcaRef, const QList<qint64
 
         if (U2Msa::GAP_CHAR != MsaRowUtils::charAt(seq, row.gaps, pos)) {
             qint64 startPosInSeq = -1;
-            qint64 endPosInSeq= -1;
+            qint64 endPosInSeq = -1;
             MaDbiUtils::getStartAndEndSequencePositions(seq, row.gaps,
-                                                        pos, count,
-                                                        startPosInSeq, endPosInSeq);
+                pos, count,
+                startPosInSeq, endPosInSeq);
 
             DNAChromatogram chrom = ChromatogramUtils::exportChromatogram(os, U2EntityRef(mcaRef.dbiRef, row.chromatogramId));
             ChromatogramUtils::removeBaseCalls(os, chrom, startPosInSeq, endPosInSeq);
@@ -303,7 +300,7 @@ void McaDbiUtils::replaceCharacterInRow(const U2EntityRef& mcaRef, qint64 rowId,
     U2McaRow row = getMcaRow(os, mcaRef, rowId);
     CHECK_OP(os, );
     qint64 msaLength = msaDbi->getMsaLength(mcaRef.entityId, os);
-    CHECK(pos < msaLength,);
+    CHECK(pos < msaLength, );
 
     U2Region seqReg(0, row.length);
     QByteArray seq = sequenceDbi->getSequenceData(row.sequenceId, seqReg, os);
@@ -358,8 +355,8 @@ void McaDbiUtils::removeRegion(const U2EntityRef& entityRef, const qint64 rowId,
     qint64 startPosInSeq = -1;
     qint64 endPosInSeq = -1;
     MaDbiUtils::getStartAndEndSequencePositions(seq, row.gaps,
-    pos, count,
-    startPosInSeq, endPosInSeq);
+        pos, count,
+        startPosInSeq, endPosInSeq);
 
     DNAChromatogram chrom = ChromatogramUtils::exportChromatogram(os, U2EntityRef(entityRef.dbiRef, row.chromatogramId));
     ChromatogramUtils::removeRegion(os, chrom, startPosInSeq, endPosInSeq);

@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -18,26 +18,25 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301, USA.
  */
- 
+
 //'Copy' menu definition
 function initializeCopyMenu() {
     var items = [{
-            isDivider: false,
-            tag: "a",
-            id: "copy_selected_action",
-            innerText: "Copy selected text",
-            command: "copySelected(event, this)",
-            active: true
-        }, {
-            isDivider: false,
-            tag: "a",
-            id: "copy_all_action",
-            innerText: "Copy element content",
-            command: "copyElementContent(event, this)",
-            active: true
-        }];
+                     isDivider: false,
+                     tag: "a",
+                     id: "copy_selected_action",
+                     innerText: "Copy selected text",
+                     command: "copySelected(event, this)",
+                     active: true
+                 }, {
+                     isDivider: false,
+                     tag: "a",
+                     id: "copy_all_action",
+                     innerText: "Copy element content",
+                     command: "copyElementContent(event, this)",
+                     active: true
+                 }];
     initializeMenu("ext_menu", items);
-
 }
 
 function addEventListeners() {
@@ -45,10 +44,8 @@ function addEventListeners() {
 }
 
 function copySelected(e, element) {
-    var menuObj = document.getElementById(element.getAttribute("menuId"));
-    agent.setClipboardText(document.getSelection());
+    agent.setClipboardText(document.getSelection() + "");
     e.stopPropagation();
-    menuObj.hide();
 }
 
 function copyElementContent(e, element) {
@@ -56,15 +53,13 @@ function copyElementContent(e, element) {
     var targetObj = document.getElementById(menuObj.getAttribute("target"));
     agent.setClipboardText(targetObj.innerText);
     e.stopPropagation();
-    menuObj.hide();
 }
 
 function contextmenu(e, element) {
     //Check that right button is pressed
-    if(e.which == 3 || e.button == 2) {
+    if (e.which === 3 || e.button === 2) {
         return onContextMenuTriggered(e, "ext_menu", element.id);
-    }
-    else {
+    } else {
         return true;
     }
 }
@@ -73,12 +68,12 @@ function contextmenu(e, element) {
 function initializeMenu(menuId, menuItems) {
     var container = document.body;
     var menu = createContextMenu(menuId, menuItems);
-    $("#"+menuId).hide(); 
+    $("#"+menuId).hide();
 }
 
 function onContextMenuTriggered(e, menuId, element) { 
     var menu = document.getElementById(menuId);
-    if(menu === null) {
+    if (menu === null) {
         return false;
     }
     $("#" + menuId).show();
@@ -86,11 +81,10 @@ function onContextMenuTriggered(e, menuId, element) {
     menu.setAttribute("target", element);
 
     var copySelAction = document.getElementById("li_copy_selected_action");
-    if(copySelAction !== null) {
-        if(document.getSelection() && document.getSelection() != "") {
-            copySelAction.className = ""; 
-        }
-        else {
+    if (copySelAction !== null) {
+        if (document.getSelection() && document.getSelection() != "") {
+            copySelAction.className = "";
+        } else {
             copySelAction.className = "disabled";
         }
     }
@@ -102,15 +96,15 @@ function createContextMenu(menuId, menuElements) {
     var newMenu = document.createElement("ul");
     newMenu.className = "dropdown-menu context";
     newMenu.id = menuId;
-    document.body.appendChild(newMenu); 
+    document.body.appendChild(newMenu);
     
-    for(var i = 0; i < menuElements.length; i++) {
+    for (var i = 0; i < menuElements.length; i++) {
         var currentElement = menuElements[i];
         var listElement = document.createElement("li");
         listElement.id = "li_" + currentElement.id;
         newMenu.appendChild(listElement);
-        if(currentElement.isDivider) {
-            listElement.className = "divider"; 
+        if (currentElement.isDivider) {
+            listElement.className = "divider";
             continue;
         }
         
@@ -131,15 +125,13 @@ function setCoordsForMenu(menuObj, event) {
 
     if ((event.pageX + menuObj.offsetWidth) > winWidth) {
         menuObj.style.left = (event.pageX - menuObj.offsetWidth.toString()) + 'px';
-    }
-    else {
+    } else {
         menuObj.style.left = event.pageX.toString() + 'px';
     }
 
     if ((event.pageY + menuObj.offsetHeight) > winHeight) {
         menuObj.style.top = (event.pageY - menuObj.offsetHeight).toString() + 'px';
-    }
-    else {
+    } else {
         menuObj.style.top = event.pageY.toString() + 'px';
     }
 }

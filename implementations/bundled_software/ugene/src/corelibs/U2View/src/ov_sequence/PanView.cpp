@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -590,12 +590,12 @@ void PanView::sl_updateRows(){
 
 const U2Region PanView::getRegionToZoom() const {
     const QVector<U2Region>& sel = ctx->getSequenceSelection()->getSelectedRegions();
-    const QList<AnnotationSelectionData> annotationSel = getSequenceContext()->getAnnotationsSelection()->getSelection();
+    const QList<Annotation*> annotationSel = getSequenceContext()->getAnnotationsSelection()->getAnnotations();
     U2Region selRegion;
     if (!sel.isEmpty()) {
         selRegion = sel.first();
     } else if (!annotationSel.isEmpty()) {
-        selRegion = U2Region::containingRegion(annotationSel.first().annotation->getRegions());
+        selRegion = U2Region::containingRegion(annotationSel.first()->getRegions());
     }
 
     return selRegion;
@@ -604,7 +604,7 @@ const U2Region PanView::getRegionToZoom() const {
 //////////////////////////////////////////////////////////////////////////
 /// render
 PanViewRenderArea::PanViewRenderArea(PanView* d, PanViewRenderer *renderer)
-    : GSequenceLineViewAnnotatedRenderArea(d, false),
+    : GSequenceLineViewAnnotatedRenderArea(d),
       panView(d),
       renderer(renderer)
 {

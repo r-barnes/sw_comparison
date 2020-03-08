@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -23,10 +23,8 @@
 
 #include <U2Core/AppContext.h>
 #include <U2Core/AppResources.h>
-#include <U2Core/AppSettings.h>
 #include <U2Core/DocumentModel.h>
 #include <U2Core/GHints.h>
-#include <U2Core/L10n.h>
 #include <U2Core/U2AlphabetUtils.h>
 #include <U2Core/U2AttributeDbi.h>
 #include <U2Core/U2AttributeUtils.h>
@@ -43,16 +41,13 @@ namespace U2 {
 
 #define NO_LENGTH_CONSTRAINT -1
 U2SequenceObjectConstraints::U2SequenceObjectConstraints(QObject* p)
-: GObjectConstraints(GObjectTypes::SEQUENCE, p), sequenceSize(NO_LENGTH_CONSTRAINT)
-{
-}
+    : GObjectConstraints(GObjectTypes::SEQUENCE, p), sequenceSize(NO_LENGTH_CONSTRAINT) {}
 
 //////////////////////////////////////////////////////////////////////////
 // U2SequenceObject
 
 U2SequenceObject::U2SequenceObject(const QString& name, const U2EntityRef& seqRef, const QVariantMap& hintsMap)
-    : GObject(GObjectTypes::SEQUENCE, name, hintsMap), cachedAlphabet(NULL), cachedLength(-1), cachedCircular(TriState_Unknown)
-{
+    : GObject(GObjectTypes::SEQUENCE, name, hintsMap), cachedAlphabet(NULL), cachedLength(-1), cachedCircular(TriState_Unknown) {
     entityRef = seqRef;
 }
 
@@ -85,7 +80,7 @@ qint64 U2SequenceObject::getSequenceLength() const {
     return cachedLength;
 }
 
-QString U2SequenceObject::getSequenceName() const  {
+QString U2SequenceObject::getSequenceName() const {
     if (cachedName.isEmpty()) {
         updateCachedValues();
     }
@@ -100,7 +95,7 @@ QString U2SequenceObject::getSequenceName() const  {
         seq = con.dbi->getSequenceDbi()->getSequenceObject(entityRef.entityId, os); \
         CHECK_OP(os, DNASequence()); \
         seqGet = true; \
-    }
+        }
 
 DNASequence U2SequenceObject::getSequence(const U2Region &region, U2OpStatus& os) const {
     U2Sequence seq;
@@ -196,7 +191,7 @@ bool U2SequenceObject::isValidDbiObject(U2OpStatus &os) {
     CHECK_OP(os, false);
     U2Sequence s = con.dbi->getSequenceDbi()->getSequenceObject(entityRef.entityId, os);
     CHECK_OP(os, false);
-    if(U2AlphabetUtils::getById(s.alphabet) == NULL) {
+    if (U2AlphabetUtils::getById(s.alphabet) == NULL) {
         os.setError(tr("Internal error, sequence alphabet id '%1' is invalid").arg(s.alphabet.id));
         return false;
     }
@@ -255,7 +250,7 @@ GObject * U2SequenceObject::clone(const U2DbiRef &dbiRef, U2OpStatus &os, const 
 
 void U2SequenceObject::setCircular(bool isCircular) {
     TriState newVal = isCircular ? TriState_Yes : TriState_No;
-    if ( newVal == cachedCircular ){
+    if (newVal == cachedCircular) {
         return;
     }
     U2OpStatus2Log os;
@@ -264,7 +259,7 @@ void U2SequenceObject::setCircular(bool isCircular) {
     U2Sequence u2seq = con.dbi->getSequenceDbi()->getSequenceObject(entityRef.entityId, os);
     CHECK_OP(os, );
     u2seq.circular = isCircular;
-    con.dbi->getSequenceDbi()->updateSequenceObject(u2seq,os);
+    con.dbi->getSequenceDbi()->updateSequenceObject(u2seq, os);
     CHECK_OP(os, );
     cachedCircular = newVal;
     setModified(true);
@@ -280,14 +275,14 @@ DNAQuality U2SequenceObject::getQuality() const {
     U2OpStatus2Log os;
     DbiConnection con(entityRef.dbiRef, os);
     DNAQuality res;
-    QList<U2DataId> idQualList=con.dbi->getAttributeDbi()->getObjectAttributes(entityRef.entityId,DNAInfo::FASTQ_QUAL_CODES,os);
+    QList<U2DataId> idQualList = con.dbi->getAttributeDbi()->getObjectAttributes(entityRef.entityId, DNAInfo::FASTQ_QUAL_CODES, os);
     CHECK_OP(os, res);
-    QList<U2DataId> idQualTypeList=con.dbi->getAttributeDbi()->getObjectAttributes(entityRef.entityId,DNAInfo::FASTQ_QUAL_TYPE,os);
+    QList<U2DataId> idQualTypeList = con.dbi->getAttributeDbi()->getObjectAttributes(entityRef.entityId, DNAInfo::FASTQ_QUAL_TYPE, os);
     CHECK_OP(os, res);
-    if(!idQualList.isEmpty() && !idQualTypeList.isEmpty()){
-        res.qualCodes=con.dbi->getAttributeDbi()->getByteArrayAttribute(idQualList.first(),os).value;
+    if (!idQualList.isEmpty() && !idQualTypeList.isEmpty()) {
+        res.qualCodes = con.dbi->getAttributeDbi()->getByteArrayAttribute(idQualList.first(), os).value;
         CHECK_OP(os, DNAQuality());
-        res.type=(DNAQualityType)con.dbi->getAttributeDbi()->getIntegerAttribute(idQualTypeList.first(),os).value;
+        res.type = (DNAQualityType)con.dbi->getAttributeDbi()->getIntegerAttribute(idQualTypeList.first(), os).value;
         CHECK_OP(os, DNAQuality());
     }
     return res;
@@ -315,10 +310,10 @@ void U2SequenceObject::setStringAttribute(const QString& newStringAttributeValue
     U2OpStatus2Log os;
     DbiConnection con(entityRef.dbiRef, os);
     CHECK_OP(os, );
-    QList<U2DataId> oldStringAttributeList = con.dbi->getAttributeDbi()->getObjectAttributes(entityRef.entityId,type,os);
+    QList<U2DataId> oldStringAttributeList = con.dbi->getAttributeDbi()->getObjectAttributes(entityRef.entityId, type, os);
     CHECK_OP(os, );
-    if(!oldStringAttributeList.isEmpty()){
-        con.dbi->getAttributeDbi()->removeObjectAttributes(oldStringAttributeList.first(),os);
+    if (!oldStringAttributeList.isEmpty()) {
+        con.dbi->getAttributeDbi()->removeObjectAttributes(oldStringAttributeList.first(), os);
         CHECK_OP(os, );
     }
     U2StringAttribute newStringAttribute(entityRef.entityId, type, newStringAttributeValue);
@@ -334,10 +329,10 @@ void U2SequenceObject::setIntegerAttribute(int newIntegerAttributeValue, const Q
     U2OpStatus2Log os;
     DbiConnection con(entityRef.dbiRef, os);
     CHECK_OP(os, );
-    QList<U2DataId> oldIntegerAttributeList = con.dbi->getAttributeDbi()->getObjectAttributes(entityRef.entityId,type,os);
+    QList<U2DataId> oldIntegerAttributeList = con.dbi->getAttributeDbi()->getObjectAttributes(entityRef.entityId, type, os);
     CHECK_OP(os, );
-    if(!oldIntegerAttributeList.isEmpty()){
-        con.dbi->getAttributeDbi()->removeObjectAttributes(oldIntegerAttributeList.first(),os);
+    if (!oldIntegerAttributeList.isEmpty()) {
+        con.dbi->getAttributeDbi()->removeObjectAttributes(oldIntegerAttributeList.first(), os);
         CHECK_OP(os, );
     }
     U2IntegerAttribute newIntegerAttribute(entityRef.entityId, type, newIntegerAttributeValue);
@@ -353,10 +348,10 @@ void U2SequenceObject::setRealAttribute(double newRealAttributeValue, const QStr
     U2OpStatus2Log os;
     DbiConnection con(entityRef.dbiRef, os);
     CHECK_OP(os, );
-    QList<U2DataId> oldRealAttributeList = con.dbi->getAttributeDbi()->getObjectAttributes(entityRef.entityId,type,os);
+    QList<U2DataId> oldRealAttributeList = con.dbi->getAttributeDbi()->getObjectAttributes(entityRef.entityId, type, os);
     CHECK_OP(os, );
-    if(!oldRealAttributeList.isEmpty()){
-        con.dbi->getAttributeDbi()->removeObjectAttributes(oldRealAttributeList.first(),os);
+    if (!oldRealAttributeList.isEmpty()) {
+        con.dbi->getAttributeDbi()->removeObjectAttributes(oldRealAttributeList.first(), os);
         CHECK_OP(os, );
     }
     U2RealAttribute newRealAttribute(entityRef.entityId, type, newRealAttributeValue);
@@ -372,10 +367,10 @@ void U2SequenceObject::setByteArrayAttribute(const QByteArray& newByteArrayAttri
     U2OpStatus2Log os;
     DbiConnection con(entityRef.dbiRef, os);
     CHECK_OP(os, );
-    QList<U2DataId> oldByteArrayAttributeList = con.dbi->getAttributeDbi()->getObjectAttributes(entityRef.entityId,type,os);
+    QList<U2DataId> oldByteArrayAttributeList = con.dbi->getAttributeDbi()->getObjectAttributes(entityRef.entityId, type, os);
     CHECK_OP(os, );
-    if(!oldByteArrayAttributeList.isEmpty()){
-        con.dbi->getAttributeDbi()->removeObjectAttributes(oldByteArrayAttributeList.first(),os);
+    if (!oldByteArrayAttributeList.isEmpty()) {
+        con.dbi->getAttributeDbi()->removeObjectAttributes(oldByteArrayAttributeList.first(), os);
         CHECK_OP(os, );
     }
     U2ByteArrayAttribute newByteArrayAttribute(entityRef.entityId, type, newByteArrayAttributeValue);

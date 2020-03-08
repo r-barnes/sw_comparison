@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -68,7 +68,7 @@ public:
     void wheelEvent(QWheelEvent* we);
     virtual QSize sizeHint() const;
 
-    virtual QList<AnnotationSelectionData> selectAnnotationByCoord(const QPoint& coord) const;
+    virtual QList<Annotation*> findAnnotationsByCoord(const QPoint& coord) const;
 
     static qreal coordToAngle(const QPoint point);
 
@@ -81,6 +81,8 @@ public:
 
     static const int MIN_OUTER_SIZE;
     static const int CV_REGION_ITEM_WIDTH;
+    static const int GRADUATION;
+    static const int MAX_GRADUATION_ANGLE;
 
     void setAngle(int angle);
     void updateMinSize();
@@ -123,6 +125,8 @@ protected:
      */
     void invertCurrentSelection();
 
+    CircularViewRenderArea* getRenderArea() const;
+
     Direction getDirection(float a, float b) const;
 
     QVBoxLayout *layout;
@@ -130,12 +134,11 @@ protected:
     int lastMovePos;
     int currectSelectionLen;
     int lastMouseY;
-    CircularViewRenderArea* ra;
-    bool clockwise, holdSelection;
-    CircularViewSettings*   settings;
-
-private:
-    static const int graduation;
+    bool clockwise;
+    bool holdSelection;
+    qreal lastPressAngle;
+    qreal lastMoveAngle;
+    CircularViewSettings* settings;
 };
 
 class CircularViewRenderArea : public GSequenceLineViewAnnotatedRenderArea {
@@ -153,7 +156,11 @@ public:
 
     static const int MIDDLE_ELLIPSE_SIZE;
     int getCenterY() const { return verticalOffset; }
+    qreal coordToAsin(const QPoint& p) const;
+    qint64 asinToPos(const qreal asin) const;
+
 protected:
+    qint64 coordToPos(const QPoint& p) const override;
     void resizeEvent(QResizeEvent *e);
     virtual void drawAll(QPaintDevice* pd);
     virtual U2Region getAnnotationYRange(Annotation *a, int ri, const AnnotationSettings *as) const;

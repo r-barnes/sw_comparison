@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -24,8 +24,6 @@
 
 #include <assert.h>
 
-#include <QList>
-#include <QMap>
 #include <QObject>
 #include <QString>
 
@@ -53,26 +51,26 @@ int DiProperty::index(char c) {
     if (c == 'A') { return 0; }
     if (c == 'C') { return 1; }
     if (c == 'G') { return 2; }
-    if (c == 'T' || c == 'U') {return 3;}
+    if (c == 'T' || c == 'U') { return 3; }
     return 0; //default is 'A'
 }
 
 char DiProperty::fromIndex(int index) {
-    assert (index >=0);
-    assert (index < 4);
+    assert(index >= 0);
+    assert(index < 4);
     char a[] = "ACGT";
     return a[index];
 }
 
 char DiProperty::fromIndexLo(int index) {
-    assert (index >= 0);
-    assert (index < 16);
+    assert(index >= 0);
+    assert(index < 16);
     return fromIndex(index & 3);
 }
 
 char DiProperty::fromIndexHi(int index) {
-    assert (index >= 0);
-    assert (index < 16);
+    assert(index >= 0);
+    assert(index < 16);
     return fromIndex(index >> 2);
 }
 

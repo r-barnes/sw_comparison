@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -805,10 +805,12 @@ GUI_TEST_CLASS_DEFINITION(proj_test_0004) {
 
     QModelIndex dirItem1 = GTUtilsProjectTreeView::findIndex(os, "pt0004_dir1");
     QModelIndex dirItem2 = GTUtilsProjectTreeView::findIndex(os, "pt0004_dir2");
+    GTGlobals::sleep();
     QModelIndex objItem = GTUtilsProjectTreeView::findIndex(os, "pt0004_human_T1");
     CHECK_SET_ERR(treeView->isExpanded(dirItem2), "The folder item has not expanded after double click");
-
+    GTGlobals::sleep();
     GTUtilsProjectTreeView::dragAndDrop(os, objItem, dirItem1);
+    GTGlobals::sleep(20000);
     dirItem1 = GTUtilsProjectTreeView::findIndex(os, "pt0004_dir1");
     dirItem2 = GTUtilsProjectTreeView::findIndex(os, "pt0004_dir2");
     CHECK_SET_ERR(2 == model->rowCount(dirItem1), QString("Invalid child item count for pt0004_dir1 Expected: 2; actual: %1").arg(model->rowCount(dirItem1)));

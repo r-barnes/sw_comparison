@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -38,6 +38,8 @@
 
 #include <U2Designer/DelegateEditors.h>
 
+#include <U2Gui/DialogUtils.h>
+
 #include <U2Formats/BAMUtils.h>
 
 #include <U2Lang/ActorPrototypeRegistry.h>
@@ -63,6 +65,7 @@ const QString FastQCWorker::BASE_FASTQC_SUBDIR = "FastQC";
 const QString FastQCWorker::INPUT_PORT = "in-file";
 const QString FastQCWorker::OUT_MODE_ID = "out-mode";
 const QString FastQCWorker::CUSTOM_DIR_ID = "custom-dir";
+const QString FastQCWorker::OUT_FILE = "out-file";
 
 const QString FastQCWorker::ADAPTERS = "adapter";
 const QString FastQCWorker::CONTAMINANTS = "contaminants";
@@ -107,11 +110,14 @@ void FastQCFactory::init() {
             "<b>Workflow</b> - internal workflow folder. "
             "<b>Input file</b> - the folder of the input file."));
 
+        Descriptor outFile(FastQCWorker::OUT_FILE, FastQCWorker::tr("Output file"),
+            FastQCWorker::tr("Specify the output file name."));
+
         Descriptor customDir(FastQCWorker::CUSTOM_DIR_ID, FastQCWorker::tr("Custom folder"),
             FastQCWorker::tr("Select the custom output folder."));
 
         Descriptor adapters(FastQCWorker::ADAPTERS, FastQCWorker::tr("List of adapters"),
-            FastQCWorker::tr("Specifies a non-default file which contains the list of adapter sequences which will be explicity searched against "
+            FastQCWorker::tr("Specifies a non-default file which contains the list of adapter sequences which will be explicitly searched against "
                                              "the library. The file must contain sets of named adapters "
                                              "in the form name[tab]sequence.  Lines prefixed with a hash "
                                              "will be ignored."));
@@ -123,14 +129,14 @@ void FastQCFactory::init() {
                                              "form name[tab]sequence.  Lines prefixed with a hash will "
                                              "be ignored."));
 
-
-        a << new Attribute(outDir, BaseTypes::NUM_TYPE(), false, QVariant(FileAndDirectoryUtils::WORKFLOW_INTERNAL));
+        a << new Attribute(outDir, BaseTypes::NUM_TYPE(), (Attribute::Flags) Attribute::Hidden, QVariant(FileAndDirectoryUtils::WORKFLOW_INTERNAL));
         Attribute* customDirAttr = new Attribute(customDir, BaseTypes::STRING_TYPE(), false, QVariant(""));
         customDirAttr->addRelation(new VisibilityRelation(FastQCWorker::OUT_MODE_ID, FileAndDirectoryUtils::CUSTOM));
         a << customDirAttr;
 
         a << new Attribute( adapters, BaseTypes::STRING_TYPE(), false, "");
         a << new Attribute( conts, BaseTypes::STRING_TYPE(), false, "");
+        a << new Attribute(outFile, BaseTypes::STRING_TYPE(), Attribute::Required | Attribute::NeedValidateEncoding | Attribute::CanBeEmpty);
     }
 
     QMap<QString, PropertyDelegate*> delegates;
@@ -149,14 +155,19 @@ void FastQCFactory::init() {
 
         delegates[FastQCWorker::ADAPTERS] = new URLDelegate("", "", false, false, false);
         delegates[FastQCWorker::CONTAMINANTS] = new URLDelegate("", "", false, false, false);
+
+        DelegateTags outputUrlTags;
+        outputUrlTags.set(DelegateTags::PLACEHOLDER_TEXT, FastQCWorker::tr("Auto"));
+        outputUrlTags.set(DelegateTags::FILTER, DialogUtils::prepareFileFilter("HTML", QStringList("html"), false, QStringList()));
+        delegates[FastQCWorker::OUT_FILE] = new URLDelegate(outputUrlTags, "fastqc/output");
     }
 
     ActorPrototype* proto = new IntegralBusActorPrototype(desc, p, a);
     proto->setEditor(new DelegateEditor(delegates));
     proto->setPrompter(new FastQCPrompter());
-    proto->addExternalTool(ET_JAVA);
-    proto->addExternalTool(ET_FASTQC);
-    proto->addExternalTool(ET_PERL);
+    proto->addExternalTool(JavaSupport::ET_JAVA_ID);
+    proto->addExternalTool(FastQCSupport::ET_FASTQC_ID);
+    proto->addExternalTool(PerlSupport::ET_PERL_ID);
 
     WorkflowEnv::getProtoRegistry()->registerProto(BaseActorCategories::CATEGORY_NGS_BASIC(), proto);
     DomainFactory *localDomain = WorkflowEnv::getDomainRegistry()->getById(LocalDomainFactory::ID);
@@ -180,18 +191,27 @@ Task * FastQCWorker::tick() {
     if (inputUrlPort->hasMessage()) {
         const QString url = takeUrl();
         CHECK(!url.isEmpty(), NULL);
+        QString outFile = getValue<QString>(OUT_FILE);
+        FastQCSetting settings;
+        if (outFile.isEmpty()) {
+            QString outputDir = FileAndDirectoryUtils::createWorkingDir(url, getValue<int>(OUT_MODE_ID), "", context->workingDir());
+            settings.outDir = outputDir + FastQCWorker::BASE_FASTQC_SUBDIR;
+            QDir outQDir(settings.outDir);
+            if (!outQDir.exists()) {
+                U2OpStatusImpl os;
+                GUrlUtils::createDirectory(settings.outDir, "_", os);
+            }
+            settings.fileName = "";
+        } else {
+            QFileInfo outFileFi(outFile);
+            settings.outDir = outFileFi.absoluteDir().absolutePath();
+            settings.fileName = outFileFi.fileName();
+        }
+        settings.inputUrl = url;
+        settings.adapters = getValue<QString>(ADAPTERS);
+        settings.conts = getValue<QString>(CONTAMINANTS);
 
-        QString outputDir = FileAndDirectoryUtils::createWorkingDir(url, getValue<int>(OUT_MODE_ID), getValue<QString>(CUSTOM_DIR_ID), context->workingDir());
-        U2OpStatusImpl os;
-        outputDir = GUrlUtils::createDirectory(outputDir + FastQCWorker::BASE_FASTQC_SUBDIR, "_", os);
-
-        FastQCSetting setting;
-        setting.inputUrl = url;
-        setting.outDir = outputDir;
-        setting.adapters = getValue<QString>(ADAPTERS);
-        setting.conts = getValue<QString>(CONTAMINANTS);
-
-        FastQCTask *t = new FastQCTask (setting);
+        FastQCTask *t = new FastQCTask (settings);
         t->addListeners(createLogListeners());
         connect(new TaskSignalMapper(t), SIGNAL(si_taskFinished(Task*)), SLOT(sl_taskFinished(Task*)));
         return t;

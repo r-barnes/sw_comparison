@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -66,6 +66,7 @@ public slots:
     void reset();
     void commit();
     void sendModified();
+    void sl_updatePortTable();
     void sl_resizeSplitter(bool);
 
 private slots:
@@ -74,6 +75,7 @@ private slots:
     void handleDataChanged(const QModelIndex & topLeft, const QModelIndex & bottomRight);
     void editingLabelFinished();
     void sl_showPropDoc();
+    void sl_changeVisibleParameters(bool);
     void sl_changeVisibleInput(bool);
     void sl_changeVisibleOutput(bool);
     void sl_showDoc(const QString&);
@@ -81,11 +83,13 @@ private slots:
 
 private:
     void changeSizes(QWidget *w, int h);
+    static void removePortTable(QList<QWidget *> &portWidgets);
+    void createInputPortTable(Actor* a);
+    void createOutputPortTable(Actor* a);
 
-private:
     SpecialParametersPanel *specialParameters;
     WorkflowView* owner;
-    ConfigurationEditor* custom;
+    QPointer<ConfigurationEditor> custom;
     QWidget* customWidget;
     Configuration* subject;
     Actor* actor;

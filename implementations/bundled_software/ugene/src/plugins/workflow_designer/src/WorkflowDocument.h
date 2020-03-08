@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -25,6 +25,9 @@
 #include "WorkflowDesignerPlugin.h"
 #include <U2Core/DocumentModel.h>
 #include <U2Core/GObject.h>
+
+#include <U2Formats/TextDocumentFormat.h>
+
 #include <U2Gui/ObjectViewModel.h>
 #include <U2Gui/ObjectViewTasks.h>
 
@@ -36,27 +39,21 @@ namespace U2 {
 
 class WorkflowView;
 
-class WorkflowDocFormat : public DocumentFormat {
+class WorkflowDocFormat : public TextDocumentFormat {
     Q_OBJECT
 public:
     WorkflowDocFormat(QObject* p);
 
     static const DocumentFormatId FORMAT_ID;
-    virtual DocumentFormatId getFormatId() const {return FORMAT_ID;}
-
-    virtual const QString& getFormatName() const {return formatName;}
 
     virtual Document* createNewLoadedDocument(IOAdapterFactory* io, const GUrl& url, U2OpStatus& os, const QVariantMap& fs = QVariantMap());
 
     virtual void storeDocument( Document* d, IOAdapter* io, U2OpStatus& os);
 
-    virtual FormatCheckResult checkRawData(const QByteArray& rawData, const GUrl& url = GUrl()) const;
-
 protected:
-    virtual Document* loadDocument(IOAdapter* io, const U2DbiRef& targetDb, const QVariantMap& hints, U2OpStatus& os);
+    virtual FormatCheckResult checkRawTextData(const QByteArray& rawData, const GUrl& url = GUrl()) const;
 
-private:
-    QString formatName;
+    virtual Document* loadTextDocument(IOAdapter* io, const U2DbiRef& targetDb, const QVariantMap& hints, U2OpStatus& os);
 };
 
 class WorkflowGObject : public GObject {

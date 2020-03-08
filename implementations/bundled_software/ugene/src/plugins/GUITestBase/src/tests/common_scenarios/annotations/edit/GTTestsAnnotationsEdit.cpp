@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -717,23 +717,23 @@ GUI_TEST_CLASS_DEFINITION(test_0006_1) {
     QTreeWidgetItem *item = GTUtilsAnnotationsTreeView::findItem(os, "B_group  (0, 2)");
     GTMouseDriver::moveTo(GTTreeWidget::getItemCenter(os, item));
     GTMouseDriver::doubleClick();
-	GTGlobals::sleep();
+    GTGlobals::sleep();
 
     item = GTUtilsAnnotationsTreeView::findItem(os, "B");
     GTMouseDriver::moveTo(GTTreeWidget::getItemCenter(os, item));
     GTMouseDriver::click();
-	GTGlobals::sleep(100);
+    GTGlobals::sleep(100);
 
     // 4. Check that menu item { Edit -> Annotation } is enabled at popup menu of sequence view.
     GTUtilsDialog::waitForDialog(os, new PopupChecker(os, QStringList() << ADV_MENU_EDIT << "edit_annotation_tree_item",
                                                       PopupChecker::IsEnabled, GTGlobals::UseMouse));
     GTMenu::showContextMenu(os, GTWidget::findWidget(os, "ADV_single_sequence_widget_0"));
-	GTGlobals::sleep();
+    GTGlobals::sleep();
     // 5. Check that menu item { Edit -> Annotation } is enabled at popup menu of annotations view.
     GTUtilsDialog::waitForDialog(os, new PopupChecker(os, QStringList() << ADV_MENU_EDIT << "edit_annotation_tree_item",
                                                       PopupChecker::IsEnabled, GTGlobals::UseMouse));
-    GTMenu::showContextMenu(os, GTWidget::findWidget(os, "annotations_tree_widget"));
-	GTGlobals::sleep();
+    GTUtilsAnnotationsTreeView::callContextMenuOnItem(os, "B");
+    GTGlobals::sleep();
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0006_2) {
@@ -759,7 +759,8 @@ GUI_TEST_CLASS_DEFINITION(test_0006_2) {
     // Expected state: { Edit -> Annotation } action is enabled
     GTUtilsDialog::waitForDialog(os, new PopupChecker(os, QStringList() << ADV_MENU_EDIT << "edit_annotation_tree_item",
                                                       PopupChecker::IsEnabled, GTGlobals::UseMouse));
-    GTMenu::showContextMenu(os, GTWidget::findWidget(os, "annotations_tree_widget"));
+    //GTMenu::showContextMenu(os, GTWidget::findWidget(os, "annotations_tree_widget"));
+    GTUtilsAnnotationsTreeView::callContextMenuOnItem(os, "CDS");
 }
 
 } // namespace GUITest_common_scenarios_annotations_edit

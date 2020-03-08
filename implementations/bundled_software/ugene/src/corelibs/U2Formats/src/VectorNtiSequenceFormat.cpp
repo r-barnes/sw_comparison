@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -48,7 +48,7 @@ VectorNtiSequenceFormat::VectorNtiSequenceFormat(QObject* parent)
     fileExtensions << "gb" << "gp";
 }
 
-FormatCheckResult VectorNtiSequenceFormat::checkRawData(const QByteArray &rawData, const GUrl &) const {
+FormatCheckResult VectorNtiSequenceFormat::checkRawTextData(const QByteArray &rawData, const GUrl &) const {
     const char* data = rawData.constData();
     int size = rawData.size();
     bool textOnly = !TextUtils::contains(TextUtils::BINARY, data, size);

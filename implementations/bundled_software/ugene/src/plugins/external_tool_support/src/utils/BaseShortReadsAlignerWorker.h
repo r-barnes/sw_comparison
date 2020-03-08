@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -37,6 +37,9 @@ namespace LocalWorkflow {
 
 const QString IN_PORT_DESCR("in-data");
 const QString REFERENCE_GENOME("reference");
+const QString REFERENCE_INPUT_TYPE = "reference-input-type";
+const QString INDEX_DIR("index-dir");
+const QString INDEX_BASENAME("index-basename");
 
 class BaseShortReadsAlignerWorker: public BaseWorker {
     Q_OBJECT
@@ -76,7 +79,7 @@ public slots:
 
 class ShortReadsAlignerSlotsValidator : public PortValidator {
 public:
-    bool validate(const IntegralBusPort *port, ProblemList &problemList) const;
+    bool validate(const IntegralBusPort *port, NotificationsList &notificationList) const;
 };
 
 class BaseShortReadsAlignerWorkerFactory : public DomainFactory {
@@ -85,7 +88,8 @@ protected:
 
     static QList<PortDescriptor*> getPortDescriptors();
 
-    static void addCommonAttributes(QList<Attribute*>& attrs, QMap<QString, PropertyDelegate*>& delegates);
+    static void addCommonAttributes(QList<Attribute*>& attrs, QMap<QString, PropertyDelegate*>& delegates,
+                                    const QString& descrIndexFolder, const QString& descrIndexBasename);
 
     static int getThreadsCount();
 };

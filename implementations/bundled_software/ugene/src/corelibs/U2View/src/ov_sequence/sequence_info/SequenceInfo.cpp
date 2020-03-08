@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -65,7 +65,7 @@ SequenceInfo::SequenceInfo(AnnotatedDNAView* _annotatedDnaView)
 {
     SAFE_POINT(0 != annotatedDnaView, "AnnotatedDNAView is NULL!",);
 
-    updateCurrentRegion();
+    updateCurrentRegions();
     initLayout();
     connectSlots();
     updateData();
@@ -191,7 +191,7 @@ void SequenceInfo::updateData() {
 }
 
 void SequenceInfo::updateCommonStatisticsData() {
-    if (!getCommonStatisticsCache()->isValid(currentRegion)) {
+    if (!getCommonStatisticsCache()->isValid(currentRegions)) {
         launchCalculations(STAT_GROUP_ID);
     } else {
         updateCommonStatisticsData(getCommonStatisticsCache()->getStatistics());
@@ -240,7 +240,7 @@ void SequenceInfo::updateCommonStatisticsData(const DNAStatistics &commonStatist
 }
 
 void SequenceInfo::updateCharactersOccurrenceData() {
-    if (!getCharactersOccurrenceCache()->isValid(currentRegion)) {
+    if (!getCharactersOccurrenceCache()->isValid(currentRegions)) {
         launchCalculations(CHAR_OCCUR_GROUP_ID);
     } else {
         updateCharactersOccurrenceData(getCharactersOccurrenceCache()->getStatistics());
@@ -266,7 +266,7 @@ void SequenceInfo::updateCharactersOccurrenceData(const CharactersOccurrence &ch
 }
 
 void SequenceInfo::updateDinucleotidesOccurrenceData() {
-    if (!getDinucleotidesOccurrenceCache()->isValid(currentRegion)) {
+    if (!getDinucleotidesOccurrenceCache()->isValid(currentRegions)) {
         launchCalculations(DINUCL_OCCUR_GROUP_ID);
     } else {
         updateDinucleotidesOccurrenceData(getDinucleotidesOccurrenceCache()->getStatistics());
@@ -341,33 +341,13 @@ void SequenceInfo::connectSlots()
 void SequenceInfo::sl_onSelectionChanged(LRegionsSelection*,
                                          const QVector<U2Region>& added,
                                          const QVector<U2Region>& removed) {
-    // Each time selection is changed the signal is emitted
-    // with the whole previously selected region(s) removed and
-    // the whole currently selected region(s) added,
-    // e.g. "removed: 3..10, added: 3..11"
-    if (!added.empty()) {
-        // Only the first region is taken into account
-        const U2Region& region = added.first();
-
-        // Skip, if a signal with the same region has already came
-        if (region == currentRegion) {
-            return;
-        } else {
-            currentRegion = region;
-        }
-    } else {
-        // None is selected
-        if (!removed.empty()) {
-            updateCurrentRegion();
-        }
-    }
-
+    updateCurrentRegions();
     updateData();
 }
 
 
 void SequenceInfo::sl_onSequenceModified() {
-    updateCurrentRegion();
+    updateCurrentRegions();
     updateData();
 }
 
@@ -376,7 +356,7 @@ void SequenceInfo::sl_onFocusChanged(ADVSequenceWidget * /*from*/, ADVSequenceWi
 {
     if (0 != to) { // i.e. the sequence has been deleted
         updateLayout();
-        updateCurrentRegion();
+        updateCurrentRegions();
         updateData();
     }
 }
@@ -407,7 +387,7 @@ bool SequenceInfo::eventFilter(QObject *object, QEvent *event) {
     return false;
 }
 
-void SequenceInfo::updateCurrentRegion()
+void SequenceInfo::updateCurrentRegions()
 {
     ADVSequenceObjectContext* seqContext = annotatedDnaView->getSequenceInFocus();
     SAFE_POINT(0 != seqContext, "A sequence context is NULL!",);
@@ -416,9 +396,10 @@ void SequenceInfo::updateCurrentRegion()
 
     QVector<U2Region> selectedRegions = selection->getSelectedRegions();
     if (!selectedRegions.empty()) {
-        currentRegion = selectedRegions.first();
+        currentRegions = selectedRegions;
     } else {
-        currentRegion = U2Region(0, seqContext->getSequenceLength());
+        currentRegions.clear();
+        currentRegions << U2Region(0, seqContext->getSequenceLength());
     }
 }
 
@@ -436,7 +417,7 @@ void SequenceInfo::launchCalculations(QString subgroupId)
     if (subgroupId.isEmpty() || subgroupId == CHAR_OCCUR_GROUP_ID) {
         if ((!charOccurWidget->isHidden()) && (charOccurWidget->isSubgroupOpened())) {
             charOccurWidget->showProgress();
-            charOccurTaskRunner.run(new CharOccurTask(alphabet, seqRef, currentRegion));
+            charOccurTaskRunner.run(new CharOccurTask(alphabet, seqRef, currentRegions));
             getCharactersOccurrenceCache()->sl_invalidate();
             updateCharactersOccurrenceData(getCharactersOccurrenceCache()->getStatistics());
         }
@@ -445,7 +426,7 @@ void SequenceInfo::launchCalculations(QString subgroupId)
     if (subgroupId.isEmpty() || subgroupId == DINUCL_OCCUR_GROUP_ID) {
         if ((!dinuclWidget->isHidden()) && (dinuclWidget->isSubgroupOpened())) {
             dinuclWidget->showProgress();
-            dinuclTaskRunner.run(new DinuclOccurTask(alphabet, seqRef, currentRegion));
+            dinuclTaskRunner.run(new DinuclOccurTask(alphabet, seqRef, currentRegions));
             getDinucleotidesOccurrenceCache()->sl_invalidate();
             updateDinucleotidesOccurrenceData(getDinucleotidesOccurrenceCache()->getStatistics());
         }
@@ -454,7 +435,7 @@ void SequenceInfo::launchCalculations(QString subgroupId)
     if (subgroupId.isEmpty() || subgroupId == STAT_GROUP_ID) {
         if ((!statsWidget->isHidden()) && (statsWidget->isSubgroupOpened())) {
             statsWidget->showProgress();
-            dnaStatisticsTaskRunner.run(new DNAStatisticsTask(alphabet, seqRef, currentRegion));
+            dnaStatisticsTaskRunner.run(new DNAStatisticsTask(alphabet, seqRef, currentRegions));
             getCommonStatisticsCache()->sl_invalidate();
             updateCommonStatisticsData(getCommonStatisticsCache()->getStatistics());
         }
@@ -498,20 +479,20 @@ int SequenceInfo::getAvailableSpace(DNAAlphabetType alphabetType) const {
 
 void SequenceInfo::sl_updateCharOccurData() {
     charOccurWidget->hideProgress();
-    getCharactersOccurrenceCache()->setStatistics(charOccurTaskRunner.getResult(), currentRegion);
+    getCharactersOccurrenceCache()->setStatistics(charOccurTaskRunner.getResult(), currentRegions);
     updateCharactersOccurrenceData(getCharactersOccurrenceCache()->getStatistics());
 }
 
 
 void SequenceInfo::sl_updateDinuclData() {
     dinuclWidget->hideProgress();
-    getDinucleotidesOccurrenceCache()->setStatistics(dinuclTaskRunner.getResult(), currentRegion);
+    getDinucleotidesOccurrenceCache()->setStatistics(dinuclTaskRunner.getResult(), currentRegions);
     updateDinucleotidesOccurrenceData(getDinucleotidesOccurrenceCache()->getStatistics());
 }
 
 void SequenceInfo::sl_updateStatData() {
     statsWidget->hideProgress();
-    getCommonStatisticsCache()->setStatistics(dnaStatisticsTaskRunner.getResult(), currentRegion);
+    getCommonStatisticsCache()->setStatistics(dnaStatisticsTaskRunner.getResult(), currentRegions);
     updateCommonStatisticsData(getCommonStatisticsCache()->getStatistics());
 }
 

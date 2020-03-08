@@ -395,7 +395,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/QDDocumentFormat.cpp" line="52"/>
         <location filename="../src/QDDocumentFormat.cpp" line="60"/>
-        <location filename="../src/QDDocumentFormat.cpp" line="83"/>
+        <location filename="../src/QDDocumentFormat.cpp" line="84"/>
         <source>Query Schema</source>
         <translation>Схема дизайнера запросов</translation>
     </message>
@@ -405,7 +405,7 @@ p, li { white-space: pre-wrap; }
         <translation>QDDoc это формат для создания/редактирования/сохранения схем дизайнера запросов в текстовый файл</translation>
     </message>
     <message>
-        <location filename="../src/QDDocumentFormat.cpp" line="76"/>
+        <location filename="../src/QDDocumentFormat.cpp" line="77"/>
         <source>Invalid header. %1 expected</source>
         <translation>Неправильный заголовок! Должен быть: %1</translation>
     </message>
@@ -763,7 +763,7 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>U2::QDRulerItem</name>
     <message>
-        <location filename="../src/QueryViewItems.cpp" line="1229"/>
+        <location filename="../src/QueryViewItems.cpp" line="1227"/>
         <source>N/A</source>
         <translation>N/A</translation>
     </message>
@@ -835,7 +835,7 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>U2::QDViewFactory</name>
     <message>
-        <location filename="../src/QDDocumentFormat.cpp" line="131"/>
+        <location filename="../src/QDDocumentFormat.cpp" line="132"/>
         <source>Open multiple views</source>
         <translation>Открыть несколько просмотров</translation>
     </message>
@@ -843,7 +843,7 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>U2::QueryDesignerPlugin</name>
     <message>
-        <location filename="../src/QDDocumentFormat.h" line="80"/>
+        <location filename="../src/QDDocumentFormat.h" line="75"/>
         <location filename="../src/QueryDesignerPlugin.cpp" line="56"/>
         <source>Query Designer</source>
         <translation>Дизайнер запросов</translation>

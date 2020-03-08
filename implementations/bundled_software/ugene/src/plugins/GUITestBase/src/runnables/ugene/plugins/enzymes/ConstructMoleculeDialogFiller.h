@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -32,7 +32,8 @@ public:
     enum ActionType {           // an appropriate action data
         AddAllFragments,        // ignored
         InvertAddedFragment,    // QString with a part of the fragment name, if several fragments match this part, the first one will be inverted
-        ClickCancel             // ignored
+        ClickCancel,            // ignored
+        ClickOk
     };
     typedef QPair<ActionType, QVariant> Action;
 
@@ -45,6 +46,7 @@ private:
     void addAllFragments();
     void invertAddedFragment(const QVariant &actionData);
     void clickCancel();
+    void clickOk();
 
     QWidget *dialog;
     const QList<Action> actions;

@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -360,8 +360,14 @@ void ExportProjectViewItemsContoller::exportSequences(const QList<GObject *> &se
         defaultFileNameDir, fileBaseName);
 
     QString defaultFileName = defaultFileNameDir + QDir::separator() + fileBaseName + "_new.fa";
-    QObjectScopedPointer<ExportSequencesDialog> d = new ExportSequencesDialog(allowMerge, allowComplement, allowTranslate, allowBackTranslate, defaultFileName, fileBaseName,
-        BaseDocumentFormats::FASTA, AppContext::getMainWindow()->getQMainWindow());
+    QObjectScopedPointer<ExportSequencesDialog> d = new ExportSequencesDialog(allowMerge,
+                                                                              allowComplement,
+                                                                              allowTranslate,
+                                                                              allowBackTranslate,
+                                                                              defaultFileName,
+                                                                              fileBaseName,
+                                                                              BaseDocumentFormats::FASTA,
+                                                                              AppContext::getMainWindow()->getQMainWindow());
 
     const int rc = d->exec();
     CHECK(!d.isNull(), );

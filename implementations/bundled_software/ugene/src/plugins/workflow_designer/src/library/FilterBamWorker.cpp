@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -150,14 +150,14 @@ void FilterBamWorkerFactory::init() {
             FilterBamWorker::tr("Select the custom output folder."));
 
         Descriptor outName(OUT_NAME_ID, FilterBamWorker::tr("Output name"),
-            FilterBamWorker::tr("A name of an output BAM/SAM file. If default of empty value is provided the output name is the name of the first BAM/SAM file with .filtered extention."));
+            FilterBamWorker::tr("A name of an output BAM/SAM file. If default of empty value is provided the output name is the name of the first BAM/SAM file with .filtered extension."));
 
         Descriptor outFormat(OUT_FORMAT_ID, FilterBamWorker::tr("Output format"),
             FilterBamWorker::tr("Format of an output assembly file."));
 
         Descriptor regionFilter(REGION_ID, FilterBamWorker::tr("Region"),
             FilterBamWorker::tr("Regions to filter. For BAM output only. chr2 to output the whole chr2. chr2:1000 to output regions of chr 2 starting from 1000. "
-                                "chr2:1000-2000 to ouput regions of chr2 between 1000 and 2000 including the end point. To input multiple regions use the space seprator (e.g. chr1 chr2 chr3:1000-2000)."));
+                                "chr2:1000-2000 to output regions of chr2 between 1000 and 2000 including the end point. To input multiple regions use the space separator (e.g. chr1 chr2 chr3:1000-2000)."));
 
         Descriptor mapqFilter(MAPQ_ID, FilterBamWorker::tr("MAPQ threshold"),
             FilterBamWorker::tr("Minimum MAPQ quality score."));
@@ -197,7 +197,7 @@ void FilterBamWorkerFactory::init() {
         formatMap[BaseDocumentFormats::BAM] = BaseDocumentFormats::BAM;
         formatMap[BaseDocumentFormats::SAM] = BaseDocumentFormats::SAM;
         delegates[OUT_FORMAT_ID] = new ComboBoxDelegate(formatMap);
-        QVariantMap lenMap; lenMap["minimum"] = QVariant(0); lenMap["maximum"] = QVariant(INT_MAX);
+        QVariantMap lenMap; lenMap["minimum"] = QVariant(0); lenMap["maximum"] = QVariant(254);
         delegates[MAPQ_ID] = new SpinBoxDelegate(lenMap);
 
         QVariantMap flags;
@@ -212,7 +212,8 @@ void FilterBamWorkerFactory::init() {
     ActorPrototype* proto = new IntegralBusActorPrototype(desc, p, a);
     proto->setEditor(new DelegateEditor(delegates));
     proto->setPrompter(new FilterBamPrompter());
-    proto->addExternalTool("SAMtools");
+    //no way to include tool support files, so ids passed to functions manually
+    proto->addExternalTool("USUPP_SAMTOOLS");//SamToolsExtToolSupport::ET_SAMTOOLS_EXT_ID
 
     WorkflowEnv::getProtoRegistry()->registerProto(BaseActorCategories::CATEGORY_NGS_BASIC(), proto);
     DomainFactory *localDomain = WorkflowEnv::getDomainRegistry()->getById(LocalDomainFactory::ID);
@@ -367,6 +368,8 @@ QStringList BamFilterSetting::getSamtoolsArguments() const{
 
 ////////////////////////////////////////////////////////
 //SamtoolsViewFilterTask
+const QString SamtoolsViewFilterTask::SAMTOOLS_ID = "USUPP_SAMTOOLS";
+
 SamtoolsViewFilterTask::SamtoolsViewFilterTask(const BamFilterSetting &settings)
 :ExternalToolSupportTask(tr("Samtool view (filter) for %1 ").arg(settings.inputUrl), TaskFlags(TaskFlag_None)),settings(settings),resultUrl(""){
 
@@ -392,7 +395,7 @@ void SamtoolsViewFilterTask::prepare(){
 void SamtoolsViewFilterTask::run(){
     CHECK_OP(stateInfo, );
 
-    ProcessRun samtools = ExternalToolSupportUtils::prepareProcess("SAMtools", settings.getSamtoolsArguments(), "", QStringList(), stateInfo, getListener(0));
+    ProcessRun samtools = ExternalToolSupportUtils::prepareProcess(SAMTOOLS_ID, settings.getSamtoolsArguments(), "", QStringList(), stateInfo, getListener(0));
     CHECK_OP(stateInfo, );
     QScopedPointer<QProcess> sp(samtools.process);
     QScopedPointer<ExternalToolRunTaskHelper> sh(new ExternalToolRunTaskHelper(samtools.process, new ExternalToolLogParser(), stateInfo));
@@ -403,7 +406,7 @@ void SamtoolsViewFilterTask::run(){
 
     while(!samtools.process->waitForFinished(1000)){
         if (isCanceled()) {
-            samtools.process->kill();
+            CmdlineTaskRunner::killProcessTree(samtools.process);
             return;
         }
     }

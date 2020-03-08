@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -21,8 +21,6 @@
 
 #include <QFileInfo>
 
-#include <U2Core/U2SafePoints.h>
-
 #include "ImportToDatabaseOptions.h"
 
 namespace U2 {
@@ -39,29 +37,27 @@ const QString ImportToDatabaseOptions::CREATE_SUBFOLDER_FOR_DOCUMENT = "create_s
 const QString ImportToDatabaseOptions::MERGE_MULTI_SEQUENCE_POLICY_SEPARATOR_SIZE = "merge_multi_sequence_policy_separator_size";
 
 ImportToDatabaseOptions::ImportToDatabaseOptions() :
-    createSubfolderForEachDocument(true),
-    createSubfolderForEachFile(true),
-    createSubfolderForTopLevelFolder(false),
-    importUnknownAsUdr(false),
-    keepFileExtension(false),
-    keepFoldersStructure(true),
-    mergeMultiSequencePolicySeparatorSize(10),
-    multiSequencePolicy(SEPARATE),
-    processFoldersRecursively(true)
-{
-}
+createSubfolderForEachDocument(true),
+createSubfolderForEachFile(true),
+createSubfolderForTopLevelFolder(false),
+importUnknownAsUdr(false),
+keepFileExtension(false),
+keepFoldersStructure(true),
+mergeMultiSequencePolicySeparatorSize(10),
+multiSequencePolicy(SEPARATE),
+processFoldersRecursively(true) {}
 
 bool ImportToDatabaseOptions::operator == (const ImportToDatabaseOptions &other) const {
     return createSubfolderForEachDocument == other.createSubfolderForEachDocument &&
-            createSubfolderForEachFile == other.createSubfolderForEachFile &&
-            createSubfolderForTopLevelFolder == other.createSubfolderForTopLevelFolder &&
-            importUnknownAsUdr == other.importUnknownAsUdr &&
-            keepFileExtension == other.keepFileExtension &&
-            keepFoldersStructure == other.keepFoldersStructure &&
-            mergeMultiSequencePolicySeparatorSize == other.mergeMultiSequencePolicySeparatorSize &&
-            multiSequencePolicy == other.multiSequencePolicy &&
-            preferredFormats == other.preferredFormats &&
-            processFoldersRecursively == other.processFoldersRecursively;
+        createSubfolderForEachFile == other.createSubfolderForEachFile &&
+        createSubfolderForTopLevelFolder == other.createSubfolderForTopLevelFolder &&
+        importUnknownAsUdr == other.importUnknownAsUdr &&
+        keepFileExtension == other.keepFileExtension &&
+        keepFoldersStructure == other.keepFoldersStructure &&
+        mergeMultiSequencePolicySeparatorSize == other.mergeMultiSequencePolicySeparatorSize &&
+        multiSequencePolicy == other.multiSequencePolicy &&
+        preferredFormats == other.preferredFormats &&
+        processFoldersRecursively == other.processFoldersRecursively;
 }
 
 bool ImportToDatabaseOptions::operator !=(const ImportToDatabaseOptions &other) const {

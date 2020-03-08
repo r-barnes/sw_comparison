@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -84,6 +84,18 @@ ExportSequenceItem & ExportSequenceItem::operator =(const ExportSequenceItem &ot
     return *this;
 }
 
+bool ExportSequenceItem::operator==(const ExportSequenceItem& other) const {
+    return seqRef == other.seqRef &&
+           name == other.name &&
+           circular == other.circular &&
+           alphabet == other.alphabet &&
+           length == other.length &&
+           annotations == other.annotations &&
+           complTT == other.complTT &&
+           aminoTT == other.aminoTT &&
+           backTT == other.backTT;
+}
+
 ExportSequenceItem::~ExportSequenceItem() {
     releaseOwnedSeq();
 }
@@ -149,6 +161,11 @@ bool ExportSequenceItem::ownsSeq() const {
     return sequencesRefCounts.contains(seqRef);
 }
 
+bool ExportSequenceItem::isEmpty() const {
+    static const ExportSequenceItem empty;
+    return *this == empty;
+}
+
 void ExportSequenceItem::setSequenceInfo(U2SequenceObject *seqObj) {
     SAFE_POINT(NULL != seqObj, L10N::nullPointerError("sequence object"), );
 
@@ -160,11 +177,14 @@ void ExportSequenceItem::setSequenceInfo(U2SequenceObject *seqObj) {
 }
 
 ExportSequenceTaskSettings::ExportSequenceTaskSettings()
-    : merge(false), mergeGap(0), strand(TriState_Yes), allAminoFrames(false), mostProbable(true), saveAnnotations(false),
-    formatId(BaseDocumentFormats::FASTA)
-{
-
-}
+                          : merge(false),
+                            mergeGap(0),
+                            strand(TriState_Yes),
+                            allAminoFrames(false),
+                            mostProbable(true),
+                            saveAnnotations(false),
+                            formatId(BaseDocumentFormats::FASTA),
+                            sequenceLength(0) {}
 
 //////////////////////////////////////////////////////////////////////////
 //ExportSequenceTask
@@ -480,6 +500,9 @@ void ExportSequenceTask::run() {
     f->storeDocument(resultDocument, stateInfo);
 }
 
+ExportSequenceItem ExportSequenceTask::mergedCircularItem(const ExportSequenceItem &first, const ExportSequenceItem &second, U2OpStatus &os) {
+    return mergeExportItems(QList<ExportSequenceItem>() << first << second, 0, os);
+}
 
 //////////////////////////////////////////////////////////////////////////
 // Export sequence under annotations

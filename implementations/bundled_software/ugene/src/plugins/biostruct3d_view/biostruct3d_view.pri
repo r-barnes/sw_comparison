@@ -22,11 +22,7 @@ PLUGIN_MODE=ui
 
 include( ../../ugene_plugin_common.pri )
 
-win32-msvc2013 {
-    LIBS += opengl32.lib
-}
-
-win32-msvc2015 {
+win32-msvc2013|win32-msvc2015|greaterThan(QMAKE_MSC_VER, 1909) {
     LIBS += opengl32.lib
 }
 

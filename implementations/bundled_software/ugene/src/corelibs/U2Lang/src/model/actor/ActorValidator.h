@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -34,8 +34,8 @@ class U2LANG_EXPORT ActorValidator : public ConfigurationValidator {
 public:
     virtual ~ActorValidator() {}
 
-    virtual bool validate(const Configuration *cfg, ProblemList &problemList) const;
-    virtual bool validate(const Actor *actor, ProblemList &problemList, const QMap<QString, QString> &options) const = 0;
+    virtual bool validate(const Configuration *cfg, NotificationsList &notificationList) const;
+    virtual bool validate(const Actor *actor, NotificationsList &notificationList, const QMap<QString, QString> &options) const = 0;
 
 protected:
     template<class T>

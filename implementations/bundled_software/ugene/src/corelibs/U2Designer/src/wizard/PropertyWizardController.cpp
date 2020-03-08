@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -54,6 +54,11 @@ void PropertyWizardController::sl_valueChanged(const QVariant &newValue) {
 void PropertyWizardController::updateGUI(const QVariant &newValue) {
     emit si_updateGUI(newValue);
 }
+
+void PropertyWizardController::updateVisibility(bool newValue) {
+    emit si_updateVisibility(newValue);
+}
+
 
 DelegateTags * PropertyWizardController::tags() const {
     return _tags;
@@ -132,6 +137,7 @@ QWidget * DefaultPropertyController::createGUI(U2OpStatus &os) {
     if (attribute()->isRequiredAttribute()) {
         propWidget->setRequired();
     }
+    connect(this, SIGNAL(si_updateVisibility(bool)), result, SLOT(setVisible(bool)));
 
     result->setToolTip("<html>" + attribute()->getDocumentation() + "</html>");
     return result;

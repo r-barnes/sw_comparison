@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -303,7 +303,7 @@ GUI_TEST_CLASS_DEFINITION(test_0008){
     GTUtilsMSAEditorSequenceArea::clickToPosition(os, QPoint(41, 9));
 
     //3. Replace the gap
-    //Expected result : the gap is succesfully replaced.
+    //Expected result : the gap is successfully replaced.
     GTKeyboardDriver::keyClick( 'r', Qt::ShiftModifier);
 
     GTKeyboardDriver::keyClick( 'c');
@@ -323,7 +323,7 @@ GUI_TEST_CLASS_DEFINITION(test_0009){
     GTUtilsMSAEditorSequenceArea::clickToPosition(os, QPoint(43, 9));
 
     //3. Replace the gap
-    //Expected result : the gap is succesfully replaced.
+    //Expected result : the gap is successfully replaced.
     GTKeyboardDriver::keyClick( 'r', Qt::ShiftModifier);
 
     GTKeyboardDriver::keyClick( 'c');
@@ -343,7 +343,7 @@ GUI_TEST_CLASS_DEFINITION(test_0010){
     GTUtilsMSAEditorSequenceArea::clickToPosition(os, QPoint(42, 9));
 
     //3. Replace the gap
-    //Expected result : the gap is succesfully replaced.
+    //Expected result : the gap is successfully replaced.
     GTKeyboardDriver::keyClick( 'r', Qt::ShiftModifier);
 
     GTKeyboardDriver::keyClick( 'c');
@@ -370,7 +370,7 @@ GUI_TEST_CLASS_DEFINITION(test_0011){
     GTGlobals::sleep(500);
 
     //3. Replace the gap
-    //Expected result : the gap is succesfully replaced.
+    //Expected result : the gap is successfully replaced.
     GTKeyboardDriver::keyClick( 'r', Qt::ShiftModifier);
     GTGlobals::sleep(1000);
     GTKeyboardDriver::keyClick( 'c');
@@ -393,7 +393,7 @@ GUI_TEST_CLASS_DEFINITION(test_0012){
     GTUtilsMSAEditorSequenceArea::selectArea(os, QPoint(0, 9), QPoint(0, 9));
 
     //3. Replace the gap
-    //Expected result : the gap is succesfully replaced.
+    //Expected result : the gap is successfully replaced.
     GTKeyboardDriver::keyClick( 'r', Qt::ShiftModifier);
 
     GTKeyboardDriver::keyClick( 'c');
@@ -413,7 +413,7 @@ GUI_TEST_CLASS_DEFINITION(test_0013){
     GTUtilsMSAEditorSequenceArea::selectArea(os, QPoint(0, 9), QPoint(0, 9));
 
     //3. Replace the character
-    //Expected result : the character is succesfully replaced.
+    //Expected result : the character is successfully replaced.
     GTKeyboardDriver::keyClick( 'r', Qt::ShiftModifier);
 
     GTKeyboardDriver::keyClick( 'c');
@@ -434,7 +434,7 @@ GUI_TEST_CLASS_DEFINITION(test_0014){
     GTUtilsMSAEditorSequenceArea::clickToPosition(os, QPoint(603, 9));
 
     //3. Replace the character
-    //Expected result : the character is succesfully replaced.
+    //Expected result : the character is successfully replaced.
     GTKeyboardDriver::keyClick( 'r', Qt::ShiftModifier);
 
     GTKeyboardDriver::keyClick( 'c');
@@ -487,7 +487,7 @@ GUI_TEST_CLASS_DEFINITION(test_0016){
     GTUtilsMSAEditorSequenceArea::selectArea(os, QPoint(0, 9), QPoint(0, 9));
 
     //3. Replace the character to gap by space key
-    //Expected result : the character is succesfully replaced.
+    //Expected result : the character is successfully replaced.
     GTKeyboardDriver::keyClick( 'r', Qt::ShiftModifier);
 
     GTKeyboardDriver::keyClick( Qt::Key_Space);
@@ -502,7 +502,7 @@ GUI_TEST_CLASS_DEFINITION(test_0016){
     GTUtilsMSAEditorSequenceArea::selectArea(os, QPoint(0, 10), QPoint(0, 10));
 
     //4. Replace the character to gap by '-' key
-    //Expected result : the character is succesfully replaced.
+    //Expected result : the character is successfully replaced.
     GTKeyboardDriver::keyClick( 'r', Qt::ShiftModifier);
 
     GTKeyboardDriver::keyClick( '-');

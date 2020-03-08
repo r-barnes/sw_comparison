@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -110,7 +110,7 @@ void CASAVAFilterWorkerFactory::init() {
             CASAVAFilterWorker::tr("Select the custom output folder."));
 
         Descriptor outName(BaseNGSWorker::OUT_NAME_ID, CASAVAFilterWorker::tr("Output file name"),
-            CASAVAFilterWorker::tr("A name of an output file. If default of empty value is provided the output name is the name of the first file with additional extention."));
+            CASAVAFilterWorker::tr("A name of an output file. If default of empty value is provided the output name is the name of the first file with additional extension."));
 
         a << new Attribute(outDir, BaseTypes::NUM_TYPE(), false, QVariant(FileAndDirectoryUtils::WORKFLOW_INTERNAL));
         Attribute* customDirAttr = new Attribute(customDir, BaseTypes::STRING_TYPE(), false, QVariant(""));
@@ -265,7 +265,7 @@ void FastqQualityTrimWorkerFactory::init() {
             FastqQualityTrimWorker::tr("Select the custom output folder."));
 
         Descriptor outName(BaseNGSWorker::OUT_NAME_ID, FastqQualityTrimWorker::tr("Output file name"),
-            FastqQualityTrimWorker::tr("A name of an output file. If default of empty value is provided the output name is the name of the first file with additional extention."));
+            FastqQualityTrimWorker::tr("A name of an output file. If default of empty value is provided the output name is the name of the first file with additional extension."));
 
         Descriptor qualT(QUALITY_ID, FastqQualityTrimWorker::tr("Quality threshold"),
             FastqQualityTrimWorker::tr("Quality threshold for trimming."));
@@ -490,7 +490,7 @@ void MergeFastqWorkerFactory::init() {
             MergeFastqWorker::tr("Select the custom output folder."));
 
         Descriptor outName(BaseNGSWorker::OUT_NAME_ID, MergeFastqWorker::tr("Output file name"),
-            MergeFastqWorker::tr("A name of an output file. If default of empty value is provided the output name is the name of the first file with additional extention."));
+            MergeFastqWorker::tr("A name of an output file. If default of empty value is provided the output name is the name of the first file with additional extension."));
 
 
         a << new Attribute(outDir, BaseTypes::NUM_TYPE(), false, QVariant(FileAndDirectoryUtils::WORKFLOW_INTERNAL));

@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -24,7 +24,6 @@
 
 #include <QMap>
 #include <QObject>
-#include <QSet>
 #include <QSharedData>
 #include <QVector>
 
@@ -43,14 +42,14 @@ public:
     QList<const PhyNode*> collectNodes() const;
     void print() const;
 
-    void setRootNode(PhyNode* _rootNode) {rootNode = _rootNode;}
-    PhyNode* getRootNode() const { return rootNode;}
+    void setRootNode(PhyNode* _rootNode) { rootNode = _rootNode; }
+    PhyNode* getRootNode() const { return rootNode; }
 
     static PhyBranch* addBranch(PhyNode* node1, PhyNode* node2, double distance);
     static void removeBranch(PhyNode* node1, PhyNode* node2);
 
     void setUsingNodeLabels(bool haveNodeLabels);
-    bool usingNodeLabels() const {return haveNodeLabels;}
+    bool usingNodeLabels() const { return haveNodeLabels; }
 
     void renameNodes(const QMap<QString, QString>& newNamesByOldNames);
 private:
@@ -60,7 +59,7 @@ private:
 };
 typedef QSharedDataPointer<PhyTreeData> PhyTree;
 
-class U2CORE_EXPORT PhyBranch : public QObject{
+class U2CORE_EXPORT PhyBranch : public QObject {
     Q_OBJECT
 public:
     PhyBranch();
@@ -75,7 +74,7 @@ public:
 
 class U2CORE_EXPORT PhyNode {
     Q_DISABLE_COPY(PhyNode)
-    friend class PhyTreeUtils;
+        friend class PhyTreeUtils;
     friend class PhyTreeData;
 public:
     PhyNode();
@@ -83,7 +82,7 @@ public:
 
     /* const */
     const QString & getName() const { return name; }
-    int branchCount() const {return branches.size();}
+    int branchCount() const { return branches.size(); }
     const PhyNode * getSecondNodeOfBranch(int branchNumber) const;
     double getBranchesDistance(int branchNumber) const;
     double getBranchesNodeValue(int branchNumber) const;
@@ -92,18 +91,18 @@ public:
     PhyNode * clone() const;
 
     PhyBranch * getBranch(int i) const;
-    void setName(const QString& _name){ name = _name; }
+    void setName(const QString& _name) { name = _name; }
 
     /* For distance matrix */
     const PhyNode * getParentNode() const;
     PhyNode * getParentNode();
-    void setBranchesDistance(int branchNumber, double distance) { branches.at(branchNumber)->distance = distance;}
+    void setBranchesDistance(int branchNumber, double distance) { branches.at(branchNumber)->distance = distance; }
     void print(QList<PhyNode*>& nodes, int distance, int tab);
 
     /* For reroot */
     void setParentNode(PhyNode* newParent, double distance);
     QList<PhyNode*> getChildrenNodes() const;
-    void swapBranches(int firstBrunch, int secondBranch){branches.swap(firstBrunch, secondBranch);}
+    void swapBranches(int firstBrunch, int secondBranch) { branches.swap(firstBrunch, secondBranch); }
     double getDistanceToRoot() const;
 
     const PhyBranch * getParentBranch() const;

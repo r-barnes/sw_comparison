@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -27,29 +27,31 @@
 namespace U2 {
 namespace Workflow {
 
-bool WriteAnnotationsValidator::validate(const Actor *actor, ProblemList &problemList, const QMap<QString, QString> &options) const {
+bool WriteAnnotationsValidator::validate(const Actor *actor, NotificationsList &notificationList, const QMap<QString, QString> &options) const {
+    Q_UNUSED(options);
+
     Port* port = actor->getPort(BasePorts::IN_ANNOTATIONS_PORT_ID());
     if (port == NULL) {
-        problemList << Problem(tr("Input port is NULL"), actor->getId(), Problem::U2_ERROR);
+        notificationList << WorkflowNotification(tr("Input port is NULL"), actor->getId(), WorkflowNotification::U2_ERROR);
         FAIL("Input port is NULL", false);
     }
 
     IntegralBusPort* input = qobject_cast<IntegralBusPort*>(port);
     if (input == NULL) {
-        problemList << Problem(tr("IntegralBusPort is NULL"), actor->getId(), Problem::U2_ERROR);
+        notificationList << WorkflowNotification(tr("IntegralBusPort is NULL"), actor->getId(), WorkflowNotification::U2_ERROR);
         FAIL("IntegralBusPort is NULL", false);
     }
 
     Attribute* attribute = actor->getParameter("write_names");
     if (attribute == NULL) {
-        problemList << Problem(tr("Attribute is NULL"), actor->getId(), Problem::U2_ERROR);
+        notificationList << WorkflowNotification(tr("Attribute is NULL"), actor->getId(), WorkflowNotification::U2_ERROR);
         FAIL("Attribute is NULL", false);
     }
     const bool writeSequence = attribute->getAttributeValueWithoutScript<bool>();
 
     const QList<Actor*> inputSeq = input->getProducers(BaseSlots::DNA_SEQUENCE_SLOT().getId());
     if (inputSeq.isEmpty() && writeSequence) {
-        problemList << Problem(QObject::tr("Sequence names were not saved, the input slot 'Sequence' is empty."), actor->getId(), Problem::U2_WARNING);
+        notificationList << WorkflowNotification(QObject::tr("Sequence names were not saved, the input slot 'Sequence' is empty."), actor->getId(), WorkflowNotification::U2_WARNING);
     }
 
     return true;

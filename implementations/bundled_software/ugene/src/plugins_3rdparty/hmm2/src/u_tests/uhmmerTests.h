@@ -15,7 +15,7 @@ class HMMBuildToFileTask;
 class CreateAnnotationModel;
 struct plan7_s;
 
-class GTest_uHMMERSearch : public GTest {
+class GTest_uHMMERSearch : public XmlTest {
     Q_OBJECT
 public:
 
@@ -48,7 +48,7 @@ protected:
 	
 };
 
-class GTest_uHMMERBuild: public GTest {
+class GTest_uHMMERBuild: public XmlTest {
     Q_OBJECT
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_uHMMERBuild, "uhmmer-build");
     ReportResult report();
@@ -59,7 +59,7 @@ private:
 	bool deleteTempFile;
 };
 
-class GTest_hmmCompare: public GTest {
+class GTest_hmmCompare: public XmlTest {
     Q_OBJECT
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_hmmCompare, "hmm-compare");
     ReportResult report();
@@ -67,7 +67,7 @@ private:
 	QString file1Name;
 	QString file2Name;
 };
-class GTest_uHMMERCalibrate: public GTest {
+class GTest_uHMMERCalibrate: public XmlTest {
     Q_OBJECT
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_uHMMERCalibrate, "uhmmer-calibrate");
     ReportResult report();

@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -27,6 +27,7 @@
 #include <U2Core/Annotation.h>
 #include <U2Core/AnnotationTableObject.h>
 #include <U2Core/AppContext.h>
+#include <U2Core/AppResources.h>
 #include <U2Core/DNASequenceObject.h>
 #include <U2Core/DNASequenceSelection.h>
 #include <U2Core/GenbankFeatures.h>
@@ -78,7 +79,7 @@ FindRepeatsDialog::FindRepeatsDialog(ADVSequenceObjectContext* _sc)
 {
     sc = _sc;
     setupUi(this);
-    new HelpButton(this, buttonBox, "21433358");
+    new HelpButton(this, buttonBox, "24742557");
 
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Start"));
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
@@ -227,12 +228,32 @@ bool FindRepeatsDialog::getRegions(QCheckBox* cb, QLineEdit* le, QVector<U2Regio
     return true;
 }
 
+// This is maximum sequence size we allow to use on 32bit OS to search for repeats.
+#define MAX_REPEAT_SEQUENCE_LENGTH_32_BIT_OS (300 * 1000 * 1000)
+
 void FindRepeatsDialog::accept() {
     int minLen = minLenBox->value();
     int identPerc = identityBox->value();
+    qint64 sequenceLen = sc->getSequenceLength();
+
+    // find repeats algorithm operates with 32 bit values and can't process 64-bit coordinates.
+    // so we reject sequences that do not fit into 32 bit length range.
+    if (sequenceLen > INT_MAX) {
+        QMessageBox::warning(this, L10N::warningTitle(),  tr("Sequence size is too large!"));
+        return;
+    }
+    int sequenceLenAsInt = int(sequenceLen);
     int minDist = minDistCheck->isChecked() ? minDistBox->value() : 0;
-    int maxDist = maxDistCheck->isChecked() ? maxDistBox->value(): sc->getSequenceLength();
+    int maxDist = maxDistCheck->isChecked() ? maxDistBox->value() : sequenceLenAsInt;
     bool inverted = invertCheck->isChecked();
+
+    if (AppResourcePool::is32BitBuild()) {
+        if (sequenceLen > MAX_REPEAT_SEQUENCE_LENGTH_32_BIT_OS) {
+            QMessageBox::warning(this, L10N::warningTitle(),  tr("Sequence size is too large!"));
+            return;
+        }
+    }
+
     bool isRegionOk = false;
     U2Region range = rs->getRegion(&isRegionOk);
     if (!isRegionOk){

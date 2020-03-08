@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -19,7 +19,6 @@
  * MA 02110-1301, USA.
  */
 
-#include <U2Core/DocumentModel.h>
 #include <U2Core/GHints.h>
 #include <U2Core/GObjectTypes.h>
 #include <U2Core/MsaDbiUtils.h>
@@ -37,11 +36,10 @@
 namespace U2 {
 
 MultipleSequenceAlignmentObject::MultipleSequenceAlignmentObject(const QString &name,
-                                                                 const U2EntityRef &msaRef,
-                                                                 const QVariantMap &hintsMap,
-                                                                 const MultipleSequenceAlignment &alnData)
-    : MultipleAlignmentObject(GObjectTypes::MULTIPLE_SEQUENCE_ALIGNMENT, name, msaRef, hintsMap, alnData)
-{
+    const U2EntityRef &msaRef,
+    const QVariantMap &hintsMap,
+    const MultipleSequenceAlignment &alnData)
+    : MultipleAlignmentObject(GObjectTypes::MULTIPLE_SEQUENCE_ALIGNMENT, name, msaRef, hintsMap, alnData) {
 
 }
 
@@ -53,7 +51,7 @@ const MultipleSequenceAlignment MultipleSequenceAlignmentObject::getMsaCopy() co
     return getMsa()->getExplicitCopy();
 }
 
-GObject * MultipleSequenceAlignmentObject::clone(const U2DbiRef &dstDbiRef, U2OpStatus &os, const QVariantMap &hints) const {
+MultipleSequenceAlignmentObject* MultipleSequenceAlignmentObject::clone(const U2DbiRef &dstDbiRef, U2OpStatus &os, const QVariantMap &hints) const {
     DbiOperationsBlock opBlock(dstDbiRef, os);
     Q_UNUSED(opBlock);
     CHECK_OP(os, NULL);
@@ -86,7 +84,7 @@ void MultipleSequenceAlignmentObject::updateGapModel(U2OpStatus &os, const U2Msa
 
     const QList<qint64> rowIds = msa->getRowsIds();
     QList<qint64> modifiedRowIds;
-    foreach (qint64 rowId, rowsGapModel.keys()) {
+    foreach(qint64 rowId, rowsGapModel.keys()) {
         if (!rowIds.contains(rowId)) {
             os.setError(QString("Can't update gaps of a multiple alignment: cannot find a row with the id %1").arg(rowId));
             return;
@@ -136,6 +134,15 @@ void MultipleSequenceAlignmentObject::crop(const U2Region &window, const QSet<QS
         }
     }
 
+    U2OpStatus2Log os;
+    MsaDbiUtils::crop(entityRef, rowIds, window.startPos, window.length, os);
+    SAFE_POINT_OP(os, );
+
+    updateCachedMultipleAlignment();
+}
+
+void MultipleSequenceAlignmentObject::crop(const U2Region &window, const QList<qint64> &rowIds) {
+    SAFE_POINT(!isStateLocked(), "Alignment state is locked", );
     U2OpStatus2Log os;
     MsaDbiUtils::crop(entityRef, rowIds, window.startPos, window.length, os);
     SAFE_POINT_OP(os, );
@@ -235,7 +242,7 @@ void MultipleSequenceAlignmentObject::updateCachedRows(U2OpStatus &os, const QLi
     MultipleSequenceAlignmentExporter msaExporter;
     QList<MsaRowReplacementData> rowsAndSeqs = msaExporter.getAlignmentRows(entityRef.dbiRef, entityRef.entityId, rowIds, os);
     SAFE_POINT_OP(os, );
-    foreach (const MsaRowReplacementData &data, rowsAndSeqs) {
+    foreach(const MsaRowReplacementData &data, rowsAndSeqs) {
         const int rowIndex = cachedMsa->getRowIndexByRowId(data.row.rowId, os);
         SAFE_POINT_OP(os, );
         cachedMsa->setRowContent(rowIndex, data.sequence.seq);
@@ -254,7 +261,7 @@ void MultipleSequenceAlignmentObject::removeRowPrivate(U2OpStatus &os, const U2E
 }
 
 void MultipleSequenceAlignmentObject::removeRegionPrivate(U2OpStatus &os, const U2EntityRef &maRef, const QList<qint64> &rows,
-                                                          int startPos, int nBases) {
+    int startPos, int nBases) {
     MsaDbiUtils::removeRegion(maRef, rows, startPos, nBases, os);
 }
 

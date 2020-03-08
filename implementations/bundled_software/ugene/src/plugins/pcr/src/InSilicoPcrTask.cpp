@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -25,6 +25,7 @@
 #include <U2Core/DNASequenceUtils.h>
 #include <U2Core/DNATranslation.h>
 #include <U2Core/L10n.h>
+#include <U2Core/U2Msa.h>
 
 #include "Primer.h"
 #include "PrimerStatistics.h"
@@ -49,6 +50,10 @@ InSilicoPcrProduct::InSilicoPcrProduct()
 
 }
 
+bool InSilicoPcrProduct::isValid() const {
+    return ta != Primer::INVALID_TM;
+}
+
 InSilicoPcrTask::InSilicoPcrTask(const InSilicoPcrTaskSettings &settings)
 : Task(tr("In Silico PCR"), TaskFlags(TaskFlag_ReportingIsSupported) | TaskFlag_ReportingIsEnabled | TaskFlags_FOSE_COSC),
 settings(settings), forwardSearch(NULL), reverseSearch(NULL), minProductSize(0)
@@ -58,9 +63,18 @@ settings(settings), forwardSearch(NULL), reverseSearch(NULL), minProductSize(0)
 }
 
 namespace {
-    int getMaxError(const QByteArray &primer, uint mismatches) {
-        return qMin(int(mismatches), primer.length() / 2);
+int getMaxError(const InSilicoPcrTaskSettings& settings, U2Strand::Direction direction) {
+    int res = 0;
+    if (direction == U2Strand::Direct) {
+        res = qMin(settings.forwardMismatches, settings.forwardPrimer.length() - settings.perfectMatch);
+        res = qMin(res, settings.forwardPrimer.length() - 1);
+    } else {
+        res = qMin(settings.reverseMismatches, settings.reversePrimer.length() - settings.perfectMatch);
+        res = qMin(res, settings.reversePrimer.length() - 1);
     }
+    return qMax(0, res);
+}
+
 }
 
 FindAlgorithmTaskSettings InSilicoPcrTask::getFindPatternSettings(U2Strand::Direction direction) {
@@ -77,14 +91,21 @@ FindAlgorithmTaskSettings InSilicoPcrTask::getFindPatternSettings(U2Strand::Dire
     result.strand = FindAlgorithmStrand_Both;
     result.useAmbiguousBases = true;
 
+    int pos = 0;
     if (U2Strand::Direct == direction) {
         result.pattern = settings.forwardPrimer;
-        result.maxErr = getMaxError(settings.forwardPrimer, settings.forwardMismatches);
+        pos = 0;
     } else {
         result.pattern = settings.reversePrimer;
-        result.maxErr = getMaxError(settings.reversePrimer, settings.reverseMismatches);
+        pos = result.sequence.size();
     }
 
+    result.maxErr = getMaxError(settings, direction);
+    if (!result.searchIsCircular) {
+        QByteArray ledge(result.pattern.size() - settings.perfectMatch - 1, 'N');
+        result.sequence.insert(pos, ledge);
+    }
+    result.searchRegion.length = result.sequence.length();
     result.complementTT = translator;
 
     return result;
@@ -113,14 +134,16 @@ void InSilicoPcrTask::run() {
             if (forward.strand == reverse.strand) {
                 continue;
             }
-            PrimerBind leftBind = getPrimerBind(forward, reverse, U2Strand::Direct);
-            PrimerBind rightBind = getPrimerBind(forward, reverse, U2Strand::Complementary);
+            const PrimerBind leftBind = getPrimerBind(forward, reverse, U2Strand::Direct);
+            const PrimerBind rightBind = getPrimerBind(forward, reverse, U2Strand::Complementary);
 
-            qint64 productSize = getProductSize(leftBind.region, rightBind.region);
+            const qint64 productSize = getProductSize(leftBind, rightBind);
             bool accepted = filter(leftBind, rightBind, productSize);
             if (accepted) {
                 U2Region productRegion(leftBind.region.startPos, productSize);
-                InSilicoPcrProduct product = createResult(leftBind.region, productRegion, rightBind.region, forward.strand.getDirection());
+                InSilicoPcrProduct product = createResult(leftBind, productRegion, rightBind, forward.strand.getDirection());
+                CHECK_CONTINUE(product.isValid());
+
                 results << product;
             }
         }
@@ -135,10 +158,33 @@ InSilicoPcrTask::PrimerBind InSilicoPcrTask::getPrimerBind(const FindAlgorithmRe
         result.primer = settings.reversePrimer;
         result.mismatches = settings.reverseMismatches;
         result.region = reverse.region;
+        const qint64 reverseRegionEndPos = reverse.region.endPos();
+        const qint64 sequenceSize = settings.sequence.size();
+        if (reverseRegionEndPos > sequenceSize) {
+            result.region = U2Region(reverse.region.startPos, sequenceSize - reverse.region.startPos);
+            if (!settings.isCircular) {
+                result.region.length -= reverse.region.startPos;
+            }
+            result.ledge = reverseRegionEndPos - sequenceSize;
+        } else {
+            result.region = reverse.region;
+            result.ledge = 0;
+        }
     } else {
         result.primer = settings.forwardPrimer;
         result.mismatches = settings.forwardMismatches;
-        result.region = forward.region;
+        const int ledge = result.primer.size() - settings.perfectMatch - 1;
+        if (forward.region.startPos < ledge) {
+            result.region = U2Region(0, forward.region.length - forward.region.startPos);
+            result.ledge = forward.region.startPos;
+        } else {
+            result.region = U2Region(forward.region.startPos, forward.region.length);
+            if (!settings.isCircular) {
+                result.region.startPos -= (ledge);
+            }
+            result.ledge = 0;
+        }
+        result.mismatches += result.ledge;
     }
     return result;
 }
@@ -148,10 +194,10 @@ bool InSilicoPcrTask::filter(const PrimerBind &leftBind, const PrimerBind &right
 
     if (settings.perfectMatch > 0) {
         if (leftBind.mismatches > 0) {
-            CHECK(checkPerfectMatch(leftBind.region, leftBind.primer, U2Strand::Direct), false);
+            CHECK(checkPerfectMatch(leftBind, U2Strand::Direct), false);
         }
         if (rightBind.mismatches > 0) {
-            CHECK(checkPerfectMatch(rightBind.region, rightBind.primer, U2Strand::Complementary), false);
+            CHECK(checkPerfectMatch(rightBind, U2Strand::Complementary), false);
         }
     }
     return true;
@@ -161,13 +207,21 @@ bool InSilicoPcrTask::isCorrectProductSize(qint64 productSize, qint64 minPrimerS
     return (productSize >= minPrimerSize) && (productSize <= qint64(settings.maxProductSize));
 }
 
-bool InSilicoPcrTask::checkPerfectMatch(const U2Region &region, QByteArray primer, U2Strand::Direction direction) const {
-    const QByteArray sequence = getSequence(region, direction);
-    SAFE_POINT(sequence.length() == primer.length(), L10N::internalError("Wrong match length"), false);
+bool InSilicoPcrTask::checkPerfectMatch(const PrimerBind &bind, U2Strand::Direction direction) const {
+    const QByteArray sequence = getSequence(bind.region, direction);
+    QByteArray croppedPrimer = bind.primer;
+    if (bind.ledge > 0) {
+        croppedPrimer = bind.primer.right(bind.region.length);
+    }
+    const int sequenceLength = sequence.length();
+    const int primerLength = croppedPrimer.length();
+    SAFE_POINT(sequenceLength == primerLength, L10N::internalError("Wrong match length"), false);
 
     int perfectMatch = qMin(sequence.length(), int(settings.perfectMatch));
     for (int i = 0; i < perfectMatch; i++) {
-        if (!FindAlgorithm::cmpAmbiguous(sequence.at(sequence.length() - 1 - i), primer.at(primer.length() - 1 - i))) {
+        char a = sequence.at(sequenceLength - 1 - i);
+        char b = croppedPrimer.at(primerLength - 1 - i);
+        if (!FindAlgorithm::cmpAmbiguous(a, b)) {
             return false;
         }
     }
@@ -190,7 +244,7 @@ QByteArray InSilicoPcrTask::getSequence(const U2Region &region, U2Strand::Direct
 
 QString InSilicoPcrTask::generateReport() const {
     QString spaces;
-    for (int i=0; i<150; i++) {
+    for (int i = 0; i < 150; i++) {
         spaces += "&nbsp;";
     }
     if (PrimerStatistics::validate(settings.forwardPrimer) && PrimerStatistics::validate(settings.reversePrimer)) {
@@ -207,11 +261,14 @@ QString InSilicoPcrTask::generateReport() const {
               "The detailed information about primers is not available as primers or sequence contain a character from the Extended DNA alphabet.").arg(results.size());
 }
 
-InSilicoPcrProduct InSilicoPcrTask::createResult(const U2Region &leftPrimer, const U2Region &product, const U2Region &rightPrimer, U2Strand::Direction direction) const {
+InSilicoPcrProduct InSilicoPcrTask::createResult(const PrimerBind &leftPrimer, const U2Region &product, const PrimerBind &rightPrimer, U2Strand::Direction direction) const {
     QByteArray productSequence = settings.sequence.mid(product.startPos, product.length);
     if (productSequence.length() < product.length) {
-        assert(settings.isCircular);
-        productSequence += settings.sequence.left(product.endPos() - settings.sequence.length());
+        if (settings.isCircular) {
+            productSequence += settings.sequence.left(product.endPos() - settings.sequence.length());
+        } else {
+            CHECK(updateSequenceByPrimers(leftPrimer, rightPrimer, productSequence), InSilicoPcrProduct());
+        }
     }
 
     InSilicoPcrProduct result;
@@ -219,10 +276,12 @@ InSilicoPcrProduct InSilicoPcrTask::createResult(const U2Region &leftPrimer, con
     result.ta = PrimerStatistics::getAnnealingTemperature(productSequence,
                                                           direction == U2Strand::Direct ? settings.forwardPrimer : settings.reversePrimer,
                                                           direction == U2Strand::Direct ? settings.reversePrimer : settings.forwardPrimer);
-    result.forwardPrimerMatchLength = leftPrimer.length;
-    result.reversePrimerMatchLength = rightPrimer.length;
+    result.forwardPrimerMatchLength = leftPrimer.region.length + leftPrimer.ledge;
+    result.reversePrimerMatchLength = rightPrimer.region.length + rightPrimer.ledge;
     result.forwardPrimer = settings.forwardPrimer;
     result.reversePrimer = settings.reversePrimer;
+    result.forwardPrimerLedge = settings.forwardPrimer.left(leftPrimer.ledge);
+    result.reversePrimerLedge = settings.reversePrimer.left(rightPrimer.ledge);
     if (U2Strand::Complementary == direction) {
         qSwap(result.forwardPrimer, result.reversePrimer);
     }
@@ -230,10 +289,32 @@ InSilicoPcrProduct InSilicoPcrTask::createResult(const U2Region &leftPrimer, con
     return result;
 }
 
-qint64 InSilicoPcrTask::getProductSize(const U2Region &left, const U2Region &right) const {
-    qint64 result = right.endPos() - left.startPos;
+bool InSilicoPcrTask::updateSequenceByPrimers(const PrimerBind &leftPrimer, const PrimerBind &rightPrimer, QByteArray& productSequence) const {
+    SAFE_POINT((leftPrimer.ledge > 0 || rightPrimer.ledge > 0),
+        "Error: at least one primer should has a ledge on one side",
+        false);
+
+    updateSequenceByPrimer(leftPrimer, productSequence);
+    updateSequenceByPrimer(rightPrimer, productSequence);
+
+    return true;
+}
+
+void InSilicoPcrTask::updateSequenceByPrimer(const PrimerBind &primer, QByteArray& productSequence) const {
+    if (primer.region.startPos == 0) {
+        QByteArray primerPart = primer.primer.left(primer.ledge);
+        productSequence.insert(0, primerPart);
+    } else {
+        QByteArray primerPart = DNASequenceUtils::reverseComplement(primer.primer.left(primer.ledge));
+        productSequence.insert(productSequence.size(), primerPart);
+    }
+}
+
+qint64 InSilicoPcrTask::getProductSize(const PrimerBind& leftBind, const PrimerBind& rightBind) const {
+    const qint64 ledge = rightBind.ledge + leftBind.ledge;
+    qint64 result = rightBind.region.endPos() - leftBind.region.startPos + ledge;
     if (result < 0 && settings.isCircular) {
-        return right.endPos() + (settings.sequence.length() - left.startPos);
+        result += settings.sequence.length();
     }
     return result;
 }
@@ -244,6 +325,11 @@ const QList<InSilicoPcrProduct> & InSilicoPcrTask::getResults() const {
 
 const InSilicoPcrTaskSettings & InSilicoPcrTask::getSettings() const {
     return settings;
+}
+
+InSilicoPcrTask::PrimerBind::PrimerBind() {
+    mismatches = 0;
+    ledge = 0;
 }
 
 } // U2

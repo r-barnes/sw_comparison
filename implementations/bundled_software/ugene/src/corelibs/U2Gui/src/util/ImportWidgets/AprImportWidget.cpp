@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -32,7 +32,7 @@
 namespace U2 {
 
 AprImportWidget::AprImportWidget(const GUrl& url, const QVariantMap& settings) :
-    ImportWidget(url, settings)
+    ImportWidget()
 {
     setupUi(this);
 

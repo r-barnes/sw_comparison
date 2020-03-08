@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -24,8 +24,6 @@
 
 #include <U2Core/U2Region.h>
 
-#include <QVariant>
-
 namespace U2 {
 
 class DNATranslation;
@@ -38,7 +36,7 @@ class U2CORE_EXPORT U1SequenceUtils {
 public:
     /** Extract sequence parts marked by the regions
         Note: the order of complemented regions is also reversed
-    */
+        */
     static QList<QByteArray> extractRegions(const QByteArray& seq, const QVector<U2Region>& regions,
         const DNATranslation* complTT, const DNATranslation* aminoTT = NULL, bool circular = false, bool join = false);
 

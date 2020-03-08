@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -28,6 +28,7 @@
 #include <U2Core/AppContext.h>
 #include <U2Core/AppSettings.h>
 #include <U2Core/DNASequenceObject.h>
+#include <U2Core/GUrlUtils.h>
 #include <U2Core/L10n.h>
 #include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2SafePoints.h>
@@ -56,6 +57,8 @@ const QString TopHatWorkerFactory::ACTOR_ID("tophat");
 
 const QString TopHatWorkerFactory::OUT_DIR("out-dir");
 const QString TopHatWorkerFactory::SAMPLES_MAP("samples");
+const QString TopHatWorkerFactory::REFERENCE_INPUT_TYPE("reference-input-type");
+const QString TopHatWorkerFactory::REFERENCE_GENOME("reference");
 const QString TopHatWorkerFactory::BOWTIE_INDEX_DIR("bowtie-index-dir");
 const QString TopHatWorkerFactory::BOWTIE_INDEX_BASENAME("bowtie-index-basename");
 const QString TopHatWorkerFactory::REF_SEQ("ref-seq");
@@ -180,12 +183,15 @@ void TopHatWorkerFactory::init()
 
     // Description of the element
     Descriptor topHatDescriptor(ACTOR_ID,
-        TopHatWorker::tr("Find Splice Junctions with TopHat"),
-        TopHatWorker::tr("TopHat is a fast splice junction mapper for RNA-Seq"
-            " reads. It aligns RNA-Seq reads to mammalian-sized genomes"
-            " using the ultra high-throughput short read aligner Bowtie,"
-            " and then analyzes the mapping results to identify splice"
-            " junctions between exons."));
+        TopHatWorker::tr("Map RNA-Seq Reads with TopHat"),
+        TopHatWorker::tr("TopHat is a program for mapping RNA-Seq reads to a long reference sequence."
+                         " It uses Bowtie or Bowtie2 to map the reads and then analyzes the mapping"
+                         " results to identify splice junctions between exons."
+                         "<br/><br/>Provide URL(s) to FASTA or FASTQ file(s) with NGS RNA-Seq reads to the input"
+                         " port of the element, set up the reference sequence in the parameters."
+                         " The result is saved to the specified BAM file, URL to the file is passed"
+                         " to the output port. Several UCSC BED tracks are also produced: junctions,"
+                         " insertions, and deletions."));
 
     // Define parameters of the element
     Descriptor outDir(OUT_DIR,
@@ -195,6 +201,17 @@ void TopHatWorkerFactory::init()
     Descriptor samplesMap(SAMPLES_MAP,
         TopHatWorker::tr("Samples map"),
         TopHatWorker::tr("The map which divide all input datasets into samples. Every sample has the unique name."));
+
+    Descriptor referenceInputType(REFERENCE_INPUT_TYPE,
+        TopHatWorker::tr("Reference input type"),
+        TopHatWorker::tr("Select \"Sequence\" to input a reference genome as a sequence file. "
+        "<br/>Note that any sequence file format, supported by UGENE, is allowed (FASTA, GenBank, etc.). "
+        "<br/>The index will be generated automatically in this case. "
+        "<br/>Select \"Index\" to input already generated index files, specific for the tool."));
+
+    Descriptor refGenome(REFERENCE_GENOME,
+        TopHatWorker::tr("Reference genome"),
+        TopHatWorker::tr("Path to indexed reference genome."));
 
     Descriptor bowtieIndexDir(BOWTIE_INDEX_DIR,
         TopHatWorker::tr("Bowtie index folder"),
@@ -348,15 +365,22 @@ void TopHatWorkerFactory::init()
         TopHatWorker::tr("Temporary folder"),
         TopHatWorker::tr("The folder for temporary files."));
 
-    attributes << new Attribute(outDir, BaseTypes::STRING_TYPE(), true, "");
+    attributes << new Attribute(referenceInputType, BaseTypes::STRING_TYPE(), true, QVariant(TopHatSettings::INDEX));
+    Attribute* attrRefGenom = new Attribute(refGenome, BaseTypes::STRING_TYPE(), Attribute::Required | Attribute::NeedValidateEncoding, QVariant(""));
+    attrRefGenom->addRelation(new VisibilityRelation(REFERENCE_INPUT_TYPE, TopHatSettings::SEQUENCE));
+    attributes << attrRefGenom;
     {
-        Attribute *dirAttr = new Attribute(bowtieIndexDir, BaseTypes::STRING_TYPE(), true, QVariant(""));
+        Attribute *dirAttr = new Attribute(bowtieIndexDir, BaseTypes::STRING_TYPE(), Attribute::Required | Attribute::NeedValidateEncoding, QVariant(""));
+        dirAttr->addRelation(new VisibilityRelation(REFERENCE_INPUT_TYPE, TopHatSettings::INDEX));
         dirAttr->addRelation(new BowtieFilesRelation(BOWTIE_INDEX_BASENAME));
         dirAttr->addRelation(new BowtieVersionRelation(BOWTIE_VERSION));
         attributes << dirAttr;
     }
-    attributes << new Attribute(bowtieIndexBasename, BaseTypes::STRING_TYPE(), true, QVariant(""));
-    // attributes << new Attribute(refSeq, BaseTypes::STRING_TYPE(), true, QVariant(""));
+    Attribute *attrIndexBasename = new Attribute(bowtieIndexBasename, BaseTypes::STRING_TYPE(), Attribute::Required | Attribute::NeedValidateEncoding, QVariant(""));
+    attrIndexBasename->addRelation(new VisibilityRelation(REFERENCE_INPUT_TYPE, TopHatSettings::INDEX));
+    attributes << attrIndexBasename;
+
+    attributes << new Attribute(outDir, BaseTypes::STRING_TYPE(), true, "");
     attributes << new Attribute(mateInnerDistance, BaseTypes::NUM_TYPE(), false, QVariant(50));
     attributes << new Attribute(mateStandardDeviation, BaseTypes::NUM_TYPE(), false, QVariant(20));
     attributes << new Attribute(libraryType, BaseTypes::NUM_TYPE(), false, QVariant(0));
@@ -392,6 +416,14 @@ void TopHatWorkerFactory::init()
     QMap<QString, PropertyDelegate*> delegates;
 
     {
+        QVariantMap rip;
+        rip[TopHatWorker::tr("Sequence")] = TopHatSettings::SEQUENCE;
+        rip[TopHatWorker::tr("Index")] = TopHatSettings::INDEX;
+        delegates[REFERENCE_INPUT_TYPE] = new ComboBoxDelegate(rip);
+
+        delegates[REFERENCE_GENOME] = new URLDelegate("", "", false, false, false);
+    }
+    {
         QVariantMap vm;
         vm[TopHatWorker::tr("Use -n mode")] = 1;
         vm[TopHatWorker::tr("Use -v mode")] = 0;
@@ -419,9 +451,9 @@ void TopHatWorkerFactory::init()
     }
     {
         QVariantMap vm;
-        vm["Standard Illumina"] = 0;
-        vm["dUTP, NSR, NNSR"] = 1;
-        vm["Ligation, Standard SOLiD"] = 2;
+        vm["fr-unstranded"] = 0;
+        vm["fr-firststrand"] = 1;
+        vm["fr-secondstrand"] = 2;
         delegates[LIBRARY_TYPE] = new ComboBoxDelegate(vm);
     }
     {
@@ -485,12 +517,12 @@ void TopHatWorkerFactory::init()
     proto->setValidator(new BowtieToolsValidator());
 
     { // external tools
-        proto->addExternalTool(ET_SAMTOOLS_EXT, SAMTOOLS_TOOL_PATH);
-        proto->addExternalTool(ET_TOPHAT, EXT_TOOL_PATH);
+        proto->addExternalTool(SamToolsExtToolSupport::ET_SAMTOOLS_EXT_ID, SAMTOOLS_TOOL_PATH);
+        proto->addExternalTool(TopHatSupport::ET_TOPHAT_ID, EXT_TOOL_PATH);
     }
 
     WorkflowEnv::getProtoRegistry()->registerProto(
-        BaseActorCategories::CATEGORY_RNA_SEQ(),
+        BaseActorCategories::CATEGORY_NGS_MAP_ASSEMBLE_READS(),
         proto);
 
     DomainFactory* localDomain = WorkflowEnv::getDomainRegistry()->getById(LocalDomainFactory::ID);
@@ -509,8 +541,18 @@ TopHatPrompter::TopHatPrompter(Actor* parent)
 
 QString TopHatPrompter::composeRichDoc()
 {
-    QString result = TopHatWorker::tr(
-        "Aligns RNA-seq reads to a reference and finds splice junctions.");
+    QString result = TopHatWorker::tr("Maps RNA-seq reads");
+
+    QVariant inputType = getParameter(TopHatWorkerFactory::REFERENCE_INPUT_TYPE);
+    if (inputType == TopHatSettings::INDEX) {
+        QString baseName = getHyperlink(TopHatWorkerFactory::BOWTIE_INDEX_BASENAME, getURL(TopHatWorkerFactory::BOWTIE_INDEX_BASENAME));
+        result.append(tr(" to reference sequence with index <u>%1</u>.").arg(baseName));
+    } else {
+        QString genome = getHyperlink(TopHatWorkerFactory::REFERENCE_GENOME, getURL(TopHatWorkerFactory::REFERENCE_GENOME));
+        result.append(tr(" to reference sequence <u>%1</u>.").arg(genome));
+    }
+
+    result.append(TopHatWorker::tr(" and finds splice junctions."));
 
     return result;
 }
@@ -522,10 +564,8 @@ QString TopHatPrompter::composeRichDoc()
 TopHatWorker::TopHatWorker(Actor* actor)
     : BaseWorker(actor, false /*autoTransit*/),
       input(NULL),
-      output(NULL),
-      datasetsData(false, "")
+      output(NULL)
 {
-
 }
 
 QList<Actor*> TopHatWorker::getProducers(const QString &slotId) const {
@@ -538,6 +578,15 @@ QList<Actor*> TopHatWorker::getProducers(const QString &slotId) const {
         QList<Actor*>());
 
     return bus->getProducers(slotId);
+}
+
+QString TopHatWorker::getSampleName(const QString &datasetName) const {
+    foreach (const TophatSample &sample, samples) {
+        if (sample.datasets.contains(datasetName)) {
+            return sample.name;
+        }
+    }
+    return "";
 }
 
 void TopHatWorker::initInputData() {
@@ -555,12 +604,14 @@ void TopHatWorker::initPairedReads() {
     settings.data.paired = (!pairedProducers.isEmpty());
 }
 
-void TopHatWorker::initDatasetData() {
-    QList<Actor*> producers = getProducers(DATASET_SLOT_ID);
-    datasetsData = DatasetData(!producers.isEmpty(), getValue<QString>(TopHatWorkerFactory::SAMPLES_MAP));
+void TopHatWorker::initDatasetFetcher() {
+    readsFetcher = DatasetFetcher(this, input, context);
 }
 
 void TopHatWorker::initSettings() {
+    settings.referenceInputType = getValue<QString>(TopHatWorkerFactory::REFERENCE_INPUT_TYPE);
+    settings.referenceGenome = getValue<QString>(TopHatWorkerFactory::REFERENCE_GENOME);
+
     settingsAreCorrect = true;
     settings.data.workflowContext = context;
 
@@ -611,14 +662,13 @@ void TopHatWorker::initSettings() {
     QString bowtieExtToolPath = getValue<QString>(TopHatWorkerFactory::BOWTIE_TOOL_PATH);
     if (0 != bowtieVersionVal) {
         settings.useBowtie1 = true;
-        settings.bowtiePath = WorkflowUtils::updateExternalToolPath(ET_BOWTIE, bowtieExtToolPath);
-    }
-    else {
-        settings.bowtiePath = WorkflowUtils::updateExternalToolPath(ET_BOWTIE2_ALIGN, bowtieExtToolPath);
+        settings.bowtiePath = WorkflowUtils::updateExternalToolPath(BowtieSupport::ET_BOWTIE_ID, bowtieExtToolPath);
+    } else {
+        settings.bowtiePath = WorkflowUtils::updateExternalToolPath(Bowtie2Support::ET_BOWTIE2_ALIGN_ID, bowtieExtToolPath);
     }
 
     QString samtools = getValue<QString>(TopHatWorkerFactory::SAMTOOLS_TOOL_PATH);
-    settings.samtoolsPath = WorkflowUtils::updateExternalToolPath(ET_SAMTOOLS_EXT, samtools);
+    settings.samtoolsPath = WorkflowUtils::updateExternalToolPath(SamToolsExtToolSupport::ET_SAMTOOLS_EXT_ID, samtools);
 }
 
 void TopHatWorker::initPathes() {
@@ -629,8 +679,13 @@ void TopHatWorker::initPathes() {
 
     QString extToolPath = actor->getParameter(TopHatWorkerFactory::EXT_TOOL_PATH)->getAttributeValue<QString>(context);
     if (QString::compare(extToolPath, "default", Qt::CaseInsensitive) != 0) {
-        AppContext::getExternalToolRegistry()->getByName(ET_TOPHAT)->setPath(extToolPath);
+        AppContext::getExternalToolRegistry()->getById(TopHatSupport::ET_TOPHAT_ID)->setPath(extToolPath);
     }
+}
+
+void TopHatWorker::initSamples() {
+    U2OpStatus2Log os;
+    samples = WorkflowUtils::unpackSamples(getValue<QString>(TopHatWorkerFactory::SAMPLES_MAP), os);
 }
 
 void TopHatWorker::init() {
@@ -639,30 +694,24 @@ void TopHatWorker::init() {
 
     initInputData();
     initPairedReads();
-    initDatasetData();
+    initDatasetFetcher();
     initSettings();
     initPathes();
+    initSamples();
 }
 
 Task * TopHatWorker::runTophat() {
-    settings.sample = datasetsData.getCurrentSample();
-    TopHatSupportTask * topHatSupportTask = new TopHatSupportTask(settings);
+    if (settings.data.fromFiles && settings.data.size() == 1) {
+        settings.resultPrefix = GUrlUtils::getPairedFastqFilesBaseName(settings.data.urls.first(), settings.data.paired);
+    } else {
+        settings.resultPrefix = settings.datasetName;
+    }
+
+    TopHatSupportTask *topHatSupportTask = new TopHatSupportTask(settings);
     topHatSupportTask->addListeners(createLogListeners());
     connect(topHatSupportTask, SIGNAL(si_stateChanged()), SLOT(sl_topHatTaskFinished()));
     settings.cleanupReads();
     return topHatSupportTask;
-}
-
-Task * TopHatWorker::checkDatasets(const QVariantMap &data) {
-    if (datasetsData.isGroup()) {
-        QString dataset = data[DATASET_SLOT_ID].toString();
-        if (!datasetsData.isCurrent(dataset)) {
-            Task *t = runTophat();
-            datasetsData.replaceCurrent(dataset);
-            return t;
-        }
-    }
-    return NULL;
 }
 
 Task * TopHatWorker::tick() {
@@ -670,51 +719,52 @@ Task * TopHatWorker::tick() {
         return NULL;
     }
 
-    if (input->hasMessage()) {
-        Message inputMessage = input->get();
-        SAFE_POINT(!inputMessage.isEmpty(), "Internal error: message can't be NULL!", NULL);
-        QVariantMap data = inputMessage.getData().toMap();
+    readsFetcher.processInputMessage();
 
-        Task *result = checkDatasets(data);
-        if (settings.data.fromFiles) {
-            settings.data.urls << data[IN_URL_SLOT_ID].toString();
-            if (settings.data.paired) {
-                settings.data.pairedUrls << data[PAIRED_IN_URL_SLOT_ID].toString();
-            }
-        } else {
-            settings.data.seqIds << data[IN_DATA_SLOT_ID].value<SharedDbiDataHandler>();
-            // If the second slot is connected, expect the sequence of the paired read
-            if (settings.data.paired) {
-                settings.data.pairedSeqIds << data[PAIRED_IN_DATA_SLOT_ID].value<SharedDbiDataHandler>();
+    if (readsFetcher.hasFullDataset()) {
+        settings.datasetName = readsFetcher.getDatasetName();
+        const QList<Message> dataset = readsFetcher.takeFullDataset();
+        foreach (const Message &message, dataset) {
+            const QVariantMap messageData = message.getData().toMap();
+            if (settings.data.fromFiles) {
+                settings.data.urls << messageData[IN_URL_SLOT_ID].toString();
+                if (settings.data.paired) {
+                    settings.data.pairedUrls << messageData[PAIRED_IN_URL_SLOT_ID].toString();
+                }
+            } else {
+                settings.data.seqIds << messageData[IN_DATA_SLOT_ID].value<SharedDbiDataHandler>();
+                if (settings.data.paired) {
+                    settings.data.pairedSeqIds << messageData[PAIRED_IN_DATA_SLOT_ID].value<SharedDbiDataHandler>();
+                }
             }
         }
-        return result;
-    } else if (input->isEnded()) {
-        if (!settings.data.urls.isEmpty() || !settings.data.seqIds.isEmpty()) {
-            return runTophat();
-        } else {
-            setDone();
-            output->setEnded();
-        }
+
+        return runTophat();
+    }
+
+    if (readsFetcher.isDone()) {
+        setDone();
+        output->setEnded();
     }
     return NULL;
 }
 
-void TopHatWorker::sl_topHatTaskFinished()
-{
-    TopHatSupportTask *t = qobject_cast<TopHatSupportTask*>(sender());
-    if (!t->isFinished()) {
+void TopHatWorker::sl_topHatTaskFinished() {
+    TopHatSupportTask *task = qobject_cast<TopHatSupportTask*>(sender());
+    if (!task->isFinished()) {
         return;
     }
 
     if (output) {
         QVariantMap m;
-        m[ACCEPTED_HITS_SLOT_ID] = qVariantFromValue<SharedDbiDataHandler>(t->getAcceptedHits());
-        m[SAMPLE_SLOT_ID] = t->getSampleName();
-        m[OUT_BAM_URL_SLOT_ID] = t->getOutBamUrl();
+        m[ACCEPTED_HITS_SLOT_ID] = qVariantFromValue<SharedDbiDataHandler>(task->getAcceptedHits());
+        m[SAMPLE_SLOT_ID] = getSampleName(task->getDatasetName());
+        m[OUT_BAM_URL_SLOT_ID] = task->getOutBamUrl();
         output->put(Message(output->getBusType(), m));
-        foreach (const QString &url, t->getOutputFiles()) {
-            context->getMonitor()->addOutputFile(url, getActor()->getId());
+        foreach (const QString &url, task->getOutputFiles()) {
+            if (QFile::exists(url)) {
+                context->getMonitor()->addOutputFile(url, getActor()->getId());
+            }
         }
     }
 }
@@ -724,51 +774,9 @@ void TopHatWorker::cleanup()
 }
 
 /************************************************************************/
-/* DatasetData */
-/************************************************************************/
-DatasetData::DatasetData(bool groupByDatasets, const QString &samplesMapStr)
-: groupByDatasets(groupByDatasets), samplesMapStr(samplesMapStr)
-{
-    inited = false;
-}
-
-bool DatasetData::isGroup() const {
-    return groupByDatasets;
-}
-
-void DatasetData::init(const QString &dataset) {
-    SAFE_POINT(!inited, "DatasetData has already been initialized", );
-    replaceCurrent(dataset);
-}
-
-bool DatasetData::isCurrent(const QString &dataset) {
-    if (!inited) {
-        init(dataset);
-    }
-    return (currentDataset == dataset);
-}
-
-void DatasetData::replaceCurrent(const QString &dataset) {
-    currentDataset = dataset;
-    inited = true;
-}
-
-QString DatasetData::getCurrentSample() const {
-    U2OpStatus2Log os;
-    QList<TophatSample> samples = WorkflowUtils::unpackSamples(samplesMapStr, os);
-    CHECK_OP(os, "");
-    foreach (const TophatSample &sample, samples) {
-        if (sample.datasets.contains(currentDataset)) {
-            return sample.name;
-        }
-    }
-    return "";
-}
-
-/************************************************************************/
 /* Validators */
 /************************************************************************/
-bool InputSlotsValidator::validate(const IntegralBusPort *port, ProblemList &problemList) const {
+bool InputSlotsValidator::validate(const IntegralBusPort *port, NotificationsList &notificationList) const {
     StrStrMap bm = port->getParameter(IntegralBusPort::BUS_MAP_ATTR_ID)->getAttributeValueWithoutScript<StrStrMap>();
     bool data = isBinded(bm, IN_DATA_SLOT_ID);
     bool pairedData = isBinded(bm, PAIRED_IN_DATA_SLOT_ID);
@@ -778,13 +786,13 @@ bool InputSlotsValidator::validate(const IntegralBusPort *port, ProblemList &pro
     if (!data && !url) {
         QString dataName = slotName(port, IN_DATA_SLOT_ID);
         QString urlName = slotName(port, IN_URL_SLOT_ID);
-        problemList.append(IntegralBusPort::tr("Error! One of these slots must be not empty: '%1', '%2'").arg(dataName).arg(urlName));
+        notificationList.append(IntegralBusPort::tr("Error! One of these slots must be not empty: '%1', '%2'").arg(dataName).arg(urlName));
         return false;
     }
 
     if ((data && pairedUrl) || (url && pairedData)) {
         if (pairedUrl) {
-            problemList.append(IntegralBusPort::tr("Error! You can not bind one of sequences slots and one of url slots simultaneously"));
+            notificationList.append(IntegralBusPort::tr("Error! You can not bind one of sequences slots and one of url slots simultaneously"));
             return false;
         }
     }
@@ -792,7 +800,7 @@ bool InputSlotsValidator::validate(const IntegralBusPort *port, ProblemList &pro
     return true;
 }
 
-bool BowtieToolsValidator::validateBowtie(const Actor *actor, ProblemList &problemList) const {
+bool BowtieToolsValidator::validateBowtie(const Actor *actor, NotificationsList &notificationList) const {
     Attribute *attr = actor->getParameter( TopHatWorkerFactory::BOWTIE_TOOL_PATH );
     SAFE_POINT( NULL != attr, "NULL attribute", false );
 
@@ -800,83 +808,83 @@ bool BowtieToolsValidator::validateBowtie(const Actor *actor, ProblemList &probl
     {
         int version = getValue<int>( actor, TopHatWorkerFactory::BOWTIE_VERSION );
         if ( 1 == version ) {
-            bowTieTool = AppContext::getExternalToolRegistry( )->getByName( ET_BOWTIE );
+            bowTieTool = AppContext::getExternalToolRegistry( )->getById(BowtieSupport::ET_BOWTIE_ID);
             SAFE_POINT( NULL != bowTieTool, "NULL bowtie tool", false );
-            ExternalTool *topHatTool = AppContext::getExternalToolRegistry()->getByName( ET_TOPHAT );
+            ExternalTool *topHatTool = AppContext::getExternalToolRegistry()->getById(TopHatSupport::ET_TOPHAT_ID);
             SAFE_POINT( NULL != topHatTool, "NULL tophat tool", false );
 
             Version bowtieVersion = Version::parseVersion(bowTieTool->getVersion( ));
             Version topHatVersion = Version::parseVersion(topHatTool->getVersion( ));
 
             if ( topHatVersion.text.isEmpty( ) || bowtieVersion.text.isEmpty( ) ) {
-                const QString toolName = topHatVersion.text.isEmpty( ) ? "TopHat" : "Bowtie";
-                const QString message = QObject::tr( "%1 tool's version is undefined, "
+                QString toolName = topHatVersion.text.isEmpty( ) ? "TopHat" : "Bowtie";
+                QString message = QObject::tr( "%1 tool's version is undefined, "
                     "this may cause some compatibility issues" ).arg( toolName );
 
-                Problem warning( message, actor->getLabel( ), Problem::U2_WARNING );
-                problemList << warning;
+                WorkflowNotification warning( message, actor->getLabel( ), WorkflowNotification::U2_WARNING );
+                notificationList << warning;
                 return true;
             } else if ( !( Version::parseVersion("0.12.9") > bowtieVersion && Version::parseVersion("2.0.8") >= topHatVersion )
                  && !( Version::parseVersion("0.12.9") <= bowtieVersion && Version::parseVersion("2.0.8b") <= topHatVersion ) )
             {
-                const QString message = QObject::tr( "Bowtie and TopHat tools have incompatible "
+                QString message = QObject::tr( "Bowtie and TopHat tools have incompatible "
                     "versions. Your TopHat's version is %1, Bowtie's one is %2. The following are "
                     "considered to be compatible: Bowtie < \"0.12.9\" and TopHat <= \"2.0.8\" or "
                     "Bowtie >= \"0.12.9\" and TopHat >= \"2.0.8.b\"" ).arg( topHatVersion.text,
                      bowtieVersion.text);
 
-                Problem error( message, actor->getLabel( ) );
-                problemList << error;
+                WorkflowNotification error( message, actor->getLabel( ) );
+                notificationList << error;
                 return false;
             }
         } else {
-            bowTieTool = AppContext::getExternalToolRegistry( )->getByName( ET_BOWTIE2_ALIGN );
+            bowTieTool = AppContext::getExternalToolRegistry( )->getById(Bowtie2Support::ET_BOWTIE2_ALIGN_ID);
         }
         SAFE_POINT( NULL != bowTieTool, "NULL bowtie tool", false );
     }
 
     bool valid = attr->isDefaultValue( ) ? !bowTieTool->getPath( ).isEmpty( ) : !attr->isEmpty( );
     if ( !valid ) {
-        problemList << WorkflowUtils::externalToolError( bowTieTool->getName( ) );
+        notificationList << WorkflowUtils::externalToolError( bowTieTool->getName( ) );
     }
     return valid;
 }
 
-bool BowtieToolsValidator::validateSamples(const Actor *actor, ProblemList &problemList) const {
+bool BowtieToolsValidator::validateSamples(const Actor *actor, NotificationsList &notificationList) const {
     bool valid = true;
     Attribute *samplesAttr = actor->getParameter(TopHatWorkerFactory::SAMPLES_MAP);
 
     U2OpStatusImpl os;
     QList<TophatSample> samples = WorkflowUtils::unpackSamples(samplesAttr->getAttributePureValue().toString(), os);
     if (os.hasError()) {
-        problemList << Problem(os.getError(), actor->getLabel());
+        notificationList << WorkflowNotification(os.getError(), actor->getLabel());
         valid = false;
     }
     CHECK(samples.size() > 0, valid);
 
     if (1 == samples.size()) {
-        problemList << Problem(QObject::tr("At least two samples are required"), actor->getLabel());
+        notificationList << WorkflowNotification(QObject::tr("At least two samples are required"), actor->getLabel());
         valid = false;
     }
 
     QStringList names;
     foreach (const TophatSample &sample, samples) {
         if (names.contains(sample.name)) {
-            problemList << Problem(QObject::tr("Duplicate sample name: ") + sample.name, actor->getLabel());
+            notificationList << WorkflowNotification(QObject::tr("Duplicate sample name: ") + sample.name, actor->getLabel());
             valid = false;
         }
         names << sample.name;
         if (sample.datasets.isEmpty()) {
-            problemList << Problem(QObject::tr("No datasets in the sample: ") + sample.name, actor->getLabel());
+            notificationList << WorkflowNotification(QObject::tr("No datasets in the sample: ") + sample.name, actor->getLabel());
             valid = false;
         }
     }
     return valid;
 }
 
-bool BowtieToolsValidator::validate( const Actor *actor, ProblemList &problemList, const QMap<QString, QString> &/*options*/ ) const {
-    bool valid = validateBowtie(actor, problemList);
-    return valid && validateSamples(actor, problemList);
+bool BowtieToolsValidator::validate( const Actor *actor, NotificationsList &notificationList, const QMap<QString, QString> &/*options*/ ) const {
+    bool valid = validateBowtie(actor, notificationList);
+    return valid && validateSamples(actor, notificationList);
 }
 
 /************************************************************************/
@@ -885,7 +893,6 @@ bool BowtieToolsValidator::validate( const Actor *actor, ProblemList &problemLis
 BowtieFilesRelation::BowtieFilesRelation(const QString &indexNameAttrId)
 : AttributeRelation(indexNameAttrId)
 {
-
 }
 
 QVariant BowtieFilesRelation::getAffectResult(const QVariant &influencingValue, const QVariant &dependentValue, DelegateTags *infTags, DelegateTags *) const {
@@ -903,6 +910,10 @@ QVariant BowtieFilesRelation::getAffectResult(const QVariant &influencingValue, 
 
 RelationType BowtieFilesRelation::getType() const {
     return CUSTOM_VALUE_CHANGER;
+}
+
+BowtieFilesRelation *BowtieFilesRelation::clone() const {
+    return new BowtieFilesRelation(*this);
 }
 
 static QString getBowtieIndexName(const QString &, const QString &fileName, const QRegExp &dirRx, const QRegExp &revRx) {
@@ -937,7 +948,6 @@ QString BowtieFilesRelation::getBowtie2IndexName(const QString &dir, const QStri
 BowtieVersionRelation::BowtieVersionRelation(const QString &bwtVersionAttrId)
 : AttributeRelation(bwtVersionAttrId)
 {
-
 }
 
 QVariant BowtieVersionRelation::getAffectResult(const QVariant &influencingValue, const QVariant &dependentValue, DelegateTags *infTags, DelegateTags *) const {
@@ -960,5 +970,8 @@ RelationType BowtieVersionRelation::getType() const {
     return CUSTOM_VALUE_CHANGER;
 }
 
+BowtieVersionRelation *BowtieVersionRelation::clone() const {
+    return new BowtieVersionRelation(*this);
+}
 } // namespace LocalWorkflow
 } // namespace U2

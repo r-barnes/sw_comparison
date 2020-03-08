@@ -4,8 +4,6 @@ MODULE_ID=U2Script
 
 include( ../../ugene_lib_common.pri )
 
-UGENE_RELATIVE_DESTDIR = ''
-
 DEFINES +=          QT_FATAL_ASSERT BUILDING_U2SCRIPT_DLL
 
 QT += network xml widgets
@@ -21,31 +19,13 @@ INCLUDEPATH +=      ../../include \
 #                    $${UGENE_NODE_DIR}/deps/uv/include
 #}
 
-LIBS += -L../../_release -lU2Core -lU2Algorithm -lU2Formats -lU2Lang -lU2Private -lugenedb -lU2Gui -lU2Test
+LIBS += -L../../$$out_dir()
+LIBS += -lU2Core$$D -lU2Algorithm$$D -lU2Formats$$D -lU2Lang$$D -lU2Private$$D -lU2Gui$$D -lU2Test$$D
+LIBS += $$add_sqlite_lib()
 
-!debug_and_release|build_pass {
-
-    CONFIG( debug, debug|release ) {
-        DESTDIR =   ../../_debug
-
-        LIBS -=     -L../../_release -lU2Core -lU2Algorithm -lU2Formats -lU2Lang -lU2Private -lugenedb -lU2Gui -lU2Test
-        LIBS +=     -L../../_debug -lU2Cored -lU2Algorithmd -lU2Formatsd -lU2Langd -lU2Privated -lugenedbd -lU2Guid -lU2Testd
-                    
-#        count( UGENE_NODE_DIR, 1 ) {
-#            LIBS += -l$${UGENE_NODE_DIR}/Debug/node
-#        }
-    }
-
-    CONFIG( release, debug|release ) {
-        DESTDIR =   ../../_release
-
-#        count( UGENE_NODE_DIR, 1 ) {
-#            LIBS += -l$${UGENE_NODE_DIR}/Release/node
-#        }
-    }
-}
+DESTDIR = ../../$$out_dir()
 
 unix {
-    target.path =   $$UGENE_INSTALL_DIR/$$UGENE_RELATIVE_DESTDIR
+    target.path =   $$UGENE_INSTALL_DIR/
     INSTALLS +=     target
 }

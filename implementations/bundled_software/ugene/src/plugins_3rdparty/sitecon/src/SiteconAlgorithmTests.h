@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -31,7 +31,7 @@
 
 namespace U2 {
 
-class GTest_CalculateACGTContent : public GTest {
+class GTest_CalculateACGTContent : public XmlTest {
     Q_OBJECT
 public:
     SIMPLE_XML_TEST_BODY_WITH_FACTORY_EXT(GTest_CalculateACGTContent, "sitecon-calculateACGTContent", TaskFlags_FOSCOE);
@@ -46,7 +46,7 @@ private:
     int expectedACGT[4];
 };
 
-class GTest_CalculateDispersionAndAverage : public GTest {
+class GTest_CalculateDispersionAndAverage : public XmlTest {
     Q_OBJECT
     typedef QVector<int> ResultVector;
 public:
@@ -63,7 +63,7 @@ private:
     QVector<ResultVector> expectedResults;    
 };
 
-class GTest_CalculateFirstTypeError : public GTest {
+class GTest_CalculateFirstTypeError : public XmlTest {
     Q_OBJECT
 public:
     SIMPLE_XML_TEST_BODY_WITH_FACTORY_EXT(GTest_CalculateFirstTypeError, "sitecon-calculateFirstTypeError", TaskFlags_FOSCOE);
@@ -80,7 +80,7 @@ private:
     QVector<int> expectedResult;    
 };
 
-class GTest_CalculateSecondTypeError : public GTest {
+class GTest_CalculateSecondTypeError : public XmlTest {
     Q_OBJECT
 public:
     SIMPLE_XML_TEST_BODY_WITH_FACTORY_EXT(GTest_CalculateSecondTypeError, "sitecon-calculateSecondTypeError", TaskFlags_FOSCOE);
@@ -97,7 +97,7 @@ private:
     QVector<int> expectedResult;    
 };
 
-class GTest_SiteconSearchTask : public GTest {
+class GTest_SiteconSearchTask : public XmlTest {
     Q_OBJECT
 public:
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_SiteconSearchTask, "sitecon-search_task");
@@ -119,7 +119,7 @@ private:
 };
 
 
-class GTest_CompareSiteconModels: public GTest {
+class GTest_CompareSiteconModels: public XmlTest {
     Q_OBJECT
 public:
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_CompareSiteconModels, "compare-sitecon-models");

@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -41,6 +41,7 @@
 #include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2SafePoints.h>
 #include <U2Core/GUrlUtils.h>
+#include <U2Core/AppResources.h>
 
 #include <U2Gui/DialogUtils.h>
 #include <U2Gui/ExportImageDialog.h>
@@ -428,8 +429,8 @@ void DotPlotWidget::cancelRepeatFinderTask() {
     MultiTask *mTask = qobject_cast<MultiTask*>(dotPlotTask);
     if (mTask) {
         mTask->cancel();
-        foreach(Task *t, mTask->getSubtasks()) {
-            factory->setRFResultsListener(t, NULL);
+        foreach(const QPointer<Task> &t, mTask->getSubtasks()) {
+            factory->setRFResultsListener(t.data(), NULL);
         }
     }
 }
@@ -650,6 +651,11 @@ bool DotPlotWidget::sl_showLoadFileDialog() {
     return true;
 }
 
+// This is maximum sequence size (X+Y) we allow to use with dot plots
+// W is 100% match algorithm, it uses less memory that WK which is a <100% algorithm and requires more memory.
+#define MAX_DOT_PLOT_W_SUM_SEQUENCE_LENGTH_32_BIT_OS (600 * 1000 * 1000)
+#define MAX_DOT_PLOT_WK_SUM_SEQUENCE_LENGTH_32_BIT_OS (200 * 1000 * 1000)
+
 // creating new dotplot or changing settings
 bool DotPlotWidget::sl_showSettingsDialog(bool disableLoad) {
 
@@ -679,6 +685,16 @@ bool DotPlotWidget::sl_showSettingsDialog(bool disableLoad) {
 
     sequenceX = d->getXSeq();
     sequenceY = d->getYSeq();
+
+    if (AppResourcePool::is32BitBuild()) {
+        quint64 sumSeqLen = sequenceX->getSequenceLength() + sequenceY->getSequenceLength();
+        bool wkMode = identity < 100;
+        if ((wkMode && sumSeqLen > MAX_DOT_PLOT_WK_SUM_SEQUENCE_LENGTH_32_BIT_OS)||
+                (!wkMode && sumSeqLen > MAX_DOT_PLOT_W_SUM_SEQUENCE_LENGTH_32_BIT_OS)) {
+            QMessageBox::warning(this, L10N::warningTitle(),  tr("Sequence size is too large!"));
+            return false;
+        }
+    }
 
     if (res){
         resetZooming();
@@ -1054,7 +1070,7 @@ void DotPlotWidget::drawNames(QPainter &p) const {
 
     // If nameX doesn't fit, it should be aligned left instead of center
     int flags = (nameXWidth < w) ? Qt::AlignCenter : Qt::AlignVCenter | Qt::AlignLeft;
-    p.drawText(textSpace, h + textSpace, w, textSpace, Qt::AlignCenter, nameX);
+    p.drawText(textSpace, h + textSpace, w, textSpace, flags, nameX);
 
     p.save();
 

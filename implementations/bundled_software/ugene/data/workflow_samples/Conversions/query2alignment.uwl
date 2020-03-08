@@ -116,6 +116,7 @@ workflow "Convert UQL schema results to alignment" {
         wizard {
             name:"Convert UQL schema results to alignment Wizard";
             help-page-id:16122706;
+            auto-run: true;
             page {
                 id:1;
                 next:2;

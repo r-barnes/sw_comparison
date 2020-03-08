@@ -26,10 +26,10 @@ dirname=$(dirname "`readlink -f "$0"`")
 tmp="${dirname#?}"
 
 if [ "${dirname%$tmp}" != "/" ]; then
-    dirname=$PWD/$dirname
+    dirname="$PWD/$dirname"
 fi
 
-LD_LIBRARY_PATH=$dirname
+LD_LIBRARY_PATH="$dirname"
 export LD_LIBRARY_PATH
 
 # check compatibility OS and UGENE (32-bit or 64-bit)
@@ -44,7 +44,7 @@ esac
 ugene_i686=false
 ugene_x86_64=false
 
-case "`file -b $dirname/$appname |cut -d "," -f1 |grep 64|wc -l|tr -d ' '`" in
+case "`file -b \"$dirname\"/\"$appname\" |cut -d "," -f1 |grep 64|wc -l|tr -d ' '`" in
 0*) ugene_i686=true;;
 1*) ugene_x86_64=true;;
 esac
@@ -63,8 +63,8 @@ fi
 export QT_QPA_PLATFORMTHEME=
 
 if [ -z $IS_KDE ]; then
-    "$dirname/$appname" "${params[@]}"
+    "$dirname"/"$appname" "${params[@]}"
 else
-    "$dirname/$appname" "${params[@]}" -style cleanlooks
+    "$dirname"/"$appname" "${params[@]}" -style cleanlooks
 fi
 

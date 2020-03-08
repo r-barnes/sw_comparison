@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -637,6 +637,49 @@ Task::ReportResult GTest_DNAMulSequencePart::report() {
 
 //-----------------------------------------------------------------------------
 
+void GTest_DNAMulSequenceName::init(XMLTestFormat *tf, const QDomElement& el) {
+    Q_UNUSED(tf);
+
+    objContextName = el.attribute(OBJ_ATTR);
+    if (objContextName.isEmpty()) {
+        failMissingValue(OBJ_ATTR);
+        return;
+    }
+
+    seqName = el.attribute(SEQNAME_ATTR);
+    if (seqName.isEmpty()) {
+        failMissingValue(SEQNAME_ATTR);
+        return;
+    }
+
+}
+
+Task::ReportResult GTest_DNAMulSequenceName::report() {
+    GObject *obj = getContext<GObject>(this, objContextName);
+    if (obj == NULL) {
+        stateInfo.setError(QString("wrong value: %1").arg(OBJ_ATTR));
+        return ReportResult_Finished;
+    }
+
+    MultipleSequenceAlignmentObject* myMSequence = qobject_cast<MultipleSequenceAlignmentObject*>(obj);
+    bool ok_flag = false;
+    const MultipleSequenceAlignment ma = myMSequence->getMultipleAlignment();
+    foreach(const MultipleSequenceAlignmentRow& myItem, ma->getMsaRows()){
+        if (myItem->getName() == seqName){
+            ok_flag = true;
+            break;
+        }
+    }
+    if (!ok_flag){
+        stateInfo.setError(QString("no Sequence name: %1").arg(seqName));
+    }
+    return ReportResult_Finished;
+
+}
+
+
+//-----------------------------------------------------------------------------
+
 void GTest_DNAMulSequenceQuality::init(XMLTestFormat *tf, const QDomElement& el) {
     Q_UNUSED(tf);
 
@@ -1179,6 +1222,7 @@ QList<XMLTestFactory*> DNASequenceObjectTests::createTestFactories() {
     res.append(GTest_DNAcompareSequencesAlphabetsInTwoObjects::createFactory());
     res.append(GTest_DNAcompareMulSequencesInTwoObjects::createFactory());
     res.append(GTest_DNAMulSequenceQuality::createFactory());
+    res.append(GTest_DNAMulSequenceName::createFactory());
     res.append(GTest_DNAcompareMulSequencesNamesInTwoObjects::createFactory());
     res.append(GTest_DNAcompareMulSequencesAlphabetIdInTwoObjects::createFactory());
     return res;

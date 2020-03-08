@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -31,7 +31,7 @@ namespace U2 {
 #define SIMPLE_XML_TEST_CONSTRUCT(ClassName, TFlags) \
     ClassName(XMLTestFormat* _tf, const QString& _name, GTest* _cp, \
         const GTestEnvironment* _env, const QList<GTest*>& _contexts, const QDomElement& _el) \
-    : GTest(_name, _cp, _env, TFlags, _contexts){init(_tf, _el);} \
+    : XmlTest(_name, _cp, _env, TFlags, _contexts){init(_tf, _el);} \
 
 
 #define SIMPLE_XML_TEST_BODY(ClassName, TFlags) \
@@ -60,46 +60,74 @@ public:\
     SIMPLE_XML_TEST_BODY_WITH_FACTORY_EXT(TestClass, TagName, TaskFlags_NR_FOSCOE) \
 
 
+class U2TEST_EXPORT XmlTest : public GTest {
+public:
+    XmlTest(const QString &taskName,
+            GTest *cp,
+            const GTestEnvironment *env,
+            TaskFlags flags, const QList<GTest *> &subtasks = QList<GTest*>());
+
+    void checkNecessaryAttributeExistence(const QDomElement &element, const QString &attribute);
+    void checkAttribute(const QDomElement &element, const QString &attribute, const QStringList &acceptableValues, bool isNecessary);
+    void checkBooleanAttribute(const QDomElement &element, const QString &attribute, bool isNecessary);
+
+    static const QString TRUE_VALUE;
+    static const QString FALSE_VALUE;
+};
 
 class U2TEST_EXPORT XMLTestUtils {
 public:
     static QList<XMLTestFactory*> createTestFactories();
     static void replacePrefix(const GTestEnvironment* env, QString &path);
+    static bool parentTasksHaveError(Task* t);
+
+    static const QString TMP_DATA_DIR_PREFIX;
+    static const QString COMMON_DATA_DIR_PREFIX;
+    static const QString LOCAL_DATA_DIR_PREFIX;
+    static const QString SAMPLE_DATA_DIR_PREFIX;
+    static const QString WORKFLOW_SAMPLES_DIR_PREFIX;
+    static const QString WORKFLOW_OUTPUT_DIR_PREFIX;
+    static const QString EXPECTED_OUTPUT_DIR_PREFIX;
+
+    static const QString CONFIG_FILE_PATH;
 };
 
 
 //////////////////////////////////////////////////////////////////////////
 // utility tasks
 
-class XMLMultiTest : public GTest {
+class XMLMultiTest : public XmlTest {
     Q_OBJECT
 public:
-    SIMPLE_XML_TEST_BODY_WITH_FACTORY(XMLMultiTest, "multi-test");
+    SIMPLE_XML_TEST_BODY_WITH_FACTORY(XMLMultiTest, "multi-test")
     ReportResult report();
+
+    static const QString FAIL_ON_SUBTEST_FAIL;      // it defines whether the test should stop execution after the first error; is "true" by default
+    static const QString LOCK_FOR_LOG_LISTENING;      // This attribute is used to avoid mixing log messages between different tests. Each test that listens to log should set this attribute to "true"
 };
 
-class GTest_Fail : public GTest {
+class GTest_Fail : public XmlTest {
     Q_OBJECT
 public:
-    SIMPLE_XML_TEST_BODY_WITH_FACTORY_EXT(GTest_Fail, "fail", TaskFlag_NoRun);
+    SIMPLE_XML_TEST_BODY_WITH_FACTORY_EXT(GTest_Fail, "fail", TaskFlag_NoRun)
     ReportResult report();
 private:
     QString msg;
 };
 
-class GTest_DeleteTmpFile : public GTest {
+class GTest_DeleteTmpFile : public XmlTest {
     Q_OBJECT
 public:
-    SIMPLE_XML_TEST_BODY_WITH_FACTORY_EXT(GTest_DeleteTmpFile, "delete", TaskFlag_NoRun);
+    SIMPLE_XML_TEST_BODY_WITH_FACTORY_EXT(GTest_DeleteTmpFile, "delete", TaskFlag_NoRun)
     ReportResult report();
 private:
     QString url;
 };
 
-class GTest_CreateTmpFolder: public GTest {
+class GTest_CreateTmpFolder: public XmlTest {
     Q_OBJECT
 public:
-    SIMPLE_XML_TEST_BODY_WITH_FACTORY_EXT(GTest_CreateTmpFolder, "create-folder", TaskFlag_NoRun);
+    SIMPLE_XML_TEST_BODY_WITH_FACTORY_EXT(GTest_CreateTmpFolder, "create-folder", TaskFlag_NoRun)
     ReportResult report();
 private:
     QString url;

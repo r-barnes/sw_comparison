@@ -4,9 +4,8 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../src/SiteconIOWorkers.cpp" line="69"/>
         <source>Sitecon model</source>
-        <translation>Профайл SITECON</translation>
+        <translation type="vanished">Профайл SITECON</translation>
     </message>
 </context>
 <context>
@@ -1083,7 +1082,7 @@
     </message>
     <message>
         <location filename="../src/SiteconSearchDialogController.cpp" line="322"/>
-        <source>Error parsing minumum score</source>
+        <source>Error parsing minimum score</source>
         <translation>Неразборчивая строка минимальной ошибки</translation>
     </message>
     <message>

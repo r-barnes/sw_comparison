@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -27,6 +27,7 @@
 
 #include <U2Core/AppContext.h>
 #include <U2Core/CMDLineCoreOptions.h>
+#include <U2Core/CmdlineTaskRunner.h>
 #include <U2Core/ExternalToolRegistry.h>
 #include <U2Core/Timer.h>
 #include <U2Core/U2SafePoints.h>
@@ -52,9 +53,9 @@
 
 namespace U2 {
 
-GUITestLauncher::GUITestLauncher(int _suiteNumber, bool _noIgnored)
+GUITestLauncher::GUITestLauncher(int _suiteNumber, bool _noIgnored, QString _iniFileTemplate)
     : Task("gui_test_launcher", TaskFlags(TaskFlag_ReportingIsSupported) | TaskFlag_ReportingIsEnabled),
-      suiteNumber(_suiteNumber), noIgnored(_noIgnored), pathToSuite("") {
+      suiteNumber(_suiteNumber), noIgnored(_noIgnored), pathToSuite(""), iniFileTemplate(_iniFileTemplate) {
 
     tpm = Task::Progress_Manual;
     testOutDir = getTestOutDir();
@@ -65,9 +66,9 @@ GUITestLauncher::GUITestLauncher(int _suiteNumber, bool _noIgnored)
     }
 }
 
-GUITestLauncher::GUITestLauncher(QString _pathToSuite, bool _noIgnored)
+GUITestLauncher::GUITestLauncher(QString _pathToSuite, bool _noIgnored, QString _iniFileTemplate)
     : Task("gui_test_launcher", TaskFlags(TaskFlag_ReportingIsSupported) | TaskFlag_ReportingIsEnabled),
-      suiteNumber(0), noIgnored(_noIgnored), pathToSuite(_pathToSuite) {
+      suiteNumber(0), noIgnored(_noIgnored), pathToSuite(_pathToSuite), iniFileTemplate(_iniFileTemplate) {
 
     tpm = Task::Progress_Manual;
     testOutDir = getTestOutDir();
@@ -224,7 +225,12 @@ QProcessEnvironment GUITestLauncher::getProcessEnvironment(QString testName) {
     env.insert(ENV_GUI_TEST, "1");
     env.insert(ENV_USE_NATIVE_DIALOGS, "0");
     env.insert(U2_PRINT_TO_FILE, testOutDir + "/logs/" + testOutFile(testName));
-    env.insert(U2_USER_INI, testOutDir + "/inis/" + testName.replace(':', '_') + "_UGENE.ini");
+
+    QString iniFileName = testOutDir + "/inis/" + testName.replace(':', '_') + "_UGENE.ini";
+    if (!iniFileTemplate.isEmpty() && QFile::exists(iniFileTemplate)) {
+        QFile::copy(iniFileTemplate, iniFileName);
+    }
+    env.insert(U2_USER_INI, iniFileName);
 
     return env;
 }
@@ -232,11 +238,14 @@ QProcessEnvironment GUITestLauncher::getProcessEnvironment(QString testName) {
 QString GUITestLauncher::performTest(const QString& testName) {
 
     QString path = QCoreApplication::applicationFilePath();
+    QProcessEnvironment environment = getProcessEnvironment(testName);
+    QStringList arguments = getTestProcessArguments(testName);
 
     // ~QProcess is killing the process, will not return until the process is terminated.
     QProcess process;
-    process.setProcessEnvironment(getProcessEnvironment(testName));
-    process.start(path, getTestProcessArguments(testName));
+    process.setProcessEnvironment(environment);
+    process.start(path, arguments);
+    qint64 processId = process.processId();
 
     QProcess screenRecorder;
     if(qgetenv("UGENE_SKIP_TEST_RECORDING").toInt() != 1){
@@ -250,6 +259,10 @@ QString GUITestLauncher::performTest(const QString& testName) {
     bool finished;
     finished = process.waitForFinished(TIMEOUT);
     QProcess::ExitStatus exitStatus = process.exitStatus();
+
+    if (!finished || exitStatus != QProcess::NormalExit) {
+        CmdlineTaskRunner::killChildrenProcesses(processId);
+    }
 
 #ifdef Q_OS_WIN
     QProcess::execute("closeErrorReport.exe"); //this exe file, compiled Autoit script
@@ -269,7 +282,7 @@ QString GUITestLauncher::performTest(const QString& testName) {
         return testResult;
     }
 #ifdef Q_OS_WIN
-    process.kill();
+    CmdlineTaskRunner::killProcessTree(process.processId());
 #endif
     if (finished) {
         return tr("An error occurred while finishing UGENE: ") + process.errorString() + '\n' + testResult;
@@ -343,5 +356,4 @@ QString GUITestLauncher::getVideoPath(const QString &testName){
     QString result = QDir::currentPath() + "/videos/" + testName + ".avi";
     return result;
 }
-
 }

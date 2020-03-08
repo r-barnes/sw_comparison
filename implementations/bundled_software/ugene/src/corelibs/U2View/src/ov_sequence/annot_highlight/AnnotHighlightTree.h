@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -33,7 +33,6 @@ class AnnotHighlightTree : public QTreeWidget
     Q_OBJECT
 public:
     AnnotHighlightTree();
-    virtual QSize sizeHint() const;
     virtual void addItem(QString annotName, QColor annotColor);
     virtual void clear();
 
@@ -81,7 +80,6 @@ private:
     virtual void insertTopLevelItems(int index,  const QList<QTreeWidgetItem *>& items) { QTreeWidget::insertTopLevelItems(index, items); }
 
     /** Size of the tree elements */
-    static const int ANNOT_COLUMN_WIDTH;
     static const int COLOR_COLUMN_WIDTH;
 
     static const int INITIAL_TREE_HEIGHT;

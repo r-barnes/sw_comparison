@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -39,11 +39,11 @@ DataTypeRegistry * WorkflowEnvImpl::initDataRegistry() {
     qRegisterMetaTypeStreamOperators<StrStrMap>("StrStrMap");
     qRegisterMetaTypeStreamOperators<CfgMap>("CfgMap");
     qRegisterMetaTypeStreamOperators<IterationCfg>("IterationCfg");
-    qRegisterMetaType<U2::Workflow::Monitor::FileInfo>( "U2::Workflow::Monitor::FileInfo" );
-    qRegisterMetaType<Problem>( "Problem" );
-    qRegisterMetaType<U2::Workflow::Monitor::WorkerInfo>( "U2::Workflow::Monitor::WorkerInfo" );
-    qRegisterMetaType<U2::Workflow::Monitor::LogEntry>( "U2::Workflow::Monitor::LogEntry" );
-    qRegisterMetaType<U2::ActorId>( "U2::ActorId" );
+    qRegisterMetaType<Monitor::FileInfo>("Monitor::FileInfo");
+    qRegisterMetaType<WorkflowNotification>("WorkflowNotification");
+    qRegisterMetaType<Monitor::WorkerInfo>("Monitor::WorkerInfo");
+    qRegisterMetaType<Monitor::LogEntry>("Monitor::LogEntry");
+    qRegisterMetaType<ActorId>("ActorId");
 
     DataTypeRegistry *r = new DataTypeRegistry();
 
@@ -63,6 +63,8 @@ ActorPrototypeRegistry * WorkflowEnvImpl::initProtoRegistry() {
 DataTypeValueFactoryRegistry * WorkflowEnvImpl::initDataTypeValueFactoryRegistry() {
     DataTypeValueFactoryRegistry *ret = new DataTypeValueFactoryRegistry();
     ret->registerEntry( new StringTypeValueFactory() );
+    ret->registerEntry( new StringListTypeValueFactory() );
+    ret->registerEntry( new MapTypeValueFactory() );
     ret->registerEntry( new BoolTypeValueFactory() );
     ret->registerEntry( new NumTypeValueFactory() );
     ret->registerEntry( new UrlTypeValueFactory() );

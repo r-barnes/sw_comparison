@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -22,6 +22,7 @@
 #include <QDir>
 
 #include <U2Core/Log.h>
+#include <U2Core/U2SafePoints.h>
 
 #include "FileAndDirectoryUtils.h"
 
@@ -29,7 +30,13 @@ static const QString OUTPUT_SUBDIR = "run";
 
 namespace U2 {
 
-int FileAndDirectoryUtils::minLengthToWrite = 32768;
+int FileAndDirectoryUtils::MIN_LENGTH_TO_WRITE = 32768;
+
+#if defined(Q_OS_LINUX) | defined (Q_OS_MAC)
+const QString FileAndDirectoryUtils::HOME_DIR_IDENTIFIER = "~/";
+#else
+const QString FileAndDirectoryUtils::HOME_DIR_IDENTIFIER = "%UserProfile%/";
+#endif
 
 QString FileAndDirectoryUtils::getFormatId(const FormatDetectionResult &r) {
     if (NULL != r.format) {
@@ -41,7 +48,7 @@ QString FileAndDirectoryUtils::getFormatId(const FormatDetectionResult &r) {
     return "";
 }
 
-QString FileAndDirectoryUtils::createWorkingDir(const QString &fileUrl, int dirMode, const QString &customDir, const QString &workingDir){
+QString FileAndDirectoryUtils::getWorkingDir(const QString &fileUrl, int dirMode, const QString &customDir, const QString &workingDir) {
     QString result;
 
     bool useInternal = false;
@@ -71,8 +78,20 @@ QString FileAndDirectoryUtils::createWorkingDir(const QString &fileUrl, int dirM
         if (!result.endsWith("/")) {
             result += "/";
         }
+        if (dirMode == WORKFLOW_INTERNAL_CUSTOM) {
+            if (!customDir.isEmpty()) {
+                result += customDir;
+            }
+            if (!result.endsWith("/")) {
+                result += "/";
+            }
+        }
     }
+    return result;
+}
 
+QString FileAndDirectoryUtils::createWorkingDir(const QString &fileUrl, int dirMode, const QString &customDir, const QString &workingDir){
+    const QString result = getWorkingDir(fileUrl, dirMode, customDir, workingDir);
     QDir dir(result);
     if (!dir.exists(result)) {
         dir.mkdir(result);
@@ -107,11 +126,21 @@ bool FileAndDirectoryUtils::isFileEmpty(const QString& url){
 }
 
 void FileAndDirectoryUtils::dumpStringToFile(QFile *f, QString &str) {
-    if (Q_LIKELY(f == NULL || str.length() <= minLengthToWrite)) {
+    if (Q_LIKELY(f == NULL || str.length() <= MIN_LENGTH_TO_WRITE)) {
         return;
     }
     f->write(str.toLocal8Bit());
     str.clear();
+}
+
+QString FileAndDirectoryUtils::getAbsolutePath(const QString& filePath) {
+    CHECK(!filePath.isEmpty(), filePath);
+    QString result = QDir::fromNativeSeparators(filePath);
+    if (result.startsWith(HOME_DIR_IDENTIFIER, Qt::CaseInsensitive)) {
+        result.remove(0, HOME_DIR_IDENTIFIER.length() - 1);
+        result.prepend(QDir::homePath());
+    }
+    return QFileInfo(result).absoluteFilePath();
 }
 
 } // U2

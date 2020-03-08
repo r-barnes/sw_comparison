@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -96,11 +96,9 @@ private:
     void connectSlots();
 
     /**
-     * A sequence in focus should be present to call this function.
-     * If regions are selected, the currentRegion is set to the first one,
-     * otherwise it is set to the whole sequence.
+     * Updates current regions to the selection. If selection is empty the whole sequence is used.
      */
-    void updateCurrentRegion();
+    void updateCurrentRegions();
 
     /**
      * Calculates the sequence (or region) length and launches other tasks (like characters occurrence).
@@ -135,7 +133,7 @@ private:
     QLabel* dinuclLabel;
     BackgroundTaskRunner<DinucleotidesOccurrence> dinuclTaskRunner;
 
-    U2Region currentRegion;
+    QVector<U2Region> currentRegions;
 
     U2SavableWidget savableWidget;
 

@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -21,7 +21,6 @@
 
 #include <QScriptEngine>
 
-#include <U2Core/AppContext.h>
 #include "ProjectModel.h"
 
 namespace U2 {
@@ -30,19 +29,16 @@ Project::~Project() {
 
 }
 
-void Project::setupToEngine(QScriptEngine *engine)
-{
+void Project::setupToEngine(QScriptEngine *engine) {
     Document::setupToEngine(engine);
     qScriptRegisterMetaType(engine, toScriptValue, fromScriptValue);
     qScriptRegisterSequenceMetaType<QList<Document*> >(engine);
 };
-QScriptValue Project::toScriptValue(QScriptEngine *engine, Project* const &in)
-{
+QScriptValue Project::toScriptValue(QScriptEngine *engine, Project* const &in) {
     return engine->newQObject(in);
 }
 
-void Project::fromScriptValue(const QScriptValue &object, Project* &out)
-{
+void Project::fromScriptValue(const QScriptValue &object, Project* &out) {
     out = qobject_cast<Project*>(object.toQObject());
 }
 

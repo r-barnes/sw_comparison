@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -67,8 +67,22 @@ void GTest::removeContext(const QString& name) {
     contextProvider->subtestsContext.remove(name);
 }
 
+void GTest::removeTempDir() {
+    QDir tempDir(env->getVar("TEMP_DATA_DIR"));
+    taskLog.trace(QString("Removing test temporary dir: %1").arg(tempDir.path()));
+    tempDir.removeRecursively();
+}
+
 void GTest::failMissingValue( const QString& name) {
     stateInfo.setError(QString("Mandatory attribute not set: %1").arg(name));
+}
+
+void GTest::wrongValue(const QString& name) {
+    stateInfo.setError(QString("Wrong value for attribute: %1").arg(name));
+}
+
+void GTest::emptyValue(const QString &name) {
+    stateInfo.setError(QString("Empty value for attribute: %1").arg(name));
 }
 
 //////////////////////////////////////////////////////////////////////////

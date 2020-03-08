@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -24,9 +24,7 @@
 
 #include <QMimeData>
 #include <QMutex>
-#include <QPointer>
 
-#include <U2Core/global.h>
 #include "StateLockableDataModel.h"
 #include "GObjectReference.h"
 #include <U2Core/U2Type.h>
@@ -69,15 +67,15 @@ public:
 
     virtual Document* getDocument() const;
 
-    const QString& getGObjectName() const {return name;}
+    const QString& getGObjectName() const { return name; }
 
     virtual void setGObjectName(const QString& newName);
 
-    GObjectType getGObjectType() const {return type;}
+    GObjectType getGObjectType() const { return type; }
 
-    virtual bool checkConstraints(const GObjectConstraints* c) const {Q_UNUSED(c); return true;}
+    virtual bool checkConstraints(const GObjectConstraints* c) const { Q_UNUSED(c); return true; }
 
-    GHints* getGHints() const {return hints;}
+    GHints* getGHints() const { return hints; }
 
     QVariantMap getGHintsMap() const;
 
@@ -107,11 +105,11 @@ public:
 
     bool hasObjectRelation(const GObjectRelation& r) const;
 
-    QHash< QString, QString > getIndexInfo() const {return indexInfo;}
+    QHash< QString, QString > getIndexInfo() const { return indexInfo; }
 
-    void setIndexInfo( const QHash<QString, QString>& ii) {indexInfo = ii;}
+    void setIndexInfo(const QHash<QString, QString>& ii) { indexInfo = ii; }
 
-    const U2EntityRef& getEntityRef() const {return entityRef;}
+    const U2EntityRef& getEntityRef() const { return entityRef; }
 
     bool isUnloaded() const;
 
@@ -156,7 +154,7 @@ private:
 class GObjectConstraints : public QObject {
     Q_OBJECT
 public:
-    GObjectConstraints(const GObjectType& t, QObject* parent = NULL) : QObject(parent), objectType(t){}
+    GObjectConstraints(const GObjectType& t, QObject* parent = NULL) : QObject(parent), objectType(t) {}
     const GObjectType objectType;
 
 };
@@ -164,7 +162,7 @@ public:
 class U2CORE_EXPORT GObjectMimeData : public QMimeData {
     Q_OBJECT
 public:
-    GObjectMimeData(GObject* obj) : objPtr(obj){}
+    GObjectMimeData(GObject* obj) : objPtr(obj) {}
 
     QPointer<GObject> objPtr;
 

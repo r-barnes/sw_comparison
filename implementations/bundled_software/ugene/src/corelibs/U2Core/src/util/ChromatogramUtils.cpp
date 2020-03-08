@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -20,8 +20,6 @@
  */
 
 #include <U2Core/DatatypeSerializeUtils.h>
-#include <U2Core/DbiConnection.h>
-#include <U2Core/DNAChromatogramObject.h>
 #include <U2Core/Log.h>
 #include <U2Core/L10n.h>
 #include <U2Core/RawDataUdrSchema.h>
@@ -69,7 +67,7 @@ void ChromatogramUtils::removeBaseCalls(U2OpStatus &os, DNAChromatogram &chromat
 void ChromatogramUtils::removeRegion(U2OpStatus &os, DNAChromatogram &chromatogram, int startPos, int endPos) {
     if ((endPos <= startPos) || (startPos < 0) || (endPos > chromatogram.seqLength)) {
         coreLog.trace(L10N::internalError("incorrect parameters were passed to ChromatogramUtils::removeRegion, "
-             "startPos '%1', endPos '%2', chromatogram sequence length '%3'").arg(startPos).arg(endPos).arg(chromatogram.seqLength));
+            "startPos '%1', endPos '%2', chromatogram sequence length '%3'").arg(startPos).arg(endPos).arg(chromatogram.seqLength));
         os.setError("Can't remove current region");
         return;
     }
@@ -100,17 +98,17 @@ void ChromatogramUtils::removeRegion(U2OpStatus &os, DNAChromatogram &chromatogr
 
 bool ChromatogramUtils::areEqual(const DNAChromatogram &first, const DNAChromatogram &second) {
     return first.traceLength == second.traceLength &&
-            first.seqLength == second.seqLength &&
-            first.baseCalls == second.baseCalls &&
-            first.A == second.A &&
-            first.C == second.C &&
-            first.G == second.G &&
-            first.T == second.T &&
-            first.prob_A == second.prob_A &&
-            first.prob_C == second.prob_C &&
-            first.prob_G == second.prob_G &&
-            first.prob_T == second.prob_T &&
-            first.hasQV == second.hasQV;
+        first.seqLength == second.seqLength &&
+        first.baseCalls == second.baseCalls &&
+        first.A == second.A &&
+        first.C == second.C &&
+        first.G == second.G &&
+        first.T == second.T &&
+        first.prob_A == second.prob_A &&
+        first.prob_C == second.prob_C &&
+        first.prob_G == second.prob_G &&
+        first.prob_T == second.prob_T &&
+        first.hasQV == second.hasQV;
 }
 
 namespace {
@@ -187,7 +185,7 @@ void ChromatogramUtils::updateChromatogramData(U2OpStatus &os, const U2EntityRef
 }
 
 void ChromatogramUtils::updateChromatogramData(U2OpStatus &os, const U2DataId& masterId,
-                                               const U2EntityRef &chromatogramRef, const DNAChromatogram &chromatogram) {
+    const U2EntityRef &chromatogramRef, const DNAChromatogram &chromatogram) {
     const QByteArray data = DNAChromatogramSerializer::serialize(chromatogram);
     RawDataUdrSchema::writeContent(masterId, data, chromatogramRef, os);
 
@@ -202,7 +200,7 @@ U2EntityRef ChromatogramUtils::getChromatogramIdByRelatedSequenceId(U2OpStatus &
     CHECK_OP(os, U2EntityRef());
 
     QList<U2DataId> chromatogramsIds;
-    foreach (const U2DataId &dataId, relatedObjects) {
+    foreach(const U2DataId &dataId, relatedObjects) {
         if (U2Type::Chromatogram != U2DbiUtils::toType(dataId)) {
             continue;
         }
@@ -276,8 +274,8 @@ DNAChromatogram ChromatogramUtils::reverseComplement(const DNAChromatogram &chro
 
 U2Region ChromatogramUtils::sequenceRegion2TraceRegion(const DNAChromatogram &chromatogram, const U2Region &sequenceRegion) {
     CHECK(sequenceRegion.startPos <= chromatogram.baseCalls.length()
-          && sequenceRegion.endPos() <= chromatogram.baseCalls.length()
-          && 0 < sequenceRegion.length, U2Region());
+        && sequenceRegion.endPos() <= chromatogram.baseCalls.length()
+        && 0 < sequenceRegion.length, U2Region());
 
     const int traceStartPos = sequenceRegion.startPos == 0 ? 0 : chromatogram.baseCalls[sequenceRegion.startPos - 1];
     const int traceLength = chromatogram.baseCalls[sequenceRegion.endPos() - 1] - traceStartPos + 1;
@@ -285,10 +283,10 @@ U2Region ChromatogramUtils::sequenceRegion2TraceRegion(const DNAChromatogram &ch
 }
 
 void ChromatogramUtils::insertBase(DNAChromatogram &chromatogram, int posUngapped,
-                                   const QList<U2MsaGap>& gapModel, int posWithGaps) {
+    const QList<U2MsaGap>& gapModel, int posWithGaps) {
     SAFE_POINT(posUngapped >= 0 && posUngapped < chromatogram.seqLength,
-               QString("Invalid parameters for ChromatogramUtils::insertBase: pos - %1, chrom.sequence len - %2")
-               .arg(posUngapped).arg(chromatogram.seqLength), );
+        QString("Invalid parameters for ChromatogramUtils::insertBase: pos - %1, chrom.sequence len - %2")
+        .arg(posUngapped).arg(chromatogram.seqLength), );
     int leadingGap = gapModel.isEmpty() ? 0 : gapModel.first().offset == 0 ? gapModel.first().gap : 0;
     DNAChromatogram gappedChrom = getGappedChromatogram(chromatogram, gapModel);
 
@@ -298,9 +296,9 @@ void ChromatogramUtils::insertBase(DNAChromatogram &chromatogram, int posUngappe
     if (posWithGaps - leadingGap == -1) {
         leadingGap--;
     }
-    SAFE_POINT(posWithGaps- leadingGap >= 0 && posWithGaps - leadingGap < gappedChrom.seqLength,
-               QString("Incorrect gapped position for ChromatogramUtils::insertBase: pos - %1, gapped chrom.len - %2")
-               .arg(posWithGaps).arg(gappedChrom.seqLength), );
+    SAFE_POINT(posWithGaps - leadingGap >= 0 && posWithGaps - leadingGap < gappedChrom.seqLength,
+        QString("Incorrect gapped position for ChromatogramUtils::insertBase: pos - %1, gapped chrom.len - %2")
+        .arg(posWithGaps).arg(gappedChrom.seqLength), );
     ushort newTracePos = gappedChrom.baseCalls[posWithGaps - leadingGap];
     chromatogram.baseCalls.insert(posUngapped, newTracePos);
 
@@ -315,7 +313,7 @@ void ChromatogramUtils::insertBase(DNAChromatogram &chromatogram, int posUngappe
 DNAChromatogram ChromatogramUtils::getGappedChromatogram(const DNAChromatogram &chromatogram, const QList<U2MsaGap> &gapModel) {
     DNAChromatogram gappedChromatogram = chromatogram;
     const U2MsaGap leadingGap = gapModel.isEmpty() ? U2MsaGap() : gapModel.first().offset == 0 ? gapModel.first() : U2MsaGap();
-    foreach (const U2MsaGap &gap, gapModel) {
+    foreach(const U2MsaGap &gap, gapModel) {
         if (gap.offset == 0) {
             continue;
         }

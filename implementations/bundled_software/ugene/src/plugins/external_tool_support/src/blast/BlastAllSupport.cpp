@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -52,7 +52,11 @@
 
 namespace U2 {
 
-BlastAllSupport::BlastAllSupport(const QString& name, const QString& path) : ExternalTool(name, path)
+ const QString BlastAllSupport::ET_BLASTALL = "BlastAll";
+ const QString BlastAllSupport::ET_BLASTALL_ID = "USUPP_BLAST_ALL";
+ const QString BlastAllSupport::BLASTALL_TMP_DIR = "blast_all";
+
+BlastAllSupport::BlastAllSupport(const QString& id, const QString& name, const QString& path) : ExternalTool(id, name, path)
 {
     if (AppContext::getMainWindow()) {
         viewCtx = NULL; // new BlastAllSupportContext(this);
@@ -81,7 +85,7 @@ BlastAllSupport::BlastAllSupport(const QString& name, const QString& path) : Ext
 
 void BlastAllSupport::sl_runWithExtFileSpecify(){
     //Check that blastall and tempory folder path defined
-    ExternalToolUtils::checkExtToolsPath(QStringList() << ET_BLASTALL);
+    ExternalToolUtils::checkExtToolsPath(QStringList() << ET_BLASTALL_ID);
 
     if (path.isEmpty()){
         return;
@@ -115,7 +119,7 @@ void BlastAllSupportContext::initViewContext(GObjectView* view) {
     assert(av!=NULL);
     Q_UNUSED(av);
 
-    ExternalToolSupportAction* queryAction = new ExternalToolSupportAction(this, view, tr("Query with local BLAST..."), 2000, QStringList(ET_BLASTALL));
+    ExternalToolSupportAction* queryAction = new ExternalToolSupportAction(this, view, tr("Query with local BLAST..."), 2000, QStringList(BlastAllSupport::ET_BLASTALL_ID));
 
     addViewAction(queryAction);
     connect(queryAction, SIGNAL(triggered()), SLOT(sl_showDialog()));
@@ -132,9 +136,9 @@ void BlastAllSupportContext::buildMenu(GObjectView* view, QMenu* m) {
 
 void BlastAllSupportContext::sl_showDialog() {
     //Checking the BlastAll path and temporary folder path are defined
-    ExternalToolUtils::checkExtToolsPath(QStringList() << ET_BLASTALL);
+    ExternalToolUtils::checkExtToolsPath(QStringList() << BlastAllSupport::ET_BLASTALL_ID);
 
-    if (AppContext::getExternalToolRegistry()->getByName(ET_BLASTALL)->getPath().isEmpty()){
+    if (AppContext::getExternalToolRegistry()->getById(BlastAllSupport::ET_BLASTALL_ID)->getPath().isEmpty()){
         return;
     }
     U2OpStatus2Log os;

@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -32,7 +32,7 @@ namespace U2 {
 class Document;
 
 //---------------------------------------------------------------------
-class GTest_DNATranslation3to1Test : public GTest {
+class GTest_DNATranslation3to1Test : public XmlTest {
     Q_OBJECT
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_DNATranslation3to1Test, "check-translation");
 

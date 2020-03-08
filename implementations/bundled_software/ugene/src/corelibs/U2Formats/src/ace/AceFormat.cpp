@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -46,13 +46,13 @@ const QString ACEFormat::AS = "AS";
 const QString ACEFormat::AF = "AF";
 const QString ACEFormat::BQ = "BQ";
 
-ACEFormat::ACEFormat(QObject* p) : DocumentFormat(p, DocumentFormatFlags(0), QStringList("ace")) {
+ACEFormat::ACEFormat(QObject* p) : TextDocumentFormat(p, BaseDocumentFormats::ACE, DocumentFormatFlags(0), QStringList("ace")) {
     formatName = tr("ACE");
     formatDescription = tr("ACE is a format used for storing information about genomic confgurations");
     supportedObjectTypes += GObjectTypes::MULTIPLE_SEQUENCE_ALIGNMENT;
 }
 
-static int modifyLine(QString &line, int pos){
+static int modifyLine(QString &line, int pos) {
     int curIdx = 0;
     char space = ' ';
 
@@ -82,7 +82,7 @@ static int modifyLine(QString &line, int pos){
     }
 }
 
-static int prepareLine(QString &line, int pos){
+static int prepareLine(QString &line, int pos) {
     int curIdx = 0;
     char space = ' ';
 
@@ -101,19 +101,19 @@ static int prepareLine(QString &line, int pos){
 }
 
 #define READS_COUNT_POS 3
-static int readsCount(const QString& cur_line){
+static int readsCount(const QString& cur_line) {
     QString line = cur_line;
     return modifyLine(line, READS_COUNT_POS);
 }
 
 #define CONTIG_COUNT_POS 1
-static int contigCount(const QString& cur_line){
+static int contigCount(const QString& cur_line) {
     QString line = cur_line;
     return modifyLine(line, CONTIG_COUNT_POS);
 }
 
 #define LAST_QA_POS 4
-static int clearRange(const QString& cur_line){
+static int clearRange(const QString& cur_line) {
     QString line = cur_line;
     modifyLine(line, LAST_QA_POS);
 
@@ -126,7 +126,7 @@ static int clearRange(const QString& cur_line){
     }
 }
 #define PADDED_START_POS 3
-static int paddedStartCons(const QString& cur_line){
+static int paddedStartCons(const QString& cur_line) {
     QString line = cur_line;
     modifyLine(line, PADDED_START_POS);
 
@@ -140,7 +140,7 @@ static int paddedStartCons(const QString& cur_line){
 }
 
 #define READS_POS 3
-static int readsPos(const QString& cur_line){
+static int readsPos(const QString& cur_line) {
     QString line = cur_line;
     prepareLine(line, READS_POS);
 
@@ -159,7 +159,7 @@ static int readsPos(const QString& cur_line){
     }
 }
 #define COMPLEMENT_POS 2
-static int readsComplement(const QString& cur_line){
+static int readsComplement(const QString& cur_line) {
     QString line = cur_line;
     prepareLine(line, COMPLEMENT_POS);
 
@@ -172,7 +172,7 @@ static int readsComplement(const QString& cur_line){
     }
 }
 
-static QString getName(const QString &line){
+static QString getName(const QString &line) {
     int curIdx = 0;
     char space = ' ';
 
@@ -195,7 +195,7 @@ static QString getName(const QString &line){
     return name;
 }
 
-static bool checkSeq(const QByteArray &seq){
+static bool checkSeq(const QByteArray &seq) {
     const DNAAlphabet* alphabet =  AppContext::getDNAAlphabetRegistry()->findById(BaseDNAAlphabetIds::NUCL_DNA_EXTENDED());
     for(int i = 0; i < seq.length(); i++) {
         if (!(alphabet->contains(seq[i]) || seq[i] == '*')) {
@@ -205,99 +205,80 @@ static bool checkSeq(const QByteArray &seq){
     return true;
 }
 
-static inline void skipBreaks(U2::IOAdapter *io, U2OpStatus &ti, char* buff, qint64* len){
+static inline void skipBreaks(U2::IOAdapter *io, U2OpStatus &ti, char* buff, qint64* len) {
     bool lineOk = true;
     *len = io->readUntil(buff, DocumentFormat::READ_BUFF_SIZE, TextUtils::LINE_BREAKS, IOAdapter::Term_Include, &lineOk);
-    if (*len == 0) { //end if stream
-        ti.setError(ACEFormat::tr("Unexpected end of file"));
-        return;
-    }
-    if (!lineOk) {
-        ti.setError(ACEFormat::tr("Line is too long"));
-        return;
-    }
+    CHECK_EXT(!io->hasError(), ti.setError(io->errorString()), );
+    CHECK_EXT(*len != 0, ti.setError(ACEFormat::tr("Unexpected end of file")), );//end if stream
+    CHECK_EXT(lineOk, ti.setError(ACEFormat::tr("Line is too long")), );
 }
-static inline void parseConsensus(U2::IOAdapter *io, U2OpStatus &ti, char* buff, QString& consName, QSet<QString> &names, QString& headerLine, QByteArray& consensus){
+
+static inline void parseConsensus(U2::IOAdapter *io, U2OpStatus &ti, char* buff, QString& consName, QSet<QString> &names, QString& headerLine, QByteArray& consensus) {
     char aceBStartChar = 'B';
     QBitArray aceBStart = TextUtils::createBitMap(aceBStartChar);
     qint64 len = 0;
     bool ok = true;
     QString line;
     consName = getName(headerLine);
-    if("" == consName){
-        ti.setError(ACEFormat::tr("There is no AF note"));
-        return ;
-    }
-    if (names.contains(consName)) {
-        ti.setError(ACEFormat::tr("A name is duplicated"));
-        return ;
-    }
+    CHECK_EXT(!consName.isEmpty(), ti.setError(ACEFormat::tr("There is no AF note")), );
+    CHECK_EXT(!names.contains(consName), ti.setError(ACEFormat::tr("A name is duplicated")), );
+
     names.insert(consName);
     consensus.clear();
     do {
         len = io->readUntil(buff, DocumentFormat::READ_BUFF_SIZE, aceBStart, IOAdapter::Term_Exclude, &ok);
-        if (len <= 0) {
-            ti.setError(ACEFormat::tr("No consensus"));
-            return ;
-        }
+        CHECK_EXT(!io->hasError(), ti.setError(io->errorString()), );
+        CHECK_EXT(len > 0, ti.setError(ACEFormat::tr("No consensus")), );
+
         len = TextUtils::remove(buff, len, TextUtils::WHITES);
         buff[len] = 0;
         consensus.append(buff);
         ti.setProgress(io->getProgress());
     } while (!ti.isCoR() && !ok);
+
     len = io->readUntil(buff, DocumentFormat::READ_BUFF_SIZE, TextUtils::LINE_BREAKS, IOAdapter::Term_Include, &ok);
+    CHECK_EXT(!io->hasError(), ti.setError(io->errorString()), );
+
     line = QString(QByteArray(buff, len)).trimmed();
-    if(!line.startsWith("BQ")){
-        ti.setError(ACEFormat::tr("BQ keyword hasn't been found"));
-        return ;
-    }
-    consensus=consensus.toUpper();
-    if(!checkSeq(consensus)){
-        ti.setError(ACEFormat::tr("Bad consensus data"));
-        return ;
-    }
+    CHECK_EXT(line.startsWith("BQ"), ti.setError(ACEFormat::tr("BQ keyword hasn't been found")), );
+
+    consensus = consensus.toUpper();
+    CHECK_EXT(checkSeq(consensus), ti.setError(ACEFormat::tr("Bad consensus data")), );
+
     consensus.replace('*',U2Msa::GAP_CHAR);
 }
 
-static inline void parseAFTag(U2::IOAdapter *io, U2OpStatus &ti, char* buff, int count, QMap< QString, int> &posMap, QMap< QString, bool> &complMap, QSet<QString> &names){
+static inline void parseAFTag(U2::IOAdapter *io, U2OpStatus &ti, char* buff, int count, QMap< QString, int> &posMap, QMap< QString, bool> &complMap, QSet<QString> &names) {
     int count1 = count;
     QString readLine;
     QString name;
     qint64 len = 0;
-    while (!ti.isCoR() && count1>0) {
-        do{
+    while (!ti.isCoR() && count1 > 0) {
+        do {
             skipBreaks(io, ti, buff, &len);
-            if(ti.hasError()){
-                return;
-            }
+            CHECK_OP(ti, );
+
             readLine = QString(QByteArray(buff, len)).trimmed();
-        }while (!readLine.startsWith("AF"));
+        } while (!readLine.startsWith("AF"));
 
         name = getName(readLine);
-        if(!readLine.startsWith("AF") || "" == name){
+        if(!readLine.startsWith("AF") || "" == name) {
             ti.setError(ACEFormat::tr("There is no AF note"));
             return ;
         }
 
         int readPos = readsPos(readLine);
         int complStrand = readsComplement(readLine);
-        if((INT_MAX == readPos) ||  (-1 == complStrand) ){
+        if((INT_MAX == readPos) || (-1 == complStrand) ) {
             ti.setError(ACEFormat::tr("Bad AF note"));
             return ;
         }
 
         int paddedStart = paddedStartCons(readLine);
-        if(INT_MAX == paddedStart){
-            ti.setError(ACEFormat::tr("Bad AF note"));
-            return ;
-        }
+        CHECK_EXT(paddedStart != INT_MAX, ti.setError(ACEFormat::tr("Bad AF note")), );
 
         posMap.insert(name,paddedStart);
-
-        if (names.contains(name)) {
-            ti.setError(ACEFormat::tr("A name is duplicated"));
-            return ;
-        }
+        CHECK_EXT(!names.contains(name), ti.setError(ACEFormat::tr("A name is duplicated")), );
 
         bool cur_compl = (complStrand == 1);
         complMap.insert(name,cur_compl);
@@ -309,58 +290,51 @@ static inline void parseAFTag(U2::IOAdapter *io, U2OpStatus &ti, char* buff, int
     }
 }
 
-static inline void parseRDandQATag(U2::IOAdapter *io, U2OpStatus &ti, char* buff, QSet<QString> &names, QString& name, QByteArray& sequence){
+static inline void parseRDandQATag(U2::IOAdapter *io, U2OpStatus &ti, char* buff, QSet<QString> &names, QString& name, QByteArray& sequence) {
     QString line;
     qint64 len = 0;
     bool ok = true;
     char aceQStartChar = 'Q';
     QBitArray aceQStart = TextUtils::createBitMap(aceQStartChar);
-    do{
+    do {
         skipBreaks(io, ti, buff, &len);
-        if(ti.hasError()){
-            return;
-        }
+        CHECK_OP(ti, );
+
         line = QString(QByteArray(buff, len)).trimmed();
-    }while (!line.startsWith("RD"));
+    } while (!line.startsWith("RD"));
 
     name = getName(line);
-    if(!line.startsWith("RD") || "" == name){
+    if (!line.startsWith("RD") || "" == name) {
         ti.setError(ACEFormat::tr("There is no read note"));
-        return ;
+        return;
     }
 
     sequence.clear();
     do {
         len = io->readUntil(buff, DocumentFormat::READ_BUFF_SIZE, aceQStart, IOAdapter::Term_Exclude, &ok);
-        if (len <= 0) {
-            ti.setError(ACEFormat::tr("No sequence"));
-            return ;
-        }
+        CHECK_EXT(!io->hasError(), ti.setError(io->errorString()), );
+        CHECK_EXT(len > 0, ti.setError(ACEFormat::tr("No sequence")), );
+
         len = TextUtils::remove(buff, len, TextUtils::WHITES);
         buff[len] = 0;
         sequence.append(buff);
         ti.setProgress(io->getProgress());
     } while (!ti.isCoR() && !ok);
+
     len = io->readUntil(buff, DocumentFormat::READ_BUFF_SIZE, TextUtils::LINE_BREAKS, IOAdapter::Term_Include, &ok);
+    CHECK_EXT(!io->hasError(), ti.setError(io->errorString()), );
+
     line = QString(QByteArray(buff, len)).trimmed();
-    if(!line.startsWith("QA")){
-        ti.setError(ACEFormat::tr("QA keyword hasn't been found"));
-        return ;
-    }
+    CHECK_EXT(line.startsWith("QA"), ti.setError(ACEFormat::tr("QA keyword hasn't been found")), );
+
     int clearRangeStart = 0;
     int clearRangeEnd = 0;
 
     clearRangeStart = readsCount(line);
-    if(-1==clearRangeStart){
-        ti.setError(ACEFormat::tr("QA error no clear range"));
-        return ;
-    }
+    CHECK_EXT(clearRangeStart != -1, ti.setError(ACEFormat::tr("QA error no clear range")), );
 
     clearRangeEnd = clearRange(line);
-    if(0==clearRangeEnd){
-        ti.setError(ACEFormat::tr("QA error no clear range"));
-        return ;
-    }
+    CHECK_EXT(clearRangeEnd != 0, ti.setError(ACEFormat::tr("QA error no clear range")), );
 
     len = sequence.length();
     if(clearRangeStart > clearRangeEnd || clearRangeEnd > len){
@@ -368,16 +342,13 @@ static inline void parseRDandQATag(U2::IOAdapter *io, U2OpStatus &ti, char* buff
         return ;
     }
 
-    sequence=sequence.toUpper();
-    if(!checkSeq(sequence)){
-        ti.setError(ACEFormat::tr("Bad sequence data"));
-        return ;
-    }
+    sequence = sequence.toUpper();
+    CHECK_EXT(checkSeq(sequence), ti.setError(ACEFormat::tr("Bad sequence data")), );
 
     if (!names.contains(name)) {
         ti.setError(ACEFormat::tr("A name is not match with AF names"));
-        return ;
-    }else{
+        return;
+    } else {
         names.remove(name);
     }
 
@@ -411,57 +382,44 @@ void ACEFormat::load(IOAdapter *io, const U2DbiRef& dbiRef, QList<GObject*> &obj
      //skip leading whites if present
     bool lineOk = true;
     skipBreaks(io, os, buff, &len);
-    if(os.hasError()){
-        return;
-    }
-    QString headerLine = QString(QByteArray(buff, len)).trimmed();
+    CHECK_OP(os, );
 
-    if (!headerLine.startsWith(AS)) {
-        os.setError(ACEFormat::tr("First line is not an ace header"));
-        return ;
-    }
+    QString headerLine = QString(QByteArray(buff, len)).trimmed();
+    CHECK_EXT(headerLine.startsWith(AS), os.setError(ACEFormat::tr("First line is not an ace header")), );
+
     int contigC = contigCount(headerLine);
-    if(-1==contigC){
-         os.setError(ACEFormat::tr("No contig count tag in the header line"));
-        return ;
-    }
-    for(int i =0; i < contigC; i++){
-        if(i==0){
+    CHECK_EXT(contigC != -1, os.setError(ACEFormat::tr("No contig count tag in the header line")), );
+
+    for (int i = 0; i < contigC; i++) {
+        if (i == 0) {
             QBitArray nonWhites = ~TextUtils::WHITES;
             io->readUntil(buff, READ_BUFF_SIZE, nonWhites, IOAdapter::Term_Exclude, &lineOk);
+            CHECK_EXT(!io->hasError(), os.setError(io->errorString()), );
+
             //read header
             skipBreaks(io, os, buff, &len);
-            if(os.hasError()){
-                return;
-            }
+            CHECK_OP(os, );
+
             headerLine = QString(QByteArray(buff, len)).trimmed();
-            if (!headerLine.startsWith(CO)) {
-                os.setError(ACEFormat::tr("Must be CO keyword"));
-                return ;
-            }
-        }else{
-            do{
+            CHECK_EXT(headerLine.startsWith(CO), os.setError(ACEFormat::tr("Must be CO keyword")), );
+        } else {
+            do {
                 skipBreaks(io, os, buff, &len);
-                if(os.hasError()){
-                    return;
-                }
+                CHECK_OP(os, );
+
                 headerLine = QString(QByteArray(buff, len)).trimmed();
-            }while (!headerLine.startsWith(CO));
+            } while (!headerLine.startsWith(CO));
         }
         int count = readsCount(headerLine);
-        if(-1 == count){
-            os.setError(ACEFormat::tr("There is no note about reads count"));
-            return ;
-        }
+        CHECK_EXT(count != -1, os.setError(ACEFormat::tr("There is no note about reads count")), );
+
         //consensus
         QString name;
         QByteArray consensus;
         QString consName;
 
         parseConsensus(io, os, buff, consName, names, headerLine, consensus);
-        if (os.hasError()){
-            return;
-        }
+        CHECK_OP(os, );
 
         MultipleSequenceAlignment al(consName);
         al->addRow(consName, consensus);
@@ -488,7 +446,7 @@ void ACEFormat::load(IOAdapter *io, const U2DbiRef& dbiRef, QList<GObject*> &obj
                 pos += qAbs(smallestOffset);
             }
             QString rowName(name);
-            if(true == isComplement){
+            if(isComplement){
                 rowName.append("(rev-compl)");
             }
 
@@ -511,7 +469,7 @@ void ACEFormat::load(IOAdapter *io, const U2DbiRef& dbiRef, QList<GObject*> &obj
     }
 }
 
-FormatCheckResult ACEFormat::checkRawData(const QByteArray& rawData, const GUrl&) const {
+FormatCheckResult ACEFormat::checkRawTextData(const QByteArray& rawData, const GUrl&) const {
     static const char* formatTag = "AS";
 
     if (!rawData.startsWith(formatTag)) {
@@ -520,7 +478,7 @@ FormatCheckResult ACEFormat::checkRawData(const QByteArray& rawData, const GUrl&
     return FormatDetection_AverageSimilarity;
 }
 
-Document* ACEFormat::loadDocument(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& fs, U2OpStatus& os) {
+Document* ACEFormat::loadTextDocument(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& fs, U2OpStatus& os) {
     QList <GObject*> objs;
     load(io, dbiRef, objs, fs, os);
 

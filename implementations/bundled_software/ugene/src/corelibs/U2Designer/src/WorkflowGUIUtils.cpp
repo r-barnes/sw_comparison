@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -143,6 +143,7 @@ void DesignerGUIUtils::setupSamplesDocument(const Descriptor& d, const QIcon& ic
     if (hasIcon) {
         doc->addResource(QTextDocument::ImageResource, QUrl(img), ico.pixmap(200));
     }
+
     QString body = d.getDocumentation().toHtmlEscaped().replace("\n", "<br>");
     int brk = body.indexOf("<br><br>");
     int shift = 8;

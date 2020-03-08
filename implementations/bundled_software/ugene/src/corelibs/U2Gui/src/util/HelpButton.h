@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -25,6 +25,9 @@
 #include <QDialogButtonBox>
 #include <QMap>
 #include <QString>
+#include <QPushButton>
+#include <QButtonGroup>
+
 #include <QWidget>
 
 #include <U2Core/global.h>
@@ -38,9 +41,14 @@ class U2GUI_EXPORT HelpButton: public QObject {
 public:
     HelpButton(QObject *parent, QDialogButtonBox *b, const QString& pageId);
     HelpButton(QObject *parent, QAbstractButton *b, const QString& pageId);
+
     void updatePageId(const QString &pageId);
+
+    static const QString INVALID_VALUE;
+
 protected slots:
     virtual void sl_buttonClicked();
+
 protected:
     QString pageId;
     QPushButton *helpButton;

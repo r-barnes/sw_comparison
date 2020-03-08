@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -23,6 +23,7 @@
 #include <QMessageBox>
 #include <QPushButton>
 #include <QRadioButton>
+#include <QButtonGroup>
 #include <QToolButton>
 
 #include <U2Core/AppContext.h>
@@ -72,7 +73,7 @@ DocumentProviderSelectorController::DocumentProviderSelectorController(const GUr
     setupUi(this);
 
     setObjectName("Select Document Format");
-    new HelpButton(this, buttonBox, "21433285");
+    new HelpButton(this, buttonBox, "24742484");
     gbFormats->setTitle(QString("Options for %1").arg(url.fileName()));
     buttonBox->button(QDialogButtonBox::Cancel)->setAutoDefault(false);
     buttonBox->button(QDialogButtonBox::Cancel)->setDefault(false);

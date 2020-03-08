@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -584,7 +584,8 @@ bool BreakpointManagerView::eventFilter(QObject * /*object*/, QEvent *event) {
         QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
         CHECK(NULL != keyEvent, false);
 
-        if ((keyEvent->modifiers() && Qt::ShiftModifier) && (keyEvent->key() == Qt::Key_Delete)) {
+        bool shiftPressed = keyEvent->modifiers().testFlag(Qt::ShiftModifier);
+        if (shiftPressed && keyEvent->key() == Qt::Key_Delete) {
             sl_deleteAllBreakpoints();
         }
         if (keyEvent->matches(QKeySequence::Delete)) {

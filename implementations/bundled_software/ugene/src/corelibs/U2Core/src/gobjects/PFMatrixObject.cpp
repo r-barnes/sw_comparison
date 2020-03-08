@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -22,7 +22,6 @@
 #include <U2Core/DatatypeSerializeUtils.h>
 #include <U2Core/DocumentModel.h>
 #include <U2Core/GHints.h>
-#include <U2Core/RawDataUdrSchema.h>
 #include <U2Core/U2DbiUtils.h>
 #include <U2Core/U2ObjectDbi.h>
 
@@ -51,8 +50,7 @@ U2DataType U2PFMatrix::getType() const {
 //PFMatrixObject
 //////////////////////////////////////////////////////////////////////////
 PFMatrixObject * PFMatrixObject::createInstance(const PFMatrix &matrix, const QString &objectName,
-    const U2DbiRef &dbiRef, U2OpStatus &os, const QVariantMap &hintsMap)
-{
+    const U2DbiRef &dbiRef, U2OpStatus &os, const QVariantMap &hintsMap) {
     U2PFMatrix object(dbiRef);
     const QString dstFolder = hintsMap.value(DocumentFormat::DBI_FOLDER_HINT, U2ObjectDbi::ROOT_FOLDER).toString();
     const U2EntityRef entRef = PMatrixSerializeUtils<FMatrixSerializer, PFMatrix>::commit(matrix,
@@ -63,15 +61,13 @@ PFMatrixObject * PFMatrixObject::createInstance(const PFMatrix &matrix, const QS
 
 PFMatrixObject::PFMatrixObject(const QString &objectName, const U2EntityRef &matrixRef,
     const QVariantMap &hintsMap)
-    : GObject(TYPE, objectName, hintsMap)
-{
+    : GObject(TYPE, objectName, hintsMap) {
     entityRef = matrixRef;
 }
 
 PFMatrixObject::PFMatrixObject(const PFMatrix &matrix, const QString &objectName,
     const U2EntityRef &matrixRef, const QVariantMap &hintsMap)
-    : GObject(TYPE, objectName, hintsMap), m(matrix)
-{
+    : GObject(TYPE, objectName, hintsMap), m(matrix) {
     entityRef = matrixRef;
 }
 

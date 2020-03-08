@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -71,7 +71,7 @@ void BlastAllSupportTask::prepare(){
                          QTime::currentTime().toString("hh.mm.ss.zzz")+"_"+
                          QString::number(QCoreApplication::applicationPid())+"/";
     //Check and remove subdir for temporary files
-    QString blastTmpDir = AppContext::getAppSettings()->getUserAppsSettings()->getCurrentProcessTemporaryDirPath(BLASTALL_TMP_DIR);
+    QString blastTmpDir = AppContext::getAppSettings()->getUserAppsSettings()->getCurrentProcessTemporaryDirPath(BlastAllSupport::BLASTALL_TMP_DIR);
     QDir tmpDir(blastTmpDir + "/"+ tmpDirName);
     if(tmpDir.exists()){
         foreach(const QString& file, tmpDir.entryList()){
@@ -199,19 +199,19 @@ QList<Task*> BlastAllSupportTask::onSubTaskFinished(Task* subTask) {
         }
 
         QString workingDirectory=QFileInfo(url).absolutePath();
-        blastAllTask = new ExternalToolRunTask(ET_BLASTALL, arguments, new ExternalToolLogParser(), workingDirectory);
+        blastAllTask = new ExternalToolRunTask(BlastAllSupport::ET_BLASTALL_ID, arguments, new ExternalToolLogParser(), workingDirectory);
         setListenerForTask(blastAllTask);
         blastAllTask->setSubtaskProgressWeight(95);
         res.append(blastAllTask);
     } else if(subTask == blastAllTask) {
         if (settings.outputType == 7 || settings.outputType == 8) {
             if (!QFileInfo(settings.outputOriginalFile).exists()) {
-                if (AppContext::getExternalToolRegistry()->getByName(ET_BLASTALL)->isValid()) {
+                if (AppContext::getExternalToolRegistry()->getById(BlastAllSupport::ET_BLASTALL_ID)->isValid()) {
                     stateInfo.setError(tr("Output file not found"));
                 } else {
                     stateInfo.setError(tr("Output file not found. May be %1 tool path '%2' not valid?")
-                                       .arg(AppContext::getExternalToolRegistry()->getByName(ET_BLASTALL)->getName())
-                                       .arg(AppContext::getExternalToolRegistry()->getByName(ET_BLASTALL)->getPath()));
+                                       .arg(AppContext::getExternalToolRegistry()->getById(BlastAllSupport::ET_BLASTALL_ID)->getName())
+                                       .arg(AppContext::getExternalToolRegistry()->getById(BlastAllSupport::ET_BLASTALL_ID)->getPath()));
                 }
                 emit si_stateChanged();
                 return res;
@@ -482,12 +482,26 @@ void BlastAllSupportTask::parseXMLHsp(const QDomNode &xml,const QString &id, con
         ad->qualifiers.push_back(U2Qualifier("hit_frame", frame_txt));
     }
 
-    elem = xml.lastChildElement("Hsp_query-frame");
+    QString strandTag;
+    switch (settings.strandSource) {
+    case BlastTaskSettings::HitFrame:
+        strandTag = "Hsp_hit-frame";
+    	break;
+    case BlastTaskSettings::QueryFrame:
+        strandTag = "Hsp_query-frame";
+        break;
+    default:
+        SAFE_POINT_EXT(false, stateInfo.setError(tr("Unknown strand source setting")), );
+        break;
+    }
+
+    elem = xml.lastChildElement(strandTag);
     int frame = elem.text().toInt(&isOk);
-    if(!isOk) {
-        stateInfo.setError(tr("Can't get location. Hsp_query-frame[%1]").arg(elem.text()));
+    if (!isOk) {
+        stateInfo.setError(tr("Can't get location. %1[%2]").arg(strandTag).arg(elem.text()));
         return;
     }
+
     QString frame_txt = (frame < 0) ? "complement" : "direct";
     ad->qualifiers.push_back(U2Qualifier("source_frame", frame_txt));
     ad->setStrand(frame < 0 ? U2Strand::Complementary :  U2Strand::Direct);
@@ -658,7 +672,7 @@ QString BlastAllSupportMultiTask::generateReport() const {
 
     res+="<table>";
     res+="<tr><td width=200><b>" + tr("Source file") + "</b></td><td>" + settingsList.at(0).queryFile + "</td></tr>";
-    res+="<tr><td width=200><b>" + tr("Used databse") + "</b></td><td>" + settingsList.at(0).databaseNameAndPath + "</td></tr>";
+    res+="<tr><td width=200><b>" + tr("Used database") + "</b></td><td>" + settingsList.at(0).databaseNameAndPath + "</td></tr>";
     res+="<tr></tr>";
     res+="<tr><td width=200><b>" + tr("No any results found") + "</b></td><td></td></tr>";
     res+="</table>";

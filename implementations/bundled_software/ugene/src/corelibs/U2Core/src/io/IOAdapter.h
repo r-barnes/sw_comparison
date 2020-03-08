@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -24,7 +24,6 @@
 
 #include <QObject>
 
-#include <U2Core/global.h>
 #include <U2Core/GUrl.h>
 
 namespace U2 {
@@ -39,9 +38,9 @@ class IOAdapter;
 
 class U2CORE_EXPORT IOAdapterFactory : public QObject {
 public:
-    IOAdapterFactory(QObject* p) : QObject(p){}
+    IOAdapterFactory(QObject* p) : QObject(p) {}
 
-    virtual IOAdapter* createIOAdapter()  = 0;
+    virtual IOAdapter* createIOAdapter() = 0;
 
     virtual IOAdapterId getAdapterId() const = 0;
 
@@ -57,16 +56,17 @@ public:
 class U2CORE_EXPORT IOAdapter : public QObject {
     Q_OBJECT
 public:
-    IOAdapter(IOAdapterFactory* f, QObject* o = NULL) : QObject(o), factory(f){}
-    virtual ~IOAdapter(){}
+    IOAdapter(IOAdapterFactory* f, QObject* o = NULL) : QObject(o), formatMode(BinaryMode), factory(f) {}
 
-    IOAdapterId getAdapterId() const {return factory->getAdapterId();}
+    virtual ~IOAdapter() {}
 
-    virtual const QString& getAdapterName() const  {return factory->getAdapterName();}
+    IOAdapterId getAdapterId() const { return factory->getAdapterId(); }
 
-    virtual bool isIOModeSupported(IOAdapterMode m) const  {return factory->isIOModeSupported(m);}
+    virtual const QString& getAdapterName() const { return factory->getAdapterName(); }
 
-    IOAdapterFactory* getFactory() const {return factory;}
+    virtual bool isIOModeSupported(IOAdapterMode m) const { return factory->isIOModeSupported(m); }
+
+    IOAdapterFactory* getFactory() const { return factory; }
 
     virtual bool open(const GUrl& url, IOAdapterMode m) = 0;
 
@@ -80,11 +80,19 @@ public:
         Term_Skip       // do not include terminators to the result, but skip to after last terminator
     };
 
+    enum FormatMode {
+        TextMode,    //Format is represented by text
+        BinaryMode   //Format is represented by binary data
+    };
+
+    //if format is represented by text (not by binary data) you need to call this func
+    virtual void setFormatMode(FormatMode mode) { formatMode = mode; }
+
     //return 0 if at the end of file, -1 if error
     virtual qint64 readUntil(char* buff, qint64 maxSize, const QBitArray& readTerminators,
         TerminatorHandling th, bool* terminatorFound = 0);
 
-    virtual bool getChar(char* buff) {return 1 == readBlock(buff, 1);}
+    virtual bool getChar(char* buff) { return 1 == readBlock(buff, 1); }
 
     //If an error occurs, this function returns -1
     virtual qint64 readBlock(char* buff, qint64 maxSize) = 0;
@@ -94,7 +102,7 @@ public:
 
     virtual qint64 writeBlock(const char* buff, qint64 size) = 0;
 
-    qint64 writeBlock(const QByteArray& a) {return writeBlock(a.data(), a.size());}
+    qint64 writeBlock(const QByteArray& a) { return writeBlock(a.data(), a.size()); }
 
     /**
      * Both positive and negative values are accepted.
@@ -108,22 +116,30 @@ public:
     /* Percent values in range 0..100, negative if unknown. */
     virtual int getProgress() const = 0;
 
-    bool isEof();
+    virtual bool isEof();
 
     virtual qint64 bytesRead() const { return -1; }
 
     virtual GUrl getURL() const = 0;
 
-    virtual QString toString() const {return getURL().getURLString();}
+    virtual QString toString() const { return getURL().getURLString(); }
 
     /* Returns a human-readable description of the last device error that occurred */
     virtual QString errorString() const = 0;
+
+    bool hasError() const { return !errorString().isEmpty(); }
+
+protected:
+    static void cutByteOrderMarks(char* data, QString& errorString, qint64& length);
+
+    FormatMode formatMode;
+    QString errorMessage;
 
 private:
     IOAdapterFactory* factory;
 };
 
-class U2CORE_EXPORT IOAdapterRegistry  : public QObject {
+class U2CORE_EXPORT IOAdapterRegistry : public QObject {
 public:
     IOAdapterRegistry(QObject* p = NULL) : QObject(p) {}
 

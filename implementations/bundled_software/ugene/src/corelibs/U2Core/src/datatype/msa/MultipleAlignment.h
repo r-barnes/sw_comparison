@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -23,8 +23,6 @@
 #define _U2_MULTIPLE_ALIGNMENT_H_
 
 #include <QVariantMap>
-
-#include <U2Core/U2Region.h>
 
 #include "MultipleAlignmentRow.h"
 
@@ -82,15 +80,15 @@ protected:
      * The name must be provided if this is not default alignment.
      */
     MultipleAlignmentData(const QString &name = QString(),
-                          const DNAAlphabet *alphabet = NULL,
-                          const QList<MultipleAlignmentRow> &rows = QList<MultipleAlignmentRow>());
+        const DNAAlphabet *alphabet = NULL,
+        const QList<MultipleAlignmentRow> &rows = QList<MultipleAlignmentRow>());
     MultipleAlignmentData(const MultipleAlignmentData &multipleAlignment);
 
 public:
     virtual ~MultipleAlignmentData();
 
     // TODO: marked to remove (if it is not used)
-//    const MultipleAlignmentData & operator=(const MultipleAlignmentData &other);
+    //    const MultipleAlignmentData & operator=(const MultipleAlignmentData &other);
 
     /**
      * Clears the alignment. Makes alignment length == 0.
@@ -147,6 +145,9 @@ public:
 
     /** Returns IDs of the alignment rows in the database */
     QList<qint64> getRowsIds() const;
+
+    /** Returns row ids by row indexes. */
+    QList<qint64> getRowIdsByRowIndexes(const QList<int>& rowIndexes) const;
 
     MultipleAlignmentRow getRowByRowId(qint64 rowId, U2OpStatus &os) const;
 

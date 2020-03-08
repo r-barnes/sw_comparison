@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -57,6 +57,7 @@ private:
     ExternalToolRunTask *hmmerTask;
     HmmerParseSearchResultsTask *parseTask;
     bool removeWorkingDir;
+    bool hmm2Mode;
 
     static const QString INPUT_SEQUENCE_FILENAME;
     static const QString PER_DOMAIN_HITS_FILENAME;

@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -30,7 +30,6 @@
 #include <U2Core/GHints.h>
 #include <U2Core/GObjectUtils.h>
 #include <U2Core/GUrlUtils.h>
-#include <U2Core/IOAdapter.h>
 #include <U2Core/IOAdapterUtils.h>
 #include <U2Core/L10n.h>
 #include <U2Core/Log.h>
@@ -52,9 +51,8 @@ bool isNoWritePermission(GUrl &url) {
 }
 
 SaveDocumentTask::SaveDocumentTask(Document* _doc, IOAdapterFactory* _io, const GUrl& _url, SaveDocFlags _flags)
-: Task(tr("Save document"), TaskFlag_None), doc(_doc), iof(_io), url(_url), flags(_flags)
-{
-    assert(doc!=NULL);
+    : Task(tr("Save document"), TaskFlag_None), doc(_doc), iof(_io), url(_url), flags(_flags) {
+    assert(doc != NULL);
     if (iof == NULL) {
         iof = doc->getIOAdapterFactory();
     }
@@ -62,30 +60,29 @@ SaveDocumentTask::SaveDocumentTask(Document* _doc, IOAdapterFactory* _io, const 
         url = doc->getURLString();
     }
     if (isNoWritePermission(url)) {
-        stateInfo.setError(tr("No permission to write to '%1' file.").arg(url.fileName()));
+        stateInfo.setError(tr("No permission to write to '%1' file.").arg(url.getURLString()));
     }
 
     lock = NULL;
 }
 
 SaveDocumentTask::SaveDocumentTask(Document* _doc, SaveDocFlags f, const QSet<QString>& _excludeFileNames)
-: Task(tr("Save document"), TaskFlag_None),
-doc(_doc), iof(doc->getIOAdapterFactory()), url(doc->getURL()), flags(f), excludeFileNames(_excludeFileNames)
-{
-    assert(doc!=NULL);
+    : Task(tr("Save document"), TaskFlag_None),
+    doc(_doc), iof(doc->getIOAdapterFactory()), url(doc->getURL()), flags(f), excludeFileNames(_excludeFileNames) {
+    assert(doc != NULL);
 
     if (isNoWritePermission(url)) {
-        stateInfo.setError(tr("No permission to write to '%1' file.").arg(url.fileName()));
+        stateInfo.setError(tr("No permission to write to '%1' file.").arg(url.getURLString()));
     }
 }
 
 void SaveDocumentTask::addFlag(SaveDocFlag f) {
-    flags|=f;
+    flags |= f;
 }
 
 void SaveDocumentTask::prepare() {
     if (doc.isNull()) {
-        setError("Document was removed");
+        setError(tr("Document was removed"));
         return;
     }
     lock = new StateLock(getTaskName(), StateLockFlag_LiveLock);
@@ -106,17 +103,21 @@ void SaveDocumentTask::run() {
     DocumentFormat* df = doc->getDocumentFormat();
 
     QString originalFilePath = url.getURLString();
-    QFile originalFile( originalFilePath );
-    const bool originalFileExists = ( url.isLocalFile( ) )
-        ? originalFile.exists( ) && 0 != originalFile.size( )
+    QFile originalFile(originalFilePath);
+    const bool originalFileExists = (url.isLocalFile())
+        ? originalFile.exists() && 0 != originalFile.size()
         : false;
 
     if (originalFileExists && df->checkFlags(DocumentFormatFlag_DirectWriteOperations)) {
         // Changes are already applied, the file shouldn't be saved
+        coreLog.trace(QString("Document with 'direct write operations' flag saving: "
+            "file '%1' exists, all changes are already applied, finishing the task").arg(url.getURLString()));
         return;
     }
 
     if (url.isLocalFile() && originalFileExists) {
+        coreLog.trace(QString("Local file '%1' already exists, going to overwrite it").arg(url.getURLString()));
+
         // make tmp file
         QString tmpFileName = GUrlUtils::prepareTmpFileLocation(url.dirPath(), url.fileName(), "tmp", stateInfo);
 
@@ -150,6 +151,7 @@ void SaveDocumentTask::run() {
         bool renamed = QFile::rename(tmpFileName, originalFilePath);
         CHECK_EXT(renamed == true, stateInfo.setError(tr("Can't rename saved tmp file to original file")), );
     } else {
+        coreLog.trace(QString("File '%1' doesn't exist, going to write it directly").arg(url.getURLString()));
         QScopedPointer<IOAdapter> io(IOAdapterUtils::open(url, stateInfo, flags.testFlag(SaveDoc_Append) ? IOAdapterMode_Append : IOAdapterMode_Write, doc->getIOAdapterFactory()));
         CHECK_OP(stateInfo, );
         df->storeDocument(doc, io.data(), stateInfo);
@@ -160,7 +162,7 @@ void SaveDocumentTask::run() {
 }
 
 Task::ReportResult SaveDocumentTask::report() {
-    if (lock!=NULL) {
+    if (lock != NULL) {
         assert(!doc.isNull());
         doc->unlockState(lock);
         delete lock;
@@ -180,11 +182,11 @@ Task::ReportResult SaveDocumentTask::report() {
         if (!dontUnload) {
             doc->unload();
         }
-        CHECK( AppContext::getProject() != NULL, ReportResult_Finished);
+        CHECK(AppContext::getProject() != NULL, ReportResult_Finished);
         AppContext::getProject()->removeDocument(doc, true);
     }
-    if(flags.testFlag(SaveDoc_UnloadAfter)) {
-        if(!doc->unload()) {
+    if (flags.testFlag(SaveDoc_UnloadAfter)) {
+        if (!doc->unload()) {
             stateInfo.setError(tr("Document '%1' can't be unloaded: ").arg(doc->getName()) + tr("unexpected error"));
             coreLog.error(stateInfo.getError());
         }
@@ -203,11 +205,10 @@ Task::ReportResult SaveDocumentTask::report() {
 /// save multiple
 
 SaveMultipleDocuments::SaveMultipleDocuments(const QList<Document*>& docs, bool askBeforeSave, SavedNewDocFlag saveAndOpenFlag)
-: Task(tr("Save multiple documents"), TaskFlag_NoRun)
-{
+    : Task(tr("Save multiple documents"), TaskFlag_NoRun) {
     bool saveAll = false;
     foreach(Document* doc, docs) {
-        bool save=true;
+        bool save = true;
         if (askBeforeSave) {
             QMessageBox::StandardButtons buttons = QMessageBox::StandardButtons(QMessageBox::Yes) | QMessageBox::No | QMessageBox::Cancel;
             if (docs.size() > 1) {
@@ -215,10 +216,10 @@ SaveMultipleDocuments::SaveMultipleDocuments(const QList<Document*>& docs, bool 
             }
 
             QObjectScopedPointer<QMessageBox> messageBox(new QMessageBox(QMessageBox::Question,
-                                                                         tr("Question?"),
-                                                                         tr("Save document: %1").arg(doc->getURLString()),
-                                                                         buttons,
-                                                                         QApplication::activeWindow()));
+                tr("Question?"),
+                tr("Save document: %1").arg(doc->getURLString()),
+                buttons,
+                QApplication::activeWindow()));
             messageBox->button(QMessageBox::Cancel)->hide();
 
             int res = saveAll ? QMessageBox::YesToAll : messageBox->exec();
@@ -245,7 +246,7 @@ SaveMultipleDocuments::SaveMultipleDocuments(const QList<Document*>& docs, bool 
                 if (!url.isEmpty()) {
                     if (saveAndOpenFlag == SavedNewDoc_Open) {
                         addSubTask(new SaveDocumentTask(doc, doc->getIOAdapterFactory(), url,
-                                                       SaveDocFlags(SaveDoc_Overwrite) | SaveDoc_DestroyAfter | SaveDoc_OpenAfter));
+                            SaveDocFlags(SaveDoc_Overwrite) | SaveDoc_DestroyAfter | SaveDoc_OpenAfter));
                     } else {
                         addSubTask(new SaveDocumentTask(doc, doc->getIOAdapterFactory(), url));
                     }
@@ -279,22 +280,22 @@ GUrl SaveMultipleDocuments::chooseAnotherUrl(Document* doc) {
         msgBox->setText(tr("You have no permission to write to '%1' file.\nUGENE contains unsaved modifications.").arg(doc->getURL().fileName()));
         msgBox->setInformativeText(tr("Do you want to save changes to another file?"));
 
-        QPushButton *saveButton = msgBox->addButton( QMessageBox::Save );
-        msgBox->addButton( QMessageBox::Cancel );
+        QPushButton *saveButton = msgBox->addButton(QMessageBox::Save);
+        msgBox->addButton(QMessageBox::Cancel);
         msgBox->setDefaultButton(saveButton);
         msgBox->setObjectName("permissionBox");
         msgBox->exec();
         CHECK(!msgBox.isNull(), url);
 
         if (msgBox->clickedButton() == saveButton) {
-            QString newFileUrl = GUrlUtils::rollFileName(doc->getURLString(), "_modified_", DocumentUtils::getNewDocFileNameExcludesHint( ) );
+            QString newFileUrl = GUrlUtils::rollFileName(doc->getURLString(), "_modified_", DocumentUtils::getNewDocFileNameExcludesHint());
             QString saveFileFilter = doc->getDocumentFormat()->getSupportedDocumentFileExtensions().join(" *.").prepend("*.");
             QWidget *activeWindow = qobject_cast<QWidget*>(QApplication::activeWindow());
             QFileDialog::Options options;
 #if defined(Q_OS_MAC) | defined(Q_OS_WIN)
             if (qgetenv(ENV_GUI_TEST).toInt() == 1 && qgetenv(ENV_USE_NATIVE_DIALOGS).toInt() == 0) {
                 options = QFileDialog::DontUseNativeDialog;
-            }else {
+            } else {
                 options = 0;
             }
 #endif
@@ -320,8 +321,7 @@ GUrl SaveMultipleDocuments::chooseAnotherUrl(Document* doc) {
 //////////////////////////////////////////////////////////////////////////
 // save a copy and add to project
 SaveCopyAndAddToProjectTask::SaveCopyAndAddToProjectTask(Document* doc, IOAdapterFactory* iof, const GUrl& _url)
-: Task (tr("Save a copy %1").arg(_url.getURLString()), TaskFlags_NR_FOSCOE), url(_url)
-{
+    : Task(tr("Save a copy %1").arg(_url.getURLString()), TaskFlags_NR_FOSCOE), url(_url) {
     origURL = doc->getURL();
     df = doc->getDocumentFormat();
     hints = doc->getGHintsMap();
@@ -360,9 +360,7 @@ Task::ReportResult SaveCopyAndAddToProjectTask::report() {
 // relocate task
 
 RelocateDocumentTask::RelocateDocumentTask(const GUrl& fu, const GUrl& tu)
-: Task (tr("Relocate document %1 -> %2").arg(fu.getURLString()).arg(tu.getURLString()), TaskFlag_NoRun), fromURL(fu), toURL(tu)
-{
-}
+    : Task(tr("Relocate document %1 -> %2").arg(fu.getURLString()).arg(tu.getURLString()), TaskFlag_NoRun), fromURL(fu), toURL(tu) {}
 
 Task::ReportResult RelocateDocumentTask::report() {
     Project* p = AppContext::getProject();

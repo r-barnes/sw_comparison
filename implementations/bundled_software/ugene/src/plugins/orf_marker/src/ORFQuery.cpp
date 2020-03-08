@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -207,7 +207,7 @@ QDORFActorPrototype::QDORFActorPrototype() {
      Descriptor mld(MAX_LENGTH_ATTR, QDORFActor::tr("Max length"), QDORFActor::tr("Maximum length of annotation allowed."));
      Descriptor fd(FIT_ATTR, QDORFActor::tr("Require stop codon"), QDORFActor::tr("Require stop codon."));
      Descriptor mr(RES_ATTR,QDORFActor::tr("Max result"),QDORFActor::tr("Find results not achieved by specified count."));
-     Descriptor lr(LIMIT_ATTR,QDORFActor::tr("Limit results"),QDORFActor::tr("The amount of results will be limited id that option is setted"));
+     Descriptor lr(LIMIT_ATTR,QDORFActor::tr("Limit results"),QDORFActor::tr("The amount of results will be limited id that option is set"));
 
      attributes << new Attribute(ttd, BaseTypes::STRING_TYPE(), false, QVariant(DNATranslationID(1)));
      attributes << new Attribute(ld, BaseTypes::NUM_TYPE(), true, QVariant(100));

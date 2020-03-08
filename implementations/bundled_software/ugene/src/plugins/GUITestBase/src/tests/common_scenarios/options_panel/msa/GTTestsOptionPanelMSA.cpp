@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -28,16 +28,17 @@
 #include <base_dialogs/GTFileDialog.h>
 #include <base_dialogs/MessageBoxFiller.h>
 #include <drivers/GTKeyboardDriver.h>
+#include <drivers/GTMouseDriver.h>
 #include <primitives/GTAction.h>
 #include <primitives/GTCheckBox.h>
 #include <primitives/GTComboBox.h>
 #include <primitives/GTDoubleSpinBox.h>
 #include <primitives/GTLineEdit.h>
+#include <primitives/GTMenu.h>
 #include <primitives/GTRadioButton.h>
 #include <primitives/GTSlider.h>
 #include <primitives/GTWidget.h>
 #include <primitives/PopupChooser.h>
-#include <drivers/GTMouseDriver.h>
 #include <system/GTFile.h>
 
 #include <U2Core/AppContext.h>
@@ -127,7 +128,7 @@ GUI_TEST_CLASS_DEFINITION(general_test_0002){
     QLineEdit* sequenceLineEdit = qobject_cast<QLineEdit*>(GTWidget::findWidget(os, "sequenceLineEdit"));
     CHECK_SET_ERR(sequenceLineEdit != NULL, "sequenceLineEdit not found");
     GTLineEdit::setText(os, sequenceLineEdit, "phan");
-    QStringList names = GTBaseCompleter::getNames(os, GTBaseCompleter::getCompleter(os));
+    QStringList names = GTBaseCompleter::getNames(os, sequenceLineEdit);
 //Expected state: popup helper contains Phaneroptera_falcata.(case insencivity is checked)
     int num = names.count();
     CHECK_SET_ERR(num == 1, QString("wrong number of sequences in completer. Expected 1, found %1").arg(num));
@@ -148,7 +149,7 @@ GUI_TEST_CLASS_DEFINITION(general_test_0003){
     CHECK_SET_ERR(sequenceLineEdit != NULL, "sequenceLineEdit not found");
     GTLineEdit::setText(os, sequenceLineEdit, "wrong name");
 //    Expected state: empty popup helper appeared
-    bool empty = GTBaseCompleter::isEmpty(os, GTBaseCompleter::getCompleter(os));
+    bool empty = GTBaseCompleter::isEmpty(os, sequenceLineEdit);
     CHECK_SET_ERR(empty, "completer is not empty");
     GTWidget::click(os, sequenceLineEdit);//needed to close completer
 }
@@ -165,7 +166,7 @@ GUI_TEST_CLASS_DEFINITION(general_test_0004){
     QLineEdit* sequenceLineEdit = qobject_cast<QLineEdit*>(GTWidget::findWidget(os, "sequenceLineEdit"));
     CHECK_SET_ERR(sequenceLineEdit != NULL, "sequenceLineEdit not found");
     GTLineEdit::setText(os, sequenceLineEdit, "Phan");
-    QStringList completerList = GTBaseCompleter::getNames(os, GTBaseCompleter::getCompleter(os));
+    QStringList completerList = GTBaseCompleter::getNames(os, sequenceLineEdit);
 //    Expected state: two sequence names "Phaneroptera_falcata" appeared in popup helper
     CHECK_SET_ERR(completerList.count() == 2, "wrong number of sequences in completer");
     QString first = completerList.at(0);
@@ -222,7 +223,7 @@ GUI_TEST_CLASS_DEFINITION(highlighting_test_0001){
     CHECK_SET_ERR(c == "#70f970", QString("c has color %1").arg(c));
     CHECK_SET_ERR(gap == "#ffffff", QString("gap has color %1").arg(gap));
 //    4. Check colors for all symbols
-//    (branches: check Jalview, Percentage Identity, Percentage Identity(gray), UGENE color schemes)
+//    (branches: check Jalview, Percentage identity, Percentage identity(gray), UGENE color schemes)
 }
 
 GUI_TEST_CLASS_DEFINITION(highlighting_test_0001_1){
@@ -245,7 +246,7 @@ GUI_TEST_CLASS_DEFINITION(highlighting_test_0001_1){
     CHECK_SET_ERR(c == "#ffffff", QString("c has color %1").arg(c));
     CHECK_SET_ERR(gap == "#ffffff", QString("gap has color %1").arg(gap));
 //    4. Check colors for all symbols
-//    (branches: check Jalview, Percentage Identity, Percentage Identity(gray), UGENE color schemes)
+//    (branches: check Jalview, Percentage identity, Percentage identity(gray), UGENE color schemes)
 }
 
 GUI_TEST_CLASS_DEFINITION(highlighting_test_0001_2){
@@ -268,7 +269,7 @@ GUI_TEST_CLASS_DEFINITION(highlighting_test_0001_2){
     CHECK_SET_ERR(c == "#ffb340", QString("c has color %1").arg(c));
     CHECK_SET_ERR(gap == "#ffffff", QString("gap has color %1").arg(gap));
 //    4. Check colors for all symbols
-//    (branches: check Jalview, Percentage Identity, Percentage Identity(gray), UGENE color schemes)
+//    (branches: check Jalview, Percentage identity, Percentage identity(gray), UGENE color schemes)
 }
 
 GUI_TEST_CLASS_DEFINITION(highlighting_test_0001_3){
@@ -277,9 +278,9 @@ GUI_TEST_CLASS_DEFINITION(highlighting_test_0001_3){
     GTUtilsTaskTreeView::waitTaskFinished(os);
 //    2. Open highlighting option panel tab
     GTUtilsOptionPanelMsa::openTab(os, GTUtilsOptionPanelMsa::Highlighting);
-//    3. Select "Percentage Identity" color scheme
+//    3. Select "Percentage identity" color scheme
     QComboBox* colorScheme = qobject_cast<QComboBox*>(GTWidget::findWidget(os, "colorScheme"));
-    GTComboBox::setIndexWithText(os, colorScheme,"Percentage Identity");
+    GTComboBox::setIndexWithText(os, colorScheme,"Percentage identity");
     QString a = GTUtilsMSAEditorSequenceArea::getColor(os, QPoint(0,0));
     QString t = GTUtilsMSAEditorSequenceArea::getColor(os, QPoint(0,2));
     QString g = GTUtilsMSAEditorSequenceArea::getColor(os, QPoint(2,0));
@@ -291,7 +292,7 @@ GUI_TEST_CLASS_DEFINITION(highlighting_test_0001_3){
     CHECK_SET_ERR(c == "#9999ff", QString("c has color %1").arg(c));
     CHECK_SET_ERR(gap == "#ffffff", QString("gap has color %1").arg(gap));
 //    4. Check colors for all symbols
-//    (branches: check Jalview, Percentage Identity, Percentage Identity(gray), UGENE color schemes)
+//    (branches: check Jalview, Percentage identity, Percentage identity(gray), UGENE color schemes)
 }
 
 GUI_TEST_CLASS_DEFINITION(highlighting_test_0001_4){
@@ -300,9 +301,9 @@ GUI_TEST_CLASS_DEFINITION(highlighting_test_0001_4){
     GTUtilsTaskTreeView::waitTaskFinished(os);
 //    2. Open highlighting option panel tab
     GTUtilsOptionPanelMsa::openTab(os, GTUtilsOptionPanelMsa::Highlighting);
-//    3. Select "Percentage Identity (gray)" color scheme
+//    3. Select "Percentage identity (gray)" color scheme
     QComboBox* colorScheme = qobject_cast<QComboBox*>(GTWidget::findWidget(os, "colorScheme"));
-    GTComboBox::setIndexWithText(os, colorScheme,"Percentage Identity (gray)");
+    GTComboBox::setIndexWithText(os, colorScheme,"Percentage identity (gray)");
     QString a = GTUtilsMSAEditorSequenceArea::getColor(os, QPoint(0,0));
     QString t = GTUtilsMSAEditorSequenceArea::getColor(os, QPoint(0,2));
     QString g = GTUtilsMSAEditorSequenceArea::getColor(os, QPoint(2,0));
@@ -314,7 +315,7 @@ GUI_TEST_CLASS_DEFINITION(highlighting_test_0001_4){
     CHECK_SET_ERR(c == "#999999", QString("c has color %1").arg(c));
     CHECK_SET_ERR(gap == "#ffffff", QString("gap has color %1").arg(gap));
 //    4. Check colors for all symbols
-//    (branches: check Jalview, Percentage Identity, Percentage Identity(gray), UGENE color schemes)
+//    (branches: check Jalview, Percentage identity, Percentage identity(gray), UGENE color schemes)
 }
 
 GUI_TEST_CLASS_DEFINITION(highlighting_test_0002){
@@ -889,10 +890,10 @@ GUI_TEST_CLASS_DEFINITION(highlighting_test_0007){
     QString g = GTUtilsMSAEditorSequenceArea::getColor(os, QPoint(2, 0));
     QString c = GTUtilsMSAEditorSequenceArea::getColor(os, QPoint(4, 0));
     QString gap = GTUtilsMSAEditorSequenceArea::getColor(os, QPoint(4, 2));
-    CHECK_SET_ERR(a == "#fcff92", QString("a has color %1").arg(a));
+    CHECK_SET_ERR(a == "#fdff6a", QString("a has color %1").arg(a));
     CHECK_SET_ERR(t == "#ff99b1", QString("t has color %1").arg(t));
-    CHECK_SET_ERR(g == "#4eade1", QString("g has color %1").arg(g));
-    CHECK_SET_ERR(c == "#70f970", QString("c has color %1").arg(c));
+    CHECK_SET_ERR(g == "#2aa1e1", QString("g has color %1").arg(g));
+    CHECK_SET_ERR(c == "#49f949", QString("c has color %1").arg(c));
     CHECK_SET_ERR(gap == "#ffffff", QString("gap has color %1").arg(gap));
  /* GTUtilsMSAEditorSequenceArea::checkColor(os, QPoint(0,0), "#fcff92");//yellow
     GTUtilsMSAEditorSequenceArea::checkColor(os, QPoint(0,2), "#ff99b1");//red
@@ -934,9 +935,9 @@ GUI_TEST_CLASS_DEFINITION(highlighting_test_0008){
     QString g = GTUtilsMSAEditorSequenceArea::getColor(os, QPoint(2, 0));
     QString gap2 = GTUtilsMSAEditorSequenceArea::getColor(os, QPoint(3, 1));
     QString gap3 = GTUtilsMSAEditorSequenceArea::getColor(os, QPoint(4, 2));
-    CHECK_SET_ERR(a == "#fcff92", QString("a has color %1 intead of %2").arg(a).arg("#fcff92"));
+    CHECK_SET_ERR(a == "#fdff6a", QString("a has color %1 intead of %2").arg(a).arg("#fcff92"));
     CHECK_SET_ERR(gap1 == "#ffffff", QString("gap1 has color %1 intead of %2").arg(gap1).arg("#ffffff"));
-    CHECK_SET_ERR(g == "#4eade1", QString("g has color %1 intead of %2").arg(g).arg("#4eade1"));
+    CHECK_SET_ERR(g == "#2aa1e1", QString("g has color %1 intead of %2").arg(g).arg("#4eade1"));
     CHECK_SET_ERR(gap2 == "#ffffff", QString("gap2 has color%1 intead of %2").arg(gap2).arg("#ffffff"));
     CHECK_SET_ERR(gap3 == "#ffffff", QString("gap3 has color %1 intead of %2").arg(gap3).arg("#ffffff"));
     /*
@@ -1163,14 +1164,14 @@ GUI_TEST_CLASS_DEFINITION(pairwise_alignment_test_0004){
     QLineEdit* line1 = GTUtilsOptionPanelMsa::getSeqLineEdit(os, 1);
     CHECK_SET_ERR(line1 != NULL, "lineEdit 1 not found");
     GTLineEdit::setText(os, line1, "wrong name");
-    CHECK_SET_ERR(GTBaseCompleter::isEmpty(os), "Completer is not empty");
+    CHECK_SET_ERR(GTBaseCompleter::isEmpty(os, line1), "Completer is not empty");
 
     GTKeyboardDriver::keyClick( Qt::Key_Escape);
 
     QLineEdit* line2 = GTUtilsOptionPanelMsa::getSeqLineEdit(os, 2);
     CHECK_SET_ERR(line2 != NULL, "lineEdit 2 not found");
     GTLineEdit::setText(os, line2, "wrong name");
-    CHECK_SET_ERR(GTBaseCompleter::isEmpty(os), "Completer is not empty");
+    CHECK_SET_ERR(GTBaseCompleter::isEmpty(os, line2), "Completer is not empty");
     GTKeyboardDriver::keyClick(Qt::Key_Escape);
     GTUtilsOptionPanelMsa::toggleTab(os, GTUtilsOptionPanelMsa::PairwiseAlignment);
 //    Expected state: empty popup helper appeared
@@ -1222,10 +1223,10 @@ GUI_TEST_CLASS_DEFINITION(pairwise_alignment_test_0005_1){
     CHECK_SET_ERR(line1->text() == "seq7_1", QString("wrong text in line edit1: %1").arg(line1->text()));
     CHECK_SET_ERR(line2->text() == "seq7", QString("wrong text in line edit2: %1").arg(line2->text()));
 //    4. Remove sequenses
-    GTWidget::click(os, GTUtilsOptionPanelMsa::getDeleteButton(os, 1));		
+    GTWidget::click(os, GTUtilsOptionPanelMsa::getDeleteButton(os, 1));
     GTWidget::click(os, GTUtilsOptionPanelMsa::getDeleteButton(os, 2));
-	GTWidget::click(os, GTUtilsOptionPanelMsa::getDeleteButton(os, 1));
-	
+    GTWidget::click(os, GTUtilsOptionPanelMsa::getDeleteButton(os, 1));
+
 //    Expected state: sequences removed
     CHECK_SET_ERR(line1->text().isEmpty(), QString("wrong text in line edit1: %1").arg(line1->text()));
     CHECK_SET_ERR(line2->text().isEmpty(), QString("wrong text in line edit2: %1").arg(line2->text()));
@@ -1342,7 +1343,7 @@ GUI_TEST_CLASS_DEFINITION(pairwise_alignment_test_0007_1){
 //    3. Add Phaneroptera_falcata and Isophya_altaica_EF540820 sequences to PA
     GTUtilsOptionPanelMsa::addFirstSeqToPA(os, "Phaneroptera_falcata");
     GTUtilsOptionPanelMsa::addSecondSeqToPA(os, "Isophya_altaica_EF540820");
-//    4. Set gap extention penalty to 1000. Press align button
+//    4. Set gap extension penalty to 1000. Press align button
     setGapExtd(os, 1000);
     inNewWindow(os, false);
     align(os);
@@ -1439,27 +1440,27 @@ GUI_TEST_CLASS_DEFINITION(pairwise_alignment_test_0009){
     GTUtilsOptionPanelMsa::addSecondSeqToPA(os, "Isophya_altaica_EF540820");
 //    4. Add Isophya_altaica_EF540820 sequence
 //    5. Select some existing read-only file as output
-    QString s = sandBoxDir + "pairwise_alignment_test_0009";
+    QString dirPath = sandBoxDir + "pairwise_alignment_test_0009";
 
-    QDir().mkpath(s);
+    QDir().mkpath(dirPath);
 
-    s += "/" + fileName;
-    QFile f(s);
+    const QString filePath = dirPath + "/" + fileName;
+    QFile f(filePath);
     bool created = f.open(QFile::ReadWrite);
     CHECK_SET_ERR(created, "file not created");
     f.close();
-    GTFile::setReadOnly(os, s);
+    GTFile::setReadOnly(os, filePath);
 
     setOutputPath(os, sandBoxDir + dirName, fileName);
     align(os);
     GTGlobals::sleep(500);
 //    Expected state: error in log: Task {Pairwise alignment task} finished with error: No permission to write to 'pairwise_alignment_test_0009.aln' file.
     QString error = l.getError();
-    QString expected;
-    expected = QString("Task {Pairwise alignment task} finished with error: No permission to write to \'%1\' file.").arg(fileName);
+    const QString expectedFilePath = QFileInfo(filePath).absoluteFilePath();
+    const QString expected = QString("Task {Pairwise alignment task} finished with error: No permission to write to \'%1\' file.").arg(expectedFilePath);
     CHECK_SET_ERR(error.contains(expected), QString("enexpected error: %1").arg(error));
 
-    GTFile::setReadWrite(os, s);
+    GTFile::setReadWrite(os, filePath);
 }
 
 GUI_TEST_CLASS_DEFINITION(pairwise_alignment_test_0010){
@@ -1476,21 +1477,24 @@ GUI_TEST_CLASS_DEFINITION(pairwise_alignment_test_0010){
     GTUtilsOptionPanelMsa::addSecondSeqToPA(os, "Isophya_altaica_EF540820");
 //    4. Add Isophya_altaica_EF540820 sequence
 //    5. Select some existing read-only file as output
-    QString s = sandBoxDir + dirName;
-    bool ok = QDir().mkpath(s);
+    QString dirPath = sandBoxDir + dirName;
+    bool ok = QDir().mkpath(dirPath);
     CHECK_SET_ERR(ok, "subfolder not created");
 
-    GTFile::setReadOnly(os, s);
+    GTFile::setReadOnly(os, dirPath);
 
-    setOutputPath(os, sandBoxDir + dirName,  fileName);
+    const QString filePath = dirPath + "/" + fileName;
+
+    setOutputPath(os, dirPath, fileName);
     align(os);
     GTGlobals::sleep(500);
 //    Expected state: error in log: Task {Pairwise alignment task} finished with error: No permission to write to 'COI_transl.aln' file.
     QString error = l.getError();
-    QString expected = QString("Task {Pairwise alignment task} finished with error: No permission to write to \'%1\' file.").arg(fileName);
+    const QString expectedFilePath = QFileInfo(filePath).absoluteFilePath();
+    const QString expected = QString("Task {Pairwise alignment task} finished with error: No permission to write to \'%1\' file.").arg(expectedFilePath);
     CHECK_SET_ERR(error == expected, QString("enexpected error: %1").arg(error));
 
-    GTFile::setReadWrite(os, s);
+    GTFile::setReadWrite(os, dirPath);
 }
 
 GUI_TEST_CLASS_DEFINITION(pairwise_alignment_test_0011){
@@ -1663,9 +1667,9 @@ GUI_TEST_CLASS_DEFINITION(tree_settings_test_0005){
     CHECK_SET_ERR(showDistancesCheck != NULL, "showDistancesCheck not found");
     QCheckBox* alignLabelsCheck = qobject_cast<QCheckBox*>(GTWidget::findWidget(os, "alignLabelsCheck"));
     CHECK_SET_ERR(alignLabelsCheck != NULL, "alignLabelsCheck not found");
-
-    QWidget* parent = GTWidget::findWidget(os, "COI [m] COI");
-    QGraphicsView* treeView = qobject_cast<QGraphicsView*>(GTWidget::findWidget(os, "treeView", parent));
+    QWidget* parent = GTWidget::findWidget(os, "COI [m] COI_SubWindow");
+    QWidget* parent2 = GTWidget::findWidget(os, "COI [m] COI", parent);
+    QGraphicsView* treeView = qobject_cast<QGraphicsView*>(GTWidget::findWidget(os, "treeView", parent2));
 
     QList<QGraphicsSimpleTextItem*> initNames = GTUtilsPhyTree::getVisiableLabels(os, treeView);
     QList<QGraphicsSimpleTextItem*> initDistanses = GTUtilsPhyTree::getVisiableDistances(os, treeView);
@@ -1997,28 +2001,28 @@ GUI_TEST_CLASS_DEFINITION(export_consensus_test_0002){
     GTUtilsOptionPanelMsa::openTab(os, GTUtilsOptionPanelMsa::ExportConsensus);
 //    3. Select existing read-only file "export_consensus_test_0002.aln" as output
 
-    QString s = sandBoxDir + "export_consensus_test_0002";
-    QDir().mkpath(s);
+    const QString dirPath = sandBoxDir + "export_consensus_test_0002";
+    QDir().mkpath(dirPath);
 
-    s += "/" + fileName;
-    QFile f(s);
+    const QString filePath = dirPath + "/" + fileName;
+    QFile f(filePath);
     bool created = f.open(QFile::ReadWrite);
     CHECK_SET_ERR(created, "file not created");
     f.close();
 
-    GTFile::setReadOnly(os, s);
+    GTFile::setReadOnly(os, filePath);
 
-    setConsensusOutputPath(os, s);
+    setConsensusOutputPath(os, filePath);
 //    4. Press export button
     GTWidget::click(os, GTWidget::findWidget(os, "exportBtn"));
     GTGlobals::sleep(300);
 //    Expected state: error in log: Task {Save document} finished with error: No permission to write to 'COI_transl.aln' file.
     QString error = l.getError();
-    QString expected;
-    expected = QString("Task {Export consensus} finished with error: Subtask {Save document} is failed: No permission to write to \'%1\' file.").arg(fileName);
+    const QString expectedFilePath = QFileInfo(filePath).absoluteFilePath();
+    QString expected = QString("Task {Export consensus} finished with error: Subtask {Save document} is failed: No permission to write to \'%1\' file.").arg(expectedFilePath);
     CHECK_SET_ERR(error.contains(expected), QString("Unexpected error: %1").arg(error));
 
-    GTFile::setReadWrite(os, s);
+    GTFile::setReadWrite(os, filePath);
 }
 
 GUI_TEST_CLASS_DEFINITION(export_consensus_test_0003){
@@ -2031,24 +2035,39 @@ GUI_TEST_CLASS_DEFINITION(export_consensus_test_0003){
 //    2. Open export consensus option panel tab
     GTUtilsOptionPanelMsa::openTab(os, GTUtilsOptionPanelMsa::ExportConsensus);
 //    3. Select some existing file in read-only directory as output
-    QString s = sandBoxDir + dirName;
-    bool ok = QDir().mkpath(s);
+    QString dirPath = sandBoxDir + dirName;
+    bool ok = QDir().mkpath(dirPath);
     CHECK_SET_ERR(ok, "subfolder not created");
-    GTFile::setReadOnly(os, s);
+    GTFile::setReadOnly(os, dirPath);
 
-    setConsensusOutputPath(os, sandBoxDir + dirName + '/' + fileName);
+    const QString filePath = dirPath + '/' + fileName;
+    setConsensusOutputPath(os, filePath);
 //    4. Press export button
     GTWidget::click(os, GTWidget::findWidget(os, "exportBtn"));
     GTGlobals::sleep(300);
 //    Expected state: error in log: Task {Pairwise Alignment Task} finished with error: No permission to write to 'COI_transl.aln' file.
     QString error = l.getError();
-    QString expected = QString("Task {Export consensus} finished with error: Subtask {Save document} is failed: No permission to write to \'%1\' file.").arg(fileName);
+    const QString expectedFilePath = QFileInfo(filePath).absoluteFilePath();
+    QString expected = QString("Task {Export consensus} finished with error: Subtask {Save document} is failed: No permission to write to \'%1\' file.").arg(expectedFilePath);
     CHECK_SET_ERR(error == expected, QString("Unexpected error: %1").arg(error));
 
-    GTFile::setReadWrite(os, s);
+    GTFile::setReadWrite(os, dirPath);
 }
 
 GUI_TEST_CLASS_DEFINITION(export_consensus_test_0004){
+    //0. Change Documents folder to sandbox
+    class Custom : public CustomScenario {
+        void run(HI::GUITestOpStatus &os){
+            QWidget *dialog = QApplication::activeModalWidget();
+            AppSettingsDialogFiller::setDocumentsDirPath(os, sandBoxDir);
+            GTUtilsDialog::clickButtonBox(os, dialog, QDialogButtonBox::Ok);
+        }
+    };
+
+    GTUtilsDialog::waitForDialog(os, new AppSettingsDialogFiller(os, new Custom()));
+    GTMenu::clickMainMenuItem(os, QStringList() << "Settings" << "Preferences...", GTGlobals::UseMouse);
+    GTUtilsTaskTreeView::waitTaskFinished(os);
+
 //    1. Open data/samples/CLUSTALW/COI.aln
     GTFileDialog::openFile(os, dataDir + "samples/CLUSTALW", "COI.aln");
     GTUtilsTaskTreeView::waitTaskFinished(os);
@@ -2073,7 +2092,7 @@ GUI_TEST_CLASS_DEFINITION(export_consensus_test_0004){
 
     QLineEdit* pathLe = GTWidget::findExactWidget<QLineEdit*>(os, "pathLe");
     QString pathLeText = pathLe->text();
-    CHECK_SET_ERR(!pathLeText.isEmpty() && pathLeText.contains("COI_consensus.txt"), "wrong lineEdit text: " + pathLeText);
+    CHECK_SET_ERR(!pathLeText.isEmpty() && pathLeText.contains("COI_consensus_1.txt"), "wrong lineEdit text: " + pathLeText);
 }
 
 GUI_TEST_CLASS_DEFINITION(export_consensus_test_0005){

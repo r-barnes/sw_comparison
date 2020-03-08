@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -39,21 +39,13 @@ static const QString CHROMOSOME("chromosome");
 static const QString UNKNOWN_CHR("unknown");
 
 DifferentialFormat::DifferentialFormat(QObject *parent)
-: DocumentFormat(parent, DocumentFormatFlags_W1, QStringList()<<"diff")
+: TextDocumentFormat(parent, BaseDocumentFormats::DIFF, DocumentFormatFlags_W1, QStringList()<<"diff")
 {
     formatName = tr("Differential");
     supportedObjectTypes += GObjectTypes::ANNOTATION_TABLE;
     formatDescription = tr("Differential format is a text-based format for"
         " representing Cuffdiff differential output files: expression,"
         " splicing, promoters and cds.");
-}
-
-DocumentFormatId DifferentialFormat::getFormatId() const {
-    return BaseDocumentFormats::DIFF;
-}
-
-const QString & DifferentialFormat::getFormatName() const {
-    return formatName;
 }
 
 QList<ColumnDataParser::Column> DifferentialFormat::getColumns() const {
@@ -79,7 +71,7 @@ QString DifferentialFormat::getAnnotationName() const {
     return "differential";
 }
 
-FormatCheckResult DifferentialFormat::checkRawData(const QByteArray &rawData,
+FormatCheckResult DifferentialFormat::checkRawTextData(const QByteArray &rawData,
     const GUrl &) const {
     QStringList lines = QString(rawData).split("\n", QString::SkipEmptyParts);
     CHECK(lines.size() > 0, FormatDetection_NotMatched);
@@ -116,10 +108,9 @@ const int DifferentialFormat::BUFFER_SIZE = 4194304;
 QString DifferentialFormat::readLine(IOAdapter *io, QByteArray &buffer, U2OpStatus &os) {
     bool eol = false;
     qint64 size = io->readLine(buffer.data(), BUFFER_SIZE, &eol);
-    if (!eol && !io->isEof()) {
-        os.setError("Line line is too long");
-        return "";
-    }
+    CHECK_EXT(eol || io->isEof(), os.setError("Line is too long"), QString());
+    CHECK_EXT(!io->hasError(), os.setError(io->errorString()), QString());
+
     return buffer.left(size).trimmed();
 }
 
@@ -185,7 +176,7 @@ QList<SharedAnnotationData> DifferentialFormat::parseAnnotations(const ColumnDat
     return anns;
 }
 
-Document * DifferentialFormat::loadDocument(IOAdapter *io, const U2DbiRef &targetDb, const QVariantMap &hints, U2OpStatus &os) {
+Document * DifferentialFormat::loadTextDocument(IOAdapter *io, const U2DbiRef &targetDb, const QVariantMap &hints, U2OpStatus &os) {
     DbiOperationsBlock opBlock(targetDb, os);
     CHECK_OP(os, NULL);
     Q_UNUSED(opBlock);

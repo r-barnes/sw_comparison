@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -277,14 +277,6 @@ ImageExportFormFiller::ImageExportFormFiller(HI::GUITestOpStatus &os, const Para
 void ImageExportFormFiller::commonScenario() {
     QWidget* dialog = QApplication::activeModalWidget();
     GT_CHECK(dialog, "activeModalWidget is NULL");
-
-    QCheckBox* export_msa_simple_overview = qobject_cast<QCheckBox*>(GTWidget::findWidget(os, "export_msa_simple_overview", dialog));
-    GT_CHECK(export_msa_simple_overview, "export_msa_simple_overview is NULL");
-    GTCheckBox::setChecked(os, export_msa_simple_overview, parameters.simpleOverviewChecked);
-
-    QCheckBox* export_msa_graph_overview = qobject_cast<QCheckBox*>(GTWidget::findWidget(os, "export_msa_graph_overview", dialog));
-    GT_CHECK(export_msa_graph_overview, "export_msa_graph_overview is NULL");
-    GTCheckBox::setChecked(os, export_msa_graph_overview, parameters.graphOverviewChecked);
 
     QLineEdit* fileNameEdit = qobject_cast<QLineEdit*>(GTWidget::findWidget(os, "fileNameEdit", dialog));
     GT_CHECK(fileNameEdit, "fileNameEdit is NULL");

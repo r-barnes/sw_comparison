@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -21,15 +21,12 @@
 
 #include <QAbstractSpinBox>
 #include <QApplication>
-#include <QDialog>
 #include <QLabel>
 #include <QLineEdit>
 #include <QListWidget>
 #include <QMainWindow>
-#include <QMenu>
 #include <QMenuBar>
 #include <QMessageBox>
-#include <QMouseEvent>
 #include <QPushButton>
 #include <QTreeWidget>
 #include <QWidget>
@@ -49,13 +46,13 @@ bool UserActionsWriter::eventFilter(QObject *obj, QEvent *event) {
     Q_UNUSED(locker);
 
     if (event->type() == QEvent::MouseButtonPress ||
-         event->type() == QEvent::MouseButtonRelease ||
-         event->type() == QEvent::MouseButtonDblClick) {
+        event->type() == QEvent::MouseButtonRelease ||
+        event->type() == QEvent::MouseButtonDblClick) {
         QMouseEvent* m = dynamic_cast<QMouseEvent *>(event);
         generateMouseMessage(m);
         return false;
     } else if (event->type() == QEvent::KeyPress ||
-               event->type() == QEvent::KeyRelease) {
+        event->type() == QEvent::KeyRelease) {
         QKeyEvent* k = dynamic_cast<QKeyEvent *>(event);
         generateKeyMessage(k);
         return false;
@@ -64,7 +61,7 @@ bool UserActionsWriter::eventFilter(QObject *obj, QEvent *event) {
     }
 }
 
-void UserActionsWriter::generateMouseMessage(QMouseEvent* m){
+void UserActionsWriter::generateMouseMessage(QMouseEvent* m) {
     CHECK_EXT(m, userActLog.error(QString("MouseEvent is NULL %1:%2").arg(__FILE__).arg(__LINE__)), );
 
     QString message("");
@@ -114,7 +111,7 @@ void UserActionsWriter::generateMouseMessage(QMouseEvent* m){
     filterMouseMessages(message);
 }
 
-QString UserActionsWriter::getMouseButtonInfo(QMouseEvent* m){
+QString UserActionsWriter::getMouseButtonInfo(QMouseEvent* m) {
     CHECK_EXT(m, userActLog.error(QString("MouseEvent is NULL %1:%2").arg(__FILE__).arg(__LINE__)), "");
     switch (m->button()) {
     case Qt::RightButton: {
@@ -126,12 +123,12 @@ QString UserActionsWriter::getMouseButtonInfo(QMouseEvent* m){
         break;
     }
     default: {
-       return QString("Other_button ");
+        return QString("Other_button ");
     }
     }
 }
 
-QString UserActionsWriter::getTreeWidgetInfo(QMouseEvent* m, QWidget *parent){
+QString UserActionsWriter::getTreeWidgetInfo(QMouseEvent* m, QWidget *parent) {
     CHECK_EXT(m, userActLog.error(QString("MouseEvent is NULL %1:%2").arg(__FILE__).arg(__LINE__)), "");
     CHECK_EXT(parent, userActLog.error(QString("Widget is NULL %1:%2").arg(__FILE__).arg(__LINE__)), "");
 
@@ -155,7 +152,7 @@ QString UserActionsWriter::getTreeWidgetInfo(QMouseEvent* m, QWidget *parent){
     return message;
 }
 
-QString UserActionsWriter::getAdditionalWidgetInfo(QMouseEvent* m, QWidget *w){
+QString UserActionsWriter::getAdditionalWidgetInfo(QMouseEvent* m, QWidget *w) {
     CHECK_EXT(m, userActLog.error(QString("MouseEvent is NULL %1:%2").arg(__FILE__).arg(__LINE__)), "");
     CHECK_EXT(w, userActLog.error(QString("Widget is NULL %1:%2").arg(__FILE__).arg(__LINE__)), "");
 
@@ -178,7 +175,7 @@ QString UserActionsWriter::getAdditionalWidgetInfo(QMouseEvent* m, QWidget *w){
     return message;
 }
 
-QString UserActionsWriter::getWidgetText(QMouseEvent* m, QWidget* w){
+QString UserActionsWriter::getWidgetText(QMouseEvent* m, QWidget* w) {
     CHECK_EXT(m, userActLog.error(QString("MouseEvent is NULL %1:%2").arg(__FILE__).arg(__LINE__)), "");
     CHECK_EXT(w, userActLog.error(QString("Widget is NULL %1:%2").arg(__FILE__).arg(__LINE__)), "");
 
@@ -197,7 +194,7 @@ QString UserActionsWriter::getWidgetText(QMouseEvent* m, QWidget* w){
     QMenu* menu = qobject_cast<QMenu*>(w);
     if (menu) {
         QAction* menuAct = menu->actionAt(menu->mapFromGlobal(m->globalPos()));
-        if (menuAct){
+        if (menuAct) {
             text.append(menuAct->text());
         }
     }
@@ -254,7 +251,7 @@ void UserActionsWriter::filterMouseMessages(QString message) {
 
         /*Do not duplicate event information when logging mouse release event*/
         if (prevMessage.right(prevMessage.length() - typeMap.value(QEvent::MouseButtonPress).length()) ==
-                message.right(message.length() - typeMap.value(QEvent::MouseButtonRelease).length())) {
+            message.right(message.length() - typeMap.value(QEvent::MouseButtonRelease).length())) {
             userActLog.trace("mouse_release");
             prevMessage = message;
             return;
@@ -276,14 +273,14 @@ void UserActionsWriter::filterKeyboardMessages(QKeyEvent *k, QString message) {
     if (message != prevMessage && typeMap.value(k->type()) != NULL) {
         /*Do not duplicate event information when logging key release event*/
         if (prevMessage.right(prevMessage.length() - typeMap.value(QEvent::KeyPress).length()) ==
-                message.right(message.length() - typeMap.value(QEvent::KeyRelease).length())) {
+            message.right(message.length() - typeMap.value(QEvent::KeyRelease).length())) {
             prevMessage = message;
             return;
         }
 
         /*If one key pressed several times, count presses*/
         if (prevMessage.right(prevMessage.length() - typeMap.value(QEvent::KeyRelease).length()) ==
-                message.right(message.length() - typeMap.value(QEvent::KeyPress).length()) && !BUFFER_CONDITION(k)) {
+            message.right(message.length() - typeMap.value(QEvent::KeyPress).length()) && !BUFFER_CONDITION(k)) {
             prevMessage = message;
             counter++;
             return;
@@ -330,7 +327,7 @@ QString UserActionsWriter::getKeyModifiersInfo(QKeyEvent *k) {
     if (m.testFlag(Qt::ShiftModifier) && k->key() != Qt::Key_Shift) {
         return QString("shift + ");
     }
-    if (m.testFlag(Qt::AltModifier)&& k->key() != Qt::Key_Alt) {
+    if (m.testFlag(Qt::AltModifier) && k->key() != Qt::Key_Alt) {
         return QString("alt + ");
     }
     if (m.testFlag(Qt::ControlModifier) && k->key() != Qt::Key_Control) {

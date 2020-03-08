@@ -1,6 +1,6 @@
 /**
 * UGENE - Integrated Bioinformatics Tools.
-* Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+* Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
 * http://ugene.net
 *
 * This program is free software; you can redistribute it and/or
@@ -23,6 +23,8 @@
 #include <QMenu>
 #include <QMessageBox>
 #include <QResizeEvent>
+#include <QToolButton>
+#include <QVBoxLayout>
 
 #include <U2Core/Counter.h>
 #include <U2Core/U2OpStatusUtils.h>
@@ -42,6 +44,8 @@ DatasetsListWidget::DatasetsListWidget(DatasetsController *_ctrl)
     tabs = new DatasetsTabWidget(this);
     l->addWidget(tabs);
 
+    setObjectName("DatasetsListWidget");
+
     QToolButton *newTabButton = new QToolButton(this);
     tabs->setCornerWidget(newTabButton, Qt::TopRightCorner);
     newTabButton->setCursor(Qt::ArrowCursor);
@@ -51,6 +55,7 @@ DatasetsListWidget::DatasetsListWidget(DatasetsController *_ctrl)
     newTabButton->setToolTip(tr("Add dataset"));
     QIcon addIcon = QIcon(QString(":U2Designer/images/add.png"));
     newTabButton->setIcon(addIcon);
+
     connect(newTabButton, SIGNAL(clicked()), SLOT(sl_newDataset()));
     connect(tabs, SIGNAL(tabCloseRequested(int)), SLOT(sl_deleteDataset(int)));
     connect(tabs, SIGNAL(si_contextMenu(const QPoint &, int)), SLOT(sl_contextMenu(const QPoint &, int)));
@@ -156,6 +161,7 @@ void DatasetsListWidget::sl_contextMenu(const QPoint &p, int idx) {
 DatasetsTabWidget::DatasetsTabWidget(QWidget *parent)
 : QTabWidget(parent)
 {
+    setObjectName("DatasetsTabWidget");
     setUsesScrollButtons(true);
     setTabsClosable(true);
     tabBar()->setContextMenuPolicy(Qt::CustomContextMenu);

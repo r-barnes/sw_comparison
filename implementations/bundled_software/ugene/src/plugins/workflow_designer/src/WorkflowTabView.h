@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -27,6 +27,7 @@
 #include <QToolButton>
 
 #include <U2Designer/Dashboard.h>
+#include <U2Designer/DashboardInfo.h>
 
 #include <U2Lang/WorkflowMonitor.h>
 
@@ -45,7 +46,6 @@ public:
 
     void addDashboard(WorkflowMonitor *monitor, const QString &name = QString());
     bool hasDashboards() const;
-    void updateDashboards(const QList<DashboardInfo> &dashboards);
 
     bool eventFilter(QObject *watched, QEvent *event);
 
@@ -55,18 +55,34 @@ signals:
 
 private slots:
     void sl_closeTab();
-    void sl_dashboardsLoaded();
+    void sl_dashboardsListChanged(const QStringList &added, const QStringList &removed);
+    void sl_dashboardsChanged(const QStringList &dashboardIds);
     void sl_renameTab();
     void sl_showDashboard(int idx);
     void sl_workflowStateChanged(bool isRunning);
 
 private:
-    int addDashboard(Dashboard *db);
+    int appendDashboard(Dashboard *db);
+    void removeDashboard(Dashboard *db);
     QString generateName(const QString &baseName = "") const;
-    QStringList allNames() const;
+    QSet<QString> allNames() const;
+    QStringList allIds() const;
+    QMap<QString, Dashboard *> getDashboards(const QStringList &dashboardIds) const;
+
+    WorkflowView *parent;
+};
+
+class RegistryConnectionBlocker {
+public:
+    RegistryConnectionBlocker(WorkflowTabView *tabView);
+    ~RegistryConnectionBlocker();
+
+    static void connectRegistry(WorkflowTabView *tabView);
+    static void disconnectRegistry(WorkflowTabView *tabView);
 
 private:
-    WorkflowView *parent;
+    WorkflowTabView *tabView;
+    static int count;
 };
 
 } // U2

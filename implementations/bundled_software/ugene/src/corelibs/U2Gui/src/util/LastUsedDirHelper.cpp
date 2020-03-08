@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -39,7 +39,12 @@ LastUsedDirHelper::~LastUsedDirHelper() {
 
 void LastUsedDirHelper::saveLastUsedDir() {
     if (!url.isEmpty()) {
-        dir = QFileInfo(url).absoluteDir().absolutePath();
+        QFileInfo fi(url);
+        if (fi.isDir()) { // sometimes 'url' points to a dir, not a file.
+            dir = fi.absoluteFilePath();
+        } else {
+            dir = fi.absoluteDir().absolutePath();
+        }
     }
     if (!dir.isEmpty()) {
         setLastUsedDir(dir, domain);

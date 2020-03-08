@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -94,7 +94,7 @@ public:
 class FormatDBSupportTask : public Task {
     Q_OBJECT
 public:
-    FormatDBSupportTask(const QString& name, const FormatDBSupportTaskSettings& settings);
+    FormatDBSupportTask(const QString& id, const FormatDBSupportTaskSettings& settings);
 
 private:
     void prepare();
@@ -109,7 +109,7 @@ private:
     QString                     externalToolLog;
     PrepareInputFastaFilesTask *prepareTask;
     ExternalToolRunTask*        formatDBTask;
-    QString                     toolName;
+    QString                     toolId;
     FormatDBSupportTaskSettings settings;
 
     QStringList                 inputFastaFiles;

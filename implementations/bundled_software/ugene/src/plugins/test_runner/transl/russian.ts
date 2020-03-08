@@ -28,22 +28,25 @@
 <context>
     <name>Reporter</name>
     <message>
-        <location filename="../src/Reporter.ui" line="13"/>
+        <location filename="../src/Reporter.ui" line="14"/>
         <source>utf_reporter_title</source>
         <translation>Reports</translation>
     </message>
     <message>
-        <location filename="../src/Reporter.ui" line="27"/>
         <source>about:blank</source>
-        <translation>about:blank</translation>
+        <translation type="vanished">about:blank</translation>
     </message>
 </context>
 <context>
     <name>TestView</name>
     <message>
-        <location filename="../src/TestView.ui" line="14"/>
         <source>utf_view_title</source>
-        <translation>Test runner</translation>
+        <translation type="vanished">Test runner</translation>
+    </message>
+    <message>
+        <location filename="../src/TestView.ui" line="14"/>
+        <source>Test Runner</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/TestView.ui" line="28"/>
@@ -56,12 +59,12 @@
         <translation>State</translation>
     </message>
     <message>
-        <location filename="../src/TestView.ui" line="56"/>
+        <location filename="../src/TestView.ui" line="65"/>
         <source>info_label</source>
         <translation>Info</translation>
     </message>
     <message>
-        <location filename="../src/TestView.ui" line="94"/>
+        <location filename="../src/TestView.ui" line="112"/>
         <source>Save test</source>
         <translation>Save test</translation>
     </message>
@@ -76,7 +79,7 @@
     <message>
         <location filename="../src/TestRunnerPlugin.cpp" line="52"/>
         <source>test_runner_desc</source>
-        <translation>Test runner allows to run and manage tests suites and individual tests for Unipro UGENE. Enabled if environment variable UGENE_DEV is set</translation>
+        <translation>Test runner allows one to run and manage tests suites and individual tests for Unipro UGENE. Enabled if environment variable UGENE_DEV is set</translation>
     </message>
     <message>
         <location filename="../src/TestRunnerPlugin.cpp" line="96"/>
@@ -99,7 +102,7 @@
         <translation>Service to support UGENE embedded testing</translation>
     </message>
     <message>
-        <location filename="../src/TestRunnerPlugin.cpp" line="292"/>
+        <location filename="../src/TestRunnerPlugin.cpp" line="296"/>
         <source>Error reading test suite from %1. Error: %2</source>
         <translation>Error reading test suite from %1. Error: %2</translation>
     </message>
@@ -262,17 +265,17 @@
 <context>
     <name>U2::TestViewReporter</name>
     <message>
-        <location filename="../src/TestViewReporter.cpp" line="50"/>
+        <location filename="../src/TestViewReporter.cpp" line="52"/>
         <source>save</source>
         <translation>Save report</translation>
     </message>
     <message>
-        <location filename="../src/TestViewReporter.cpp" line="458"/>
+        <location filename="../src/TestViewReporter.cpp" line="460"/>
         <source>select_save_path</source>
         <translation>Select file to save report</translation>
     </message>
     <message>
-        <location filename="../src/TestViewReporter.cpp" line="458"/>
+        <location filename="../src/TestViewReporter.cpp" line="460"/>
         <source>*.html</source>
         <translation>*.html</translation>
     </message>

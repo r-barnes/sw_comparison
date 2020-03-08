@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -22,7 +22,6 @@
 #include <U2Core/AddDocumentTask.h>
 #include <U2Core/AnnotationTableObject.h>
 #include <U2Core/AppContext.h>
-#include <U2Core/BaseDocumentFormats.h>
 #include <U2Core/Counter.h>
 #include <U2Core/DNAAlphabet.h>
 #include <U2Core/DNASequenceObject.h>
@@ -32,14 +31,11 @@
 #include <U2Core/GObject.h>
 #include <U2Core/GObjectRelationRoles.h>
 #include <U2Core/GObjectUtils.h>
-#include <U2Core/IOAdapter.h>
 #include <U2Core/IOAdapterUtils.h>
-#include <U2Core/L10n.h>
 #include <U2Core/Log.h>
 #include <U2Core/MultiTask.h>
 #include <U2Core/ProjectModel.h>
 #include <U2Core/SaveDocumentTask.h>
-#include <U2Core/U1AnnotationUtils.h>
 #include <U2Core/U2ObjectDbi.h>
 #include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2SafePoints.h>
@@ -55,8 +51,7 @@ ModifySequenceContentTask::ModifySequenceContentTask(const DocumentFormatId &dfI
     const DNASequence &seq2Insert, bool recalculateQualifiers, U1AnnotationUtils::AnnotationStrategyForResize str, const GUrl &url, bool mergeAnnotations)
     : Task(tr("Modify sequence task"), TaskFlags(TaskFlag_NoRun) | TaskFlag_ReportingIsSupported), resultFormatId(dfId),
     mergeAnnotations(mergeAnnotations), recalculateQualifiers(recalculateQualifiers), curDoc(seqObj->getDocument()), newDoc(NULL), url(url), strat(str),
-    seqObj(seqObj), regionToReplace(regionTodelete), sequence2Insert(seq2Insert)
-{
+    seqObj(seqObj), regionToReplace(regionTodelete), sequence2Insert(seq2Insert) {
     GCOUNTER(cvar, tvar, "Modify sequence task");
     inplaceMod = url == curDoc->getURL() || url.isEmpty();
 }
@@ -112,7 +107,7 @@ namespace {
 QString formatPairList(const QList<QStrStrPair> &pairList, bool useFirst) {
     QString result;
     const QString lineSeparator = "<br>";
-    foreach (const QStrStrPair &pair, pairList) {
+    foreach(const QStrStrPair &pair, pairList) {
         result += useFirst ? pair.first : pair.second;
         result += lineSeparator;
     }
@@ -138,7 +133,7 @@ QString ModifySequenceContentTask::generateReport() const {
     report += tr("Referenced Region");
     report += "</th></tr>";
 
-    foreach (Annotation *an, annotationForReport.keys()) {
+    foreach(Annotation *an, annotationForReport.keys()) {
         if (annotationForReport[an].isEmpty()) {
             coreLog.error(tr("Unexpected qualifiers count"));
             assert(false);
@@ -183,12 +178,12 @@ void ModifySequenceContentTask::cloneSequenceAndAnnotations() {
             AnnotationTableObject *newDocAto = new AnnotationTableObject("Annotations", newDoc->getDbiRef());
             newDocAto->addObjectRelation(seqObj, ObjectRole_Sequence);
 
-            foreach (Document *d, docs) {
+            foreach(Document *d, docs) {
                 QList<GObject *> annotationTablesList = d->findGObjectByType(GObjectTypes::ANNOTATION_TABLE);
-                foreach (GObject *table, annotationTablesList) {
+                foreach(GObject *table, annotationTablesList) {
                     AnnotationTableObject *ato = qobject_cast<AnnotationTableObject *>(table);
                     if (ato->hasObjectRelation(oldSeqObj, ObjectRole_Sequence)) {
-                        foreach (Annotation *ann, ato->getAnnotations()) {
+                        foreach(Annotation *ann, ato->getAnnotations()) {
                             newDocAto->addAnnotations(QList<SharedAnnotationData>() << ann->getData(), ann->getGroup()->getName());
                         }
                     }
@@ -197,7 +192,7 @@ void ModifySequenceContentTask::cloneSequenceAndAnnotations() {
             newDoc->addObject(newDocAto);
         } else {
             // use only sequence-doc annotations
-            foreach (GObject *o, curDoc->getObjects()) {
+            foreach(GObject *o, curDoc->getObjects()) {
                 AnnotationTableObject *aObj = qobject_cast<AnnotationTableObject *>(o);
                 if (NULL != aObj) {
                     U2OpStatus2Log os;

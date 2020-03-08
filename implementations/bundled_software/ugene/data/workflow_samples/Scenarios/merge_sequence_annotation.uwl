@@ -87,6 +87,7 @@ workflow "Merge sequences and annotations"{
         wizard {
             name:"Merge sequences and annotations Wizard";
             help-page-id:16122701;
+            auto-run: true;
             page {
                 id:1;
                 next:2;

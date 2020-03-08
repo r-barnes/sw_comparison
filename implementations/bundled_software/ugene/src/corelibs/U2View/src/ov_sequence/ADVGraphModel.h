@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -118,8 +118,7 @@ public:
 
     static bool isUnknownValue(float value) {return qFuzzyCompare(value, UNKNOWN_VAL);}
 
-    static const QString DEFAULT_COLOR;
-    static const int UNKNOWN_VAL;
+    static const float UNKNOWN_VAL;
 
 signals:
     void si_graphDataUpdated();
@@ -137,7 +136,7 @@ protected:
     bool updateStaticLabels(const QSharedPointer<GSequenceGraphData>& graph, GraphLabel* label, const QRect& rect);
     void updateMovingLabels(const QSharedPointer<GSequenceGraphData>& graph, GraphLabel* label, const QRect& rect);
     void updateStaticLabels(MultiLabel& multiLabel, const QRect& rect);
-    bool isExtremumPoint(int npoints, const PairVector& points, float value, U2Region& comparisonWindow);
+    QPair<float, float> getMinAndMaxInRange(const PairVector& points, const U2Region& region);
 
 protected slots:
     void sl_labelAdded(const QSharedPointer<GSequenceGraphData>&, GraphLabel*, const QRect&);
@@ -154,6 +153,9 @@ protected:
     GSequenceGraphWindowData        wdata;
     GSequenceGraphMinMaxCutOffData  commdata;
     BackgroundTaskRunner<PairVector> calculationTaskRunner;
+
+private:
+    QString DEFAULT_COLOR;
 };
 
 

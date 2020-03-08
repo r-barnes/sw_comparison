@@ -73,6 +73,7 @@ workflow "Find patterns"{
         wizard {
             name:"Find patterns Wizard";
             help-page-id:16122701;
+            auto-run: true;
             page {
                 id:1;
                 next:2;

@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -47,7 +47,7 @@ namespace U2{
 
 const int GFFFormat::LOCAL_READ_BUFFER_SIZE = 32768;
 
-GFFFormat::GFFFormat(QObject* p):DocumentFormat(p, DocumentFormatFlag_SupportWriting, QStringList("gff")){
+GFFFormat::GFFFormat(QObject* p) : TextDocumentFormat(p, BaseDocumentFormats::GFF, DocumentFormatFlag_SupportWriting, QStringList("gff")){
     formatName = tr("GFF");
     formatDescription = tr("GFF is a format used for storing features and annotations");
     supportedObjectTypes+=GObjectTypes::ANNOTATION_TABLE;
@@ -55,7 +55,7 @@ GFFFormat::GFFFormat(QObject* p):DocumentFormat(p, DocumentFormatFlag_SupportWri
 }
 
 
-Document* GFFFormat::loadDocument(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& _fs, U2OpStatus& os) {
+Document* GFFFormat::loadTextDocument(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& _fs, U2OpStatus& os) {
     CHECK_EXT(io != NULL && io->isOpen(), os.setError(L10N::badArgument("IO adapter")), NULL);
     QVariantMap fs = _fs;
     QList<GObject*> objects;
@@ -71,14 +71,17 @@ Document* GFFFormat::loadDocument(IOAdapter* io, const U2DbiRef& dbiRef, const Q
     return doc;
 }
 
-int readLongLine(QString &buffer, IOAdapter* io, QScopedArrayPointer<char> &charbuff, int readBufferSize) {
+int readLongLine (QString &buffer, IOAdapter* io, QScopedArrayPointer<char> &charbuff, int readBufferSize, U2OpStatus& os) {
     int len;
     buffer.clear();
     do {
         len = io->readLine(charbuff.data(), readBufferSize - 1);
+        CHECK_EXT(!io->hasError(), os.setError(io->errorString()), -1);
+
         charbuff.data()[len] = '\0';
         buffer.append(QString(charbuff.data()));
     } while (readBufferSize - 1 == len);
+
     return buffer.length();
 }
 
@@ -229,6 +232,8 @@ void GFFFormat::load(IOAdapter* io, const U2DbiRef& dbiRef, QList<GObject*>& obj
 
     QScopedArrayPointer<char> buff(new char[LOCAL_READ_BUFFER_SIZE]);
     int len = io->readLine(buff.data(), LOCAL_READ_BUFFER_SIZE);
+    CHECK_EXT(!io->hasError(), os.setError(io->errorString()), );
+
     buff.data()[len] = '\0';
     QString qstrbuf(buff.data());
     QStringList words = qstrbuf.split(QRegExp("\\s+"));
@@ -240,6 +245,8 @@ void GFFFormat::load(IOAdapter* io, const U2DbiRef& dbiRef, QList<GObject*>& obj
     int lineNumber = 2;//because first line checked in method validateHeader above
     if (!skipHeader) {
         io->skip(-io->bytesRead());
+        CHECK_EXT(!io->hasError(), os.setError(io->errorString()), );
+
         lineNumber--;
     }
 
@@ -247,7 +254,7 @@ void GFFFormat::load(IOAdapter* io, const U2DbiRef& dbiRef, QList<GObject*>& obj
     const QString folder = hints.value(DBI_FOLDER_HINT, U2ObjectDbi::ROOT_FOLDER).toString();
 
     QMap<QString, AnnotationData *> joinedAnnotations;
-    QMap<AnnotationData *, QString> annotationGroups;
+    QMap<QString, QList<AnnotationData *> > annotationGroups;
     QMap<AnnotationData *, AnnotationTableObject *> annotationTables;
     bool fastaSectionStarts = false;
     bool anyNamelessSequence = false;
@@ -259,7 +266,11 @@ void GFFFormat::load(IOAdapter* io, const U2DbiRef& dbiRef, QList<GObject*>& obj
     const int objectsCountLimit = hints.contains(DocumentReadingMode_MaxObjectsInDoc) ? hints[DocumentReadingMode_MaxObjectsInDoc].toInt() : -1;
 
     while (!io->isEof()) {
-        len = readLongLine(qstrbuf, io, buff, GFFFormat::LOCAL_READ_BUFFER_SIZE);
+        CHECK_EXT(!io->hasError(), os.setError(io->errorString()), );
+
+        len = readLongLine(qstrbuf, io, buff, GFFFormat::LOCAL_READ_BUFFER_SIZE, os);
+        CHECK_OP(os, );
+
         //skip empty lines
         if (TextUtils::remove(buff.data(), len, TextUtils::WHITES) == 0) {
             ioLog.info(GFFFormat::tr("Parsing error: file contains empty line %1, line skipped").arg(lineNumber));
@@ -290,7 +301,7 @@ void GFFFormat::load(IOAdapter* io, const U2DbiRef& dbiRef, QList<GObject*>& obj
                 DNASequence sequence(objName, seq);
                 sequence.info.insert(DNAInfo::FASTA_HDR, objName);
                 U2SequenceObject *seqObj = importSequence(sequence, objName, objects, seqImporter, dbiRef, folder, os);
-                CHECK_OP(os,);
+                CHECK_OP(os, );
 
                 SAFE_POINT(seqObj != NULL, "DocumentFormatUtils::addSequenceObject returned NULL but didn't set error",);
                 dbiObjects.objects << seqObj->getSequenceRef().entityId;
@@ -439,8 +450,7 @@ void GFFFormat::load(IOAdapter* io, const U2DbiRef& dbiRef, QList<GObject*>& obj
                     os.setError(tr("Parsing error: incorrect strand patameter at line %1. Strand can be '+','-' or '.'").arg(lineNumber));
                     return;
                 }
-
-                annotationGroups.insert(ad, groupName);
+                annotationGroups[groupName].append(ad);
                 annotationTables.insert(ad, ato);
             } else {
                 delete ad;
@@ -452,9 +462,13 @@ void GFFFormat::load(IOAdapter* io, const U2DbiRef& dbiRef, QList<GObject*>& obj
     }
 
     // add annotation data to annotation table
-    foreach (AnnotationData *ann, annotationGroups.keys()) {
-        SAFE_POINT(annotationGroups.contains(ann) && annotationTables.contains(ann), "Unexpected annotation!", );
-        annotationTables[ann]->addAnnotations(QList<SharedAnnotationData>() << SharedAnnotationData(ann), annotationGroups[ann]);
+    foreach(const QString& key, annotationGroups.keys()) {
+        QList<AnnotationData *> data = annotationGroups.value(key);
+        foreach(AnnotationData* ann, data) {
+            SAFE_POINT(data.contains(ann) && annotationTables.contains(ann), "Unexpected annotation!", );
+
+            annotationTables[ann]->addAnnotations(QList<SharedAnnotationData>() << SharedAnnotationData(ann), key);
+        }
     }
 
     //handling last fasta sequence
@@ -495,7 +509,7 @@ void GFFFormat::load(IOAdapter* io, const U2DbiRef& dbiRef, QList<GObject*>& obj
     }
 }
 
-FormatCheckResult GFFFormat::checkRawData(const QByteArray& rawData, const GUrl&) const {
+FormatCheckResult GFFFormat::checkRawTextData(const QByteArray& rawData, const GUrl&) const {
     const char* data = rawData.constData();
     int size = rawData.size();
     int n = TextUtils::skip(TextUtils::WHITES, data, size);

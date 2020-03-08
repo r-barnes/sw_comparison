@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -207,7 +207,7 @@ void GenomeAlignerIndexTask::reformatSequence() {
         seqLens.append(seq->length());
         newRefFile.write(seq->constData());
         if (firstSeq) {
-            index->seqObjName = seq->getName() + QString("_and_others");
+            index->firstSequenceObjectName = seq->getName();// + QString("_and_others");
             firstSeq = false;
         }
         CHECK_OP_EXT(stateInfo, newRefFile.close(), );

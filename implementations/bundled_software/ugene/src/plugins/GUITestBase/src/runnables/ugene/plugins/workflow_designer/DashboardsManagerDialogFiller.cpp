@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -64,6 +64,22 @@ bool DashboardsManagerDialogFiller::isDashboardPresent(HI::GUITestOpStatus &os, 
     QTreeWidget* listWidget = GTWidget::findExactWidget<QTreeWidget*>(os, "listWidget", dialog);
     QTreeWidgetItem* item = GTTreeWidget::findItem(os, listWidget, name, NULL, 0, GTGlobals::FindOptions(false));
     return item != NULL;
+}
+#undef GT_METHOD_NAME
+
+#define GT_METHOD_NAME "getDashboardsState"
+QList<QPair<QString, bool> > DashboardsManagerDialogFiller::getDashboardsState(HI::GUITestOpStatus &os) {
+    QList<QPair<QString, bool> > result;
+
+    QWidget *dialog = QApplication::activeModalWidget();
+    GT_CHECK_RESULT(dialog, "activeModalWidget is NULL", result);
+
+    QTreeWidget *treeWidget = GTWidget::findExactWidget<QTreeWidget *>(os, "listWidget", dialog);
+    for (int i = 0; i < treeWidget->topLevelItemCount(); ++i) {
+        QTreeWidgetItem *item = treeWidget->topLevelItem(i);
+        result << QPair<QString, bool>(item->text(0), Qt::Checked == item->checkState(0));
+    }
+    return result;
 }
 #undef GT_METHOD_NAME
 

@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -31,6 +31,7 @@
 #include <U2Core/Settings.h>
 #include <U2Core/U2DbiUtils.h>
 #include <U2Core/U2OpStatusUtils.h>
+#include <U2Core/U2SafePoints.h>
 
 #include <U2Gui/ExportDocumentDialogController.h>
 #include <U2Gui/ExportObjectUtils.h>
@@ -60,6 +61,7 @@ MaEditor::MaEditor(GObjectViewFactoryId factoryId, const QString &viewName, GObj
       resizeMode(ResizeMode_FontAndContent),
       zoomFactor(0),
       cachedColumnWidth(0),
+      cursorPosition(QPoint(0, 0)),
       exportHighlightedAction(NULL)
 {
     maObject = qobject_cast<MultipleAlignmentObject*>(obj);
@@ -135,8 +137,12 @@ bool MaEditor::isAlignmentEmpty() const {
     return getAlignmentLen() == 0 || getNumSequences() == 0;
 }
 
-const QRect& MaEditor::getCurrentSelection() const {
-    return ui->getSequenceArea()->getSelection().getRect();
+const MaEditorSelection& MaEditor::getSelection() const {
+    return ui->getSequenceArea()->getSelection();
+}
+
+QRect MaEditor::getSelectionRect() const {
+    return getSelection().toRect();
 }
 
 int MaEditor::getRowContentIndent(int) const {
@@ -194,9 +200,9 @@ void MaEditor::updateReference(){
 }
 
 void MaEditor::resetCollapsibleModel() {
-    MSACollapsibleItemModel *collapsibleModel = ui->getCollapseModel();
+    MaCollapseModel *collapsibleModel = ui->getCollapseModel();
     SAFE_POINT(NULL != collapsibleModel, "NULL collapsible model!", );
-    collapsibleModel->reset();
+    collapsibleModel->reset(getMaRowIds());
 }
 
 void MaEditor::sl_zoomIn() {
@@ -249,7 +255,7 @@ void MaEditor::sl_zoomToSelection()
     ResizeMode oldMode = resizeMode;
     int seqAreaWidth =  ui->getSequenceArea()->width();
     MaEditorSelection selection = ui->getSequenceArea()->getSelection();
-    if (selection.isNull()) {
+    if (selection.isEmpty()) {
         return;
     }
     int selectionWidth = selection.width();
@@ -272,7 +278,7 @@ void MaEditor::sl_zoomToSelection()
         resizeMode = ResizeMode_OnlyContent;
     }
     ui->getScrollController()->setFirstVisibleBase(selection.x());
-    ui->getScrollController()->setFirstVisibleRowByNumber(selection.y());
+    ui->getScrollController()->setFirstVisibleViewRow(selection.y());
 
     updateActions();
 
@@ -437,6 +443,7 @@ void MaEditor::setFont(const QFont& f) {
     s->setValue(getSettingsRoot() + MOBJECT_SETTINGS_FONT_SIZE, f.pointSize());
     s->setValue(getSettingsRoot() + MOBJECT_SETTINGS_FONT_ITALIC, f.italic());
     s->setValue(getSettingsRoot() + MOBJECT_SETTINGS_FONT_BOLD, f.bold());
+    widget->update();
 }
 
 void MaEditor::calcFontPixelToPointSizeCoef() {
@@ -447,7 +454,7 @@ void MaEditor::calcFontPixelToPointSizeCoef() {
 void MaEditor::setFirstVisiblePosSeq(int firstPos, int firstSeq) {
     if (ui->getSequenceArea()->isPosInRange(firstPos)) {
         ui->getScrollController()->setFirstVisibleBase(firstPos);
-        ui->getScrollController()->setFirstVisibleRowByIndex(firstSeq);
+        ui->getScrollController()->setFirstVisibleMaRow(firstSeq);
     }
 }
 
@@ -465,6 +472,22 @@ void MaEditor::updateActions() {
     zoomToSelectionAction->setEnabled( font.pointSize() < MOBJECT_MAX_FONT_SIZE);
     changeFontAction->setEnabled( resizeMode == ResizeMode_FontAndContent);
     emit si_updateActions();
+}
+
+const QPoint& MaEditor::getCursorPosition() const {
+    return cursorPosition;
+}
+
+void MaEditor::setCursorPosition(const QPoint &newCursorPosition) {
+    CHECK(cursorPosition != newCursorPosition,);
+    int x = newCursorPosition.x(), y = newCursorPosition.y();
+    CHECK(x >= 0 && y >= 0 && x < getAlignmentLen() && y < getNumSequences(),);
+    cursorPosition = newCursorPosition;
+    emit si_cursorPositionChanged(cursorPosition);
+}
+
+QList<qint64> MaEditor::getMaRowIds() const {
+    return maObject->getMultipleAlignment()->getRowsIds();
 }
 
 } // namespace

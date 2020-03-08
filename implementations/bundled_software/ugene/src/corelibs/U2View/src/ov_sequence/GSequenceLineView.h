@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -134,7 +134,6 @@ protected:
     void focusInEvent(QFocusEvent* fe);
     void focusOutEvent(QFocusEvent* fe);
     void keyPressEvent(QKeyEvent *e);
-
     virtual void onVisibleRangeChanged(bool signal = true);
 
 public slots:
@@ -150,7 +149,7 @@ protected slots:
     void completeUpdate();
 
 protected:
-    QPoint toRenderAreaPoint(const QPoint& p);
+    QPoint toRenderAreaPoint(const QPoint& p) const;
     virtual void updateScrollBar();
     void setSelection(const U2Region& r);
     void addSelection(const U2Region& r);

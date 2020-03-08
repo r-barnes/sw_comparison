@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>435</width>
-    <height>181</height>
+    <height>184</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -39,7 +39,7 @@
           <string>Select a method that would be used to align short reads.</string>
          </property>
          <property name="text">
-          <string>Align short reads method</string>
+          <string>Map short reads method</string>
          </property>
         </widget>
        </item>

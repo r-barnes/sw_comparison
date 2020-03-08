@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -22,13 +22,14 @@
 #ifndef _U2_EMBL_GENBANK_ABSTRACT_DOCUMENT_H_
 #define _U2_EMBL_GENBANK_ABSTRACT_DOCUMENT_H_
 
-#include <U2Core/BaseDocumentFormats.h>
-#include <U2Core/DocumentModel.h>
-
 #include <QStringList>
 
 #include <U2Core/AnnotationData.h>
+#include <U2Core/BaseDocumentFormats.h>
+#include <U2Core/DocumentModel.h>
 #include <U2Core/U2SequenceUtils.h>
+
+#include "TextDocumentFormat.h"
 
 namespace U2 {
 
@@ -37,17 +38,11 @@ class EMBLGenbankDataEntry;
 class IOAdapter;
 class ParserState;
 
-class U2FORMATS_EXPORT EMBLGenbankAbstractDocument : public DocumentFormat {
+class U2FORMATS_EXPORT EMBLGenbankAbstractDocument : public TextDocumentFormat {
     Q_OBJECT
 public:
     EMBLGenbankAbstractDocument(const DocumentFormatId& id, const QString& formatName,
                                 int maxLineSize, DocumentFormatFlags flags, QObject* p);
-
-    virtual DocumentFormatId getFormatId() const {return id;}
-
-    virtual const QString& getFormatName() const {return formatName;}
-
-    virtual DNASequence* loadSequence(IOAdapter*, U2OpStatus& os);
 
     static const QString UGENE_MARK;
     static const QString DEFAULT_OBJ_NAME;
@@ -63,16 +58,13 @@ public:
     static QString genObjectName(QSet<QString>& usedNames, const QString& name, const QVariantMap& info, int n, const GObjectType& t);
 
 protected:
-    virtual Document* loadDocument(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& fs, U2OpStatus& os);
+    virtual DNASequence* loadTextSequence(IOAdapter*, U2OpStatus& os);
 
-    virtual void load(const U2DbiRef& dbiRef, IOAdapter* io, QList<GObject*>& objects, QVariantMap& fs, U2OpStatus& si, QString& writeLockReason);
+    virtual Document* loadTextDocument(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& fs, U2OpStatus& os);
 
-    virtual int     readMultilineQualifier(IOAdapter* io, char* cbuff, int maxSize, bool prevLineHasMaxSize, int lenFirstQualLine, U2OpStatus& os);
-    virtual SharedAnnotationData readAnnotation(IOAdapter* io, char* cbuff, int contentLen, int bufSize, U2OpStatus& si, int offset, int seqLen = -1);
+    int readMultilineQualifier(IOAdapter* io, char* cbuff, int maxSize, bool prevLineHasMaxSize, int lenFirstQualLine, U2OpStatus& os);
 
-    void skipInvalidAnnotation(int len, IOAdapter* io, char* cbuff, int READ_BUFF_SIZE);
-
-    virtual bool    readSequence(ParserState*, U2SequenceImporter&, int&, int&, U2OpStatus&);
+    virtual bool readSequence(ParserState*, U2SequenceImporter&, int&, int&, U2OpStatus&);
 
     virtual bool readEntry(ParserState*, U2SequenceImporter& ,int& seqSize,int& fullSeqSize,bool merge, int gapSize,U2OpStatus&) = 0;
     virtual void readAnnotations(ParserState*, int offset);
@@ -86,12 +78,15 @@ protected:
     virtual U2Qualifier createQualifier(const QString &qualifierName, const QString &qualifierValue, bool containsDoubleQuotes) const;
     virtual bool breakQualifierOnSpaceOnly(const QString &qualifierName) const;
 
-    DocumentFormatId id;
-    QString     formatName;
     QByteArray  fPrefix;
     QByteArray  sequenceStartPrefix;
     int         maxAnnotationLineLen;
     bool        savedInUgene; // saveInUgene marker is a hack for opening genbank files that were saved incorrectly(!) in UGENE version <1.14.1
+
+private:
+    SharedAnnotationData readAnnotation(IOAdapter* io, char* cbuff, int contentLen, int bufSize, U2OpStatus& si, int offset, int seqLen = -1);
+    void load(const U2DbiRef& dbiRef, IOAdapter* io, QList<GObject*>& objects, QVariantMap& fs, U2OpStatus& si, QString& writeLockReason);
+    void skipInvalidAnnotation(U2OpStatus& si, int len, IOAdapter* io, char* cbuff, int READ_BUFF_SIZE);
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -130,7 +125,7 @@ public:
     QString value() const;
     QString key () const;
     bool hasKey(const char*, int slen) const;
-    bool hasKey(const char* s) const {return hasKey(s, strlen(s));}
+    bool hasKey(const char* s) const {return hasKey(s, (int)strlen(s));}
     bool hasContinuation() const { return len > valOffset && hasKey(" ");}
     bool hasValue() const {return len > valOffset;}
     bool readNextLine(bool emptyOK = false);

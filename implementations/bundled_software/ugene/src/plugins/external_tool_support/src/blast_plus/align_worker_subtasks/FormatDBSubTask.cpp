@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -71,7 +71,7 @@ void FormatDBSubTask::prepare() {
     settings.outputPath = workingDir + QFileInfo(referenceUrl).completeBaseName();
     CHECK_OP(stateInfo, );
 
-    FormatDBSupportTask* formatTask = new FormatDBSupportTask(ET_MAKEBLASTDB, settings);
+    FormatDBSupportTask* formatTask = new FormatDBSupportTask(FormatDBSupport::ET_MAKEBLASTDB_ID, settings);
     addSubTask(formatTask);
 
     databaseNameAndPath = settings.outputPath;

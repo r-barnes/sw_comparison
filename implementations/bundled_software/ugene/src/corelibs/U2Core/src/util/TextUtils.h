@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -23,16 +23,23 @@
 #define _U2_TEXT_UTILS_H_
 
 #include <U2Core/global.h>
+#include <U2Core/L10n.h>
+#include <U2Core/U2SafePoints.h>
+
+#include <assert.h>
 
 #include <QBitArray>
+#include <QCoreApplication>
 #include <QSet>
-#include <QVector>
 #include <QStringList>
-#include <assert.h>
+#include <QTextStream>
+#include <QVector>
+#include <QWidget>
 
 namespace U2 {
 
 class U2CORE_EXPORT TextUtils {
+    Q_DECLARE_TR_FUNCTIONS(TextUtils)
 public:
     static const QBitArray ALPHAS;
     static const QBitArray ALPHA_NUMS;
@@ -93,6 +100,10 @@ public:
     static QString variate(const QString& prefix, const QString& sep, const QSet<QString>& filter, bool mustHaveSuffix = false, int startSeed = 0);
 
     inline static void charBounds(const char* data, int dataSize, char& minChar, char& maxChar);
+
+    static QByteArray cutByteOrderMarks(const QByteArray& data, QString& errorMessage);
+
+    static qint64 cutByteOrderMarks(char* data, QString& errorMessage, qint64 buffLen = -1);
 
     //todo: move this method to another class
     inline static QByteArray selectIdx256(const QBitArray& map, bool sign);

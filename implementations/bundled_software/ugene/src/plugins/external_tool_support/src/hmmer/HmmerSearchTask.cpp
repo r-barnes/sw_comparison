@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -29,6 +29,7 @@
 #include <U2Core/CreateAnnotationTask.h>
 #include <U2Core/DNASequenceObject.h>
 #include <U2Core/GUrlUtils.h>
+#include <U2Core/IOAdapterUtils.h>
 #include <U2Core/L10n.h>
 #include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2SafePoints.h>
@@ -50,7 +51,8 @@ HmmerSearchTask::HmmerSearchTask(const HmmerSearchSettings &settings)
       saveSequenceTask(NULL),
       hmmerTask(NULL),
       parseTask(NULL),
-      removeWorkingDir(false)
+      removeWorkingDir(false),
+      hmm2Mode(false)
 {
     GCOUNTER(cvar, tvar, "HMMER Search");
     SAFE_POINT_EXT(settings.validate(), setError("Settings are invalid"), );
@@ -99,7 +101,11 @@ QList<Task *> HmmerSearchTask::onSubTaskFinished(Task *subTask) {
 QString HmmerSearchTask::generateReport() const {
     QString res;
     res += "<table>";
-    res += "<tr><td><b>" + tr("HMM profile used: ") + "</b></td><td>" + QFileInfo(settings.hmmProfileUrl).absoluteFilePath() + "</td></tr>";
+    res += "<tr><td><b>" + tr("HMM profile used: ") + "</b></td><td>" + QFileInfo(settings.hmmProfileUrl).absoluteFilePath()
+           + ( hmm2Mode
+            ? " <br>Warning: it is not recommended to use HMMER2 models with HMMER3. Details: https://cryptogenomicon.org/2009/03/25/using-hmmer2-models-with-hmmer3-dont-do-that/"
+            : "")
+            + "</td></tr>";
 
     if (hasError() || isCanceled()) {
         res += "<tr><td><b>" + tr("Task was not finished") + "</b></td><td></td></tr>";
@@ -227,10 +233,19 @@ void HmmerSearchTask::prepareSequenceSaveTask() {
     saveSequenceTask->setSubtaskProgressWeight(5);
 }
 
+static bool isHmm2Profile(const QString& url) {
+    QByteArray header = IOAdapterUtils::readFileHeader(GUrl(url), 6);
+    return header.startsWith("HMMER2");
+}
+
 void HmmerSearchTask::prepareHmmerTask() {
-    hmmerTask = new ExternalToolRunTask(HmmerSupport::SEARCH_TOOL, getArguments(), new Hmmer3LogParser());
+    hmmerTask = new ExternalToolRunTask(HmmerSupport::SEARCH_TOOL_ID, getArguments(), new Hmmer3LogParser());
     setListenerForTask(hmmerTask);
     hmmerTask->setSubtaskProgressWeight(85);
+    hmm2Mode = isHmm2Profile(settings.hmmProfileUrl);
+    if (hmm2Mode) {
+        stateInfo.addWarning(tr("Warning: it is not recommended to use HMMER2 models with HMMER3"));
+    }
 }
 
 void HmmerSearchTask::prepareParseTask() {

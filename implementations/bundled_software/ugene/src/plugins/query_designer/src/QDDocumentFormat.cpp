@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -43,13 +43,13 @@ GObject* QDGObject::clone(const U2DbiRef& , U2OpStatus& , const QVariantMap &hin
     return copy;
 }
 
-const DocumentFormatId QDDocFormat::FORMAT_ID = "QueryDocFormat";
+;
 
 //Format
 //////////////////////////////////////////////////////////////////////////
 QDDocFormat::QDDocFormat(QObject* p)
-: DocumentFormat(p, DocumentFormatFlags_W1, QStringList(QUERY_SCHEME_EXTENSION)),
-formatName(tr("Query Schema")) {
+: TextDocumentFormat(p, DocumentFormatId("QueryDocFormat"), DocumentFormatFlags_W1, QStringList(QUERY_SCHEME_EXTENSION)) {
+    formatName = tr("Query Schema");
     formatDescription = tr("QDDoc is a format used for creating/editing/storing/retrieving"
         "query schema with the text file");
     supportedObjectTypes += QDGObject::TYPE;
@@ -63,7 +63,7 @@ Document* QDDocFormat::createNewLoadedDocument(IOAdapterFactory* io, const GUrl 
 }
 
 #define BUFF_SIZE 1024
-Document* QDDocFormat::loadDocument(IOAdapter* io, const U2DbiRef& targetDb, const QVariantMap& hints, U2OpStatus& os) {
+Document* QDDocFormat::loadTextDocument(IOAdapter* io, const U2DbiRef& targetDb, const QVariantMap& hints, U2OpStatus& os) {
     QByteArray  rawData;
     QByteArray block(BUFF_SIZE, '\0');
     int blockLen = 0;
@@ -71,6 +71,7 @@ Document* QDDocFormat::loadDocument(IOAdapter* io, const U2DbiRef& targetDb, con
         rawData.append(block.data(), blockLen);
         os.setProgress(io->getProgress());
     }
+    CHECK_EXT(!io->hasError(), os.setError(io->errorString()), NULL);
 
     if (checkRawData(rawData).score != FormatDetection_Matched) {
         os.setError(tr("Invalid header. %1 expected").arg(QDDocument::HEADER_LINE));
@@ -102,7 +103,7 @@ void QDDocFormat::storeDocument(Document* d, IOAdapter* io, U2OpStatus& ) {
     wo->setSceneRawData(rawData);
 }
 
-FormatCheckResult QDDocFormat::checkRawData( const QByteArray& rawData, const GUrl&) const {
+FormatCheckResult QDDocFormat::checkRawTextData( const QByteArray& rawData, const GUrl&) const {
     const QString& data = rawData;
     if(QDDocument::isHeaderLine(data.trimmed())) {
         return FormatDetection_Matched;

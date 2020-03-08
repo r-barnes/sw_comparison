@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -77,7 +77,7 @@ private slots:
 
 private:
     void init();
-    void initSaveController();
+    void initSaveController(const QString& defaultFormat);
     void setSizeControlsEnabled(bool enabled);
     QStringList getFormats();
     QStringList getRasterFormats();

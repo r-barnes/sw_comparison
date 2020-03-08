@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -36,6 +36,8 @@ namespace U2 {
 class TopHatInputData {
 public:
     TopHatInputData();
+
+    int size() const;
 
     bool paired;
     bool fromFiles;
@@ -79,11 +81,16 @@ public:
     bool                useBowtie1;
     QString             bowtiePath;
     QString             samtoolsPath;
-    QString             sample;
+    QString             resultPrefix;
+    QString             datasetName;
     /** Working folder for the TopHat tool */
     QString             outDir;
 
     TopHatInputData     data;
+
+    QString             referenceInputType;
+    QString             referenceGenome;
+    QString             buildIndexPathAndBasename;
 
 public:
     void cleanupReads();
@@ -91,8 +98,10 @@ public:
     Workflow::DbiDataStorage * storage() const;
 
     static uint getThreadsCount();
-};
 
+    static const QString INDEX;
+    static const QString SEQUENCE;
+};
 }
 
 #endif

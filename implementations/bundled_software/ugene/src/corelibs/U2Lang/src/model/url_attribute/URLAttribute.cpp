@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -76,17 +76,8 @@ bool URLAttribute::isDefaultValue() const {
     return false;
 }
 
-Attribute * URLAttribute::clone() {
-    URLAttribute *cloned = new URLAttribute(*this, type, required);
-    QList<Dataset> sets = value.value< QList<Dataset> >();
-    QList<Dataset> clonedSets;
-    foreach (const Dataset &dSet, sets) {
-        clonedSets << dSet;
-    }
-    cloned->value = qVariantFromValue< QList<Dataset> >(clonedSets);
-    cloned->scriptData = AttributeScript(scriptData);
-    cloned->setCompatibleObjectTypes(compatibleObjectTypes);
-    return cloned;
+URLAttribute *URLAttribute::clone() {
+    return new URLAttribute(*this);
 }
 
 QList<Dataset> & URLAttribute::getDatasets() {
@@ -99,6 +90,19 @@ void URLAttribute::updateValue() {
         res << dSet;
     }
     value = qVariantFromValue< QList<Dataset> >(res);
+}
+
+URLAttribute::URLAttribute(const URLAttribute &other)
+    : Attribute(other)
+{
+    copy(other);
+}
+
+URLAttribute &URLAttribute::operator=(const URLAttribute &other) {
+    CHECK(this != &other, *this);
+    Attribute::operator =(other);
+    copy(other);
+    return *this;
 }
 
 QStringList URLAttribute::emptyDatasetNames(bool &hasUrl) {
@@ -114,24 +118,29 @@ QStringList URLAttribute::emptyDatasetNames(bool &hasUrl) {
     return emptySets;
 }
 
-bool URLAttribute::validate(ProblemList &problemList) {
-    if (!isRequiredAttribute()) {
+void URLAttribute::copy(const URLAttribute &other) {
+    sets = other.sets;
+    compatibleObjectTypes = other.compatibleObjectTypes;
+}
+
+bool URLAttribute::validate(NotificationsList &notificationList) {
+    if (!isRequiredAttribute() || canBeEmpty()) {
         return true;
     }
     if (sets.isEmpty()) {
-        problemList << Problem(WorkflowUtils::tr("Required parameter has no datasets specified: %1").arg(getDisplayName()));
+        notificationList << WorkflowNotification(WorkflowUtils::tr("Required parameter has no datasets specified: %1").arg(getDisplayName()));
         return false;
     }
     bool hasUrl = false;
     QStringList emptySets = emptyDatasetNames(hasUrl);
 
     if (!hasUrl) {
-        problemList << Problem(WorkflowUtils::tr("Required parameter has no input urls specified: %1").arg(getDisplayName()));
+        notificationList << WorkflowNotification(WorkflowUtils::tr("Required parameter has no input urls specified: %1").arg(getDisplayName()));
         return false;
     }
     if (!emptySets.isEmpty()) {
         foreach (const QString &name, emptySets) {
-            problemList << Problem(WorkflowUtils::tr("Required parameter %1 has empty dataset: %2").arg(getDisplayName()).arg(name));
+            notificationList << WorkflowNotification(WorkflowUtils::tr("Required parameter %1 has empty dataset: %2").arg(getDisplayName()).arg(name));
         }
         return false;
     }

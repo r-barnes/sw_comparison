@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -28,8 +28,6 @@
 #include <U2Core/ProjectModel.h>
 #include <U2Core/TextUtils.h>
 #include <U2Core/U2AlphabetUtils.h>
-#include <U2Core/U2DbiRegistry.h>
-#include <U2Core/U2DbiUtils.h>
 #include <U2Core/U2ObjectDbi.h>
 #include <U2Core/U2OpStatusUtils.h>
 #include <U2Core/U2SafePoints.h>
@@ -45,7 +43,7 @@ QList<QByteArray> U1SequenceUtils::translateRegions(const QList<QByteArray>& ori
     assert(aminoTT != NULL);
     if (join) {
         resParts.append(U1SequenceUtils::joinRegions(origParts));
-    }  else {
+    } else {
         resParts.append(origParts);
     }
     for (int i = 0, n = resParts.length(); i < n; i++) {
@@ -80,8 +78,7 @@ static QList<QByteArray> _extractRegions(const QByteArray& seq, const QVector<U2
 }
 
 QList<QByteArray> U1SequenceUtils::extractRegions(const QByteArray& seq, const QVector<U2Region>& origLocation,
-    const DNATranslation* complTT, const DNATranslation* aminoTT, bool circular, bool join)
-{
+    const DNATranslation* complTT, const DNATranslation* aminoTT, bool circular, bool join) {
     QList<QByteArray> res = _extractRegions(seq, origLocation, complTT);
     if (circular && res.size() > 1) {
         const U2Region& firstL = origLocation.first();
@@ -118,10 +115,10 @@ QVector<U2Region> U1SequenceUtils::getJoinedMapping(const QList<QByteArray>& seq
 }
 
 
-static void reorderingObjects(QList<GObject* >& objs){
-    if(objs.size() >= 2){ // ordering the object. Ahead of objects is sequence and annotations are behind.
-        for(int i = 0; i < objs.size(); ++i){
-            if(objs.at(i)->getGObjectType() == GObjectTypes::SEQUENCE){
+static void reorderingObjects(QList<GObject* >& objs) {
+    if (objs.size() >= 2) { // ordering the object. Ahead of objects is sequence and annotations are behind.
+        for (int i = 0; i < objs.size(); ++i) {
+            if (objs.at(i)->getGObjectType() == GObjectTypes::SEQUENCE) {
                 objs.push_front(objs.at(i));
                 objs.removeAt(i + 1);
             }
@@ -129,26 +126,26 @@ static void reorderingObjects(QList<GObject* >& objs){
     }
 }
 
-static QString getSuffixByAlphabet(const DNAAlphabetType& alpType){
+static QString getSuffixByAlphabet(const DNAAlphabetType& alpType) {
     QString suffix;
-    switch(alpType){
-                case DNAAlphabet_AMINO: suffix = "amino";
-                    break;
-                case DNAAlphabet_NUCL : suffix = "dna";
-                    break;
-                case DNAAlphabet_RAW : suffix = "raw";
-                    break;
-                default:
-                    assert(false && "Unknown alphabet");
+    switch (alpType) {
+    case DNAAlphabet_AMINO: suffix = "amino";
+        break;
+    case DNAAlphabet_NUCL: suffix = "dna";
+        break;
+    case DNAAlphabet_RAW: suffix = "raw";
+        break;
+    default:
+        assert(false && "Unknown alphabet");
     }
     return "_" + suffix;
 }
 
-static bool isGenbankHeaderUsed(const QVariantMap& hints, const QString& urlGenbank){
+static bool isGenbankHeaderUsed(const QVariantMap& hints, const QString& urlGenbank) {
     return hints.value(RawDataCheckResult_HeaderSequenceLength + urlGenbank, -1) != -1;
 }
 
-static U2SequenceObject* storeSequenceUseGenbankHeader(const QVariantMap& hints, const QString& urlGenbank, const QString& seqName, U2OpStatus& os){
+static U2SequenceObject* storeSequenceUseGenbankHeader(const QVariantMap& hints, const QString& urlGenbank, const QString& seqName, U2OpStatus& os) {
     qint64 sequenceLength = hints[RawDataCheckResult_HeaderSequenceLength + urlGenbank].toLongLong();
     const U2DbiRef dbiRef = AppContext::getDbiRegistry()->getSessionTmpDbiRef(os);
     CHECK_OP(os, NULL);
@@ -177,8 +174,8 @@ static void shiftAnnotations(AnnotationTableObject *newAnnObj, QList<AnnotationT
     ad->location->regions << contigReg;
     newAnnObj->addAnnotations(QList<SharedAnnotationData>() << ad);
 
-    foreach (AnnotationTableObject *annObj, annObjects) {
-        foreach (Annotation *a, annObj->getAnnotations()) {
+    foreach(AnnotationTableObject *annObj, annObjects) {
+        foreach(Annotation *a, annObj->getAnnotations()) {
             SharedAnnotationData newAnnotation(new AnnotationData(*a->getData()));
             U2Location newLocation = newAnnotation->location;
             U2Region::shift(contigReg.startPos, newLocation->regions);
@@ -192,18 +189,17 @@ static void shiftAnnotations(AnnotationTableObject *newAnnObj, QList<AnnotationT
 static void importGroupSequences2newObject(const QList<U2SequenceObject *> &seqObjects,
     AnnotationTableObject *newAnnObj, int mergeGap, U2SequenceImporter &seqImport,
     const QHash<U2SequenceObject *, QList<AnnotationTableObject *> >&annotationsBySequenceObjectName,
-    U2OpStatus &os)
-{
+    U2OpStatus &os) {
     qint64 currentSeqLen = 0;
 
-    foreach (U2SequenceObject *seqObj, seqObjects) {
+    foreach(U2SequenceObject *seqObj, seqObjects) {
         if (currentSeqLen > 0) {
             seqImport.addDefaultSymbolsBlock(mergeGap, os);
             CHECK_OP(os, );
             currentSeqLen += mergeGap;
         }
         U2Region contigReg(currentSeqLen, seqObj->getSequenceLength());
-        currentSeqLen+=seqObj->getSequenceLength();
+        currentSeqLen += seqObj->getSequenceLength();
         seqImport.addSequenceBlock(seqObj->getSequenceRef(), U2_REGION_MAX, os);
         CHECK_OP(os, );
 
@@ -215,12 +211,11 @@ static void importGroupSequences2newObject(const QList<U2SequenceObject *> &seqO
 void processOldObjects(const QList<GObject *> &objs,
     QHash<U2SequenceObject *, QList<AnnotationTableObject *> > &annotationsBySequenceObjectName,
     QMap<DNAAlphabetType, QList<U2SequenceObject *> > &mapObjects2Alphabets, const QString &url,
-    const QString &fileName, const QVariantMap &hints, U2OpStatus &os)
-{
+    const QString &fileName, const QVariantMap &hints, U2OpStatus &os) {
     U2SequenceObject* seqObj = NULL;
     int currentObject = -1;
 
-    foreach (GObject *obj, objs) {
+    foreach(GObject *obj, objs) {
         currentObject++;
         AnnotationTableObject* annObj = qobject_cast<AnnotationTableObject *>(obj);
         if (NULL == annObj) {
@@ -234,7 +229,7 @@ void processOldObjects(const QList<GObject *> &objs,
         // GENBANK without sequence but header have sequence length - made sequence with 'N' characters
         if (0 == currentObject && isGenbankHeaderUsed(hints, url)) {
             U2SequenceObject *seqObj = storeSequenceUseGenbankHeader(hints, url, fileName, os);
-            GObjectReference sequenceRef( GObjectReference(url, seqObj->getGObjectName(), GObjectTypes::SEQUENCE, seqObj->getEntityRef()));
+            GObjectReference sequenceRef(GObjectReference(url, seqObj->getGObjectName(), GObjectTypes::SEQUENCE, seqObj->getEntityRef()));
             annObj->addObjectRelation(GObjectRelation(sequenceRef, ObjectRole_Sequence));
 
             const DNAAlphabet *seqAl = seqObj->getAlphabet();
@@ -242,7 +237,7 @@ void processOldObjects(const QList<GObject *> &objs,
         }
 
         QList<GObjectRelation> seqRelations = annObj->findRelatedObjectsByRole(ObjectRole_Sequence);
-        foreach (const GObjectRelation &rel, seqRelations) {
+        foreach(const GObjectRelation &rel, seqRelations) {
             const QString &relDocUrl = rel.getDocURL();
             if (relDocUrl == url) {
                 QList<AnnotationTableObject *> &annObjs = annotationsBySequenceObjectName[seqObj];
@@ -255,27 +250,25 @@ void processOldObjects(const QList<GObject *> &objs,
 }
 
 static QList<GObject *> createNewObjects(
-        const QHash< U2SequenceObject *, QList<AnnotationTableObject *> > &annotationsBySequenceObjectName,
-        const QMap<DNAAlphabetType,
-        QList<U2SequenceObject *> > &mapObjects2Alpabets,
-        const U2DbiRef &ref,
-        const GUrl &newUrl,
-        QVariantMap &hints,
-        int mergeGap,
-        U2OpStatus &os)
-{
+    const QHash< U2SequenceObject *, QList<AnnotationTableObject *> > &annotationsBySequenceObjectName,
+    const QMap<DNAAlphabetType,
+    QList<U2SequenceObject *> > &mapObjects2Alpabets,
+    const U2DbiRef &ref,
+    const GUrl &newUrl,
+    QVariantMap &hints,
+    int mergeGap,
+    U2OpStatus &os) {
     QList<GObject *> objects;
     // Creating sequence object for group sequence with the same alphabets. Amount of different alphabets = amount of sequence objects
     bool init = false;
-    for ( QMap<DNAAlphabetType, QList<U2SequenceObject *> >::const_iterator it
-        = mapObjects2Alpabets.begin( ); it != mapObjects2Alpabets.end( ); ++it )
-    {
+    for (QMap<DNAAlphabetType, QList<U2SequenceObject *> >::const_iterator it
+        = mapObjects2Alpabets.begin(); it != mapObjects2Alpabets.end(); ++it) {
         U2SequenceImporter seqImport;
         const QString folder = hints.value(DocumentFormat::DBI_FOLDER_HINT, U2ObjectDbi::ROOT_FOLDER).toString();
-        QString seqName = newUrl.fileName( );
-        if ( mapObjects2Alpabets.size() > 1 ) {
-            seqName += getSuffixByAlphabet( it.key( ) );
-            if ( !init ) {
+        QString seqName = newUrl.fileName();
+        if (mapObjects2Alpabets.size() > 1) {
+            seqName += getSuffixByAlphabet(it.key());
+            if (!init) {
                 hints[ProjectLoaderHint_MergeMode_DifferentAlphabets] = QObject::tr("Loaded sequences have different alphabets. "
                     "That's why several sequence objects are created, each for specified alphabet. All sequences at one object have the same alphabet "
                     "and sequences from different objects have different alphabets.");
@@ -283,31 +276,30 @@ static QList<GObject *> createNewObjects(
             }
         }
         seqImport.startSequence(os, ref, folder, seqName, false);
-        CHECK_OP( os, QList<GObject*>( ) );
+        CHECK_OP(os, QList<GObject*>());
 
-        AnnotationTableObject *newAnnObj = new AnnotationTableObject( seqName + " annotations", ref, hints );
-        QList<U2SequenceObject *> seqObjects = it.value( );
-        importGroupSequences2newObject( seqObjects, newAnnObj, mergeGap, seqImport,
-            annotationsBySequenceObjectName, os );
+        AnnotationTableObject *newAnnObj = new AnnotationTableObject(seqName + " annotations", ref, hints);
+        QList<U2SequenceObject *> seqObjects = it.value();
+        importGroupSequences2newObject(seqObjects, newAnnObj, mergeGap, seqImport,
+            annotationsBySequenceObjectName, os);
 
-        U2Sequence u2seq = seqImport.finalizeSequenceAndValidate( os );
-        CHECK_OP( os, QList<GObject *>( ) );
+        U2Sequence u2seq = seqImport.finalizeSequenceAndValidate(os);
+        CHECK_OP(os, QList<GObject *>());
 
-        if ( !newUrl.getURLString( ).isEmpty( ) ) {
-            GObjectReference r( newUrl.getURLString( ), u2seq.visualName, GObjectTypes::SEQUENCE, U2EntityRef( ref, u2seq.id ) );
-            newAnnObj->addObjectRelation( GObjectRelation( r, ObjectRole_Sequence ) );
+        if (!newUrl.getURLString().isEmpty()) {
+            GObjectReference r(newUrl.getURLString(), u2seq.visualName, GObjectTypes::SEQUENCE, U2EntityRef(ref, u2seq.id));
+            newAnnObj->addObjectRelation(GObjectRelation(r, ObjectRole_Sequence));
         }
 
-        U2SequenceObject *seqObj = new U2SequenceObject( u2seq.visualName,
-            U2EntityRef( ref, u2seq.id ) );
-        objects << seqObj << newAnnObj ;
+        U2SequenceObject *seqObj = new U2SequenceObject(u2seq.visualName,
+            U2EntityRef(ref, u2seq.id));
+        objects << seqObj << newAnnObj;
     }
     return objects;
 }
 
 QList<GObject *> U1SequenceUtils::mergeSequences(const QList<Document *> docs, const U2DbiRef &ref, const QString &newStringUrl,
-    QVariantMap &hints, U2OpStatus &os)
-{
+    QVariantMap &hints, U2OpStatus &os) {
     // prepare  annotation object -> sequence object mapping first
     // and precompute resulted sequence size and alphabet
     int mergeGap = hints[DocumentReadingMode_SequenceMergeGapSize].toInt();
@@ -317,7 +309,7 @@ QList<GObject *> U1SequenceUtils::mergeSequences(const QList<Document *> docs, c
 
     QMap<DNAAlphabetType, QList<U2SequenceObject *> > mapObjects2Alpabets;
 
-    foreach (const Document *doc, docs) {
+    foreach(const Document *doc, docs) {
         QList<GObject *> objs = doc->getObjects();
         reorderingObjects(objs);
         processOldObjects(objs, annotationsBySequenceObjectName, mapObjects2Alpabets, doc->getURLString(), doc->getURL().fileName(), hints, os);
@@ -327,7 +319,7 @@ QList<GObject *> U1SequenceUtils::mergeSequences(const QList<Document *> docs, c
     return createNewObjects(annotationsBySequenceObjectName, mapObjects2Alpabets, ref, newUrl, hints, mergeGap, os);
 }
 
-QList<GObject*> U1SequenceUtils::mergeSequences(Document* doc, const U2DbiRef& ref, QVariantMap& hints, U2OpStatus& os){
+QList<GObject*> U1SequenceUtils::mergeSequences(Document* doc, const U2DbiRef& ref, QVariantMap& hints, U2OpStatus& os) {
     QList<Document* > docs; docs << doc;
     return mergeSequences(docs, ref, doc->getURLString(), hints, os);
 }
@@ -337,7 +329,7 @@ QByteArray U1SequenceUtils::joinRegions(const QList<QByteArray>& parts, int gapS
     if (parts.size() == 1) {
         return parts.first();
     }
-    int size =0;
+    int size = 0;
     foreach(const QByteArray& p, parts) {
         size += p.size();
     }
@@ -348,7 +340,7 @@ QByteArray U1SequenceUtils::joinRegions(const QList<QByteArray>& parts, int gapS
     QByteArray res;
     res.reserve(size);
     res.append(parts.first());
-    for(int i = 1; i < parts.size(); i++){
+    for (int i = 1; i < parts.size(); i++) {
         res.append(QByteArray(gapSize, alphabet->getDefaultSymbol()));
         res.append(parts[i]);
     }

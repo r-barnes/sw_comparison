@@ -1,6 +1,6 @@
 /**
 * UGENE - Integrated Bioinformatics Tools.
-* Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+* Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
 * http://ugene.net
 *
 * This program is free software; you can redistribute it and/or
@@ -25,8 +25,9 @@
 #include <QToolButton>
 
 #include <primitives/GTComboBox.h>
-#include <primitives/GTWidget.h>
+#include <primitives/GTLineEdit.h>
 #include <primitives/GTSlider.h>
+#include <primitives/GTWidget.h>
 
 #include "GTUtilsOptionPanelMca.h"
 
@@ -144,10 +145,46 @@ int GTUtilsOptionPanelMca::getThreshold(GUITestOpStatus &os) {
 }
 #undef GT_METHOD_NAME
 
+#define GT_METHOD_NAME "setExportFileName"
+void GTUtilsOptionPanelMca::setExportFileName(HI::GUITestOpStatus &os, QString exportFileName) {
+    openTab(os, Consensus);
+    QLineEdit *exportToFileLineEdit = GTWidget::findExactWidget<QLineEdit*>(os, "pathLe");
+    GT_CHECK_RESULT(exportToFileLineEdit != NULL, "exportToFileLineEdit is NULL", );
+    GTLineEdit::setText(os, exportToFileLineEdit, exportFileName);
+}
+#undef GT_METHOD_NAME
+
+#define GT_METHOD_NAME "getExportFileName"
+QString GTUtilsOptionPanelMca::getExportFileName(HI::GUITestOpStatus &os) {
+    openTab(os, Consensus);
+    QLineEdit *exportToFileLineEdit = GTWidget::findExactWidget<QLineEdit*>(os, "pathLe");
+    GT_CHECK_RESULT(exportToFileLineEdit != NULL, "exportToFileLineEdit is NULL", QString());
+    return GTLineEdit::getText(os, exportToFileLineEdit);
+}
+#undef GT_METHOD_NAME
+
+#define GT_METHOD_NAME "setFileFormat"
+void GTUtilsOptionPanelMca::setFileFormat(HI::GUITestOpStatus &os, FileFormat fileFormat) {
+    openTab(os, Consensus);
+    QComboBox* formatCb = GTWidget::findExactWidget<QComboBox *>(os, "formatCb");
+    GTComboBox::setCurrentIndex(os, formatCb, fileFormat);
+    GTGlobals::sleep(1000);
+
+}
+#undef GT_METHOD_NAME
+
 #define GT_METHOD_NAME "pushResetButton"
 void GTUtilsOptionPanelMca::pushResetButton(HI::GUITestOpStatus &os) {
     openTab(os, Consensus);
     QToolButton* result = GTWidget::findExactWidget<QToolButton *>(os, "thresholdResetButton");
+    result->click();
+}
+#undef GT_METHOD_NAME
+
+#define GT_METHOD_NAME "pushExportButton"
+void GTUtilsOptionPanelMca::pushExportButton(HI::GUITestOpStatus &os) {
+    openTab(os, Consensus);
+    QToolButton* result = GTWidget::findExactWidget<QToolButton *>(os, "exportBtn");
     result->click();
 }
 #undef GT_METHOD_NAME

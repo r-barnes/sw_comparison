@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -33,16 +33,8 @@ namespace U2 {
  * if value is existing file in _common_data we will resolve this
  * if you want to place file in _tmp you should write filename as "!tmp_out!filename"
  ***********************************/
-class GTest_RunCMDLine : public GTest {
+class GTest_RunCMDLine : public XmlTest {
     Q_OBJECT
-public:
-    static const QString UGENECL_PATH;
-    static const QString TMP_DATA_DIR_PREFIX;
-    static const QString COMMON_DATA_DIR_PREFIX;
-    static const QString LOCAL_DATA_DIR_PREFIX;
-    static const QString CONFIG_FILE_PATH;
-    static const QString WORKFLOW_SAMPLES_DIR_PREFIX;
-
 public:
     SIMPLE_XML_TEST_BODY_WITH_FACTORY( GTest_RunCMDLine, "run-cmdline" );
     virtual void prepare();
@@ -62,7 +54,11 @@ private:
     QProcess *  proc;
     QString     ugeneclPath;
     QStringList tmpFiles;
+    QString     workingDir;
+    bool        autoRemoveWorkingDir;
+    bool        customIniSet;
 
+    static const QString UGENECL_PATH;
 }; // GTest_RunCMDLine
 
 class CMDLineTests {

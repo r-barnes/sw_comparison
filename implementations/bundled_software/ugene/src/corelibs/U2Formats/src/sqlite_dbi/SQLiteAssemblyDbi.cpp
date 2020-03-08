@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -458,7 +458,7 @@ void SQLiteAssemblyUtils::unpackData(const QByteArray& packedData, U2AssemblyRea
     QByteArray &qualityString = read->quality;
 
     if (packedData.isEmpty()) {
-        os.setError(U2DbiL10n::tr("Packed data is empty!"));
+        os.setError(U2DbiL10n::tr("Packed data are empty!"));
         return;
     }
     const char* data = packedData.constData();
@@ -473,7 +473,7 @@ void SQLiteAssemblyUtils::unpackData(const QByteArray& packedData, U2AssemblyRea
     int nameStart = 1;
     int nameEnd = packedData.indexOf('\n', nameStart);
     if (nameEnd == -1) {
-        os.setError(U2DbiL10n::tr("Data is corrupted, no name end marker found: %1").arg(data));
+        os.setError(U2DbiL10n::tr("Data are corrupted, no name end marker found: %1").arg(data));
         return;
     }
     name.append(QByteArray(data + nameStart, nameEnd - nameStart));
@@ -482,7 +482,7 @@ void SQLiteAssemblyUtils::unpackData(const QByteArray& packedData, U2AssemblyRea
     int sequenceStart = nameEnd + 1;
     int sequenceEnd = packedData.indexOf('\n', sequenceStart);
     if (sequenceEnd == -1) {
-        os.setError(U2DbiL10n::tr("Data is corrupted, no sequence end marker found: %1").arg(data));
+        os.setError(U2DbiL10n::tr("Data are corrupted, no sequence end marker found: %1").arg(data));
         return;
     }
     sequence.append(data + sequenceStart, sequenceEnd - sequenceStart);
@@ -491,7 +491,7 @@ void SQLiteAssemblyUtils::unpackData(const QByteArray& packedData, U2AssemblyRea
     int cigarStart = sequenceEnd + 1;
     int cigarEnd = packedData.indexOf('\n', cigarStart);
     if (cigarEnd == -1) {
-        os.setError(U2DbiL10n::tr("Data is corrupted, no CIGAR end marker found: %1").arg(data));
+        os.setError(U2DbiL10n::tr("Data are corrupted, no CIGAR end marker found: %1").arg(data));
         return;
     }
     QByteArray cigarText(data + cigarStart, cigarEnd - cigarStart);
@@ -510,7 +510,7 @@ void SQLiteAssemblyUtils::unpackData(const QByteArray& packedData, U2AssemblyRea
         int rnextStart = qualityEnd + 1;
         int rnextEnd = packedData.indexOf('\n', rnextStart);
         if (rnextEnd == -1) {
-            os.setError(U2DbiL10n::tr("Data is corrupted, no rnext end marker found: %1").arg(data));
+            os.setError(U2DbiL10n::tr("Data are corrupted, no rnext end marker found: %1").arg(data));
             return;
         }
         read->rnext = QByteArray(data + rnextStart, rnextEnd - rnextStart);

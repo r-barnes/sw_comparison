@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -30,7 +30,7 @@
 namespace U2 {
 namespace Workflow {
 
-bool DatasetValidator::validate(const Actor *actor, ProblemList &problemList, const QMap<QString, QString> &/*options*/) const {
+bool DatasetValidator::validate(const Actor *actor, NotificationsList &notificationList, const QMap<QString, QString> &/*options*/) const {
     // If parameter is incorrect, return true and skip validation: it is only a warning
     Attribute *urlAttr = actor->getParameter(BaseAttributes::URL_IN_ATTRIBUTE().getId());
     SAFE_POINT(urlAttr != NULL, "Attribute is NULL", true);
@@ -45,7 +45,7 @@ bool DatasetValidator::validate(const Actor *actor, ProblemList &problemList, co
         if (!fileSet.contains(fileUrl)) {
             fileSet << fileUrl;
         } else {
-            problemList << Problem(QString("file '%1' was specified several times!").arg(fileUrl), "", Problem::U2_WARNING);
+            notificationList << WorkflowNotification(QString("file '%1' was specified several times!").arg(fileUrl), "", WorkflowNotification::U2_WARNING);
         }
     }
 

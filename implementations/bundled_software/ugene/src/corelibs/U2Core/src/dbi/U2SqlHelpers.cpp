@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -154,7 +154,7 @@ bool SQLiteQuery::reset(bool clearBindings) {
     }
     int rc = sqlite3_reset(st);
     if (rc != SQLITE_OK) {
-        setError(QString("SQLite: Error reseting statement: ") + U2DbiL10n::queryError(sqlite3_errmsg(db->handle)));
+        setError(QString("SQLite: Error resetting statement: ") + U2DbiL10n::queryError(sqlite3_errmsg(db->handle)));
         return false;
     }
     return true;
@@ -298,8 +298,7 @@ void SQLiteQuery::bindString(int idx, const QString& val) {
     }
     assert(st!=NULL);
     QByteArray utf8 = val.toUtf8();
-    bool transient = true;
-    int rc = sqlite3_bind_text(st, idx, utf8, utf8.length(), transient ? SQLITE_TRANSIENT : SQLITE_STATIC);
+    int rc = sqlite3_bind_text(st, idx, utf8, utf8.length(), SQLITE_TRANSIENT);
     if (rc != SQLITE_OK) {
         setError(U2DbiL10n::tr("Error binding text value! Query: '%1', idx: %2, value: '%3'").arg(sql).arg(idx).arg(val));
         return;

@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -30,33 +30,27 @@
 
 #include <cassert>
 
+#include "TextDocumentFormat.h"
+
 namespace U2
 {
 
 class IOAdapter;
 
-class U2FORMATS_EXPORT NEXUSFormat : public DocumentFormat
-{
+class U2FORMATS_EXPORT NEXUSFormat : public TextDocumentFormat {
     Q_OBJECT
 
 public:
     NEXUSFormat(QObject *p);
 
-    virtual DocumentFormatId getFormatId() const { return BaseDocumentFormats::NEXUS; }
-    virtual const QString& getFormatName() const { return formatName; }
-
-    virtual FormatCheckResult checkRawData(const QByteArray &rawData, const GUrl& = GUrl()) const;
-
     virtual void storeDocument(Document* d, IOAdapter* io, U2OpStatus& os);
 protected:
-    virtual Document* loadDocument(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& fs, U2OpStatus& os);
+    virtual FormatCheckResult checkRawTextData(const QByteArray &rawData, const GUrl& = GUrl()) const;
+    virtual Document* loadTextDocument(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& fs, U2OpStatus& os);
 
 private:
     QList<GObject*> loadObjects(IOAdapter *io, const U2DbiRef& dbiRef, const QVariantMap &fs, U2OpStatus &ti);
     void storeObjects(QList<GObject*> objects, bool simpleNames, IOAdapter *io, U2OpStatus &ti);
-
-private:
-    QString formatName;
 };
 
 } // namespace U2

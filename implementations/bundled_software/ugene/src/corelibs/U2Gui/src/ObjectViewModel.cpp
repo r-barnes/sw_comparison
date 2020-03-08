@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -300,6 +300,7 @@ GObjectViewWindow::GObjectViewWindow(GObjectView* v, const QString& _viewName, b
     } else {
         OptionsPanelWidget *optionsPanelWidget = optionsPanel->getMainWidget();
         QSplitter *splitter = new QSplitter();
+        splitter->setObjectName("OPTIONS_PANEL_SPLITTER");
         splitter->setOrientation(Qt::Horizontal);
         splitter->setChildrenCollapsible(false);
         splitter->addWidget(objectWidget);

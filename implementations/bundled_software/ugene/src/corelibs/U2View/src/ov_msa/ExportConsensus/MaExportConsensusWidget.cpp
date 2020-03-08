@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -28,9 +28,9 @@
 #include <U2Core/DocumentModel.h>
 #include <U2Core/GObjectTypes.h>
 #include <U2Core/GUrlUtils.h>
-#include <U2Core/L10n.h>
 #include <U2Core/MultipleAlignmentObject.h>
 #include <U2Core/TaskWatchdog.h>
+#include <U2Core/Theme.h>
 #include <U2Core/U2IdTypes.h>
 #include <U2Core/U2SafePoints.h>
 #include <U2Core/UserApplicationsSettings.h>
@@ -60,7 +60,7 @@ MaExportConsensusWidget::MaExportConsensusWidget(MaEditor* ma_, QWidget *parent)
 {
     setupUi(this);
 
-    hintLabel->setStyleSheet(L10N::infoHintStyleSheet());
+    hintLabel->setStyleSheet(Theme::infoHintStyleSheet());
 
     initSaveController();
 
@@ -69,8 +69,8 @@ MaExportConsensusWidget::MaExportConsensusWidget(MaEditor* ma_, QWidget *parent)
 
     connect(exportBtn, SIGNAL(clicked()), SLOT(sl_exportClicked()));
     connect(consensusArea, SIGNAL(si_consensusAlgorithmChanged(const QString &)), SLOT(sl_consensusChanged(const QString &)));
-
     U2WidgetStateStorage::restoreWidgetState(savableWidget);
+
     sl_consensusChanged(consensusArea->getConsensusAlgorithm()->getId());
 }
 
@@ -88,9 +88,12 @@ void MaExportConsensusWidget::sl_exportClicked(){
     settings.url = saveController->getSaveFileName();
     settings.algorithm = ma->getUI()->getConsensusArea()->getConsensusAlgorithm()->clone();
 
-    Task *t = new ExportMaConsensusTask(settings);
-    TaskWatchdog::trackResourceExistence(ma->getMaObject(), t, tr("A problem occurred during export consensus. The multiple alignment is no more available."));
-    AppContext::getTaskScheduler()->registerTopLevelTask(t);
+    ExportMaConsensusTask* exportTask = new ExportMaConsensusTask(settings);
+    connect(exportTask, SIGNAL(si_stateChanged()), this, SLOT(sl_exportTaskStateChanged()));
+    exportTaskUrls << exportTask->getConsensusUrl();
+    TaskWatchdog::trackResourceExistence(ma->getMaObject(), exportTask, tr("A problem occurred during export consensus. The multiple alignment is no more available."));
+    AppContext::getTaskScheduler()->registerTopLevelTask(exportTask);
+    saveController->forceRoll(exportTaskUrls);
 }
 
 void MaExportConsensusWidget::showHint( bool showHint ){
@@ -128,6 +131,15 @@ void MaExportConsensusWidget::sl_consensusChanged(const QString& algoId) {
     }
 }
 
+void MaExportConsensusWidget::sl_exportTaskStateChanged() {
+    ExportMaConsensusTask* exportTask = qobject_cast<ExportMaConsensusTask*>(sender());
+    SAFE_POINT(exportTask != NULL, "ExportMaConsensusTask object is unexpectedly NULL", );
+
+    if (exportTask->getState() == Task::State_Finished) {
+        exportTaskUrls.remove(exportTask->getConsensusUrl());
+    }
+}
+
 void MaExportConsensusWidget::initSaveController() {
     SaveDocumentControllerConfig config;
     config.defaultFileName = getDefaultFilePath();
@@ -148,5 +160,6 @@ void MaExportConsensusWidget::initSaveController() {
 QString MaExportConsensusWidget::getDefaultFilePath() const {
     return GUrlUtils::getDefaultDataPath() + "/" + ma->getMaObject()->getGObjectName() + "_consensus.txt";
 }
+
 
 }

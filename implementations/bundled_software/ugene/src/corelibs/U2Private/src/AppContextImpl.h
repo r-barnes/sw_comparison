@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -31,298 +31,303 @@ class U2PRIVATE_EXPORT AppContextImpl : public AppContext {
     Q_OBJECT
 public:
     AppContextImpl()  {
-        ps = NULL;
-        sr = NULL;
-        pl = NULL;
-        prj = NULL;
-        prs = NULL;
-        mw = NULL;
-        pv = NULL;
-        plv = NULL;
-        ss = NULL;
-        gs = NULL;
-        dfr = NULL;
-        io = NULL;
-        dtr = NULL;
-        dal = NULL;
-        ovfr = NULL;
-        ts = NULL;
-        rt = NULL;
-        asr = NULL;
-        as = NULL;
-        tf = NULL;
-        dbxr = NULL;
-        swmarntr = NULL;
-        asg = NULL;
-        smr = NULL;
-        swar = NULL;
-        msfr = NULL;
-        swrfr = NULL;
-        mcsr = NULL;
-        mhsr = NULL;
-        secStructPredictRegistry = NULL;
-        cgr = NULL;
-        oclgr = NULL;
-        rdc = NULL;
-        protocolInfoRegistry = NULL;
-        remoteMachineMonitor = NULL;
-        treeGeneratorRegistry = NULL;
-        cmdLineRegistry = NULL;
         instance = this;
-        msaConsensusAlgoRegistry = NULL;
-        msaDistanceAlgoRegistry = NULL;
-        assemblyConsensusAlgoRegistry = NULL;
-        pwmConversionAlgoRegistry = NULL;
-        dnaAssemblyAlgRegistry = NULL;
-        genomeAssemblyAlgRegistry = NULL;
-        virtualFileSystemRegistry = NULL;
-        dataBaseRegistry = NULL;
-        externalToolRegistry = NULL;
-        splicedAlignmentTaskRegistry = NULL;
-        opCommonWidgetFactoryRegistry = NULL;
-        opWidgetFactoryRegistry = NULL;
-        workflowScriptRegistry = NULL;
-        appFileStorage = NULL;
-        aaSupport = NULL;
-        dbiRegistry = NULL;
-        udrSchemaRegistry = NULL;
-        rfr = NULL;
-        qdafr = NULL;
-        cdsfr = NULL;
-        saar = NULL;
+
+        aaSupport = nullptr;
+        alignmentAlgorithmsRegistry = nullptr;
+        appFileStorage = nullptr;
+        as = nullptr;
+        asg = nullptr;
+        asr = nullptr;
+        assemblyConsensusAlgoRegistry = nullptr;
+        cdsfr = nullptr;
+        cfr = nullptr;
+        cgr = nullptr;
+        cmdLineRegistry = nullptr;
+        credentialsAsker = nullptr;
+        dal = nullptr;
+        dashboardInfoRegistry = nullptr;
+        dataBaseRegistry = nullptr;
+        dbiRegistry = nullptr;
+        dbxr = nullptr;
+        dfr = nullptr;
+        dnaAssemblyAlgRegistry = nullptr;
+        dpr = nullptr;
+        dtr = nullptr;
+        externalToolRegistry = nullptr;
+        genomeAssemblyAlgRegistry = nullptr;
+        gs = nullptr;
+        io = nullptr;
+        mcsr = nullptr;
+        mhsr = nullptr;
+        msaConsensusAlgoRegistry = nullptr;
+        msaDistanceAlgoRegistry = nullptr;
+        msfr = nullptr;
+        mw = nullptr;
+        oclgr = nullptr;
+        opCommonWidgetFactoryRegistry = nullptr;
+        opWidgetFactoryRegistry = nullptr;
+        ovfr = nullptr;
+        passwordStorage = nullptr;
+        pf = nullptr;
+        pl = nullptr;
+        plv = nullptr;
+        prj = nullptr;
+        projectFilterTaskRegistry = nullptr;
+        protocolInfoRegistry = nullptr;
+        prs = nullptr;
+        ps = nullptr;
+        pv = nullptr;
+        pwmConversionAlgoRegistry = nullptr;
+        qdafr = nullptr;
+        rdc = nullptr;
+        remoteMachineMonitor = nullptr;
+        rfr = nullptr;
+        rt = nullptr;
+        saar = nullptr;
+        secStructPredictRegistry = nullptr;
+        smr = nullptr;
+        splicedAlignmentTaskRegistry = nullptr;
+        sr = nullptr;
+        ss = nullptr;
+        str = nullptr;
+        swar = nullptr;
+        swmarntr = nullptr;
+        swrfr = nullptr;
+        tb = nullptr;
+        tf = nullptr;
+        treeGeneratorRegistry = nullptr;
+        ts = nullptr;
+        udrSchemaRegistry = nullptr;
+        virtualFileSystemRegistry = nullptr;
+        welcomePageActionRegistry = nullptr;
+        workflowScriptRegistry = nullptr;
+
         guiMode = false;
         activeWindow = "";
-        tb = NULL;
-        alignmentAlgorithmsRegistry = NULL;
-        dpr = NULL;
         workingDirectoryPath = "";
-        str = NULL;
-        credentialsAsker = NULL;
-        passwordStorage = NULL;
-        cfr = NULL;
-        welcomePageActionRegistry = NULL;
-        projectFilterTaskRegistry = NULL;
-        pf = NULL;
     }
 
     ~AppContextImpl();
 
-    void setPluginSupport(PluginSupport* _ps) {assert(ps == NULL || _ps == NULL); ps = _ps;}
+    void setPluginSupport(PluginSupport* _ps) {assert(ps == nullptr || _ps == nullptr); ps = _ps;}
 
-    void setServiceRegistry(ServiceRegistry* _sr) {assert(sr == NULL || _sr == NULL); sr = _sr;}
+    void setServiceRegistry(ServiceRegistry* _sr) {assert(sr == nullptr || _sr == nullptr); sr = _sr;}
 
-    void setProjectLoader(ProjectLoader* _pl) {assert(pl == NULL || _pl == NULL); pl = _pl;}
+    void setProjectLoader(ProjectLoader* _pl) {assert(pl == nullptr || _pl == nullptr); pl = _pl;}
 
-    void setProject(Project* _prj) {assert(prj == NULL || _prj == NULL); prj = _prj;}
+    void setProject(Project* _prj) {assert(prj == nullptr || _prj == nullptr); prj = _prj;}
 
-    void setProjectService(ProjectService* _prs) {assert(prs == NULL || _prs == NULL); prs = _prs;}
+    void setProjectService(ProjectService* _prs) {assert(prs == nullptr || _prs == nullptr); prs = _prs;}
 
-    void setMainWindow(MainWindow* _mw) {assert(mw == NULL || _mw == NULL); mw = _mw;}
+    void setMainWindow(MainWindow* _mw) {assert(mw == nullptr || _mw == nullptr); mw = _mw;}
 
-    void setProjectView(ProjectView* _pv) {assert(pv == NULL || _pv == NULL); pv = _pv;}
+    void setProjectView(ProjectView* _pv) {assert(pv == nullptr || _pv == nullptr); pv = _pv;}
 
-    void setPluginViewer(PluginViewer* _plv) {assert(plv == NULL || _plv == NULL); plv = _plv;}
+    void setPluginViewer(PluginViewer* _plv) {assert(plv == nullptr || _plv == nullptr); plv = _plv;}
 
-    void setSettings(Settings* _ss) {assert(ss == NULL || _ss == NULL); ss= _ss;}
+    void setSettings(Settings* _ss) {assert(ss == nullptr || _ss == nullptr); ss= _ss;}
 
-    void setGlobalSettings(Settings* _gs) {assert(gs == NULL || _gs == NULL); gs= _gs;}
+    void setGlobalSettings(Settings* _gs) {assert(gs == nullptr || _gs == nullptr); gs= _gs;}
 
     void setAppSettings( AppSettings* _as) { assert( as|| _as); as= _as; }
 
-    void setAppSettingsGUI( AppSettingsGUI* _asg) { assert( asg == NULL || _asg == NULL ); asg= _asg; }
+    void setAppSettingsGUI( AppSettingsGUI* _asg) { assert( asg == nullptr || _asg == nullptr ); asg= _asg; }
 
-    void setDocumentFormatRegistry(DocumentFormatRegistry* _dfr) {assert(dfr == NULL || _dfr == NULL); dfr = _dfr;}
+    void setDocumentFormatRegistry(DocumentFormatRegistry* _dfr) {assert(dfr == nullptr || _dfr == nullptr); dfr = _dfr;}
 
-    void setIOAdapterRegistry(IOAdapterRegistry* _io) {assert(io == NULL || _io == NULL); io = _io;}
+    void setIOAdapterRegistry(IOAdapterRegistry* _io) {assert(io == nullptr || _io == nullptr); io = _io;}
 
-    void setDNATranslationRegistry(DNATranslationRegistry* _dtr) {assert(dtr == NULL || _dtr == NULL);dtr = _dtr;}
+    void setDNATranslationRegistry(DNATranslationRegistry* _dtr) {assert(dtr == nullptr || _dtr == nullptr);dtr = _dtr;}
 
-    void setDNAAlphabetRegistry(DNAAlphabetRegistry* _dal) {assert(dal == NULL || _dal == NULL);dal = _dal;}
+    void setDNAAlphabetRegistry(DNAAlphabetRegistry* _dal) {assert(dal == nullptr || _dal == nullptr);dal = _dal;}
 
-    void setObjectViewFactoryRegistry(GObjectViewFactoryRegistry* _ovfr) {assert(ovfr == NULL || _ovfr == NULL); ovfr = _ovfr;}
+    void setObjectViewFactoryRegistry(GObjectViewFactoryRegistry* _ovfr) {assert(ovfr == nullptr || _ovfr == nullptr); ovfr = _ovfr;}
 
-    void setTaskScheduler(TaskScheduler* _ts) {assert(ts == NULL || _ts == NULL); ts = _ts;}
+    void setTaskScheduler(TaskScheduler* _ts) {assert(ts == nullptr || _ts == nullptr); ts = _ts;}
 
-    void setResourceTracker(ResourceTracker* _rt) {assert(rt == NULL || _rt == NULL); rt = _rt;}
+    void setResourceTracker(ResourceTracker* _rt) {assert(rt == nullptr || _rt == nullptr); rt = _rt;}
 
-    void setAnnotationSettingsRegistry(AnnotationSettingsRegistry* _asr)  {assert(asr == NULL || _asr == NULL); asr = _asr;}
+    void setAnnotationSettingsRegistry(AnnotationSettingsRegistry* _asr)  {assert(asr == nullptr || _asr == nullptr); asr = _asr;}
 
     void setTestFramework( TestFramework* _tf) { assert( tf || _tf ); tf = _tf; }
 
-    void setDBXRefRegistry( DBXRefRegistry* _dbxr) { assert( dbxr == NULL || _dbxr == NULL ); dbxr = _dbxr; }
+    void setDBXRefRegistry( DBXRefRegistry* _dbxr) { assert( dbxr == nullptr || _dbxr == nullptr ); dbxr = _dbxr; }
 
-    void setSubstMatrixRegistry(SubstMatrixRegistry* _smr) { assert( smr == NULL || _smr == NULL ); smr = _smr; }
+    void setSubstMatrixRegistry(SubstMatrixRegistry* _smr) { assert( smr == nullptr || _smr == nullptr ); smr = _smr; }
 
-    void setSmithWatermanTaskFactoryRegistry (SmithWatermanTaskFactoryRegistry* _swar) { assert( swar == NULL || _swar == NULL ); swar = _swar; }
+    void setSmithWatermanTaskFactoryRegistry (SmithWatermanTaskFactoryRegistry* _swar) { assert( swar == nullptr || _swar == nullptr ); swar = _swar; }
 
-    void setMolecularSurfaceFactoryRegistry (MolecularSurfaceFactoryRegistry* _msfr) { assert( msfr == NULL || _msfr == NULL ); msfr = _msfr; }
+    void setMolecularSurfaceFactoryRegistry (MolecularSurfaceFactoryRegistry* _msfr) { assert( msfr == nullptr || _msfr == nullptr ); msfr = _msfr; }
 
-    void setSWResultFilterRegistry (SWResultFilterRegistry* _swrfr) { assert( swrfr == NULL || _swrfr == NULL ); swrfr = _swrfr; }
+    void setSWResultFilterRegistry (SWResultFilterRegistry* _swrfr) { assert( swrfr == nullptr || _swrfr == nullptr ); swrfr = _swrfr; }
 
-    void setSWMulAlignResultNamesTagsRegistry (SWMulAlignResultNamesTagsRegistry * _swmarntr) { assert( swmarntr == NULL || _swmarntr == NULL ); swmarntr = _swmarntr; }
+    void setSWMulAlignResultNamesTagsRegistry (SWMulAlignResultNamesTagsRegistry * _swmarntr) { assert( swmarntr == nullptr || _swmarntr == nullptr ); swmarntr = _swmarntr; }
 
-    void setMsaColorSchemeRegistry(MsaColorSchemeRegistry* _mcsr) {assert( mcsr == NULL || _mcsr == NULL ); mcsr = _mcsr;}
+    void setMsaColorSchemeRegistry(MsaColorSchemeRegistry* _mcsr) {assert( mcsr == nullptr || _mcsr == nullptr ); mcsr = _mcsr;}
 
-    void setMsaHighlightingSchemeRegistry(MsaHighlightingSchemeRegistry* _mhsr) {assert( mhsr == NULL || _mhsr == NULL ); mhsr = _mhsr;}
+    void setMsaHighlightingSchemeRegistry(MsaHighlightingSchemeRegistry* _mhsr) {assert( mhsr == nullptr || _mhsr == nullptr ); mhsr = _mhsr;}
 
-    void setSecStructPedictAlgRegistry(SecStructPredictAlgRegistry* _sspar) {assert( secStructPredictRegistry == NULL || _sspar == NULL ); secStructPredictRegistry = _sspar;}
+    void setSecStructPedictAlgRegistry(SecStructPredictAlgRegistry* _sspar) {assert( secStructPredictRegistry == nullptr || _sspar == nullptr ); secStructPredictRegistry = _sspar;}
 
-    void setCudaGpuRegistry( CudaGpuRegistry * _cgr ) { assert( cgr == NULL || _cgr == NULL ); cgr = _cgr; }
+    void setCudaGpuRegistry( CudaGpuRegistry * _cgr ) { assert( cgr == nullptr || _cgr == nullptr ); cgr = _cgr; }
 
-    void setOpenCLGpuRegistry( OpenCLGpuRegistry* _oclgr ) { assert( oclgr == NULL || _oclgr == NULL ); oclgr = _oclgr; }
+    void setOpenCLGpuRegistry( OpenCLGpuRegistry* _oclgr ) { assert( oclgr == nullptr || _oclgr == nullptr ); oclgr = _oclgr; }
 
-    void setRecentlyDownloadedCache( RecentlyDownloadedCache* _rdc) { assert( rdc == NULL || _rdc == NULL ); rdc = _rdc;}
+    void setRecentlyDownloadedCache( RecentlyDownloadedCache* _rdc) { assert( rdc == nullptr || _rdc == nullptr ); rdc = _rdc;}
 
-    void setDataPathRegistry( U2DataPathRegistry* _dpr) { assert( dpr == NULL || _dpr == NULL ); dpr = _dpr;}
+    void setDataPathRegistry( U2DataPathRegistry* _dpr) { assert( dpr == nullptr || _dpr == nullptr ); dpr = _dpr;}
 
-    void setScriptingToolRegistry( ScriptingToolRegistry* _str) { assert( str == NULL || _str == NULL ); str = _str;}
+    void setScriptingToolRegistry( ScriptingToolRegistry* _str) { assert( str == nullptr || _str == nullptr ); str = _str;}
 
-    void setPasteFactory( PasteFactory* _pf) { assert( pf == NULL || _pf == NULL ); pf = _pf;}
+    void setPasteFactory( PasteFactory* _pf) { assert( pf == nullptr || _pf == nullptr ); pf = _pf;}
 
-    void setProtocolInfoRegistry( ProtocolInfoRegistry * pr ) { assert( NULL == protocolInfoRegistry || NULL == pr );
+    void setDashboardInfoRegistry(DashboardInfoRegistry *_dashboardInfoRegistry) { assert(dashboardInfoRegistry == nullptr || _dashboardInfoRegistry == nullptr); dashboardInfoRegistry = _dashboardInfoRegistry; }
+
+    void setProtocolInfoRegistry( ProtocolInfoRegistry * pr ) { assert( nullptr == protocolInfoRegistry || nullptr == pr );
         protocolInfoRegistry = pr; }
 
-    void setRemoteMachineMonitor( RemoteMachineMonitor * rm ) { assert( NULL == remoteMachineMonitor || NULL == rm );
+    void setRemoteMachineMonitor( RemoteMachineMonitor * rm ) { assert( nullptr == remoteMachineMonitor || nullptr == rm );
         remoteMachineMonitor = rm; }
 
     void setPhyTreeGeneratorRegistry(PhyTreeGeneratorRegistry* genRegistry) {
-        assert(NULL == treeGeneratorRegistry || NULL == genRegistry);
+        assert(nullptr == treeGeneratorRegistry || nullptr == genRegistry);
         treeGeneratorRegistry = genRegistry;
     }
 
     void setMSAConsensusAlgorithmRegistry(MSAConsensusAlgorithmRegistry* reg) {
-        assert(reg == NULL || msaConsensusAlgoRegistry == NULL);
+        assert(reg == nullptr || msaConsensusAlgoRegistry == nullptr);
         msaConsensusAlgoRegistry = reg;
     }
 
     void setMSADistanceAlgorithmRegistry(MSADistanceAlgorithmRegistry* reg) {
-        assert(reg == NULL || msaDistanceAlgoRegistry == NULL);
+        assert(reg == nullptr || msaDistanceAlgoRegistry == nullptr);
         msaDistanceAlgoRegistry = reg;
     }
 
     void setAssemblyConsensusAlgorithmRegistry(AssemblyConsensusAlgorithmRegistry* reg) {
-        assert(reg == NULL || assemblyConsensusAlgoRegistry == NULL);
+        assert(reg == nullptr || assemblyConsensusAlgoRegistry == nullptr);
         assemblyConsensusAlgoRegistry = reg;
     }
 
     void setPWMConversionAlgorithmRegistry(PWMConversionAlgorithmRegistry* reg) {
-        assert(reg == NULL || pwmConversionAlgoRegistry == NULL);
+        assert(reg == nullptr || pwmConversionAlgoRegistry == nullptr);
         pwmConversionAlgoRegistry = reg;
     }
 
-    void setCMDLineRegistry(CMDLineRegistry* r) { assert(cmdLineRegistry == NULL || r == NULL); cmdLineRegistry = r; }
+    void setCMDLineRegistry(CMDLineRegistry* r) { assert(cmdLineRegistry == nullptr || r == nullptr); cmdLineRegistry = r; }
 
     void setVirtualFileSystemRegistry( VirtualFileSystemRegistry * r ) {
-        assert( virtualFileSystemRegistry == NULL || r == NULL );
+        assert( virtualFileSystemRegistry == nullptr || r == nullptr );
         virtualFileSystemRegistry = r;
     }
 
     void setDnaAssemblyAlgRegistry( DnaAssemblyAlgRegistry * r ) {
-        assert( dnaAssemblyAlgRegistry == NULL || r == NULL );
+        assert( dnaAssemblyAlgRegistry == nullptr || r == nullptr );
         dnaAssemblyAlgRegistry = r;
     }
 
     void setGenomeAssemblyAlgRegistry( GenomeAssemblyAlgRegistry * r ) {
-        assert( genomeAssemblyAlgRegistry == NULL || r == NULL );
+        assert( genomeAssemblyAlgRegistry == nullptr || r == nullptr );
         genomeAssemblyAlgRegistry = r;
     }
 
     void setDataBaseRegistry( DataBaseRegistry *dbr) {
-        assert (dataBaseRegistry == NULL || dbr == NULL );
+        assert (dataBaseRegistry == nullptr || dbr == nullptr );
         dataBaseRegistry = dbr;
     }
 
     void setExternalToolRegistry( ExternalToolRegistry * _etr) {
-        assert( externalToolRegistry == NULL || _etr == NULL );
+        assert( externalToolRegistry == nullptr || _etr == nullptr );
         externalToolRegistry = _etr;
     }
 
     void setRepeatFinderTaskFactoryRegistry (RepeatFinderTaskFactoryRegistry* _rfr) {
-        assert( rfr == NULL || _rfr == NULL ); rfr = _rfr;
+        assert( rfr == nullptr || _rfr == nullptr ); rfr = _rfr;
     }
 
     void setQDActorFactoryRegistry(QDActorPrototypeRegistry* _queryfactoryRegistry) {
-        assert( qdafr == NULL || _queryfactoryRegistry == NULL );
+        assert( qdafr == nullptr || _queryfactoryRegistry == nullptr );
         qdafr = _queryfactoryRegistry;
     }
 
     void setAutoAnnotationsSupport(AutoAnnotationsSupport* _aaSupport) {
-        assert( aaSupport == NULL || _aaSupport == NULL );
+        assert( aaSupport == nullptr || _aaSupport == nullptr );
         aaSupport = _aaSupport;
     }
 
     void setDbiRegistry(U2DbiRegistry *_dbiRegistry) {
-        assert((NULL == dbiRegistry) || (NULL == _dbiRegistry));
+        assert((nullptr == dbiRegistry) || (nullptr == _dbiRegistry));
         dbiRegistry = _dbiRegistry;
     }
 
     void setUdrSchemaRegistry(UdrSchemaRegistry *_udrSchemaRegistry) {
-        assert((NULL == udrSchemaRegistry) || (NULL == _udrSchemaRegistry));
+        assert((nullptr == udrSchemaRegistry) || (nullptr == _udrSchemaRegistry));
         udrSchemaRegistry = _udrSchemaRegistry;
     }
 
     void setCDSearchFactoryRegistry(CDSearchFactoryRegistry* _cdsfr) {
-        assert((NULL == cdsfr) || (NULL == _cdsfr));
+        assert((nullptr == cdsfr) || (nullptr == _cdsfr));
         cdsfr= _cdsfr;
     }
 
     void setSplicedAlignmentTaskRegistry(SplicedAlignmentTaskRegistry* tr) {
-        assert((NULL == splicedAlignmentTaskRegistry) || (NULL == tr));
+        assert((nullptr == splicedAlignmentTaskRegistry) || (nullptr == tr));
         splicedAlignmentTaskRegistry = tr;
     }
 
     void setOPCommonWidgetFactoryRegistry(OPCommonWidgetFactoryRegistry *_opCommonWidgetFactoryRegistry) {
-        assert((NULL == opCommonWidgetFactoryRegistry) || (NULL == _opCommonWidgetFactoryRegistry));
+        assert((nullptr == opCommonWidgetFactoryRegistry) || (nullptr == _opCommonWidgetFactoryRegistry));
         opCommonWidgetFactoryRegistry = _opCommonWidgetFactoryRegistry;
     }
 
     void setOPWidgetFactoryRegistry(OPWidgetFactoryRegistry* _opWidgetFactoryRegistry) {
-        assert((NULL == opWidgetFactoryRegistry) || (NULL == _opWidgetFactoryRegistry));
+        assert((nullptr == opWidgetFactoryRegistry) || (nullptr == _opWidgetFactoryRegistry));
         opWidgetFactoryRegistry = _opWidgetFactoryRegistry;
     }
 
     void setStructuralAlignmentAlgorithmRegistry(StructuralAlignmentAlgorithmRegistry *_saar) {
-        assert(saar == NULL || _saar == NULL);
+        assert(saar == nullptr || _saar == nullptr);
         saar = _saar;
     }
 
     void setWorkflowScriptRegistry(WorkflowScriptRegistry *_wsr) {
-        assert(workflowScriptRegistry == NULL || _wsr == NULL);
+        assert(workflowScriptRegistry == nullptr || _wsr == nullptr);
         workflowScriptRegistry = _wsr;
     }
 
     void setCredentialsAsker(CredentialsAsker* _credentialsAsker) {
-        assert(credentialsAsker == NULL || _credentialsAsker == NULL);
+        assert(credentialsAsker == nullptr || _credentialsAsker == nullptr);
         credentialsAsker = _credentialsAsker;
     }
 
     void setPasswordStorage(PasswordStorage *_passwordStorage) {
-        assert(passwordStorage == NULL || _passwordStorage == NULL);
+        assert(passwordStorage == nullptr || _passwordStorage == nullptr);
         passwordStorage = _passwordStorage;
     }
 
     void setAppFileStorage(AppFileStorage *afs) {
-        assert(appFileStorage == NULL || afs == NULL);
+        assert(appFileStorage == nullptr || afs == nullptr);
         appFileStorage = afs;
     }
 
     void setAlignmentAlgorithmsRegistry(AlignmentAlgorithmsRegistry* _alignmentAlgorithmsRegistry) {
-        assert(alignmentAlgorithmsRegistry == NULL || _alignmentAlgorithmsRegistry == NULL);
+        assert(alignmentAlgorithmsRegistry == nullptr || _alignmentAlgorithmsRegistry == nullptr);
         alignmentAlgorithmsRegistry = _alignmentAlgorithmsRegistry;
     }
 
     void setConvertFactoryRegistry(ConvertFactoryRegistry* _cfr) {
-        assert(cfr == NULL || _cfr == NULL);
+        assert(cfr == nullptr || _cfr == nullptr);
         cfr = _cfr;
     }
 
     void setWelcomePageActionRegistry(IdRegistry<WelcomePageAction> *value) {
-        assert(welcomePageActionRegistry == NULL || value == NULL);
+        assert(welcomePageActionRegistry == nullptr || value == nullptr);
         welcomePageActionRegistry = value;
     }
 
     void setProjectFilterTaskRegistry(ProjectFilterTaskRegistry *value) {
-        assert(projectFilterTaskRegistry == NULL || value == NULL);
+        assert(projectFilterTaskRegistry == nullptr || value == nullptr);
         projectFilterTaskRegistry = value;
     }
 
@@ -339,7 +344,7 @@ public:
         workingDirectoryPath = path;
     }
 
-    void setGUITestBase(UGUITestBase *_tb) {assert(tb == NULL || _tb == NULL); tb = _tb;}
+    void setGUITestBase(UGUITestBase *_tb) {assert(tb == nullptr || _tb == nullptr); tb = _tb;}
 
     static AppContextImpl* getApplicationContext();
 
@@ -414,6 +419,7 @@ protected:
     virtual IdRegistry<WelcomePageAction>* _getWelcomePageActionRegistry() const { return welcomePageActionRegistry; }
     virtual ProjectFilterTaskRegistry *    _getProjectFilterTaskRegistry() const { return projectFilterTaskRegistry; }
     virtual PasteFactory *                 _getPasteFactory() const { return pf; }
+    virtual DashboardInfoRegistry *         _getDashboardInfoRegistry() const { return dashboardInfoRegistry; }
 
     virtual void _registerGlobalObject(AppGlobalObject* go);
     virtual void _unregisterGlobalObject(const QString& id);
@@ -423,74 +429,76 @@ protected:
     virtual QString _getWorkingDirectoryPath() const { return workingDirectoryPath; }
 
 private:
-    PluginSupport* ps;
-    ServiceRegistry* sr;
-    ProjectLoader* pl;
-    Project*    prj;
-    ProjectService* prs;
-    MainWindow* mw;
-    ProjectView* pv;
-    PluginViewer* plv;
-    Settings* ss;
-    Settings* gs;
-    DocumentFormatRegistry* dfr;
-    IOAdapterRegistry* io;
-    DNATranslationRegistry* dtr;
-    DNAAlphabetRegistry* dal;
-    GObjectViewFactoryRegistry* ovfr;
-    TaskScheduler* ts;
-    ResourceTracker* rt;
+    AlignmentAlgorithmsRegistry* alignmentAlgorithmsRegistry;
     AnnotationSettingsRegistry* asr;
+    AppFileStorage *appFileStorage;
     AppSettings * as;
-    TestFramework* tf;
-    DBXRefRegistry* dbxr;
-    SubstMatrixRegistry* smr;
-    SmithWatermanTaskFactoryRegistry* swar;
-    MolecularSurfaceFactoryRegistry* msfr;
-    SWResultFilterRegistry*  swrfr;
-    SWMulAlignResultNamesTagsRegistry * swmarntr;
     AppSettingsGUI* asg;
-    MsaColorSchemeRegistry* mcsr;
-    MsaHighlightingSchemeRegistry *mhsr;
-    SecStructPredictAlgRegistry* secStructPredictRegistry;
-    CudaGpuRegistry * cgr;
-    OpenCLGpuRegistry * oclgr;
-    RecentlyDownloadedCache* rdc;
-    ProtocolInfoRegistry * protocolInfoRegistry;
-    RemoteMachineMonitor * remoteMachineMonitor;
-    PhyTreeGeneratorRegistry *treeGeneratorRegistry;
+    AssemblyConsensusAlgorithmRegistry* assemblyConsensusAlgoRegistry;
+    AutoAnnotationsSupport* aaSupport;
+    CDSearchFactoryRegistry* cdsfr;
     CMDLineRegistry* cmdLineRegistry;
+    ConvertFactoryRegistry *cfr;
+    CredentialsAsker* credentialsAsker;
+    CudaGpuRegistry * cgr;
+    DBXRefRegistry* dbxr;
+    DNAAlphabetRegistry* dal;
+    DNATranslationRegistry* dtr;
+    DashboardInfoRegistry *dashboardInfoRegistry;
+    DataBaseRegistry* dataBaseRegistry;
+    DnaAssemblyAlgRegistry* dnaAssemblyAlgRegistry;
+    DocumentFormatRegistry* dfr;
+    ExternalToolRegistry * externalToolRegistry;
+    GObjectViewFactoryRegistry* ovfr;
+    GenomeAssemblyAlgRegistry* genomeAssemblyAlgRegistry;
+    IOAdapterRegistry* io;
+    IdRegistry<WelcomePageAction> *welcomePageActionRegistry;
     MSAConsensusAlgorithmRegistry* msaConsensusAlgoRegistry;
     MSADistanceAlgorithmRegistry* msaDistanceAlgoRegistry;
-    AssemblyConsensusAlgorithmRegistry* assemblyConsensusAlgoRegistry;
-    PWMConversionAlgorithmRegistry* pwmConversionAlgoRegistry;
-    VirtualFileSystemRegistry * virtualFileSystemRegistry;
-    DnaAssemblyAlgRegistry* dnaAssemblyAlgRegistry;
-    GenomeAssemblyAlgRegistry* genomeAssemblyAlgRegistry;
-    DataBaseRegistry* dataBaseRegistry;
-    ExternalToolRegistry * externalToolRegistry;
-    RepeatFinderTaskFactoryRegistry* rfr;
-    PasteFactory* pf;
-    QDActorPrototypeRegistry* qdafr;
-    CDSearchFactoryRegistry* cdsfr;
-    StructuralAlignmentAlgorithmRegistry* saar;
-    AutoAnnotationsSupport* aaSupport;
-    U2DbiRegistry *dbiRegistry;
-    UdrSchemaRegistry *udrSchemaRegistry;
-    UGUITestBase *tb;
-    SplicedAlignmentTaskRegistry* splicedAlignmentTaskRegistry;
+    MainWindow* mw;
+    MolecularSurfaceFactoryRegistry* msfr;
+    MsaColorSchemeRegistry* mcsr;
+    MsaHighlightingSchemeRegistry *mhsr;
     OPCommonWidgetFactoryRegistry* opCommonWidgetFactoryRegistry;
     OPWidgetFactoryRegistry* opWidgetFactoryRegistry;
-    WorkflowScriptRegistry* workflowScriptRegistry;
-    AppFileStorage *appFileStorage;
-    AlignmentAlgorithmsRegistry* alignmentAlgorithmsRegistry;
-    U2DataPathRegistry *dpr;
-    ScriptingToolRegistry *str;
-    CredentialsAsker* credentialsAsker;
+    OpenCLGpuRegistry * oclgr;
+    PWMConversionAlgorithmRegistry* pwmConversionAlgoRegistry;
     PasswordStorage* passwordStorage;
-    ConvertFactoryRegistry *cfr;
-    IdRegistry<WelcomePageAction> *welcomePageActionRegistry;
+    PasteFactory* pf;
+    PhyTreeGeneratorRegistry *treeGeneratorRegistry;
+    PluginSupport* ps;
+    PluginViewer* plv;
+    Project*    prj;
     ProjectFilterTaskRegistry *projectFilterTaskRegistry;
+    ProjectLoader* pl;
+    ProjectService* prs;
+    ProjectView* pv;
+    ProtocolInfoRegistry * protocolInfoRegistry;
+    QDActorPrototypeRegistry* qdafr;
+    RecentlyDownloadedCache* rdc;
+    RemoteMachineMonitor * remoteMachineMonitor;
+    RepeatFinderTaskFactoryRegistry* rfr;
+    ResourceTracker* rt;
+    SWMulAlignResultNamesTagsRegistry * swmarntr;
+    SWResultFilterRegistry*  swrfr;
+    ScriptingToolRegistry *str;
+    SecStructPredictAlgRegistry* secStructPredictRegistry;
+    ServiceRegistry* sr;
+    Settings* gs;
+    Settings* ss;
+    SmithWatermanTaskFactoryRegistry* swar;
+    SplicedAlignmentTaskRegistry* splicedAlignmentTaskRegistry;
+    StructuralAlignmentAlgorithmRegistry* saar;
+    SubstMatrixRegistry* smr;
+    TaskScheduler* ts;
+    TestFramework* tf;
+    U2DataPathRegistry *dpr;
+    U2DbiRegistry *dbiRegistry;
+    UGUITestBase *tb;
+    UdrSchemaRegistry *udrSchemaRegistry;
+    VirtualFileSystemRegistry * virtualFileSystemRegistry;
+    WorkflowScriptRegistry* workflowScriptRegistry;
+
     bool guiMode;
     QString activeWindow;
     QString workingDirectoryPath;

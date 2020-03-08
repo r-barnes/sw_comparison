@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -25,17 +25,20 @@
 #include <U2Core/ExternalToolRegistry.h>
 #include "utils/ExternalToolSupportAction.h"
 
-#define ET_FORMATDB "FormatDB"
-#define ET_MAKEBLASTDB "MakeBLASTDB"
-#define ET_GPU_MAKEBLASTDB "GPU-MakeBLASTDB"
-#define FORMATDB_TMP_DIR "FormatDB"
 namespace U2 {
 
 class FormatDBSupport : public ExternalTool {
     Q_OBJECT
 public:
-    FormatDBSupport(const QString& name, const QString& path = "");
+    FormatDBSupport(const QString& id, const QString& name, const QString& path = "");
 
+    static const QString ET_FORMATDB;
+    static const QString ET_FORMATDB_ID;
+    static const QString ET_MAKEBLASTDB;
+    static const QString ET_MAKEBLASTDB_ID;
+    static const QString ET_GPU_MAKEBLASTDB;
+    static const QString ET_GPU_MAKEBLASTDB_ID;
+    static const QString FORMATDB_TMP_DIR;
 public slots:
     void sl_runWithExtFileSpecify();
 };

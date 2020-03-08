@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -181,6 +181,30 @@ QString TextUtils::variate(const QString& prefix, const QString& sep, const QSet
         res = prefix + sep + QString::number(seed++);
     } while (filter.contains(res));
     return res;
+}
+
+QByteArray TextUtils::cutByteOrderMarks(const QByteArray& data, QString& errorMessage) {
+    QTextStream textStream(data);
+    textStream.setGenerateByteOrderMark(false);
+    QByteArray resultData = textStream.readAll().toLocal8Bit();
+    if (resultData.size() > data.size()) {
+        errorMessage = tr("The text file can't be read. Check the file encoding and make sure the file is not corrupted.");
+        resultData = QByteArray();
+    }
+    return resultData;
+}
+
+qint64 TextUtils::cutByteOrderMarks(char* data, QString& errorMessage, qint64 buffLen) {
+    CHECK(buffLen != 0, 0);
+
+    QByteArray byteArrayData = buffLen != -1 ? QByteArray(data, buffLen) : QByteArray(data);
+    QByteArray resByteArrayData = cutByteOrderMarks(byteArrayData, errorMessage);
+    CHECK(errorMessage.isEmpty(), -1);
+
+    qint64 result = resByteArrayData.size();
+    memcpy(data, resByteArrayData.data(), result);
+
+    return result;
 }
 
 }//namespace

@@ -1,6 +1,6 @@
 /**
 * UGENE - Integrated Bioinformatics Tools.
-* Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+* Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
 * http://ugene.net
 *
 * This program is free software; you can redistribute it and/or
@@ -40,7 +40,7 @@ class UrlItem;
 class U2DESIGNER_EXPORT DatasetsController : public QObject {
     Q_OBJECT
 public:
-    DatasetsController(const QSet<GObjectType> &compatibleObjTypes = QSet<GObjectType>());
+    DatasetsController(const QSet<GObjectType> &compatibleObjTypes = QSet<GObjectType>(), QObject *parent = NULL);
     virtual ~DatasetsController();
 
     virtual void update();
@@ -164,7 +164,7 @@ private:
 /************************************************************************/
 /* URLListController */
 /************************************************************************/
-class URLListController : public QObject {
+class U2DESIGNER_EXPORT URLListController : public QObject {
     Q_OBJECT
 public:
     URLListController(DatasetsController *parent, Dataset *set);

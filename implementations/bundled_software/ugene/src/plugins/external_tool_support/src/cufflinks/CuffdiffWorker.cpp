@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -49,11 +49,11 @@ namespace LocalWorkflow {
 /************************************************************************/
 class InputSlotValidator : public PortValidator {
 public:
-    virtual bool validate(const IntegralBusPort *port, ProblemList &problemList) const {
+    virtual bool validate(const IntegralBusPort *port, NotificationsList &notificationList) const {
         bool binded = isBinded(port, BaseSlots::URL_SLOT().getId());
         if (!binded) {
             QString name = slotName(port, BaseSlots::URL_SLOT().getId());
-            problemList.append(Problem(IntegralBusPort::tr("'%1' slot must be not binded").arg(name)));
+            notificationList.append(WorkflowNotification(IntegralBusPort::tr("'%1' slot must be not binded").arg(name)));
             return false;
         }
 
@@ -273,7 +273,7 @@ void CuffdiffWorkerFactory::init()
     proto->setPortValidator(BasePorts::IN_ASSEMBLY_PORT_ID(), new InputSlotValidator());
 
     { // external tools
-        proto->addExternalTool(ET_CUFFDIFF, EXT_TOOL_PATH);
+        proto->addExternalTool(CufflinksSupport::ET_CUFFDIFF_ID, EXT_TOOL_PATH);
     }
 
     WorkflowEnv::getProtoRegistry()->registerProto(
@@ -321,7 +321,7 @@ void CuffdiffWorker::initSlotsState() {
 }
 
 void CuffdiffWorker::init() {
-    WorkflowUtils::updateExternalToolPath(ET_CUFFDIFF, getValue<QString>(EXT_TOOL_PATH));
+    WorkflowUtils::updateExternalToolPath(CufflinksSupport::ET_CUFFDIFF_ID, getValue<QString>(EXT_TOOL_PATH));
 
     inAssembly = ports[BasePorts::IN_ASSEMBLY_PORT_ID()];
     inTranscript = ports[BasePorts::IN_ANNOTATIONS_PORT_ID()];

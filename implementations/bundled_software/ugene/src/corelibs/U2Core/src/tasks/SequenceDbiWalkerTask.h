@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -23,7 +23,6 @@
 #define _U2_SEQUENCE_DBI_WALKER_TASK_H_
 
 #include <U2Core/Task.h>
-#include <U2Core/U2Region.h>
 #include <U2Core/U2Type.h>
 #include "SequenceWalkerTask.h"
 
@@ -39,14 +38,14 @@ public:
 
 class U2CORE_EXPORT SequenceDbiWalkerCallback {
 public:
-    virtual ~SequenceDbiWalkerCallback(){}
+    virtual ~SequenceDbiWalkerCallback() {}
 
     virtual void onRegion(SequenceDbiWalkerSubtask* t, TaskStateInfo& ti) = 0;
 
     /* implement this to give SequenceDbiWalkerSubtask required resources
      * here are resources for ONE(!) SequenceDbiWalkerSubtask execution e.g. for one execution of onRegion function
      */
-    virtual QList< TaskResourceUsage > getResources( SequenceDbiWalkerSubtask * t ) {Q_UNUSED(t); return QList< TaskResourceUsage >(); }
+    virtual QList< TaskResourceUsage > getResources(SequenceDbiWalkerSubtask * t) { Q_UNUSED(t); return QList< TaskResourceUsage >(); }
 };
 
 class U2CORE_EXPORT SequenceDbiWalkerTask : public Task {
@@ -55,13 +54,13 @@ public:
     SequenceDbiWalkerTask(const SequenceDbiWalkerConfig& config, SequenceDbiWalkerCallback* callback,
         const QString& name, TaskFlags tf = TaskFlags_NR_FOSE_COSC);
 
-    SequenceDbiWalkerCallback*     getCallback() const {return callback;}
-    const SequenceDbiWalkerConfig& getConfig() const {return config;}
+    SequenceDbiWalkerCallback*     getCallback() const { return callback; }
+    const SequenceDbiWalkerConfig& getConfig() const { return config; }
 
     // reverseMode - start splitting from the end of the range
     static QVector<U2Region> splitRange(const U2Region& range, int chunkSize, int overlapSize, int lastChunkExtraLen, bool reverseMode);
 
-    void setError(const QString& err) {stateInfo.setError(err);}
+    void setError(const QString& err) { stateInfo.setError(err); }
 
 private:
     QList<SequenceDbiWalkerSubtask*> prepareSubtasks();
@@ -75,7 +74,7 @@ class U2CORE_EXPORT SequenceDbiWalkerSubtask : public Task {
     Q_OBJECT
 public:
     SequenceDbiWalkerSubtask(SequenceDbiWalkerTask* t, const U2Region& globalReg, bool lo, bool ro,
-                        const U2EntityRef& seqRef, int localLen, bool doCompl, bool doAmino);
+        const U2EntityRef& seqRef, int localLen, bool doCompl, bool doAmino);
 
     void run();
 
@@ -83,20 +82,20 @@ public:
 
     int  getRegionSequenceLen();
 
-    bool isDNAComplemented() const {return doCompl;}
+    bool isDNAComplemented() const { return doCompl; }
 
-    bool isAminoTranslated() const {return doAmino;}
+    bool isAminoTranslated() const { return doAmino; }
 
-    U2Region getGlobalRegion() const {return globalRegion;}
+    U2Region getGlobalRegion() const { return globalRegion; }
 
-    const SequenceDbiWalkerConfig& getGlobalConfig() const {return t->getConfig();}
+    const SequenceDbiWalkerConfig& getGlobalConfig() const { return t->getConfig(); }
 
     bool intersectsWithOverlaps(const U2Region& globalReg) const;
-    bool hasLeftOverlap() const {return leftOverlap;}
-    bool hasRightOverlap() const {return rightOverlap;}
+    bool hasLeftOverlap() const { return leftOverlap; }
+    bool hasRightOverlap() const { return rightOverlap; }
 
 private:
-    bool needLocalRegionProcessing() const {return (doAmino || doCompl) && processedSeqImage.isEmpty();}
+    bool needLocalRegionProcessing() const { return (doAmino || doCompl) && processedSeqImage.isEmpty(); }
     void prepareLocalRegion();
 
     SequenceDbiWalkerTask*     t;

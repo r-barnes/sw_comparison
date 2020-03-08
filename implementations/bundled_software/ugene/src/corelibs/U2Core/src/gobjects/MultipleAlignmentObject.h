@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -66,19 +66,27 @@ public:
     const DNAAlphabet * getAlphabet() const;
     qint64 getLength() const;
     qint64 getNumRows() const;
+    const QList<MultipleAlignmentRow>& getRows() const;
     const MultipleAlignmentRow getRow(int row) const;
     int getRowPosById(qint64 rowId) const;
     virtual char charAt(int seqNum, qint64 position) const = 0;
     U2MsaMapGapModel getMapGapModel() const;
     U2MsaListGapModel getGapModel() const;
 
-    /** Methods to work with rows */
+    /** Removes single row from the alignment by row index. */
     void removeRow(int rowIdx);
-    void renameRow(int rowIdx, const QString &newName);
+
+    /** Removes all rows from the list from the alignment by row indexes. */
+    void removeRows(const QList<int>& rowIndexes);
+
+    /** Renames row with a given index. */
+    void renameRow(int rowIdx, const QString& newName);
+
     void moveRowsBlock(int firstRow, int numRows, int delta);
 
     bool isRegionEmpty(int x, int y, int width, int height) const;
 
+    QList<qint64> getRowsOrder(U2OpStatus& os) const;
     /**
      * Updates the rows order.
      * There must be one-to-one correspondence between the specified rows IDs

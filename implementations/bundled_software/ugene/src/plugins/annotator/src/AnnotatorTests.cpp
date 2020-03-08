@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -24,14 +24,9 @@
 
 #include <U2Core/AnnotationTableObject.h>
 #include <U2Core/BaseDocumentFormats.h>
-#include <U2Core/DNASequence.h>
-#include <U2Core/DNASequenceObject.h>
 #include <U2Core/DocumentModel.h>
 #include <U2Core/GObject.h>
 #include <U2Core/GObjectTypes.h>
-#include <U2Core/U2OpStatusUtils.h>
-
-#include <U2Test/GTestFrameworkComponents.h>
 
 #include "AnnotatorTests.h"
 
@@ -84,7 +79,7 @@ void GTest_AnnotatorSearch::init(XMLTestFormat *tf, const QDomElement& el) {
             }
             bool startOk, finishOk;
             int start = bounds.first().toInt(&startOk), finish = bounds.last().toInt(&finishOk);
-            if (startOk && finishOk != true) {
+            if (!startOk || !finishOk) {
                 stateInfo.setError( QString("wrong value for %1").arg(EXPECTED_RESULTS_ATTR));
                 return;
             }

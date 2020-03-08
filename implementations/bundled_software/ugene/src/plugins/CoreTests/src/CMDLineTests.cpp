@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -25,7 +25,9 @@
 
 #include <U2Core/AppContext.h>
 #include <U2Core/CMDLineCoreOptions.h>
+#include <U2Core/GUrlUtils.h>
 #include <U2Core/Log.h>
+#include <U2Core/Settings.h>
 
 #include <U2Lang/WorkflowSettings.h>
 #include <U2Lang/WorkflowUtils.h>
@@ -36,11 +38,13 @@ namespace U2 {
 
 #define COMMON_DATA_DIR_ENV_ID "COMMON_DATA_DIR"
 #define LOCAL_DATA_DIR_ENV_ID "LOCAL_DATA_DIR"
+#define SAMPLE_DATA_DIR_ENV_ID "SAMPLE_DATA_DIR"
 #define WORKFLOW_SAMPLES_ENV_ID "WORKFLOW_SAMPLES_DIR"
+#define WORKFLOW_OUTPUT_ENV_ID "WORKFLOW_OUTPUT_DIR"
 #define TEMP_DATA_DIR_ENV_ID   "TEMP_DATA_DIR"
 #define CONFIG_FILE_ENV_ID "CONFIG_FILE"
 #define CONFIG_PROTOTYPE "PROTOTYPE"
-#define WORKINK_DIR_ATTR "working-dir"
+#define WORKING_DIR_ATTR "working-dir"
 
 /************************
  * GTest_RunCMDLine
@@ -51,22 +55,27 @@ const QString GTest_RunCMDLine::UGENECL_PATH    = "/ugenecl";
 const QString GTest_RunCMDLine::UGENECL_PATH    = "/ugenecld";
 #endif // _DEBUG
 
-const QString GTest_RunCMDLine::TMP_DATA_DIR_PREFIX  = "!tmp_data_dir!";
-const QString GTest_RunCMDLine::COMMON_DATA_DIR_PREFIX = "!common_data_dir!";
-const QString GTest_RunCMDLine::CONFIG_FILE_PATH = "!config_file_path!";
-const QString GTest_RunCMDLine::LOCAL_DATA_DIR_PREFIX = "!input!";
-const QString GTest_RunCMDLine::WORKFLOW_SAMPLES_DIR_PREFIX = "!workflow_samples!";
-
 void GTest_RunCMDLine::init(XMLTestFormat *tf, const QDomElement& el) {
     Q_UNUSED(tf);
+    customIniSet = false;
     setUgeneclPath();
     setArgs(el);
     proc = new QProcess(this);
-    if (el.hasAttribute(WORKINK_DIR_ATTR)) {
-        QString workingDir = el.attribute(WORKINK_DIR_ATTR);
-        QDir().mkpath(env->getVar(TEMP_DATA_DIR_ENV_ID) + "/" + workingDir);
-        proc->setWorkingDirectory(env->getVar(TEMP_DATA_DIR_ENV_ID) + "/" + workingDir);
+    if (el.hasAttribute(WORKING_DIR_ATTR)) {
+        workingDir = el.attribute(WORKING_DIR_ATTR);
+        XMLTestUtils::replacePrefix(env, workingDir);
+        if (QUrl(workingDir).isRelative()) {
+            workingDir = env->getVar(TEMP_DATA_DIR_ENV_ID) + "/" + workingDir;
+        }
     }
+
+    autoRemoveWorkingDir = false;
+    if (workingDir.isEmpty()) {
+        workingDir = GUrlUtils::rollFileName(env->getVar(TEMP_DATA_DIR_ENV_ID) + "/workingDir", "_");
+        autoRemoveWorkingDir = true;
+        taskLog.trace(QString("Working dir is not defined, the foolowing dir will be used as working: %1").arg(workingDir));
+    }
+
     QString protosPath = env->getVar(COMMON_DATA_DIR_ENV_ID) + "/" +  env->getVar(CONFIG_PROTOTYPE);
     QDir protoDir(protosPath), userScriptsDir(WorkflowSettings::getUserDirectory());
     QStringList filters;
@@ -99,9 +108,13 @@ void GTest_RunCMDLine::setArgs(const QDomElement & el) {
             unexpectedMessage = node.nodeValue();
             continue;
         }
-        if(node.nodeName() == WORKINK_DIR_ATTR){
+        if(node.nodeName() == WORKING_DIR_ATTR){
             continue;
         }
+        if (node.nodeName() == CMDLineCoreOptions::INI_FILE) {
+            customIniSet = true;
+        }
+
         QString argument = "--" + node.nodeName() + "=" + getVal(node.nodeValue());
          if( argument.startsWith("--task") ) {
             args.prepend(argument);
@@ -111,6 +124,11 @@ void GTest_RunCMDLine::setArgs(const QDomElement & el) {
             commandLine.append(argument + " ");
         }
     }
+
+    if (!customIniSet) {
+        args.append("--" + CMDLineCoreOptions::INI_FILE + "=" + AppContext::getSettings()->fileName());
+    }
+
     args.append("--log-level-details");
     args.append("--lang=en");
     args.append("--log-no-task-progress");
@@ -145,20 +163,26 @@ QString GTest_RunCMDLine::getVal( const QString & val ) {
     if (val.isEmpty()) {
         return val;
     }
-    if (val.startsWith(COMMON_DATA_DIR_PREFIX)) {
-        return splitVal(val, COMMON_DATA_DIR_PREFIX, env->getVar(COMMON_DATA_DIR_ENV_ID) + "/", false);
+    if (val.startsWith(XMLTestUtils::COMMON_DATA_DIR_PREFIX)) {
+        return splitVal(val, XMLTestUtils::COMMON_DATA_DIR_PREFIX, env->getVar(COMMON_DATA_DIR_ENV_ID) + "/", false);
     }
-    if (val.startsWith(TMP_DATA_DIR_PREFIX)) {
-        return splitVal(val, TMP_DATA_DIR_PREFIX, env->getVar(TEMP_DATA_DIR_ENV_ID) + "/", true);
+    if (val.startsWith(XMLTestUtils::TMP_DATA_DIR_PREFIX)) {
+        return splitVal(val, XMLTestUtils::TMP_DATA_DIR_PREFIX, env->getVar(TEMP_DATA_DIR_ENV_ID) + "/", true);
     }
-    if (val == CONFIG_FILE_PATH) {
+    if (val == XMLTestUtils::CONFIG_FILE_PATH) {
         return env->getVar(COMMON_DATA_DIR_ENV_ID) + "/" + env->getVar(CONFIG_FILE_ENV_ID);
     }
-    if (val.startsWith(LOCAL_DATA_DIR_PREFIX)) {
-        return splitVal(val, LOCAL_DATA_DIR_PREFIX, env->getVar(LOCAL_DATA_DIR_ENV_ID), false);
+    if (val.startsWith(XMLTestUtils::LOCAL_DATA_DIR_PREFIX)) {
+        return splitVal(val, XMLTestUtils::LOCAL_DATA_DIR_PREFIX, env->getVar(LOCAL_DATA_DIR_ENV_ID), false);
     }
-    if (val.startsWith(WORKFLOW_SAMPLES_DIR_PREFIX)) {
-        return splitVal(val, WORKFLOW_SAMPLES_DIR_PREFIX, env->getVar(WORKFLOW_SAMPLES_ENV_ID), false);
+    if (val.startsWith(XMLTestUtils::SAMPLE_DATA_DIR_PREFIX)) {
+        return splitVal(val, XMLTestUtils::SAMPLE_DATA_DIR_PREFIX, env->getVar(SAMPLE_DATA_DIR_ENV_ID), false);
+    }
+    if (val.startsWith(XMLTestUtils::WORKFLOW_SAMPLES_DIR_PREFIX)) {
+        return splitVal(val, XMLTestUtils::WORKFLOW_SAMPLES_DIR_PREFIX, env->getVar(WORKFLOW_SAMPLES_ENV_ID), false);
+    }
+    if (val.startsWith(XMLTestUtils::WORKFLOW_OUTPUT_DIR_PREFIX)) {
+        return splitVal(val, XMLTestUtils::WORKFLOW_OUTPUT_DIR_PREFIX, env->getVar(WORKFLOW_OUTPUT_ENV_ID) + "/", false);
     }
     return val;
 }
@@ -170,6 +194,11 @@ void GTest_RunCMDLine::setUgeneclPath() {
 }
 
 void GTest_RunCMDLine::prepare() {
+    if (!workingDir.isEmpty()) {
+        QDir().mkpath(workingDir);
+        proc->setWorkingDirectory(workingDir);
+    }
+
     QString argsStr = args.join(" ");
     coreLog.trace( "Starting UGENE with arguments: " + argsStr );
     proc->start( ugeneclPath, args );
@@ -178,8 +207,8 @@ void GTest_RunCMDLine::prepare() {
 static const QString ERROR_LABEL_TRY1 = "finished with error";
 static QString getErrorMsg(const QString & str) {
     int ind = str.indexOf(ERROR_LABEL_TRY1);
-    if(ind != -1) {
-        return str.mid(ind + ERROR_LABEL_TRY1.size() );
+    if (ind != -1) {
+        return str.mid(ind + ERROR_LABEL_TRY1.size());
     }
     return QString();
 }
@@ -212,23 +241,35 @@ Task::ReportResult GTest_RunCMDLine::report() {
     }
 
     QString err = getErrorMsg(output);
-    if( !err.isEmpty() ) {
+    if (!err.isEmpty()) {
         int eofIdx = err.indexOf("\n");
-        if (eofIdx>0) {
-            err = err.left(eofIdx-1);
+        if (eofIdx > 0) {
+            err = err.left(eofIdx - 1);
         }
-        setError( "Process finished with error" + err);
+        setError("Process finished with error" + err);
     }
+
     if (proc->exitStatus() == QProcess::CrashExit) {
         setError("Process is crashed!");
     }
+
     return ReportResult_Finished;
 }
 
 void GTest_RunCMDLine::cleanup() {
-    foreach(const QString & file, tmpFiles) {
-        QFile::remove(file);
+    if (!XMLTestUtils::parentTasksHaveError(this)) {
+        foreach(const QString & file, tmpFiles) {
+            taskLog.trace(QString("Temporary file removed: %1").arg(file));
+            QFile::remove(file);
+        }
+
+        if (autoRemoveWorkingDir) {
+            taskLog.trace(QString("Temporary working dir autoremoved: %1").arg(workingDir));
+            QDir(workingDir).removeRecursively();
+        }
     }
+
+    XmlTest::cleanup();
 }
 
 /************************

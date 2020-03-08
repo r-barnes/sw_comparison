@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -19,6 +19,7 @@
  * MA 02110-1301, USA.
  */
 
+#include <math.h>
 #include <time.h>
 
 #include <QColorDialog>
@@ -1102,7 +1103,7 @@ void BioStruct3DGLWidget::sl_resetAlignment() {
 void BioStruct3DGLWidget::sl_onAlignmentDone(Task *task) {
     if (!task->hasError()) {
         StructuralAlignmentTask *saTask = qobject_cast<StructuralAlignmentTask*> (task);
-        assert(saTask && "Task shoud have type StructuralAlignmentTask");
+        assert(saTask && "Task should have type StructuralAlignmentTask");
 
         StructuralAlignment result = saTask->getResult();
         StructuralAlignmentTaskSettings settings = saTask->getSettings();

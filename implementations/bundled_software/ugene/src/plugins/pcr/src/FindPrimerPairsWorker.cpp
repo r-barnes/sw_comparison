@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -99,7 +99,7 @@ void FindPrimerPairsWorker::sl_onTaskFinished(Task* t) {
         if(!findTask->getReport().isEmpty()) {
             context->getMonitor()->addOutputFile(reportFileUrl, getActor()->getId(), true);
         } else {
-            context->getMonitor()->addError(tr("No correct primers pairs found"), getActor()->getId(), Problem::U2_WARNING);
+            context->getMonitor()->addError(tr("No correct primers pairs found"), getActor()->getId(), WorkflowNotification::U2_WARNING);
         }
     }
 
@@ -140,7 +140,7 @@ void FindPrimerPairsWorkerFactory::init() {
     ActorPrototype * proto = new IntegralBusActorPrototype( desc, p, attrs);
 
     QMap<QString, PropertyDelegate*> delegates;
-    const QString filter = DialogUtils::prepareFileFilter(FindPrimerPairsWorker::tr("Report file"), QStringList("html"), true);
+    QString filter = DialogUtils::prepareFileFilter(FindPrimerPairsWorker::tr("Report file"), QStringList("html"), true);
     DelegateTags tags;
     tags.set("filter", filter);
     tags.set("extensions", QStringList() << "html");

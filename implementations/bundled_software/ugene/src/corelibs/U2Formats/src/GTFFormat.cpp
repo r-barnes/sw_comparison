@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -45,7 +45,6 @@ namespace U2 {
 GTFLineValidateFlags::GTFLineValidateFlags()
     : incorrectNumberOfFields(false),
       emptyField(false),
-      incorrectFeatureField(false),
       incorrectCoordinates(false),
       incorrectScore(false),
       incorrectStrand(false),
@@ -62,15 +61,20 @@ FormatDetectionScore GTFLineValidateFlags::getFormatDetectionScore()
         return FormatDetection_NotMatched;
     }
 
-    if (noGeneIdAttribute || noTranscriptIdAttribute) {
+    /*
+     * These two attributes are required according to the '.gtf' format specification
+     * But, the absence of them doesn't have any influence on the file opening
+     * So, there is a decision was made to increase the similarity points if only one of these attributes is lost
+     */
+    if (noGeneIdAttribute && noTranscriptIdAttribute) {
         return FormatDetection_VeryLowSimilarity;
     }
 
-    if (incorrectScore || incorrectStrand || incorrectFrame) {
+    if (incorrectScore || incorrectStrand || incorrectFrame || noGeneIdAttribute || noTranscriptIdAttribute) {
         return FormatDetection_LowSimilarity;
     }
 
-    if (incorrectFeatureField || incorrectFormatOfAttributes) {
+    if (incorrectFormatOfAttributes) {
         return FormatDetection_HighSimilarity;
     }
 
@@ -81,8 +85,6 @@ FormatDetectionScore GTFLineValidateFlags::getFormatDetectionScore()
 //-------------------------------------------------------------------
 //  GTFFormat
 //-------------------------------------------------------------------
-const QString GTFFormat::FORMAT_NAME = QObject::tr("GTF");
-
 const int GTFFormat::FIELDS_COUNT_IN_EACH_LINE = 9;
 
 const QString GTFFormat::NO_VALUE_STR = ".";
@@ -97,19 +99,16 @@ const QString GTFFormat::TRANSCRIPT_ID_QUALIFIER_NAME = "transcript_id";
 
 
 GTFFormat::GTFFormat(QObject* parent)
-    : DocumentFormat(parent, DocumentFormatFlag_SupportWriting, QStringList("gtf"))
+    : TextDocumentFormat(parent, BaseDocumentFormats::GTF, DocumentFormatFlag_SupportWriting, QStringList("gtf"))
 {
+    formatName = tr("GTF");
     formatDescription = tr("The Gene transfer format (GTF) is a file format used to hold"
         " information about gene structure.");
 
     supportedObjectTypes += GObjectTypes::ANNOTATION_TABLE;
-
-    GTF_FEATURE_FIELD_VALUES << "CDS" << "start_codon" << "stop_codon"
-        << "5UTR" << "3UTR" << "inter" << "inter_CNS" << "intron_CNS"
-        << "exon" << "transcript" << "missing_data";
 }
 
-Document* GTFFormat::loadDocument(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& hints, U2OpStatus& os)
+Document* GTFFormat::loadTextDocument(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& hints, U2OpStatus& os)
 {
     CHECK_EXT(io != NULL && io->isOpen(), os.setError(L10N::badArgument("IO adapter")), NULL);
     QList<GObject*> objects;
@@ -121,14 +120,17 @@ Document* GTFFormat::loadDocument(IOAdapter* io, const U2DbiRef& dbiRef, const Q
     return doc;
 }
 
-int readGTFLine(QString &buffer, IOAdapter *io, QScopedArrayPointer<char> &charbuff) {
+int readGTFLine(QString &buffer, IOAdapter *io, QScopedArrayPointer<char> &charbuff, U2OpStatus& os) {
     int len;
     buffer.clear();
     do {
         len = io->readLine(charbuff.data(), DocumentFormat::READ_BUFF_SIZE - 1);
+        CHECK_EXT(!io->hasError(), os.setError(io->errorString()), -1);
+
         charbuff.data()[len] = '\0';
         buffer.append(QString(charbuff.data()));
     } while (DocumentFormat::READ_BUFF_SIZE - 1 == len);
+
     return buffer.length();
 }
 
@@ -140,7 +142,8 @@ QMap<QString, QList<SharedAnnotationData> > GTFFormat::parseDocument(IOAdapter *
 
     bool fileIsValid = true;
     int lineNumber = 1;
-    while (readGTFLine(qstrbuf, io, buff) > 0) {
+    while (readGTFLine(qstrbuf, io, buff, os) > 0) {
+
         if (qstrbuf.startsWith("track")) { //skip comments
             lineNumber++;
             continue;
@@ -173,11 +176,6 @@ QMap<QString, QList<SharedAnnotationData> > GTFFormat::parseDocument(IOAdapter *
         // all details are written to the trace log.
         if (validationStatus.isFileInvalid()) {
             fileIsValid = false;
-        }
-
-        // Verify the feature field
-        if (validationStatus.isIncorrectFeatureField()) {
-            ioLog.trace(tr("GTF parsing error: unexpected value of the \"feature\" value \"%1\" at line %2!").arg(gtfLineData.feature).arg(lineNumber));
         }
 
         // Create the annotation
@@ -228,19 +226,6 @@ QMap<QString, QList<SharedAnnotationData> > GTFFormat::parseDocument(IOAdapter *
                 " format at line %1!").arg(lineNumber));
         }
 
-
-        // Verify that mandatory attributes "gene_id" and "transcript_id" are present
-        if (validationStatus.isGeneIdAbsent()) {
-            ioLog.trace(tr("GTF parsing error: mandatory attribute '") +
-                GENE_ID_QUALIFIER_NAME + tr("' is absent at line %1!").arg(lineNumber));
-        }
-
-        if (validationStatus.isTranscriptIdAbsent()) {
-            ioLog.trace(tr("GTF parsing error: mandatory attribute '") +
-                TRANSCRIPT_ID_QUALIFIER_NAME + tr("' is absent at line %1!").arg(lineNumber));
-        }
-
-
         // Verify the strand
         if (validationStatus.isIncorrectStrand()) {
             // Write the error to the log, but open the file
@@ -257,6 +242,7 @@ QMap<QString, QList<SharedAnnotationData> > GTFFormat::parseDocument(IOAdapter *
         // Move to the next line
         lineNumber++;
     }
+    CHECK_OP(os, result);
 
     if (!fileIsValid) {
         ioLog.error("GTF parsing error: one or more errors occurred while parsing the input file, see TRACE log for details!");
@@ -319,7 +305,7 @@ void GTFFormat::load(IOAdapter *io, QList<GObject *> &objects, const U2DbiRef &d
     }
 }
 
-FormatCheckResult GTFFormat::checkRawData(const QByteArray &rawData, const GUrl &) const {
+FormatCheckResult GTFFormat::checkRawTextData(const QByteArray &rawData, const GUrl &) const {
     const char* data = rawData.constData();
     int size = rawData.size();
 
@@ -503,12 +489,6 @@ GTFLineData GTFFormat::parseAndValidateLine(QString line, GTFLineValidateFlags& 
     parsedData.attributes = parsedAttrValues;
 
 
-    // Feature
-    if (!GTF_FEATURE_FIELD_VALUES.contains(parsedData.feature)) {
-        status.setFlagIncorrectFeatureField();
-    }
-
-
     // Score: can be either an integer, a float number, or a dot (".")
     bool scoreIsInt;
     parsedData.score.toInt(&scoreIsInt);
@@ -557,6 +537,7 @@ void GTFFormat::storeDocument(Document *doc, IOAdapter *io, U2OpStatus &os) {
     }
 
     QByteArray lineData;
+    bool geneIdOrTranscriptIdQualNotFound = false;
 
     foreach (GObject* annotTable, annotTables) {
         AnnotationTableObject *annTable = qobject_cast<AnnotationTableObject *>(annotTable);
@@ -624,15 +605,8 @@ void GTFFormat::storeDocument(Document *doc, IOAdapter *io, U2OpStatus &os) {
                         }
                     }
                 }
-                if (geneIdAttributeStr.isEmpty()) {
-                    os.setError(tr("Can't save an annotation to a GTF file"
-                     " - the annotation doesn't have the '%1' qualifier!").arg(GENE_ID_QUALIFIER_NAME));
-                    return;
-                }
-                if (transcriptIdAttributeStr.isEmpty()) {
-                    os.setError(tr("Can't save an annotation to a GTF file"
-                     " - the annotation doesn't have the '%1' qualifier!").arg(TRANSCRIPT_ID_QUALIFIER_NAME));
-                    return;
+                if (!geneIdOrTranscriptIdQualNotFound && (geneIdAttributeStr.isEmpty() || transcriptIdAttributeStr.isEmpty())) {
+                    geneIdOrTranscriptIdQualNotFound = true;
                 }
                 lineFields[GTF_ATTRIBUTES_INDEX] = geneIdAttributeStr +
                     transcriptIdAttributeStr +
@@ -646,6 +620,9 @@ void GTFFormat::storeDocument(Document *doc, IOAdapter *io, U2OpStatus &os) {
                 }
             }
         }
+    }
+    if (geneIdOrTranscriptIdQualNotFound) {
+        ioLog.info(QString("The '%1' file GTF format is not strict - some annotations do not have \"gene_id\" and/or \"transcript_id\" qualifiers.").arg(io->getURL().getURLString()));
     }
 }
 

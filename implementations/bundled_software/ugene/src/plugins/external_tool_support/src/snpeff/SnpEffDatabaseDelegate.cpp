@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -34,6 +34,7 @@
 #include "SnpEffDatabaseDelegate.h"
 #include "SnpEffDatabaseListModel.h"
 #include "SnpEffSupport.h"
+#include "java/JavaSupport.h"
 
 namespace U2 {
 namespace LocalWorkflow {
@@ -44,7 +45,7 @@ namespace LocalWorkflow {
 SnpEffDatabaseDialog::SnpEffDatabaseDialog(QWidget* parent)
     : QDialog(parent) {
     setupUi(this);
-    new HelpButton(this, buttonBox, "21433685");
+    new HelpButton(this, buttonBox, "24740244");
 
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Select"));
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
@@ -112,11 +113,15 @@ void SnpEffDatabasePropertyWidget::setValue(const QVariant &value) {
 
 void SnpEffDatabasePropertyWidget::sl_showDialog() {
     // snpEff database list is available only if there is a valid tool!
-    if (!AppContext::getExternalToolRegistry()->getByName(ET_SNPEFF)->isValid()) {
-        QObjectScopedPointer<QMessageBox> msgBox = new QMessageBox;
-        msgBox->setWindowTitle(QString(ET_SNPEFF));
-        msgBox->setText(tr("The list of %1 genomes is not available.\r\nPath for %1 tool is not selected.").arg(ET_SNPEFF));
-        msgBox->setInformativeText(tr("Do you want to select it now?"));
+    ExternalTool *java = AppContext::getExternalToolRegistry()->getById(JavaSupport::ET_JAVA_ID);
+    ExternalTool *snpEff = AppContext::getExternalToolRegistry()->getById(SnpEffSupport::ET_SNPEFF_ID);
+    CHECK(java != NULL, );
+    CHECK(snpEff != NULL, );
+    if (!(java->isValid() && snpEff->isValid())) {
+        QObjectScopedPointer<QMessageBox> msgBox = new QMessageBox(this);
+        msgBox->setWindowTitle(tr("%1 and %2").arg(snpEff->getName()).arg(java->getName()));
+        msgBox->setText(tr("The list of genomes is not available.\r\nMake sure %1 and %2 tools are set in the UGENE Application Settings and can be validated.").arg(snpEff->getName()).arg(java->getName()));
+        msgBox->setInformativeText(tr("Do you want to do it now?"));
         msgBox->setStandardButtons(QMessageBox::Yes | QMessageBox::No);
         msgBox->setDefaultButton(QMessageBox::Yes);
         const int ret = msgBox->exec();
@@ -135,8 +140,9 @@ void SnpEffDatabasePropertyWidget::sl_showDialog() {
         return;
     }
 
-    SnpEffDatabaseDialog* dlg = new SnpEffDatabaseDialog(this);
+    QObjectScopedPointer<SnpEffDatabaseDialog> dlg(new SnpEffDatabaseDialog(this));
     if (dlg->exec() == QDialog::Accepted) {
+        CHECK(!dlg.isNull(), );
         lineEdit->setText(dlg->getDatabase());
         emit si_valueChanged(lineEdit->text());
     }

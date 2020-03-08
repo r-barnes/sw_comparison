@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -194,6 +194,20 @@ QList<Annotation *> AnnotationTableObject::getAnnotationsByRegion(const U2Region
 
     foreach (Annotation *a, getAnnotations()) {
         if (annotationIntersectsRange(a, region, contains)) {
+            result.append(a);
+        }
+    }
+
+    return result;
+}
+
+QList<Annotation *> AnnotationTableObject::getAnnotationsByType(const U2FeatureType featureType) const {
+    QList<Annotation *> result;
+
+    ensureDataLoaded();
+
+    foreach(Annotation *a, getAnnotations()) {
+        if (a->getType() == featureType) {
             result.append(a);
         }
     }

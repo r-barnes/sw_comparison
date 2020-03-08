@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -29,7 +29,7 @@ using namespace HI;
 
 class ExportSelectedSequenceFromAlignment : public Filler {
 public:
-    enum documentFormat {EMBL, FASTA, FASTQ, GFF, Genbank, Swiss_Prot};
+    enum documentFormat {EMBL, FASTA, FASTQ, GFF, Genbank, Swiss_Prot, Ugene_db};
     ExportSelectedSequenceFromAlignment(HI::GUITestOpStatus &_os, const QString &_path, documentFormat _format = FASTA,
         bool _keepGaps = true, bool _addToProj = true);
     ExportSelectedSequenceFromAlignment(HI::GUITestOpStatus &os, CustomScenario *scenario);

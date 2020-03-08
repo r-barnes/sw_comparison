@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -57,9 +57,6 @@ protected:
     void initNameList(QScrollBar* nhBar);
     void initConsensusArea();
     void initStatusBar();
-
-private slots:
-    void sl_alignmentChanged();
 
 private:
     McaEditorReferenceArea*     refArea;

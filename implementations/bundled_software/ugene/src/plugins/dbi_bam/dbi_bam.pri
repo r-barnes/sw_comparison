@@ -6,21 +6,16 @@ PLUGIN_VENDOR=Unipro
 
 include( ../../ugene_plugin_common.pri )
 
-use_bundled_zlib() {
-    macx: LIBS += -lzlib
-} else {
-    macx: LIBS += -lz
-}
+LIBS += -lsamtools$$D
+LIBS += $$add_z_lib()
+LIBS += $$add_sqlite_lib()
 
-LIBS += -lugenedb -lsamtools
-
-win32-msvc2013 {
+win32-msvc2013|win32-msvc2015|greaterThan(QMAKE_MSC_VER, 1909) {
     DEFINES += NOMINMAX _XKEYCHECK_H
-    LIBS += -lzlib
 }
 
 # Force re-linking when lib changes
-unix:POST_TARGETDEPS += ../../_release/libsamtools.a
+unix:POST_TARGETDEPS += ../../$$out_dir()/libsamtools$${D}.a
 # Same options which samtools is built with
 DEFINES+="_FILE_OFFSET_BITS=64" _LARGEFILE64_SOURCE _USE_KNETFILE
 INCLUDEPATH += ../../libs_3rdparty/samtools/src ../../libs_3rdparty/samtools/src/samtools
@@ -31,29 +26,6 @@ win32:DEFINES += _USE_MATH_DEFINES "__func__=__FUNCTION__" "R_OK=4" "atoll=_atoi
 win32 {
     !win32-msvc2015 {
         DEFINES += "inline=__inline"
-    }
-}
-
-!debug_and_release|build_pass {
-
-    CONFIG(debug, debug|release) {
-        LIBS -= -lugenedb -lsamtools
-        LIBS += -lugenedbd -lsamtoolsd
-
-        win32-msvc2013 {
-            LIBS -= -lzlib
-            LIBS += -lzlibd
-        }
-
-        macx {
-            use_bundled_zlib() {
-                LIBS -= -lzlib
-                LIBS += -lzlibd
-            }
-        }
-
-        unix:POST_TARGETDEPS -= ../../_release/libsamtools.a
-        unix:POST_TARGETDEPS += ../../_debug/libsamtoolsd.a
     }
 }
 

@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -22,11 +22,10 @@
 #ifndef _U2_GENE_BY_GENE_REPORT_TASK_H_
 #define _U2_GENE_BY_GENE_REPORT_TASK_H_
 
-#include <U2Core/Task.h>
-#include <U2Core/U2Region.h>
-#include <U2Core/DNASequence.h>
 #include <U2Core/AnnotationData.h>
+#include <U2Core/DNASequence.h>
 #include <U2Core/IOAdapter.h>
+#include <U2Core/Task.h>
 
 namespace U2 {
 

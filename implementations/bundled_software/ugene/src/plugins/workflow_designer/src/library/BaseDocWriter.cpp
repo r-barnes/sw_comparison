@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -380,7 +380,7 @@ Task * BaseDocWriter::tick() {
 }
 
 void BaseDocWriter::reportNoDataReceivedWarning() {
-    monitor()->addError(tr("Nothing to write"), getActorId(), Problem::U2_WARNING);
+    monitor()->addError(tr("Nothing to write"), getActorId(), WorkflowNotification::U2_WARNING);
 }
 
 QSet<GObject *> BaseDocWriter::getObjectsToWrite(const QVariantMap &data) const {

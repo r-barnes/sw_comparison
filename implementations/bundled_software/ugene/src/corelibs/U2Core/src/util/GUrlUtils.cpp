@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -25,7 +25,6 @@
 #include <U2Core/AppSettings.h>
 #include <U2Core/DocumentModel.h>
 #include <U2Core/DocumentUtils.h>
-#include <U2Core/Log.h>
 #include <U2Core/Task.h>
 #include <U2Core/U2OpStatus.h>
 #include <U2Core/U2SafePoints.h>
@@ -47,7 +46,7 @@ QString GUrlUtils::getUncompressedExtension(const GUrl& url) {
 
 QString GUrlUtils::getUncompressedCompleteBaseName(const GUrl &url) {
     QString filePath = url.getURLString();
-    if ("gz" == url.lastFileSuffix())  {
+    if ("gz" == url.lastFileSuffix()) {
         filePath.chop(QString(".gz").length());
     }
     return QFileInfo(filePath).completeBaseName();
@@ -56,7 +55,7 @@ QString GUrlUtils::getUncompressedCompleteBaseName(const GUrl &url) {
 GUrl GUrlUtils::ensureFileExt(const GUrl& url, const QStringList& typeExt) {
     SAFE_POINT(!typeExt.isEmpty(), "Type extension is empty!", GUrl());
 
-    if( url.isVFSFile() ) {
+    if (url.isVFSFile()) {
         return url;
     }
 
@@ -67,7 +66,7 @@ GUrl GUrlUtils::ensureFileExt(const GUrl& url, const QStringList& typeExt) {
     if (typeExt.contains(GUrlUtils::getUncompressedExtension(url))) {
         return url;
     }
-    return GUrl(url.getURLString() + "."  + typeExt.first(), url.getType());
+    return GUrl(url.getURLString() + "." + typeExt.first(), url.getType());
 }
 
 bool GUrlUtils::containSpaces(const QString &string) {
@@ -167,10 +166,10 @@ static void getPreNPost(const QString &originalUrl, QString &pre, QString &post,
 
     if (idx != -1) {
         QString extSuffix = pre.mid(idx);
-        if(extSuffix == ".gz") {
+        if (extSuffix == ".gz") {
             pre.chop(extSuffix.length());
             idx = pre.lastIndexOf(".");
-            if(idx != -1) {
+            if (idx != -1) {
                 extSuffix = pre.mid(idx) + extSuffix;
                 pre.append(".gz");
             }
@@ -194,7 +193,7 @@ static void getPreNPost(const QString &originalUrl, QString &pre, QString &post,
 QString GUrlUtils::insertSuffix(const QString &originalUrl, const QString &suffix) {
     QString pre, post;
     int i = 0;
-    getPreNPost(originalUrl, pre, post, i,suffix);
+    getPreNPost(originalUrl, pre, post, i, suffix);
     return pre + suffix + post;
 }
 
@@ -224,8 +223,8 @@ QString GUrlUtils::rollFileName(const QString& originalUrl, const QString& rolle
     return resultUrl;
 }
 
-QUrl GUrlUtils::gUrl2qUrl( const GUrl& gurl) {
-    if( gurl.isVFSFile() ) {
+QUrl GUrlUtils::gUrl2qUrl(const GUrl& gurl) {
+    if (gurl.isVFSFile()) {
         return QUrl();
     }
 
@@ -237,7 +236,7 @@ QUrl GUrlUtils::gUrl2qUrl( const GUrl& gurl) {
     }
 }
 
-QList<QUrl> GUrlUtils::gUrls2qUrls( const QList<GUrl>& gurls) {
+QList<QUrl> GUrlUtils::gUrls2qUrls(const QList<GUrl>& gurls) {
     QList<QUrl> urls;
     foreach(const GUrl& gurl, gurls) {
         urls << gUrl2qUrl(gurl);
@@ -245,12 +244,12 @@ QList<QUrl> GUrlUtils::gUrls2qUrls( const QList<GUrl>& gurls) {
     return urls;
 }
 
-GUrl GUrlUtils::qUrl2gUrl( const QUrl& qurl) {
+GUrl GUrlUtils::qUrl2gUrl(const QUrl& qurl) {
     QString str = qurl.toString();
     return GUrl(str);
 }
 
-QList<GUrl> GUrlUtils::qUrls2gUrls( const QList<QUrl>& qurls) {
+QList<GUrl> GUrlUtils::qUrls2gUrls(const QList<QUrl>& qurls) {
     QList<GUrl> urls;
     foreach(const QUrl& qurl, qurls) {
         urls << qUrl2gUrl(qurl);
@@ -277,7 +276,7 @@ QString GUrlUtils::prepareFileName(const QString& url, const QString& baseSuffix
         return url + QString(".%1.%2").arg(baseSuffix).arg(typeExt.first());
     }
     QString base = fi.baseName();
-    while(!suffixList.isEmpty()) {
+    while (!suffixList.isEmpty()) {
         QString nextSuffix = suffixList.takeFirst();
         if (nextSuffix == ext) {
             break;
@@ -349,7 +348,7 @@ QString GUrlUtils::prepareTmpFileLocation(const QString& dir, const QString& pre
 void GUrlUtils::removeDir(const QString& dirPath, U2OpStatus& os) {
     QDir dir(dirPath);
     CHECK(dir.exists(), );
-    QList<QFileInfo> entries = dir.entryInfoList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden  | QDir::AllDirs | QDir::Files, QDir::DirsFirst);
+    QList<QFileInfo> entries = dir.entryInfoList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden | QDir::AllDirs | QDir::Files, QDir::DirsFirst);
     foreach(const QFileInfo& info, entries) {
         if (info.isDir()) {
             removeDir(info.absoluteFilePath(), os);
@@ -361,13 +360,13 @@ void GUrlUtils::removeDir(const QString& dirPath, U2OpStatus& os) {
     QDir().rmdir(dirPath);
 }
 
-void GUrlUtils::removeFile( const QString& filePath, U2OpStatus& os ){
+void GUrlUtils::removeFile(const QString& filePath, U2OpStatus& os) {
     CHECK_EXT(!filePath.isEmpty(), os.setError(tr("File path is not specified")), );
     QFileInfo info(filePath);
 
     CHECK_EXT(!info.isDir(), os.setError(tr("Folder path instead of file path")), );
 
-    if(info.exists()){
+    if (info.exists()) {
         QFile::remove(info.absoluteFilePath());
     }
 
@@ -396,7 +395,7 @@ bool GUrlUtils::canWriteFile(const QString &path) {
     return res;
 }
 
-QString GUrlUtils::getDefaultDataPath(){
+QString GUrlUtils::getDefaultDataPath() {
     QString res;
 
     QString path = AppContext::getAppSettings()->getUserAppsSettings()->getDefaultDataDirPath();
@@ -411,7 +410,7 @@ QString GUrlUtils::getDefaultDataPath(){
     return res;
 }
 
-QString GUrlUtils::getQuotedString( const QString& inString ){
+QString GUrlUtils::getQuotedString(const QString& inString) {
     if (inString.contains(QRegExp("\\s"))) {
         return "\"" + inString + "\"";
     }
@@ -429,18 +428,18 @@ QString GUrlUtils::createDirectory(const QString &path, const QString &suffix, U
 }
 
 namespace {
-    QString getDotExtension(const DocumentFormatId &formatId) {
-        DocumentFormatRegistry *dfr = AppContext::getDocumentFormatRegistry();
-        SAFE_POINT(NULL != dfr, "NULL document format registry", "");
+QString getDotExtension(const DocumentFormatId &formatId) {
+    DocumentFormatRegistry *dfr = AppContext::getDocumentFormatRegistry();
+    SAFE_POINT(NULL != dfr, "NULL document format registry", "");
 
-        DocumentFormat *format = AppContext::getDocumentFormatRegistry()->getFormatById(formatId);
-        CHECK(NULL != format, "");
+    DocumentFormat *format = AppContext::getDocumentFormatRegistry()->getFormatById(formatId);
+    CHECK(NULL != format, "");
 
-        QStringList results = format->getSupportedDocumentFileExtensions();
-        CHECK(!results.isEmpty(), "");
+    QStringList results = format->getSupportedDocumentFileExtensions();
+    CHECK(!results.isEmpty(), "");
 
-        return "." + results.first();
-    }
+    return "." + results.first();
+}
 }
 
 void GUrlUtils::getLocalPathFromUrl(const GUrl &url, const QString &defaultBaseFileName, QString &dirPath, QString &baseFileName) {
@@ -490,6 +489,23 @@ void GUrlUtils::validateLocalFileUrl(const GUrl &url, U2OpStatus &os, const QStr
         os.setError(tr("%1 is a folder [%2].").arg(urlName).arg(urlStr));
         return;
     }
+}
+
+QString GUrlUtils::getPairedFastqFilesBaseName(const QString &sourceFileUrl, bool truncate) {
+    static const QStringList pairedSuffixes = QStringList() << "-R1" << "-R2"
+        << "_1" << "_2"
+        << "_R1_001" << "_R2_001"
+        << "_R1" << "_R2";
+    QString baseName = QFileInfo(sourceFileUrl).completeBaseName();
+    if (truncate) {
+        foreach(const QString &suffix, pairedSuffixes) {
+            if (baseName.endsWith(suffix)) {
+                baseName.chop(suffix.length());
+                break;
+            }
+        }
+    }
+    return baseName;
 }
 
 QString GUrlUtils::fixFileName(const QString &fileName) {

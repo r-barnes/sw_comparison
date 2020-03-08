@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -19,8 +19,6 @@
  * MA 02110-1301, USA.
  */
 
-#include <U2Core/Annotation.h>
-#include <U2Core/AnnotationModification.h>
 #include <U2Core/AnnotationTableObject.h>
 #include <U2Core/L10n.h>
 #include <U2Core/TextUtils.h>
@@ -37,14 +35,12 @@ const QString AnnotationGroup::ROOT_GROUP_NAME("/");
 const QChar AnnotationGroup::GROUP_PATH_SEPARATOR('/');
 
 AnnotationGroup::AnnotationGroup()
-    : U2Entity(), parentObject(NULL), parentGroup(NULL)
-{
+    : U2Entity(), parentObject(NULL), parentGroup(NULL) {
 
 }
 
 AnnotationGroup::AnnotationGroup(const U2DataId &featureId, const QString &name, AnnotationGroup *parentGroup, AnnotationTableObject *parentObject)
-    : U2Entity(featureId), parentObject(parentObject), name(name), parentGroup(parentGroup)
-{
+    : U2Entity(featureId), parentObject(parentObject), name(name), parentGroup(parentGroup) {
     SAFE_POINT(NULL != parentObject && hasValidId(), "Invalid feature table detected", );
 }
 
@@ -71,19 +67,19 @@ bool AnnotationGroup::isValidGroupName(const QString &name, bool pathMode) {
     if (!TextUtils::fits(validChars, groupName.constData(), groupName.size())) {
         return false;
     }
-    if (' ' == groupName[0] || ' ' == groupName[groupName.size()-1]) {
+    if (' ' == groupName[0] || ' ' == groupName[groupName.size() - 1]) {
         return false;
     }
     return true;
 }
 
 void AnnotationGroup::findAllAnnotationsInGroupSubTree(QList<Annotation *> &set) const {
-    foreach (Annotation *a, annotations) {
+    foreach(Annotation *a, annotations) {
         if (!set.contains(a)) {
             set.append(a);
         }
     }
-    foreach (AnnotationGroup *subgroup, subgroups) {
+    foreach(AnnotationGroup *subgroup, subgroups) {
         subgroup->findAllAnnotationsInGroupSubTree(set);
     }
 }
@@ -91,7 +87,7 @@ void AnnotationGroup::findAllAnnotationsInGroupSubTree(QList<Annotation *> &set)
 QList<Annotation *> AnnotationGroup::getAnnotations(bool recurcively) const {
     QList<Annotation *> result = annotations;
     if (recurcively) {
-        foreach (AnnotationGroup *subgroup, subgroups) {
+        foreach(AnnotationGroup *subgroup, subgroups) {
             result.append(subgroup->getAnnotations(true));
         }
     }
@@ -102,7 +98,7 @@ bool AnnotationGroup::hasAnnotations() const {
     if (!annotations.isEmpty()) {
         return true;
     }
-    foreach (AnnotationGroup *subgroup, subgroups) {
+    foreach(AnnotationGroup *subgroup, subgroups) {
         if (subgroup->hasAnnotations()) {
             return true;
         }
@@ -119,7 +115,7 @@ QList<Annotation *> AnnotationGroup::addAnnotations(const QList<SharedAnnotation
     Q_UNUSED(opBlock);
     CHECK_OP(os, result);
 
-    foreach (const SharedAnnotationData &d, anns) {
+    foreach(const SharedAnnotationData &d, anns) {
         const U2Feature feature = U2FeatureUtils::exportAnnotationDataToFeatures(d, parentObject->getRootFeatureId(), id,
             parentObject->getEntityRef().dbiRef, os);
 
@@ -127,7 +123,7 @@ QList<Annotation *> AnnotationGroup::addAnnotations(const QList<SharedAnnotation
         SAFE_POINT_OP(os, result);
     }
 
-    foreach (Annotation *a, result) {
+    foreach(Annotation *a, result) {
         annotationById[a->id] = a;
     }
     annotations.append(result);
@@ -140,7 +136,7 @@ QList<Annotation *> AnnotationGroup::addAnnotations(const QList<SharedAnnotation
 
 void AnnotationGroup::addShallowAnnotations(const QList<Annotation *> &anns, bool newAnnotations) {
 #ifdef _DEBUG
-    foreach (Annotation *a, anns) {
+    foreach(Annotation *a, anns) {
         SAFE_POINT(a->getGroup() == this, "Unexpected annotation group", );
     }
 #endif
@@ -161,14 +157,14 @@ void AnnotationGroup::removeAnnotations(const QList<Annotation *> &anns) {
     U2OpStatusImpl os;
 
     QList<U2DataId> annotationsIds;
-    foreach (Annotation *a, anns) {
+    foreach(Annotation *a, anns) {
         SAFE_POINT(NULL != a && a->getGroup() == this, "Unexpected annotation group", );
         annotationsIds.append(a->id);
     }
     U2FeatureUtils::removeFeatures(annotationsIds, parentObject->getEntityRef().dbiRef, os);
     SAFE_POINT_OP(os, );
 
-    foreach (Annotation *a, anns) {
+    foreach(Annotation *a, anns) {
         annotationById.remove(a->id);
         annotations.removeOne(a);
         delete a;
@@ -243,7 +239,7 @@ AnnotationGroup * AnnotationGroup::getSubgroup(const QString &path, bool create)
         : ((0 == separatorFirstPosition) ? path.mid(1) : path.left(separatorFirstPosition));
 
     AnnotationGroup *subgroup = NULL;
-    foreach (AnnotationGroup *g, subgroups) {
+    foreach(AnnotationGroup *g, subgroups) {
         if (g->getName() == subgroupName) {
             subgroup = g;
             break;
@@ -302,7 +298,7 @@ Annotation * AnnotationGroup::findAnnotationById(const U2DataId &featureId) cons
 AnnotationGroup * AnnotationGroup::findSubgroupById(const U2DataId &featureId) const {
     SAFE_POINT(!featureId.isEmpty(), "Unexpected feature provided", NULL);
 
-    foreach (AnnotationGroup *g, subgroups) {
+    foreach(AnnotationGroup *g, subgroups) {
         if (g->id == featureId) {
             return g;
         }
@@ -319,7 +315,7 @@ void AnnotationGroup::getSubgroupPaths(QStringList &res) const {
     if (!isRootGroup()) {
         res.append(getGroupPath());
     }
-    foreach (const AnnotationGroup *g, subgroups) {
+    foreach(const AnnotationGroup *g, subgroups) {
         g->getSubgroupPaths(res);
     }
 }

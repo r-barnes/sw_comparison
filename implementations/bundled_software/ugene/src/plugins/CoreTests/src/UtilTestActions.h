@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -27,7 +27,7 @@
 
 namespace U2 {
 
-class GTest_CopyFile : public GTest {
+class GTest_CopyFile : public XmlTest {
     Q_OBJECT
 public:
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_CopyFile, "copy-file");
@@ -35,14 +35,18 @@ public:
     ReportResult report();
 
 private:
+    bool copyDirectry(const QString& from, const QString& to);
+
     QString             fromUrl;
     QString             toUrl;
+    bool                isDir;
 
     static const QString FROM_URL_ATTR;
     static const QString TO_URL_ATTR;
+    static const QString IS_DIRECTORY;
 };
 
-class GTest_AddSharedDbUrl : public GTest {
+class GTest_AddSharedDbUrl : public XmlTest {
     Q_OBJECT
 public:
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_AddSharedDbUrl, "add-shared-db");

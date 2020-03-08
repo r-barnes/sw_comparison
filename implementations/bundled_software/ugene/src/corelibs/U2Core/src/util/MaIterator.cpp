@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -18,6 +18,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301, USA.
  */
+
+#include <QPoint>
 
 #include <U2Core/U2SafePoints.h>
 
@@ -37,7 +39,7 @@ MaIterator::MaIterator(const MultipleAlignment &ma, NavigationDirection directio
       maSquare(static_cast<qint64>(ma->getLength()) * rowsIndexes.size())
 {
     if (rowsIndexes.isEmpty()) {
-        for (int index = 0; index << ma->getNumRows(); index++) {
+        for (int index = 0; index < ma->getNumRows(); index++) {
             rowsIndexes << index;
         }
         maSquare = static_cast<qint64>(ma->getLength()) * rowsIndexes.size();
@@ -134,10 +136,8 @@ int MaIterator::getStep(qint64 position) const {
     switch (direction) {
     case Forward:
         return row->getCoreEnd() <= columnNumber ? ma->getLength() - columnNumber : 1;
-        break;
     case Backward:
         return row->getCoreStart() >= columnNumber ? ma->getLength() - columnNumber : 1;
-        break;
     default:
         FAIL("An unknown direction", 1);
     }

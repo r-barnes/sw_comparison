@@ -1,6 +1,6 @@
 /**
 * UGENE - Integrated Bioinformatics Tools.
-* Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+* Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
 * http://ugene.net
 *
 * This program is free software; you can redistribute it and/or
@@ -48,17 +48,6 @@ enum DefaultStrategy{
     DefaultStrategy_UgeneColors
 };
 
-static void clearColorsDir() {
-    QString path = ColorSchemeUtils::getColorsDir();
-    QDir dir(path);
-    dir.setNameFilters(QStringList() << "*.*");
-    dir.setFilter(QDir::Files);
-    foreach(QString dirFile, dir.entryList())
-    {
-        dir.remove(dirFile);
-    }
-}
-
 static void setSchemaColors(const ColorSchemeData& customSchema){
     QString dirPath = ColorSchemeUtils::getColorsDir();
     QDir dir(dirPath);
@@ -92,7 +81,7 @@ static void setSchemaColors(const ColorSchemeData& customSchema){
 }
 
 
-const QString ColorSchemaSettingsPageController::helpPageId = QString("21433150");
+const QString ColorSchemaSettingsPageController::helpPageId = QString("24742349");
 
 ColorSchemaSettingsPageController::ColorSchemaSettingsPageController(MsaColorSchemeRegistry* mcsr, QObject* p)
 : AppSettingsGUIPageController(tr("Alignment Color Scheme"), ColorSchemaSettingsPageId, p) {
@@ -112,7 +101,6 @@ void ColorSchemaSettingsPageController::saveState(AppSettingsGUIPageState* s) {
     ColorSchemaSettingsPageState* state = qobject_cast<ColorSchemaSettingsPageState*>(s);
 
     ColorSchemeUtils::setColorsDir(state->colorsDir);
-    clearColorsDir();
     foreach(const ColorSchemeData& schema, state->customSchemas){
         setSchemaColors(schema);
     }

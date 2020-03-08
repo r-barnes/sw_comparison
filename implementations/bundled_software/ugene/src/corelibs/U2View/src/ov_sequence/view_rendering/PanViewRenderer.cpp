@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -268,6 +268,7 @@ void PanViewRenderer::drawSequenceSelection(QPainter& p, const QSize &canvasSize
         }
         int x1 = qMax(0, posToXCoord(r.startPos, canvasSize, visibleRange));
         int x2 = qMin(canvasSize.width(), posToXCoord(r.endPos(), canvasSize, visibleRange));
+        x2 = x2 < 0 ? canvasSize.width() : x2;
 
         p.setPen(pen1);
         if (visibleRange.contains(r.startPos) && s->numLines > 1) {

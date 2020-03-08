@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -24,16 +24,13 @@
 
 #include <QPointer>
 
-#include <U2Core/global.h>
-
 namespace U2 {
 
 template <class T>
 class QObjectScopedPointer {
 public:
     QObjectScopedPointer(T *dialog = NULL) :
-        pointer(dialog)
-    {
+        pointer(dialog) {
 
     }
     ~QObjectScopedPointer() {
@@ -44,8 +41,8 @@ public:
         return pointer.isNull();
     }
 
-    T * operator->() const {return pointer.operator ->();}
-    T & operator*() const {return *pointer.operator *();}
+    T * operator->() const { return pointer.operator ->(); }
+    T & operator*() const { return *pointer.operator *(); }
     T * data() const {
         return pointer.data();
     }
@@ -59,12 +56,14 @@ private:
 };
 
 template <class T>
-inline bool operator==(const T *o, const QObjectScopedPointer<T> &p)
-{ return o == p.operator->(); }
+inline bool operator==(const T *o, const QObjectScopedPointer<T> &p) {
+    return o == p.operator->();
+}
 
 template<class T>
-inline bool operator==(const QObjectScopedPointer<T> &p, const T *o)
-{ return p.operator->() == o; }
+inline bool operator==(const QObjectScopedPointer<T> &p, const T *o) {
+    return p.operator->() == o;
+}
 
 }   // namespace U2
 

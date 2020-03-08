@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -21,6 +21,8 @@
 
 #ifndef _U2_GENOME_ALIGNER_SEARCH_QUERY_H_
 #define _U2_GENOME_ALIGNER_SEARCH_QUERY_H_
+
+#include <QVector>
 
 #include <U2Core/DNASequence.h>
 #include <U2Core/U2AssemblyUtils.h>
@@ -64,11 +66,11 @@ public:
     SAType firstResult() const;
     quint32 firstMCount() const;
     bool contains(SAType result) const;
-    QVector<SAType> &getResults();
-    bool isWroteResult() const {return wroteResult;}
-    void writeResult() {wroteResult = true;}
-    SearchQuery *getRevCompl() {return revCompl;}
-    void setRevCompl(SearchQuery *rc) {revCompl = rc;}
+    const QVector<SAType>& getResults() const;
+    bool isWroteResult() const { return wroteResult; }
+    void writeResult() { wroteResult = true; }
+    SearchQuery *getRevCompl() { return revCompl; }
+    void setRevCompl(SearchQuery *rc) { revCompl = rc; }
 
     qint64 memoryHint() const;
 private:

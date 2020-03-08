@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -351,7 +351,7 @@ Task::ReportResult GTest_Bwa::report() {
 void GTest_Bwa::cleanup() {
 
     // delete index
-    if(!usePrebuildIndex) {
+    if(!hasError() && !usePrebuildIndex) {
         QString prefix = env->getVar("TEMP_DATA_DIR")+"/"+QString::number(getTaskId());
         QStringList files(QStringList() << prefix+".amb" << prefix+".ann"
                           << prefix+".bwt" << prefix+".pac" << prefix+".rbwt" << prefix+".rpac"
@@ -366,16 +366,12 @@ void GTest_Bwa::cleanup() {
     }
 
     //delete tmp result
-    if (QFileInfo(resultDirPath).exists()) {
+    if (!hasError() && QFileInfo(resultDirPath).exists()) {
         ioLog.trace(QString("Deleting tmp result dir %1").arg(resultDirPath));
         GUrlUtils::removeDir(resultDirPath, stateInfo);
     }
 
-}
-
-
-GTest_Bwa::~GTest_Bwa() {
-    cleanup();
+    XmlTest::cleanup();
 }
 
 QString GTest_Bwa::getTempDataDir()

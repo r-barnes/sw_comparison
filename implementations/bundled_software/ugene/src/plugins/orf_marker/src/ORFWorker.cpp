@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -90,7 +90,7 @@ void ORFWorkerFactory::init() {
             "               accordingly to the current translation table.\n", 0));
         Descriptor isc(ISC_ATTR, ORFWorker::tr("Include stop codon"), ORFWorker::tr("The result annotation will includes stop codon if this option is set."));
         Descriptor mr(RES_ATTR,ORFWorker::tr("Max result"),ORFWorker::tr("Find results not achieved by specified count."));
-        Descriptor lr(LIMIT_ATTR,ORFWorker::tr("Limit results"),ORFWorker::tr("The amount of results will be limited id that option is setted."));
+        Descriptor lr(LIMIT_ATTR,ORFWorker::tr("Limit results"),ORFWorker::tr("The amount of results will be limited id that option is set."));
 
         a << new Attribute(nd, BaseTypes::STRING_TYPE(), true, QVariant("ORF"));
         a << new Attribute(ttd, BaseTypes::STRING_TYPE(), false, QVariant(DNATranslationID(1)));
@@ -120,12 +120,12 @@ void ORFWorkerFactory::init() {
     delegates[LEN_ATTR] = new SpinBoxDelegate(lenMap);
     delegates[BaseAttributes::STRAND_ATTRIBUTE().getId()] = new ComboBoxDelegate(BaseAttributes::STRAND_ATTRIBUTE_VALUES_MAP());
 
-    QVariantMap idMap;
+    QList<ComboItem> idMap;
     QList<DNATranslation*> TTs = AppContext::getDNATranslationRegistry()->
         lookupTranslation(AppContext::getDNAAlphabetRegistry()->findById(BaseDNAAlphabetIds::NUCL_DNA_DEFAULT()),
         DNATranslationType_NUCL_2_AMINO);
     foreach(DNATranslation* tt, TTs) {
-        idMap[tt->getTranslationName()] = tt->getTranslationId();
+        idMap.append(qMakePair(tt->getTranslationName(), tt->getTranslationId()));
     }
     delegates[ID_ATTR] = new ComboBoxDelegate(idMap);
 

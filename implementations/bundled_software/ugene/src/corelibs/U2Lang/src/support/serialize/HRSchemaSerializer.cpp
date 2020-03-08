@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -124,7 +124,7 @@ QString HRSchemaSerializer::valueString(const QString & s, bool quoteEmpty) {
     if( str.contains(QRegExp("\\s") ) || str.contains(Constants::SEMICOLON) ||
         str.contains(Constants::EQUALS_SIGN) || str.contains(Constants::DATAFLOW_SIGN) ||
         str.contains(Constants::BLOCK_START) || str.contains(Constants::BLOCK_END) ||
-        str.contains(OldConstants::MARKER_START) ||
+        str.contains(Constants::SINGLE_QUOTE) || str.contains(OldConstants::MARKER_START) ||
         (str.isEmpty() && quoteEmpty)) {
         return quotedString(str);
     } else {
@@ -199,13 +199,13 @@ static bool getAbsoluteIncludePath(QString &path) {
 void HRSchemaSerializer::parseIncludes(Tokenizer &tokenizer, QList<QString> includedUrls) {
     tokenizer.assertToken(Constants::INCLUDE);
     QString path = tokenizer.take();
-    QString actorName;
+    QString actorId;
     bool includeAs = false;
     QString tok = tokenizer.look();
     if (Constants::INCLUDE_AS == tok) {
         tokenizer.assertToken(Constants::INCLUDE_AS);
         includeAs = true;
-        actorName = tokenizer.take();
+        actorId = tokenizer.take();
     }
 
     if (!getAbsoluteIncludePath(path)) {
@@ -241,9 +241,9 @@ void HRSchemaSerializer::parseIncludes(Tokenizer &tokenizer, QList<QString> incl
                 throw ReadFailed(tr("File '%1' contains mistakes").arg(path));
             }
             if (includeAs) {
-                cfg->name = actorName;
+                cfg->id = actorId;
             } else {
-                actorName = cfg->name;
+                actorId = cfg->id;
             }
             cfg->filePath = path;
             proto = IncludedProtoFactory::getExternalToolProto(cfg);
@@ -260,18 +260,18 @@ void HRSchemaSerializer::parseIncludes(Tokenizer &tokenizer, QList<QString> incl
             error = string2Schema(rawData, schema, NULL, &procMap, newUrlList);
             if (NULL != schema && error.isEmpty()) {
                 if (includeAs) {
-                    schema->setTypeName(actorName);
+                    schema->setTypeName(actorId);
                 } else {
-                    actorName = schema->getTypeName();
+                    actorId = schema->getTypeName();
                 }
-                proto = IncludedProtoFactory::getSchemaActorProto(schema, actorName, path);
+                proto = IncludedProtoFactory::getSchemaActorProto(schema, actorId, path);
             }
         }
     } else if(rawData.startsWith(Constants::OLD_XML_HEADER)) {
         includeType = SCRIPT;
-        proto = ScriptWorkerSerializer::string2actor(rawData, actorName, error, path);
+        proto = ScriptWorkerSerializer::string2actor(rawData, actorId, error, path);
         if (!includeAs && NULL != proto) {
-            actorName = proto->getDisplayName();
+            actorId = proto->getDisplayName();
         }
     } else {
         throw ReadFailed(tr("Unknown file format: '%1'").arg(path));
@@ -281,20 +281,19 @@ void HRSchemaSerializer::parseIncludes(Tokenizer &tokenizer, QList<QString> incl
     }
 
     // register the new proto
-    if (IncludedProtoFactory::isRegistered(actorName)) {
-        bool isEqualProtos = IncludedProtoFactory::isRegisteredTheSameProto(actorName, proto);
+    if (IncludedProtoFactory::isRegistered(actorId)) {
+        bool isEqualProtos = IncludedProtoFactory::isRegisteredTheSameProto(actorId, proto);
         if (!isEqualProtos) {
-            throw ReadFailed( QString("Another worker with this name is already registered: %1").arg(actorName) );
+            throw ReadFailed( QString("Another worker with ID '%1' is already registered: %1").arg(actorId) );
         }
     } else {
         WorkflowEnv::getProtoRegistry()->registerProto(BaseActorCategories::CATEGORY_INCLUDES(), proto);
         if (EXTERNAL_TOOL == includeType) {
-            WorkflowEnv::getExternalCfgRegistry()->registerExternalTool(cfg);
             IncludedProtoFactory::registerExternalToolWorker(cfg);
         } else if (SCRIPT == includeType) {
-            IncludedProtoFactory::registerScriptWorker(actorName);
+            IncludedProtoFactory::registerScriptWorker(actorId);
         } else if (SCHEMA == includeType) {
-            WorkflowEnv::getSchemaActorsRegistry()->registerSchema(actorName, schema);
+            WorkflowEnv::getSchemaActorsRegistry()->registerSchema(actorId, schema);
         }
     }
 }
@@ -540,7 +539,7 @@ Actor* HRSchemaSerializer::parseElementsDefinition(Tokenizer & tokenizer, const 
             parseGrouperOutSlots(proc, pairs.blockPairs.values(key), key);
         } else if (MARKER_GROUP == a->getGroup()) {
             parseMarkers(proc, pairs.blockPairs.values(key), key);
-        } else if (NULL != dynamic_cast<URLAttribute*>(a)) {
+        } else if (a->getAttributeType()->getId() == BaseTypes::URL_DATASETS_TYPE()->getId()) {
             QList<Dataset> sets = parseUrlAttribute(a->getId(), pairs.blockPairsList);
             a->setAttributeValue(qVariantFromValue< QList<Dataset> >(sets));
         } else {
@@ -577,7 +576,7 @@ Actor* HRSchemaSerializer::parseElementsDefinition(Tokenizer & tokenizer, const 
             proc->addCustomValidator(desc);
         }
     }
-    proc->updatePortsAvailability();
+    proc->updateItemsAvailability();
 
     return proc;
 }
@@ -786,7 +785,7 @@ QMap<ActorId, QVariantMap> HRSchemaSerializer::parseIteration(Tokenizer & tokeni
                 cfg[actorId][attrId] =
                     getAttrValue(actorMap[actorName], attrId, pairs.equalPairs[attrId]);
             }
-            if (NULL == dynamic_cast<URLAttribute*>(attr)) {
+            if (attr->getAttributeType()->getId() != BaseTypes::URL_DATASETS_TYPE()->getId()) {
                 continue;
             }
             QList<Dataset> sets = parseUrlAttribute(attrId, pairs.blockPairsList);
@@ -1287,13 +1286,13 @@ void HRSchemaSerializer::postProcessing(Schema *schema) {
         CHECK(proto != NULL, );
         foreach (Attribute* attr, proto->getAttributes()) {
             CHECK(attr != NULL, );
-            foreach (const PortRelationDescriptor& pd, attr->getPortRelations()) {
-                Port* p = a->getPort(pd.portId);
+            foreach (PortRelationDescriptor* pd, attr->getPortRelations()) {
+                Port* p = a->getPort(pd->getPortId());
                 CHECK(p != NULL, );
                 CHECK(a->hasParameter(attr->getId()), );
                 QVariant value = a->getParameter(attr->getId())->getAttributePureValue();
-                if (!p->getLinks().isEmpty() && !pd.valuesWithEnabledPort.contains(value)) {
-                    a->setParameter(attr->getId(), pd.valuesWithEnabledPort.first());
+                if (!p->getLinks().isEmpty() && !pd->isPortEnabled(value)) {
+                    a->setParameter(attr->getId(), pd->getValuesWithEnabledPort().first());
                 }
             }
         }
@@ -1303,13 +1302,19 @@ void HRSchemaSerializer::postProcessing(Schema *schema) {
 void HRSchemaSerializer::parsePorts(Tokenizer & tokenizer, QList<DataConfig>& ports) {
     while(tokenizer.look() != Constants::BLOCK_END) {
         DataConfig cfg;
-        cfg.attrName = tokenizer.take();
+        cfg.attributeId = tokenizer.take();
         tokenizer.assertToken(Constants::BLOCK_START);
         ParsedPairs pairs(tokenizer);
+        cfg.attrName = pairs.equalPairs.take(Constants::NAME_ATTR);
         cfg.type = pairs.equalPairs.take(Constants::TYPE_PORT);
         cfg.format = pairs.equalPairs.take(Constants::FORMAT_PORT);
         cfg.description = pairs.equalPairs.take(Constants::DESCRIPTION);
         tokenizer.assertToken(Constants::BLOCK_END);
+
+        if (cfg.attrName.isEmpty()) {
+            cfg.attrName = cfg.attributeId;
+        }
+
         ports << cfg;
     }
 }
@@ -1317,19 +1322,31 @@ void HRSchemaSerializer::parsePorts(Tokenizer & tokenizer, QList<DataConfig>& po
 void HRSchemaSerializer::parseAttributes(Tokenizer & tokenizer, QList<AttributeConfig>& attrs) {
     while(tokenizer.look() != Constants::BLOCK_END) {
         AttributeConfig cfg;
-        cfg.attrName = tokenizer.take();
+        cfg.attributeId = tokenizer.take();
         tokenizer.assertToken(Constants::BLOCK_START);
         ParsedPairs pairs(tokenizer);
+        cfg.attrName = pairs.equalPairs.take(Constants::NAME_ATTR);
         cfg.type = pairs.equalPairs.take(Constants::TYPE_PORT);
+        cfg.defaultValue = pairs.equalPairs.take(Constants::DEFAULT_VALUE);
         cfg.description = pairs.equalPairs.take(Constants::DESCRIPTION);
+        if (0 == QString::compare(pairs.equalPairs.take(Constants::ADD_TO_DASHBOARD), Constants::TRUE)) {
+            cfg.flags |= AttributeConfig::AddToDashboard;
+        }
+        if (0 == QString::compare(pairs.equalPairs.take(Constants::OPEN_WITH_UGENE), Constants::TRUE)) {
+            cfg.flags |= AttributeConfig::OpenWithUgene;
+        }
         tokenizer.assertToken(Constants::BLOCK_END);
+        if (cfg.attrName.isEmpty()) {
+            cfg.attrName = cfg.attributeId;
+        }
+        cfg.fixTypes();
         attrs << cfg;
     }
 }
 
 ExternalProcessConfig*  HRSchemaSerializer::parseActorBody(Tokenizer & tokenizer) {
     ExternalProcessConfig *cfg = new ExternalProcessConfig();
-    cfg->name = tokenizer.take();
+    cfg->id = tokenizer.take();
     while(tokenizer.notEmpty() && tokenizer.look() != Constants::BLOCK_END) {
         QString tok = tokenizer.take();
         QString next = tokenizer.look();
@@ -1350,6 +1367,18 @@ ExternalProcessConfig*  HRSchemaSerializer::parseActorBody(Tokenizer & tokenizer
             /*Actor * proc = HRSchemaSerializer::parseElementsDefinition(tokenizer, tok, data.actorMap, data.idMap);
             data.schema->addProcess(proc);
             tokenizer.assertToken(HRSchemaSerializer::BLOCK_END);*/
+        } else if(tok == Constants::NAME_ATTR) {
+            tokenizer.assertToken(Constants::COLON);
+            cfg->name = tokenizer.take();
+        } else if(tok == Constants::USE_INTEGRATED_TOOL) {
+            tokenizer.assertToken(Constants::COLON);
+            cfg->useIntegratedTool = (0 != QString::compare(tokenizer.take(), Constants::FALSE, Qt::CaseInsensitive));
+        } else if(tok == Constants::CUSTOM_TOOL_PATH) {
+            tokenizer.assertToken(Constants::COLON);
+            cfg->customToolPath = tokenizer.take();
+        } else if(tok == Constants::INTEGRATED_TOOL_ID) {
+            tokenizer.assertToken(Constants::COLON);
+            cfg->integratedToolId = tokenizer.take();
         } else if(tok == Constants::CMDLINE) {
             tokenizer.assertToken(Constants::COLON);
             cfg->cmdLine = tokenizer.take();
@@ -1363,6 +1392,12 @@ ExternalProcessConfig*  HRSchemaSerializer::parseActorBody(Tokenizer & tokenizer
             throw ReadFailed(Constants::UNDEFINED_CONSTRUCT.arg(tok).arg(next));
         }
     }
+
+    if (cfg->name.isEmpty()) {
+        // Name is absent in old config files, ID was used as worker name.
+        cfg->name = cfg->id;
+    }
+
     return cfg;
 }
 
@@ -1608,11 +1643,11 @@ static QString elementsDefinitionBlock(Actor * actor, bool copyMode) {
         } else if (MARKER_GROUP == attribute->getGroup()) {
             res += HRSchemaSerializer::markersDefinition(attribute);
         } else {
-            if (attribute->getId() == BaseAttributes::URL_IN_ATTRIBUTE().getId()) {
+            if (attribute->getAttributeType() == BaseTypes::URL_DATASETS_TYPE()) {
                 QVariant v = attribute->getAttributePureValue();
                 if (v.canConvert< QList<Dataset> >()) {
                     QList<Dataset> sets = v.value< QList<Dataset> >();
-                    res += inUrlDefinitionBlocks(BaseAttributes::URL_IN_ATTRIBUTE().getId(), sets, 2);
+                    res += inUrlDefinitionBlocks(attribute->getId(), sets, 2);
                     continue;
                 }
             }
@@ -1630,8 +1665,27 @@ static QString elementsDefinitionBlock(Actor * actor, bool copyMode) {
                 continue;
             }
             QVariant value = attribute->getAttributePureValue();
-            assert(value.isNull() || value.canConvert<QString>());
-            res += HRSchemaSerializer::makeEqualsPair(attributeId, value.toString(), 2, true);
+
+#ifdef _DEBUG
+            const bool valueIsNull = value.isNull();
+            const bool valueCanConvertToString = value.canConvert<QString>();
+            const bool valueCanConvertToStringList = value.canConvert<QStringList>();
+            const bool valueCanConvertToMap = value.canConvert<QMap<QString, QVariant> >();
+            assert(valueIsNull ||
+                   valueCanConvertToString ||
+                   valueCanConvertToStringList ||
+                   valueCanConvertToMap);
+#endif
+
+            QString valueString;
+            if (attribute->getAttributeType() == BaseTypes::STRING_LIST_TYPE()) {
+                valueString = StrPackUtils::packStringList(value.toStringList(), StrPackUtils::SingleQuotes);
+            } else if (attribute->getAttributeType() == BaseTypes::MAP_TYPE()) {
+                valueString = StrPackUtils::packMap(value.toMap(), StrPackUtils::SingleQuotes);
+            } else {
+                valueString = value.toString();
+            }
+            res += HRSchemaSerializer::makeEqualsPair(attributeId, valueString, 2, true);
         }
     }
 
@@ -1949,7 +2003,8 @@ QMap<ActorId, ActorId> HRSchemaSerializer::deepCopy(const Schema& from, Schema* 
 static QString inputsDefenition(const QList<DataConfig> &inputs) {
     QString res = Constants::TAB + Constants::INPUT_START + " {\n";
     foreach(const DataConfig& cfg, inputs) {
-        res += Constants::TAB + Constants::TAB + cfg.attrName + " {\n";
+        res += Constants::TAB + Constants::TAB + cfg.attributeId + " {\n";
+        res += Constants::TAB + Constants::TAB + Constants::TAB + "name:\"" + cfg.attrName + "\";\n";
         res += Constants::TAB + Constants::TAB + Constants::TAB + "type:" + cfg.type + ";\n";
         res += Constants::TAB + Constants::TAB + Constants::TAB + "format:" + cfg.format + ";\n";
         if(!cfg.description.isEmpty()) {
@@ -1964,7 +2019,8 @@ static QString inputsDefenition(const QList<DataConfig> &inputs) {
 static QString outputsDefenition(const QList<DataConfig> &inputs) {
     QString res = Constants::TAB + Constants::OUTPUT_START + " {\n";
     foreach(const DataConfig& cfg, inputs) {
-        res += Constants::TAB + Constants::TAB + cfg.attrName + " {\n";
+        res += Constants::TAB + Constants::TAB + cfg.attributeId + " {\n";
+        res += Constants::TAB + Constants::TAB + Constants::TAB + "name:\"" + cfg.attrName + "\";\n";
         res += Constants::TAB + Constants::TAB + Constants::TAB + "type:" + cfg.type + ";\n";
         res += Constants::TAB + Constants::TAB + Constants::TAB + "format:" + cfg.format + ";\n";
         if(!cfg.description.isEmpty()) {
@@ -1976,13 +2032,31 @@ static QString outputsDefenition(const QList<DataConfig> &inputs) {
     return res;
 }
 
+namespace {
+
+QString bool2String(bool value) {
+    return value ? Constants::TRUE : Constants::FALSE;
+}
+
+}
+
 static QString attributesDefinition(const QList<AttributeConfig> &attrs) {
     QString res = Constants::TAB + Constants::ATTRIBUTES_START + " {\n";
     foreach(const AttributeConfig &cfg, attrs) {
-        res += Constants::TAB + Constants::TAB + cfg.attrName + " {\n";
+        res += Constants::TAB + Constants::TAB + cfg.attributeId + " {\n";
+        res += Constants::TAB + Constants::TAB + Constants::TAB + "name:\"" + cfg.attrName + "\";\n";
         res += Constants::TAB + Constants::TAB + Constants::TAB + "type:" + cfg.type + ";\n";
-        if(!cfg.description.isEmpty()) {
-            res += Constants::TAB + Constants::TAB + Constants::TAB + "description:\"" + cfg.description + "\";\n";
+        if (!cfg.defaultValue.isEmpty()) {
+            res += Constants::TAB + Constants::TAB + Constants::TAB + Constants::DEFAULT_VALUE + ":\"" + cfg.defaultValue + "\";\n";
+        }
+        if (!cfg.description.isEmpty()) {
+            res += Constants::TAB + Constants::TAB + Constants::TAB + Constants::DESCRIPTION + Constants::COLON + Constants::QUOTE + cfg.description + Constants::QUOTE + Constants::SEMICOLON + Constants::NEW_LINE;
+        }
+        if (cfg.isOutputUrl()) {
+            res += Constants::TAB + Constants::TAB + Constants::TAB + Constants::ADD_TO_DASHBOARD + Constants::COLON + bool2String(cfg.flags.testFlag(AttributeConfig::AddToDashboard)) + Constants::SEMICOLON + Constants::NEW_LINE;
+            if (cfg.isFile()) {
+                res += Constants::TAB + Constants::TAB + Constants::TAB + Constants::OPEN_WITH_UGENE + Constants::COLON + bool2String(cfg.flags.testFlag(AttributeConfig::OpenWithUgene)) + Constants::SEMICOLON + Constants::NEW_LINE;
+            }
         }
         res += Constants::TAB + Constants::TAB + "}\n";
     }
@@ -1992,10 +2066,18 @@ static QString attributesDefinition(const QList<AttributeConfig> &attrs) {
 
 QString HRSchemaSerializer::actor2String(ExternalProcessConfig *cfg ) {
     QString res = Constants::HEADER_LINE + "\n";
-    res += "\"" + cfg->name + "\" {\n";
+    res += "\"" + cfg->id + "\" {\n";
     res += inputsDefenition(cfg->inputs);
     res += outputsDefenition(cfg->outputs);
     res += attributesDefinition(cfg->attrs);
+    res += Constants::TAB + Constants::NAME_ATTR + ":\"" + cfg->name + "\";\n";
+    res += Constants::TAB + Constants::USE_INTEGRATED_TOOL + ":" + (cfg->useIntegratedTool ? Constants::TRUE : Constants::FALSE) + ";\n";
+    if (!cfg->customToolPath.isEmpty()) {
+        res += Constants::TAB + Constants::CUSTOM_TOOL_PATH + ":\"" + cfg->customToolPath + "\";\n";   // TODO: it should be escaped (UGENE-6437)
+    }
+    if (!cfg->integratedToolId.isEmpty()) {
+        res += Constants::TAB + Constants::INTEGRATED_TOOL_ID + ":\"" + cfg->integratedToolId + "\";\n";   // TODO: it also should be escaped (UGENE-6437)
+    }
     res += Constants::TAB + Constants::CMDLINE + ":\"" + cfg->cmdLine + "\";\n";
     if(!cfg->description.isEmpty()) {
         res += Constants::TAB + Constants::DESCRIPTION + ":\"" + cfg->description + "\";\n";

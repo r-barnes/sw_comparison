@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -32,7 +32,6 @@
 
 namespace U2 {
 
-
 void WidgetScreenshotExportToSvgTask::run() {
     SAFE_POINT_EXT(settings.isSVGFormat(),
                    setError(WRONG_FORMAT_MESSAGE.arg(settings.format).arg("WidgetScreenshotExportToSVGTask")), );
@@ -40,6 +39,7 @@ void WidgetScreenshotExportToSvgTask::run() {
     bool result=false;
     QPainter painter;
     QSvgGenerator generator;
+    generator.setResolution(settings.imageDpi);
     generator.setFileName(settings.fileName);
 
     generator.setSize(widget->rect().size());

@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -74,7 +74,7 @@ BlastAllSupportRunDialog::BlastAllSupportRunDialog(ADVSequenceObjectContext* seq
     int lastRow = settingsGridLayout->rowCount();
     regionSelector = new RegionSelector(this, seqCtx->getSequenceLength(), false, seqCtx->getSequenceSelection());
     settingsGridLayout->addWidget(regionSelector, lastRow, 0, 1, 3);
-    
+
     okButton = buttonBox->button(QDialogButtonBox::Ok);
     cancelButton = buttonBox->button(QDialogButtonBox::Cancel);
 

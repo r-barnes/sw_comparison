@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -86,7 +86,7 @@ public:
 
 SiteconSearchDialogController::SiteconSearchDialogController(ADVSequenceObjectContext* _ctx, QWidget *p):QDialog(p) {
     setupUi(this);
-    new HelpButton(this, buttonBox, "21433383");
+    new HelpButton(this, buttonBox, "24742582");
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Search"));
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
 
@@ -319,7 +319,7 @@ void SiteconSearchDialogController::runTask() {
     cfg.complOnly = rbComplement->isChecked();
     cfg.minPSUM = errLevelBox->itemData(errLevelBox->currentIndex()).toInt();
     if (cfg.minPSUM == 0) {
-        QMessageBox::critical(this, tr("Error"), tr("Error parsing minumum score"));
+        QMessageBox::critical(this, tr("Error"), tr("Error parsing minimum score"));
         return;
     }
 

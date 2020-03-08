@@ -7,7 +7,6 @@ HEADERS += src/ActorCfgFilterProxyModel.h \
            src/ChooseItemDialog.h \
            src/CreateScriptWorker.h \
            src/DashboardsManagerDialog.h \
-           src/EstimationDialog.h \
            src/GalaxyConfigConfigurationDialogImpl.h \
            src/ImportSchemaDialog.h \
            src/InvestigationDataModel.h \
@@ -45,10 +44,12 @@ HEADERS += src/ActorCfgFilterProxyModel.h \
            src/library/BaseDocWriter.h \
            src/library/CDSearchWorker.h \
            src/library/CfgExternalToolModel.h \
+           src/library/CmdlineBasedWorkerValidator.h \
            src/library/ConvertFilesFormatWorker.h \
            src/library/ConvertSnpeffVariationsToAnnotationsWorker.h \
            src/library/CoreLib.h \
-           src/library/CreateExternalProcessDialog.h \
+           src/library/CustomExternalToolLogParser.h \
+           src/library/CustomExternalToolRunTaskHelper.h \
            src/library/DocActors.h \
            src/library/DocWorkers.h \
            src/library/ExternalProcessWorker.h \
@@ -61,6 +62,7 @@ HEADERS += src/ActorCfgFilterProxyModel.h \
            src/library/GenericReadActor.h \
            src/library/GenericReadWorker.h \
            src/library/GetFileListWorker.h \
+           src/library/GetReadListWorker.h \
            src/library/GroupWorker.h \
            src/library/ImportAnnotationsWorker.h \
            src/library/IncludedProtoFactoryImpl.h \
@@ -89,9 +91,11 @@ HEADERS += src/ActorCfgFilterProxyModel.h \
            src/library/WriteAnnotationsWorker.h \
            src/library/WriteAssemblyWorkers.h \
            src/library/WriteVariationWorker.h \
+           src/library/create_cmdline_based_worker/CreateCmdlineBasedWorkerWizard.h \
            src/tasks/ReadAssemblyTask.h \
            src/tasks/RenameChromosomeInVariationTask.h \
            src/tasks/SequenceQualityTrimTask.h \
+           src/util/CustomWorkerUtils.h \
            src/util/DatasetsCountValidator.h \
            src/util/DatasetValidator.h \
            src/util/GrouperActionUtils.h \
@@ -104,7 +108,6 @@ HEADERS += src/ActorCfgFilterProxyModel.h \
 FORMS += src/ChooseItemDialog.ui \
            src/CreateScriptBlockDialog.ui \
            src/DashboardsManagerDialog.ui \
-           src/library/ExternalProcessWorkerDialog.ui \
            src/GalaxyConfigConfigurationDialog.ui \
            src/ImportSchemaDialog.ui \
            src/PaletteWidget.ui \
@@ -113,7 +116,14 @@ FORMS += src/ChooseItemDialog.ui \
            src/StartupDialog.ui \
            src/WorkflowEditorWidget.ui \
            src/WorkflowMetaDialog.ui \
-           src/WorkflowSettingsWidget.ui
+           src/WorkflowSettingsWidget.ui \
+           src/library/create_cmdline_based_worker/CreateCmdlineBasedWorkerWizardCommandPage.ui \
+           src/library/create_cmdline_based_worker/CreateCmdlineBasedWorkerWizardElementAppearancePage.ui \
+           src/library/create_cmdline_based_worker/CreateCmdlineBasedWorkerWizardGeneralSettingsPage.ui \
+           src/library/create_cmdline_based_worker/CreateCmdlineBasedWorkerWizardInputDataPage.ui \
+           src/library/create_cmdline_based_worker/CreateCmdlineBasedWorkerWizardOutputDataPage.ui \
+           src/library/create_cmdline_based_worker/CreateCmdlineBasedWorkerWizardParametersPage.ui \
+           src/library/create_cmdline_based_worker/CreateCmdlineBasedWorkerWizardSummaryPage.ui
 
 SOURCES += src/ActorCfgFilterProxyModel.cpp \
            src/ActorCfgModel.cpp \
@@ -121,7 +131,6 @@ SOURCES += src/ActorCfgFilterProxyModel.cpp \
            src/ChooseItemDialog.cpp \
            src/CreateScriptWorker.cpp \
            src/DashboardsManagerDialog.cpp \
-           src/EstimationDialog.cpp \
            src/GalaxyConfigConfigurationDialogImpl.cpp \
            src/ImportSchemaDialog.cpp \
            src/InvestigationDataModel.cpp \
@@ -159,10 +168,10 @@ SOURCES += src/ActorCfgFilterProxyModel.cpp \
            src/library/BaseDocWriter.cpp \
            src/library/CDSearchWorker.cpp \
            src/library/CfgExternalToolModel.cpp \
+           src/library/CmdlineBasedWorkerValidator.cpp \
            src/library/ConvertFilesFormatWorker.cpp \
            src/library/ConvertSnpeffVariationsToAnnotationsWorker.cpp \
            src/library/CoreLib.cpp \
-           src/library/CreateExternalProcessDialog.cpp \
            src/library/DocActors.cpp \
            src/library/DocWorkers.cpp \
            src/library/ExternalProcessWorker.cpp \
@@ -177,6 +186,7 @@ SOURCES += src/ActorCfgFilterProxyModel.cpp \
            src/library/GenericReadActor.cpp \
            src/library/GenericReadWorker.cpp \
            src/library/GetFileListWorker.cpp \
+           src/library/GetReadListWorker.cpp \
            src/library/GroupWorker.cpp \
            src/library/ImportAnnotationsWorker.cpp \
            src/library/IncludedProtoFactoryImpl.cpp \
@@ -203,9 +213,11 @@ SOURCES += src/ActorCfgFilterProxyModel.cpp \
            src/library/WriteAnnotationsWorker.cpp \
            src/library/WriteAssemblyWorkers.cpp \
            src/library/WriteVariationWorker.cpp \
+           src/library/create_cmdline_based_worker/CreateCmdlineBasedWorkerWizard.cpp \
            src/tasks/ReadAssemblyTask.cpp \
            src/tasks/RenameChromosomeInVariationTask.cpp \
            src/tasks/SequenceQualityTrimTask.cpp \
+           src/util/CustomWorkerUtils.cpp \
            src/util/DatasetsCountValidator.cpp \
            src/util/DatasetValidator.cpp \
            src/util/GrouperActionUtils.cpp \

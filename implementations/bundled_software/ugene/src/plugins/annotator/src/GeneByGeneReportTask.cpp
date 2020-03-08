@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -21,9 +21,9 @@
 
 #include "GeneByGeneReportTask.h"
 
-#include <U2Core/IOAdapterUtils.h>
-#include <U2Core/GUrlUtils.h>
 #include <U2Core/Counter.h>
+#include <U2Core/GUrlUtils.h>
+#include <U2Core/IOAdapterUtils.h>
 
 #include <QFile>
 #include <QSet>
@@ -99,7 +99,7 @@ GeneByGeneCompareResult GeneByGeneComparator::compareGeneAnnotation(const DNASeq
         }
     }
 
-    if (result.identical == false && maxIdentity != -1.0f){
+    if (!result.identical && maxIdentity != -1.0f){
         result.identityString.append(QString("\\%1").arg(maxIdentity));
     }
 
@@ -332,7 +332,7 @@ void GeneByGeneReportTask::run(){
         }
 
         progressCounter+=progressStep;
-        stateInfo.progress = static_cast<float>(progressCounter + 0.5f);
+        stateInfo.progress = static_cast<int>(progressCounter + 0.5f);
     }
 
     stateInfo.progress = 100;

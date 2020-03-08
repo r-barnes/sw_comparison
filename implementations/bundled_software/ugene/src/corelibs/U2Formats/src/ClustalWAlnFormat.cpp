@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -53,8 +53,13 @@ namespace U2 {
 /* TRANSLATOR U2::IOAdapter */
 
 const QByteArray ClustalWAlnFormat::CLUSTAL_HEADER = "CLUSTAL";
+const int ClustalWAlnFormat::MAX_LINE_LEN = 190;
+//The sequence name's length maximum is defined in the "clustalw.h" file of the "CLUSTALW" source code
+const int ClustalWAlnFormat::MAX_NAME_LEN = 150;
+const int ClustalWAlnFormat::MAX_SEQ_LEN = 70;
+const int ClustalWAlnFormat::SEQ_ALIGNMENT = 5;
 
-ClustalWAlnFormat::ClustalWAlnFormat(QObject* p) : DocumentFormat(p, DocumentFormatFlags(DocumentFormatFlag_SupportWriting) | DocumentFormatFlag_OnlyOneObject, QStringList("aln"))
+ClustalWAlnFormat::ClustalWAlnFormat(QObject* p) : TextDocumentFormat(p, BaseDocumentFormats::CLUSTAL_ALN, DocumentFormatFlags(DocumentFormatFlag_SupportWriting) | DocumentFormatFlag_OnlyOneObject, QStringList("aln"))
 {
     formatName = tr("CLUSTALW");
     formatDescription = tr("Clustalw is a format for storing multiple sequence alignments");
@@ -79,6 +84,8 @@ void ClustalWAlnFormat::load(IOAdapter* io, const U2DbiRef& dbiRef, QList<GObjec
 
     //1 skip first line
     int len = io->readUntil(buff, READ_BUFF_SIZE, LINE_BREAKS, IOAdapter::Term_Include, &lineOk);
+    CHECK_EXT(!io->hasError(), os.setError(io->errorString()), );
+
     if (!lineOk || !readBuffer.startsWith( CLUSTAL_HEADER )) {
         os.setError( ClustalWAlnFormat::tr("Illegal header line"));
     }
@@ -87,6 +94,7 @@ void ClustalWAlnFormat::load(IOAdapter* io, const U2DbiRef& dbiRef, QList<GObjec
     while (!os.isCoR() && (len = io->readUntil(buff, READ_BUFF_SIZE, LINE_BREAKS, IOAdapter::Term_Include, &lineOk)) > 0) {
         if( QByteArray::fromRawData( buff, len ).startsWith( CLUSTAL_HEADER ) ) {
             io->skip( -len );
+            CHECK_EXT(!io->hasError(), os.setError(io->errorString()), );
             break;
         }
         int numNs = 0;
@@ -191,17 +199,13 @@ void ClustalWAlnFormat::load(IOAdapter* io, const U2DbiRef& dbiRef, QList<GObjec
     objects.append(obj);
 }
 
-Document* ClustalWAlnFormat::loadDocument(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& fs, U2OpStatus& os) {
+Document* ClustalWAlnFormat::loadTextDocument(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& fs, U2OpStatus& os) {
     QList<GObject*> objects;
     load(io, dbiRef, objects, fs, os);
     CHECK_OP_EXT(os, qDeleteAll(objects), NULL);
     assert(objects.size() == 1);
     return new Document(this, io->getFactory(), io->getURL(), dbiRef, objects, fs);
 }
-
-#define MAX_LINE_LEN    80
-#define MAX_NAME_LEN    39
-#define SEQ_ALIGNMENT    5
 
 void ClustalWAlnFormat::storeEntry(IOAdapter *io, const QMap< GObjectType, QList<GObject*> > &objectsMap, U2OpStatus &ti) {
     SAFE_POINT(objectsMap.contains(GObjectTypes::MULTIPLE_SEQUENCE_ALIGNMENT), "Clustal entry storing: no alignment", );
@@ -245,6 +249,7 @@ void ClustalWAlnFormat::storeEntry(IOAdapter *io, const QMap< GObjectType, QList
     if (seqEnd % SEQ_ALIGNMENT != 0) {
         seqEnd = seqEnd - (seqEnd % SEQ_ALIGNMENT);
     }
+    seqEnd = qMin(seqEnd, seqStart + MAX_SEQ_LEN);
     assert(seqStart % SEQ_ALIGNMENT == 0 && seqEnd % SEQ_ALIGNMENT == 0 && seqEnd > seqStart);
 
     int seqPerPage = seqEnd - seqStart;
@@ -310,7 +315,7 @@ void ClustalWAlnFormat::storeDocument(Document* d, IOAdapter* io, U2OpStatus& os
     CHECK_EXT(!os.isCoR(), os.setError(L10N::errorWritingFile(d->getURL())), );
 }
 
-FormatCheckResult ClustalWAlnFormat::checkRawData(const QByteArray& data, const GUrl&) const {
+FormatCheckResult ClustalWAlnFormat::checkRawTextData(const QByteArray& data, const GUrl&) const {
     if (TextUtils::contains(TextUtils::BINARY, data.constData(), data.size())) {
         return FormatDetection_NotMatched;
     }

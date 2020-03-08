@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -70,7 +70,7 @@ void FindAlgorithmTask::run() {
         config.pattern.constData(),
         config.pattern.length(),
         config.maxErr,
-        config.maxRegExpResult,
+        config.maxRegExpResultLength,
         stateInfo.cancelFlag,
         stateInfo.progress);
 }
@@ -112,17 +112,8 @@ LoadPatternsFileTask::LoadPatternsFileTask( const QString& _filePath, const QStr
 
 Document * LoadPatternsFileTask::getDocumentFromFilePath()
 {
-    GUrl fileUrl(filePath);
-    Project *project = AppContext::getProject();
-    Document *doc = NULL;
-    if(project != NULL){
-        Document *doc = project->findDocumentByURL(filePath);
-
-        // document already present in the project
-        if (NULL != doc) {
-            return doc;
-        }
-    }
+    // loading new document here and not reusing any loaded from the project
+    // because a document in the project may be opened in 'merge' mode.
 
     QList<FormatDetectionResult> formats = DocumentUtils::detectFormat(filePath);
     if (formats.isEmpty()) {
@@ -136,10 +127,12 @@ Document * LoadPatternsFileTask::getDocumentFromFilePath()
         return NULL;
     }
     Q_ASSERT(format);
+
+    GUrl fileUrl(filePath);
     IOAdapterFactory* iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(IOAdapterUtils::url2io(fileUrl));
 
     QVariantMap hints;
-    doc = format->loadDocument(iof, fileUrl, hints, stateInfo);
+    Document* doc = format->loadDocument(iof, fileUrl, hints, stateInfo);
 
     CHECK_OP(stateInfo, NULL);
 

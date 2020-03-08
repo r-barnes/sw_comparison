@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -55,7 +55,7 @@ EMBLPlainTextFormat::EMBLPlainTextFormat(QObject* p)
     tagMap["CO"] = DNAInfo::CONTIG;
 }
 
-FormatCheckResult EMBLPlainTextFormat::checkRawData(const QByteArray& rawData, const GUrl&) const {
+FormatCheckResult EMBLPlainTextFormat::checkRawTextData(const QByteArray& rawData, const GUrl&) const {
     //TODO: improve format checking
 
     const char* data = rawData.constData();

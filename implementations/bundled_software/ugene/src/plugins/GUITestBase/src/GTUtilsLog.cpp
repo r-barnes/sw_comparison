@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -69,6 +69,20 @@ bool GTLogTracer::checkMessage(QString s){
     }
     return false;
 }
+
+#define GT_CLASS_NAME "GTUtilsLog"
+#define GT_METHOD_NAME "checkMessageStartsWith"
+bool GTLogTracer::checkMessageStartsWith(QString s) {
+    QList<LogMessage*> messages = getMessages();
+    QList<QString> textMessages;
+    foreach(LogMessage* message, messages) {
+        if (message->text.startsWith(s, Qt::CaseInsensitive)) {
+            return true;
+        }
+    }
+    return false;
+}
+#undef GT_METHOD_NAME
 
 #define GT_CLASS_NAME "GTUtilsLog"
 #define GT_METHOD_NAME "check"

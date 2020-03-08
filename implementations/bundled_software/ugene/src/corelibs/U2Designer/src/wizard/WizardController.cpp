@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -81,6 +81,7 @@ WizardController::~WizardController() {
 
 QWizard * WizardController::createGui() {
     QWizard *result = new QWizard((QWidget*)AppContext::getMainWindow()->getQMainWindow());
+    result->setAttribute(Qt::WA_DeleteOnClose);
     setupButtons(result);
 
     int idx = 0;
@@ -497,6 +498,7 @@ QVariant WizardController::getAttributeValue(const AttributeInfo &info) const {
 void WizardController::setAttributeValue(const AttributeInfo &info, const QVariant &value) {
     values[info.toString()] = value;
 
+    Actor *actor = WorkflowUtils::actorById(currentActors, info.actorId);
     // Check attribute relations
     Attribute *attr = getAttribute(info);
     CHECK(NULL != attr, );
@@ -507,7 +509,6 @@ void WizardController::setAttributeValue(const AttributeInfo &info, const QVaria
         AttributeInfo related(info.actorId, relation->getRelatedAttrId());
         QVariant newValue = relation->getAffectResult(value, getAttributeValue(related), getTags(info),
                                                       getTags(related, true));
-        Actor *actor = WorkflowUtils::actorById(currentActors, info.actorId);
         Attribute *attr = getAttribute(info);
 
         bool canSetValue = false;
@@ -523,6 +524,23 @@ void WizardController::setAttributeValue(const AttributeInfo &info, const QVaria
             setAttributeValue(related, newValue);
             if (propertyControllers.contains(related.toString())) {
                 propertyControllers[related.toString()]->updateGUI(newValue);
+            }
+        }
+    }
+    foreach (Attribute* otherAttr, actor->getParameters().values()) {
+        if (otherAttr == attr) {
+            continue;
+        }
+        foreach (const AttributeRelation *relation, otherAttr->getRelations()) {
+            if (relation->getType() != VISIBILITY || relation->getRelatedAttrId() != attr->getId()) {
+                continue;
+            }
+            AttributeInfo related(info.actorId, otherAttr->getId());
+            if (propertyControllers.contains(related.toString())) {
+                bool isVisible = true;
+                //isVisible &= isAttributeVisible(masterAttribute);
+                isVisible &= relation->getAffectResult(value, getAttributeValue(related)).toBool();
+                propertyControllers[related.toString()]->updateVisibility(isVisible);
             }
         }
     }
@@ -694,13 +712,14 @@ void WidgetCreator::visit(LabelWidget *lw) {
     text.replace("\\n", "\n");
     QLabel *label = new QLabel(text);
     QString style = "\
-                    border-width: 1px;\
+                    border-width: 0px;\
                     border-style: solid;\
                     border-radius: 4px;\
                     ";
     style += "color: " + lw->textColor + ";";
     style += "background-color: " + lw->backgroundColor + ";";
-    style += "padding: 8px;";
+    style += "padding: 6px;";
+    style += "margin-bottom: 12px;";
     label->setStyleSheet(style);
     label->setAlignment(Qt::AlignJustify);
     label->setWordWrap(true);
@@ -774,6 +793,14 @@ void PageContentCreator::visit(DefaultPageContent *content) {
             contentLayout->addWidget(paramsWC.getResult());
             paramsWC.getResult()->setMinimumSize(paramsWidth, paramsHeight);
             controllers << paramsWC.getControllers();
+
+            //let it process attribute relations
+            foreach (WidgetController *wcc, controllers) {
+                PropertyWizardController *pwc = qobject_cast<PropertyWizardController*>(wcc);
+                if (pwc) {
+                    wc->setAttributeValue(pwc->attributeWidget()->getInfo(), wc->getAttributeValue(pwc->attributeWidget()->getInfo()));
+                }
+            }
         }
     }
     layout->addLayout(contentLayout);
@@ -907,7 +934,7 @@ void GroupBox::changeView(const QString &buttonText, const QString &showHide) {
     if (!title().isEmpty()) {
         parametersStr = title().toLower();
     }
-    tip->setText(showHide + " " + parametersStr + tr(" parameters"));
+    tip->setText(showHide + " " + parametersStr + tr(" settings"));
     showHideButton->setToolTip(tip->text());
 
     CHECK(NULL != hLayout, );

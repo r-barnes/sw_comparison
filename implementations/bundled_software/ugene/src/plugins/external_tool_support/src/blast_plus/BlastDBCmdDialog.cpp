@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -38,7 +38,7 @@ BlastDBCmdDialog::BlastDBCmdDialog(BlastDBCmdSupportTaskSettings &_settings, QWi
     settings(_settings)
 {
     setupUi(this);
-    new HelpButton(this, buttonBox, "21433423");
+    new HelpButton(this, buttonBox, "24742622");
 
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Fetch"));
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));

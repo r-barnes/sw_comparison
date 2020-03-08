@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -27,6 +27,7 @@
 #include "GTUtilsLog.h"
 #include "utils/GTUtilsDialog.h"
 #include <base_dialogs/MessageBoxFiller.h>
+#include <drivers/GTKeyboardDriver.h>
 
 #include "GTTestsWorkflowEstimating.h"
 
@@ -40,6 +41,7 @@ GUI_TEST_CLASS_DEFINITION(test_0001) {
     //2. Open any NGS pipeline, e.g. Call Variants.
     GTUtilsWorkflowDesigner::openWorkflowDesigner(os);
     GTUtilsWorkflowDesigner::addSample(os, "Call variants with SAMtools");
+    GTKeyboardDriver::keyClick(Qt::Key_Escape);
 
     //3. Click an "Estimate scheme" button on the toolbar.
     //Expected state: a warning message box appears: user should fix all errors.
@@ -53,6 +55,8 @@ GUI_TEST_CLASS_DEFINITION(test_0002) {
     //2. Open any NGS pipeline, e.g. Call Variants.
     GTUtilsWorkflowDesigner::openWorkflowDesigner(os);
     GTUtilsWorkflowDesigner::addSample(os, "Call variants with SAMtools");
+    GTKeyboardDriver::keyClick(Qt::Key_Escape);
+
 //    3. Set valid input data.
     GTMouseDriver::moveTo(GTUtilsWorkflowDesigner::getItemCenter(os, "Read Assembly (BAM/SAM)"));
     GTMouseDriver::click();

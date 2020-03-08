@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -33,7 +33,7 @@ namespace U2 {
 class WriteAlignedReadsSubTask : public Task {
     Q_OBJECT
 public:
-    WriteAlignedReadsSubTask(QReadWriteLock &listM, GenomeAlignerWriter *seqWriter, QList<DataBunch*> &data, quint64 &readsAligned);
+    WriteAlignedReadsSubTask(QReadWriteLock &listM, QMutex& _writeLock, GenomeAlignerWriter *seqWriter, QList<DataBunch*> &data, quint64 &readsAligned);
     virtual void run();
 private:
     GenomeAlignerWriter *seqWriter;
@@ -42,6 +42,9 @@ private:
 
     inline void setReadWritten(SearchQuery *read, SearchQuery *revCompl);
     QReadWriteLock &listM;
+
+    // lock to use when data is written to output.
+    QMutex& writeLock;
 };
 
 } //namespace

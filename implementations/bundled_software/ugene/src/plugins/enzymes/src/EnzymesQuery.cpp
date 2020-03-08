@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -111,7 +111,7 @@ QDEnzymesActorPrototype::QDEnzymesActorPrototype() {
     descriptor.setDocumentation(QDEnzymesActor::tr("Finds restriction cut sites in supplied DNA sequence."));
 
     Descriptor ed(ENZYMES_ATTR, QDEnzymesActor::tr("Enzymes"), QDEnzymesActor::tr("Restriction enzymes used to recognize the restriction sites."));
-    Descriptor cd(CIRC_ATTR, QDEnzymesActor::tr("Circular"), QDEnzymesActor::tr("If <i>True</i> considers the sequence circular. That allows to search for restriction sites between the end and the beginning of the sequence."));
+    Descriptor cd(CIRC_ATTR, QDEnzymesActor::tr("Circular"), QDEnzymesActor::tr("If <i>True</i> considers the sequence circular. That allows one to search for restriction sites between the end and the beginning of the sequence."));
 
     attributes << new Attribute(ed, BaseTypes::STRING_TYPE(), false);
     attributes << new Attribute(cd, BaseTypes::BOOL_TYPE(), false, false);
@@ -140,7 +140,7 @@ QString EnzymesSelectorDialogHandler::getSelectedString(QDialog* dlg) {
 EnzymesSelectorDialog::EnzymesSelectorDialog(EnzymesSelectorDialogHandler* parent)
 : factory(parent) {
     setupUi(this);
-    new HelpButton(this, buttonBox, "21433361");
+    new HelpButton(this, buttonBox, "24742560");
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("OK"));
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
 

@@ -2,27 +2,15 @@
 
 MODULE_ID=U2Lang
 include( ../../ugene_lib_common.pri )
-UGENE_RELATIVE_DESTDIR = ''
 
 QT += xml widgets
 DEFINES+= QT_FATAL_ASSERT BUILDING_U2LANG_DLL
 
-LIBS += -L../../_release -lU2Core
-
-!debug_and_release|build_pass {
-
-    CONFIG(debug, debug|release) {
-        DESTDIR=../../_debug
-        LIBS += -L../../_debug -lU2Cored
-        LIBS -= -L../../_release -lU2Core
-    }
-
-    CONFIG(release, debug|release) {
-        DESTDIR=../../_release
-    }
-}
+LIBS += -L../../$$out_dir()
+LIBS += -lU2Core$$D
+DESTDIR = ../../$$out_dir()
 
 unix {
-    target.path = $$UGENE_INSTALL_DIR/$$UGENE_RELATIVE_DESTDIR
+    target.path = $$UGENE_INSTALL_DIR/
     INSTALLS += target
 }

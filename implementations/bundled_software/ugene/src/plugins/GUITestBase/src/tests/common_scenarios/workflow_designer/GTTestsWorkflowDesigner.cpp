@@ -1,6 +1,6 @@
-/**
+/**009
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -79,35 +79,6 @@ namespace U2 {
 namespace GUITest_common_scenarios_workflow_designer {
 using namespace HI;
 
-GUI_TEST_CLASS_DEFINITION(test_0002){
-    GTUtilsDialog::waitForDialog(os, new StartupDialogFiller(os));
-    //1. Start UGENE. Open workflow schema file from data\cmdline\pfm-build.uws
-    GTFileDialog::openFile(os,dataDir + "cmdline/","pwm-build.uwl");
-    GTUtilsTaskTreeView::waitTaskFinished(os);
-    GTGlobals::sleep(1000);
-//  Expected state: workflow schema opened in Workflow designer
-//    2. Change item style (Minimal - Extended - Minimal - Extended)
-    QGraphicsView* sceneView = qobject_cast<QGraphicsView*>(GTWidget::findWidget(os,"sceneView"));
-    CHECK_SET_ERR(sceneView,"scene not found");
-    QList<QGraphicsItem *> items = sceneView->items();
-    QList<QPointF> posList;
-
-    foreach(QGraphicsItem* item,items){
-        posList.append(item->pos());
-    }
-    GTUtilsDialog::waitForDialog(os, new PopupChooser(os,QStringList()<<"Minimal"));
-    GTWidget::click(os, GTWidget::findWidget(os,"Element style"));
-    GTUtilsDialog::waitForDialog(os, new PopupChooser(os,QStringList()<<"Extended"));
-    GTWidget::click(os, GTWidget::findWidget(os,"Element style"));
-//  Expected state: all arrows in schema still unbroken
-    items = sceneView->items();
-    foreach(QGraphicsItem* item,items){
-        QPointF p = posList.takeFirst();
-        CHECK_SET_ERR(p==item->pos(),QString("some item changed position from %1, %2 to %3, %4")
-                      .arg(p.x()).arg(p.y()).arg(item->pos().x()).arg(item->pos().y()));
-    }
-
-}
 
 GUI_TEST_CLASS_DEFINITION(test_0002_1){
     GTUtilsDialog::waitForDialog(os, new StartupDialogFiller(os));
@@ -257,6 +228,7 @@ GUI_TEST_CLASS_DEFINITION(test_0009){
 //    1. Open schema from examples
     GTUtilsWorkflowDesigner::openWorkflowDesigner(os);
     GTUtilsWorkflowDesigner::addSample(os, "call variants");
+    GTKeyboardDriver::keyClick(Qt::Key_Escape);
 //    2. Clear dashboard (select all + del button)
     GTGlobals::sleep(500);
     QGraphicsView* sceneView = qobject_cast<QGraphicsView*>(GTWidget::findWidget(os,"sceneView"));
@@ -274,6 +246,7 @@ GUI_TEST_CLASS_DEFINITION(test_0009){
     GTKeyboardDriver::keyClick( Qt::Key_Delete);
 //    3. Open this schema from examples
     GTUtilsWorkflowDesigner::addSample(os, "call variants");
+    GTKeyboardDriver::keyClick(Qt::Key_Escape);
 //    Expected state: items and links between them painted correctly
     GTGlobals::sleep(500);
     QList<QGraphicsItem *> items1 = sceneView->items();
@@ -318,6 +291,7 @@ GUI_TEST_CLASS_DEFINITION(test_0013){
 //    1. Load any sample in WD
     GTUtilsWorkflowDesigner::openWorkflowDesigner(os);
     GTUtilsWorkflowDesigner::addSample(os, "call variants");
+    GTKeyboardDriver::keyClick(Qt::Key_Escape);
 //    2. Select output port.
     WorkflowProcessItem* gr = GTUtilsWorkflowDesigner::getWorker(os,"Call Variants");
     QGraphicsView* sceneView = qobject_cast<QGraphicsView*>(GTWidget::findWidget(os,"sceneView"));
@@ -355,12 +329,13 @@ GUI_TEST_CLASS_DEFINITION(test_0015){
     GTUtilsWorkflowDesigner::openWorkflowDesigner(os);
 //    2. Select any worker on palette.
     GTUtilsWorkflowDesigner::addSample(os,"call variants");
+    GTKeyboardDriver::keyClick(Qt::Key_Escape);
     GTMouseDriver::moveTo(GTUtilsWorkflowDesigner::getItemCenter(os,"Call Variants"));
     GTMouseDriver::click();
     GTGlobals::sleep(500);
     CHECK_SET_ERR(GTWidget::findWidget(os,"table"),"parameters table not found");
     CHECK_SET_ERR(GTWidget::findWidget(os,"doc"),"element documentation widget not found");
-    CHECK_SET_ERR(GTWidget::findWidget(os,"table2"),"input data table not found");
+    CHECK_SET_ERR(GTWidget::findWidget(os,"inputScrollArea"),"input data table not found");
     CHECK_SET_ERR(GTWidget::findWidget(os,"propDoc"),"property documentation widget not found");
 
 //    Expected state: Actor info (parameters, input data ...) will be displayed at the right part of window
@@ -480,37 +455,26 @@ GUI_TEST_CLASS_DEFINITION(test_0060){
 //    Expected state: sample works as it stated (the result of default run(format should be BED) on that data is "_common_data/bedtools/out17.bed"
 
     GTUtilsWorkflowDesigner::openWorkflowDesigner(os);
+    GTUtilsTaskTreeView::waitTaskFinished(os);
+
     GTUtilsWorkflowDesigner::addSample(os, "Intersect annotations");
-
-    class wd_test_0060 : public CustomScenario {
-    public:
-        void run(HI::GUITestOpStatus &os) {
-            QMap<QString, QVariant> parameters;
-            parameters["Output file"] = QDir(sandBoxDir).absolutePath() + "/wd_test_0060";
-            //! The following code will not work because of UGENE-4234
-//            parameters["Annotations A"] = QDir(testDir).absolutePath() + "/_common_data/bedtools/introns.bed";
-//            parameters["Annotations B"] = QDir(testDir).absolutePath() + "/_common_data/bedtools/mutation.gff";
-            GTUtilsWizard::setAllParameters(os, parameters);
-
-            GTKeyboardDriver::keyClick( Qt::Key_Enter);
-            GTUtilsWizard::clickButton(os, GTUtilsWizard::Apply);
-        }
-    };
-
-
-    GTUtilsDialog::waitForDialog(os, new WizardFiller(os, "Intersect Annotations Wizard", new wd_test_0060()));
-    GTWidget::click(os, GTAction::button(os, "Show wizard"));
-    GTGlobals::sleep();
+    GTGlobals::sleep(100);
+    GTKeyboardDriver::keyClick(Qt::Key_Escape);
 
     GTUtilsWorkflowDesigner::click(os, "Read Annotations A");
+    GTGlobals::sleep();
     GTUtilsWorkflowDesigner::setDatasetInputFile(os, testDir + "/_common_data/bedtools/introns.bed");
 
     GTUtilsWorkflowDesigner::click(os, "Read Annotations B");
+    GTGlobals::sleep();
     GTUtilsWorkflowDesigner::setDatasetInputFile(os, testDir + "/_common_data/bedtools/mutation.gff");
 
     GTUtilsWorkflowDesigner::click(os, "Write Annotations");
     GTGlobals::sleep();
     GTUtilsWorkflowDesigner::setParameter(os, "Document format", "BED", GTUtilsWorkflowDesigner::comboValue);
+    QString s = QFileInfo(testDir + "_common_data/scenarios/sandbox").absoluteFilePath();
+    GTUtilsWorkflowDesigner::setParameter(os, "Output file", QVariant(s + "/wd_test_0060"), GTUtilsWorkflowDesigner::textValue);
+
     GTUtilsWorkflowDesigner::runWorkflow(os);
     GTUtilsTaskTreeView::waitTaskFinished(os);
 
@@ -546,6 +510,7 @@ GUI_TEST_CLASS_DEFINITION(test_0061) {
     CHECK_SET_ERR(GTUtilsWorkflowDesigner::isParameterVisible(os, "Reference"), "Reference parameter is not visible");
 
     GTUtilsWorkflowDesigner::addSample(os, "Call variants with SAMtools");
+    GTKeyboardDriver::keyClick(Qt::Key_Escape);
     GTUtilsWorkflowDesigner::click(os, "Call Variants");
     CHECK_SET_ERR(!GTUtilsWorkflowDesigner::isParameterVisible(os, "Reference"), "Reference parameter is unexpectedly visible");
     item = GTUtilsWorkflowDesigner::getWorker(os, "Call Variants");

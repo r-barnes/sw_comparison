@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -20,6 +20,8 @@
  */
 
 #include "StringAdapter.h"
+
+#include <U2Core/U2SafePoints.h>
 
 namespace U2 {
 
@@ -71,6 +73,10 @@ void StringAdapter::close() {
 qint64 StringAdapter::readBlock(char * data, qint64 maxSize) {
     qint64 size = qMin<qint64>((buffer.length() - pos), maxSize);
     memcpy(data, buffer.constData() + pos, size);
+    if (formatMode == TextMode) {
+        cutByteOrderMarks(data, errorMessage, size);
+        CHECK(errorMessage.isEmpty(), -1);
+    }
     pos += size;
     return size;
 }
@@ -110,7 +116,7 @@ qint64 StringAdapter::bytesRead() const {
 }
 
 QString StringAdapter::errorString() const {
-    return "";
+    return errorMessage;
 }
 
 GUrl StringAdapter::getURL() const {

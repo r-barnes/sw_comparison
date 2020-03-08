@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -29,7 +29,7 @@ namespace Workflow {
 
 class ActorScriptValidator : public ActorValidator {
 public:
-    virtual bool validate(const Actor *actor, ProblemList &problemList, const QMap<QString, QString> &options) const;
+    virtual bool validate(const Actor *actor, NotificationsList &notificationList, const QMap<QString, QString> &options) const;
 };
 
 class ValidationContext : public QObject {
@@ -37,7 +37,7 @@ class ValidationContext : public QObject {
 public:
     ValidationContext(QScriptEngine &engine, const Actor *actor);
 
-    ProblemList problems() const;
+    NotificationsList notifications() const;
     bool hasErrors() const;
 
 public slots:

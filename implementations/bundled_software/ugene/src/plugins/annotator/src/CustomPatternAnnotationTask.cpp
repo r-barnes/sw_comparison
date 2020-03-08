@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -21,15 +21,16 @@
 
 #include <QFile>
 
+#include <U2Algorithm/SArrayBasedFindTask.h>
+
+#include <U2Core/AnnotationTableObject.h>
 #include <U2Core/AppContext.h>
 #include <U2Core/Counter.h>
+#include <U2Core/CreateAnnotationTask.h>
 #include <U2Core/DNAAlphabet.h>
 #include <U2Core/DNATranslation.h>
-#include <U2Core/AnnotationTableObject.h>
-#include <U2Core/CreateAnnotationTask.h>
-#include <U2Algorithm/SArrayIndex.h>
-#include <U2Core/TextUtils.h>
 #include <U2Core/Settings.h>
+#include <U2Core/TextUtils.h>
 #include <U2Core/U2SafePoints.h>
 
 #include "CustomPatternAnnotationTask.h"
@@ -75,8 +76,8 @@ void CustomPatternAnnotationTask::prepare()
         return;
     }
 
-    index = QSharedPointer<SArrayIndex>(new SArrayIndex(sequence.constData(), sequence.length(),
-        featureStore->getMinFeatureSize(), stateInfo, unknownChar));
+    index = QSharedPointer<SArrayIndex>(new SArrayIndex(sequence.constData(), quint32(sequence.length()),
+        quint32(featureStore->getMinFeatureSize()), stateInfo, unknownChar));
 
     if (hasError()) {
         return;
@@ -139,8 +140,8 @@ QList<Task*> CustomPatternAnnotationTask::onSubTaskFinished(Task* subTask) {
         data->setStrand(strand);
 
         if (dnaObj.isCircular() && endPos > seqLen) {
-            int outerLen = endPos - seqLen;
-            int innerLen = task->getQuery().length() - outerLen;
+            qint64 outerLen = endPos - seqLen;
+            qint64 innerLen = task->getQuery().length() - outerLen;
             U2Region region1(pos - 1, innerLen);
             U2Region region2(0, outerLen);
             data->location->regions << region1 << region2;

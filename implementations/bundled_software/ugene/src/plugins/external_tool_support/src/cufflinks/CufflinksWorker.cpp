@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -49,19 +49,19 @@ namespace LocalWorkflow {
 /************************************************************************/
 class InputSlotValidator : public PortValidator {
 public:
-    virtual bool validate(const IntegralBusPort *port, ProblemList &problemList) const {
+    virtual bool validate(const IntegralBusPort *port, NotificationsList &notificationList) const {
         bool data = isBinded(port, BaseSlots::ASSEMBLY_SLOT().getId());
         bool url = isBinded(port, BaseSlots::URL_SLOT().getId());
 
         QString dataName = slotName(port, BaseSlots::ASSEMBLY_SLOT().getId());
         QString urlName = slotName(port, BaseSlots::URL_SLOT().getId());
         if (!data && !url) {
-            problemList.append(Problem(IntegralBusPort::tr("One of these slots must be not empty: '%1', '%2'").arg(dataName).arg(urlName)));
+            notificationList.append(WorkflowNotification(IntegralBusPort::tr("One of these slots must be not empty: '%1', '%2'").arg(dataName).arg(urlName)));
             return false;
         }
 
         if (data && url) {
-            problemList.append(Problem(IntegralBusPort::tr("Only one of these slots must be binded: '%1', '%2'").arg(dataName).arg(urlName)));
+            notificationList.append(WorkflowNotification(IntegralBusPort::tr("Only one of these slots must be binded: '%1', '%2'").arg(dataName).arg(urlName)));
             return false;
         }
         return true;
@@ -266,7 +266,7 @@ void CufflinksWorkerFactory::init()
     proto->setPortValidator(BasePorts::IN_ASSEMBLY_PORT_ID(), new InputSlotValidator());
 
     { // external tools
-        proto->addExternalTool(ET_CUFFLINKS, EXT_TOOL_PATH);
+        proto->addExternalTool(CufflinksSupport::ET_CUFFLINKS_ID, EXT_TOOL_PATH);
     }
 
     WorkflowEnv::getProtoRegistry()->registerProto(
@@ -322,7 +322,7 @@ void CufflinksWorker::init() {
     settingsAreCorrect = true;
     QString extToolPath = getValue<QString>(CufflinksWorkerFactory::EXT_TOOL_PATH);
     if (QString::compare(extToolPath, "default", Qt::CaseInsensitive) != 0) {
-        AppContext::getExternalToolRegistry()->getByName(ET_CUFFLINKS)->setPath(extToolPath);
+        AppContext::getExternalToolRegistry()->getById(CufflinksSupport::ET_CUFFLINKS_ID)->setPath(extToolPath);
     }
 
     QString tmpDirPath = getValue<QString>(CufflinksWorkerFactory::TMP_DIR_PATH);

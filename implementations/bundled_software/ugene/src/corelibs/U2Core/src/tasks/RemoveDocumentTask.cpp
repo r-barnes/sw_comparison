@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -23,7 +23,6 @@
 
 #include "SaveDocumentTask.h"
 
-#include <U2Core/DocumentModel.h>
 #include <U2Core/ProjectModel.h>
 #include <U2Core/AppContext.h>
 
@@ -31,10 +30,9 @@
 namespace U2 {
 
 RemoveMultipleDocumentsTask::RemoveMultipleDocumentsTask(Project* _p, const QList<Document*>& _docs, bool _saveModifiedDocs, bool _useGUI)
-: Task(tr("Remove document"), TaskFlags(TaskFlag_NoRun) | TaskFlag_CancelOnSubtaskCancel), p(_p), saveModifiedDocs(_saveModifiedDocs), useGUI(_useGUI)
-{
+    : Task(tr("Remove document"), TaskFlags(TaskFlag_NoRun) | TaskFlag_CancelOnSubtaskCancel), p(_p), saveModifiedDocs(_saveModifiedDocs), useGUI(_useGUI) {
     assert(!_docs.empty());
-    assert(p!=NULL);
+    assert(p != NULL);
 
     foreach(Document* d, _docs) {
         docPtrs.append(d);
@@ -51,7 +49,7 @@ void RemoveMultipleDocumentsTask::prepare() {
     if (p->isTreeItemModified() && saveModifiedDocs) {
         QList<Document*> docs;
         foreach(Document* d, docPtrs) {
-            if (d!=NULL) {
+            if (d != NULL) {
                 docs.append(d);
             }
         }
@@ -66,14 +64,14 @@ void RemoveMultipleDocumentsTask::prepare() {
 
 
 Task::ReportResult RemoveMultipleDocumentsTask::report() {
-    if (lock!=NULL) {
+    if (lock != NULL) {
         assert(!p.isNull());
         p->unlockState(lock);
         delete lock;
         lock = NULL;
 
         Task* t = getSubtaskWithErrors();
-        if (t!=NULL) {
+        if (t != NULL) {
             stateInfo.setError(t->getError());
             return Task::ReportResult_Finished;
         }
@@ -92,10 +90,10 @@ Task::ReportResult RemoveMultipleDocumentsTask::report() {
     }
 
     foreach(Document* doc, docPtrs) {
-        if ( doc != NULL ) {
+        if (doc != NULL) {
             // check for "stay-alive" locked objects
-            if ( doc->hasLocks(StateLockableTreeFlags_ItemAndChildren, StateLockFlag_LiveLock) ) {
-                setError( tr("Cannot remove document %1, since it is locked by some task.").arg(doc->getName()) );
+            if (doc->hasLocks(StateLockableTreeFlags_ItemAndChildren, StateLockFlag_LiveLock)) {
+                setError(tr("Cannot remove document %1, since it is locked by some task.").arg(doc->getName()));
                 continue;
             } else {
                 p->removeDocument(doc);

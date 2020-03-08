@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -31,14 +31,12 @@
 #include <QList>
 #include <QMap>
 #include <QSharedData>
-#include <QMultiMap>
 
 namespace U2 {
 
 class U2Region;
 
-class U2CORE_EXPORT ResidueIndex
-{
+class U2CORE_EXPORT ResidueIndex {
     int resId;
     int order; // to keep order of residues in the chain
     char insCode;
@@ -57,8 +55,7 @@ public:
 
 
 //! Represents biopolimer residue
-class ResidueData : public QSharedData
-{
+class ResidueData : public QSharedData {
 public:
     enum Type {
         TYPE_UNKNOWN, TYPE_PROTEIN, TYPE_DNA, TYPE_RNA
@@ -73,8 +70,7 @@ public:
 typedef QSharedDataPointer<ResidueData> SharedResidue;
 
 //! Represents atom
-class AtomData : public QSharedData
-{
+class AtomData : public QSharedData {
 public:
     int atomicNumber;
     int chainIndex;
@@ -96,12 +92,11 @@ public:
 typedef QSharedDataPointer<AtomData> SharedAtom;
 
 //! Represents chemical bond between atoms
-class Bond
-{
+class Bond {
     SharedAtom atom1;
     SharedAtom atom2;
 public:
-    Bond(const SharedAtom& a1, const SharedAtom& a2) : atom1(a1), atom2(a2) { }
+    Bond(const SharedAtom& a1, const SharedAtom& a2) : atom1(a1), atom2(a2) {}
     const SharedAtom getAtom1() const { return atom1; }
     const SharedAtom getAtom2() const { return atom2; }
 };
@@ -121,8 +116,7 @@ public:
     int endSequenceNumber;
 
 public:
-    SecondaryStructure() : type(Type_None)
-    {
+    SecondaryStructure() : type(Type_None) {
         startSequenceNumber = 0;
         endSequenceNumber = 0;
         chainIndex = 0;
@@ -135,9 +129,8 @@ typedef QSharedDataPointer<SecondaryStructure> SharedSecondaryStructure;
 //! Model 3D
 /*!
     Represents collection of molecule atomic coordinates and bonds
-*/
-class Molecule3DModel
-{
+    */
+class Molecule3DModel {
 public:
     QList<SharedAtom> atoms;
     QList<Bond> bonds;
@@ -146,7 +139,7 @@ public:
 //! Molecule
 /*!
     Represents molecule chain (biopolymer or any other)
-*/
+    */
 
 class MoleculeData : public QSharedData {
 public:
@@ -209,7 +202,7 @@ public:
     // Theese three methods need to solve confusion between model ids (same as in PDB)
     // and internal model indexes, both  are used in UGENE
     // model ids should be used for user interface, and one fine day may become a strings
-    // model index numbers used by internal UGENE parts, and shoud be consequent int values from 0
+    // model index numbers used by internal UGENE parts, and should be consequent int values from 0
     /** @returns list of model ids (same as in PDB), that can be not consequent */
     const QList<int> getModelsNames() const;
 

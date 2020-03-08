@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -37,19 +37,63 @@ public:
     static QWebView* getDashboard(HI::GUITestOpStatus &os);
     static QTabWidget* getTabWidget(HI::GUITestOpStatus &os);
 
-    static QStringList getOutputFiles(HI::GUITestOpStatus &os, const QString &producerName = "");
-    static void clickOutputFile(HI::GUITestOpStatus &os, const QString &outputFileName, const QString &producerName = "");
+    static const QString getDashboardName(HI::GUITestOpStatus &os, int dashboardNumber);
+
+    static QStringList getOutputFiles(HI::GUITestOpStatus &os);
+    static void clickOutputFile(HI::GUITestOpStatus &os, const QString &outputFileName);
 
     static HI::HIWebElement findElement(HI::GUITestOpStatus &os, QString text, QString tag = "*", bool exactMatch = false);
     static HI::HIWebElement findTreeElement(HI::GUITestOpStatus &os, QString text);
     static HI::HIWebElement findContextMenuElement(HI::GUITestOpStatus &os, QString text);
     static void click(HI::GUITestOpStatus &os, HI::HIWebElement el, Qt::MouseButton button = Qt::LeftButton);
-    static bool areThereProblems(HI::GUITestOpStatus &os);
+    static bool areThereNotifications(HI::GUITestOpStatus &os);
     static void openTab(HI::GUITestOpStatus &os, Tabs tab);
+
+    static bool doesTabExist(HI::GUITestOpStatus &os, Tabs tab);
+
+// External tools tab
+    static QString getRootNode(HI::GUITestOpStatus &os);
+    static QString getNodeText(HI::GUITestOpStatus &os, const QString &nodeId);
+    static int getChildrenNodesCount(HI::GUITestOpStatus &os, const QString &nodeId);
+    static QString getChildNodeId(HI::GUITestOpStatus &os, const QString &nodeId, int childNum);
+    static QString getDescendantNodeId(HI::GUITestOpStatus &os, const QString &nodeId, const QList<int> &childNums);
+    static QString getChildWithTextId(HI::GUITestOpStatus &os, const QString &nodeId, const QString &text);     // childrens has to have unique texts
+
+    static bool doesNodeHaveLimitationMessageNode(HI::GUITestOpStatus &os, const QString &nodeId);
+    static QString getLimitationMessageNodeText(HI::GUITestOpStatus &os, const QString &nodeId);
+    static QString getLimitationMessageLogUrl(HI::GUITestOpStatus &os, const QString &nodeId);
+
+    static QSize getCopyButtonSize(HI::GUITestOpStatus &os, const QString &toolRunNodeId);
+    static void clickCopyButton(HI::GUITestOpStatus &os, const QString &toolRunNodeId);
+
+    // All parent nodes should be expanded
+    static bool isNodeVisible(HI::GUITestOpStatus &os, const QString &nodeId);
+    static bool isNodeCollapsed(HI::GUITestOpStatus &os, const QString &nodeId);
+    static void collapseNode(HI::GUITestOpStatus &os, const QString &nodeId);
+    static void expandNode(HI::GUITestOpStatus &os, const QString &nodeId);
+
+    static QString getLogUrlFromNode(HI::GUITestOpStatus &os, const QString &outputNodeId);
+
+    static const QString TREE_ROOT_ID;      // This constant is defined in ExternalToolWidget.js
 
 private:
     static QMap<QString, Tabs> initTabMap();
+    static QString getNodeSpanId(const QString &nodeId);
+    static HI::HIWebElement getCopyButton(HI::GUITestOpStatus &os, const QString &toolRunNodeId);
+    static HI::HIWebElement getNodeSpan(HI::GUITestOpStatus &os, const QString &nodeId);
+    static HI::HIWebElement getNodeUl(HI::GUITestOpStatus &os, const QString &nodeId);
+
+    static QString getLogUrlFromElement(HI::GUITestOpStatus &os, const HI::HIWebElement &element);
+
     static const QMap<QString, Tabs> tabMap;
+    static const QString PARENT_LI;     // This constant is defined in ExternalToolWidget.js
+
+    // Some CSS attributes
+    static const QString WIDTH;
+    static const QString HEIGHT;
+    static const QString TITLE;
+    static const QString COLLAPSED_NODE_TITLE;
+    static const QString ON_CLICK;
 };
 
 }   // namespace U2

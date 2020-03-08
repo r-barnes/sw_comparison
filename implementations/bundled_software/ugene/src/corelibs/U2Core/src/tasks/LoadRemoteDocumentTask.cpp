@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -22,21 +22,17 @@
 #include <QDir>
 #include <QEventLoop>
 #include <QTimer>
-#include <QUrl>
 
 #include <U2Core/AppContext.h>
 #include <U2Core/AppSettings.h>
 #include <U2Core/UserApplicationsSettings.h>
 #include <U2Core/DocumentModel.h>
-#include <U2Core/IOAdapter.h>
 #include <U2Core/IOAdapterUtils.h>
 #include <U2Core/Log.h>
 #include <U2Core/ProjectModel.h>
-#include <U2Core/NetworkConfiguration.h>
 #include <U2Core/Counter.h>
 #include <U2Core/DBXRefRegistry.h>
 #include <U2Core/DocumentUtils.h>
-#include <U2Core/AddDocumentTask.h>
 #include <U2Core/CopyDataTask.h>
 #include <U2Core/LoadDocumentTask.h>
 #include <U2Core/U2SafePoints.h>
@@ -66,15 +62,14 @@ const QString RemoteDBRegistry::UNIPROTKB_TREMBL("UniProtKB/TrEMBL");
 ////////////////////////////////////////////////////////////////////////////
 //BaseLoadRemoteDocumentTask
 BaseLoadRemoteDocumentTask::BaseLoadRemoteDocumentTask(const QString& _downloadPath, const QVariantMap &hints, TaskFlags flags)
-:DocumentProviderTask(tr("Load remote document"), flags), hints(hints)
-{
+    :DocumentProviderTask(tr("Load remote document"), flags), hints(hints) {
     downloadPath = _downloadPath;
     sourceUrl = GUrl("");
     fullPath = "";
     fileName = "";
 }
 
-void BaseLoadRemoteDocumentTask::prepare(){
+void BaseLoadRemoteDocumentTask::prepare() {
     sourceUrl = getSourceUrl();
     fileName = getFileName();
 
@@ -101,20 +96,18 @@ void BaseLoadRemoteDocumentTask::prepare(){
 
 }
 
-Task::ReportResult BaseLoadRemoteDocumentTask::report()
-{
+Task::ReportResult BaseLoadRemoteDocumentTask::report() {
     return ReportResult_Finished;
 }
 
-bool BaseLoadRemoteDocumentTask::prepareDownloadDirectory( QString &path ){
+bool BaseLoadRemoteDocumentTask::prepareDownloadDirectory(QString &path) {
     if (!QDir(path).exists()) {
         if (path == getDefaultDownloadDirectory()) {
             // Creating default folder if it doesn't exist
             if (!QDir().mkpath(path)) {
                 return false;
             }
-        }
-        else {
+        } else {
             // We do not touch user specified directories from here
             return false;
         }
@@ -123,12 +116,12 @@ bool BaseLoadRemoteDocumentTask::prepareDownloadDirectory( QString &path ){
     return true;
 }
 
-QString BaseLoadRemoteDocumentTask::getDefaultDownloadDirectory(){
+QString BaseLoadRemoteDocumentTask::getDefaultDownloadDirectory() {
     QString path = AppContext::getAppSettings()->getUserAppsSettings()->getDownloadDirPath();
     return path;
 }
 
-bool BaseLoadRemoteDocumentTask::initLoadDocumentTask(){
+bool BaseLoadRemoteDocumentTask::initLoadDocumentTask() {
     // Check if the document has been loaded
     Project* proj = AppContext::getProject();
     if (proj != NULL) {
@@ -151,13 +144,13 @@ bool BaseLoadRemoteDocumentTask::initLoadDocumentTask(){
     return true;
 }
 
-bool BaseLoadRemoteDocumentTask::isCached(){
+bool BaseLoadRemoteDocumentTask::isCached() {
     // Check if the file has already been downloaded
     RecentlyDownloadedCache* cache = AppContext::getRecentlyDownloadedCache();
-    if( cache != NULL && cache->contains(fileName)) {
+    if (cache != NULL && cache->contains(fileName)) {
         QString cachedUrl = cache->getFullPath(fileName);
-        if( fullPath == cachedUrl ) {
-            if (initLoadDocumentTask() ) {
+        if (fullPath == cachedUrl) {
+            if (initLoadDocumentTask()) {
                 addSubTask(loadDocumentTask);
             }
             return true;
@@ -167,7 +160,7 @@ bool BaseLoadRemoteDocumentTask::isCached(){
     return false;
 }
 
-void BaseLoadRemoteDocumentTask::createLoadedDocument(){
+void BaseLoadRemoteDocumentTask::createLoadedDocument() {
     GUrl url(fullPath);
     // Detect format
     if (formatId.isEmpty()) {
@@ -181,27 +174,25 @@ void BaseLoadRemoteDocumentTask::createLoadedDocument(){
 
 //////////////////////////////////////////////////////////////////////////
 //LoadRemoteDocumentTask
-LoadRemoteDocumentTask::LoadRemoteDocumentTask( const GUrl& url )
+LoadRemoteDocumentTask::LoadRemoteDocumentTask(const GUrl& url)
     : BaseLoadRemoteDocumentTask(),
-      loadDataFromEntrezTask(NULL)
-{
+    loadDataFromEntrezTask(NULL) {
     fileUrl = url;
-    GCOUNTER( cvar, tvar, "LoadRemoteDocumentTask" );
+    GCOUNTER(cvar, tvar, "LoadRemoteDocumentTask");
 }
 
-LoadRemoteDocumentTask::LoadRemoteDocumentTask( const QString & accId, const QString & dbName, const QString & fullPathDir, const QString& fileFormat, const QVariantMap &hints)
+LoadRemoteDocumentTask::LoadRemoteDocumentTask(const QString & accId, const QString & dbName, const QString & fullPathDir, const QString& fileFormat, const QVariantMap &hints)
     :BaseLoadRemoteDocumentTask(fullPathDir, hints),
     loadDataFromEntrezTask(NULL),
     accNumber(accId),
-    dbName(dbName)
-{
-    GCOUNTER( cvar, tvar, "LoadRemoteDocumentTask" );
+    dbName(dbName) {
+    GCOUNTER(cvar, tvar, "LoadRemoteDocumentTask");
     format = fileFormat;
 }
 
-void LoadRemoteDocumentTask::prepare(){
+void LoadRemoteDocumentTask::prepare() {
     BaseLoadRemoteDocumentTask::prepare();
-    if (!isCached()){
+    if (!isCached()) {
         if (sourceUrl.isHyperLink()) {
             IOAdapterFactory* iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(BaseIOAdapters::HTTP_FILE);
             IOAdapterFactory * iow = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(BaseIOAdapters::LOCAL_FILE);
@@ -210,7 +201,7 @@ void LoadRemoteDocumentTask::prepare(){
         } else {
             assert(sourceUrl.isLocalFile());
             QString dbId = RemoteDBRegistry::getRemoteDBRegistry().getDbEntrezName(dbName);
-            if(dbId.isEmpty()) {
+            if (dbId.isEmpty()) {
                 setError(tr("Undefined database: '%1'").arg(dbName));
                 return;
             } else {
@@ -221,7 +212,7 @@ void LoadRemoteDocumentTask::prepare(){
     }
 }
 
-QString LoadRemoteDocumentTask::getFileFormat( const QString & dbid ){
+QString LoadRemoteDocumentTask::getFileFormat(const QString & dbid) {
     QString dbId = RemoteDBRegistry::getRemoteDBRegistry().getDbEntrezName(dbid);
     if (dbId == GENBANK_NUCLEOTIDE_ID || dbId == GENBANK_PROTEIN_ID) {
         return GENBANK_FORMAT;
@@ -230,26 +221,26 @@ QString LoadRemoteDocumentTask::getFileFormat( const QString & dbid ){
     }
 }
 
-GUrl LoadRemoteDocumentTask::getSourceUrl(){
-    if (!fileUrl.isEmpty()){
+GUrl LoadRemoteDocumentTask::getSourceUrl() {
+    if (!fileUrl.isEmpty()) {
         return fileUrl;
-    }else{
+    } else {
         RemoteDBRegistry::getRemoteDBRegistry().convertAlias(dbName);
         return GUrl(RemoteDBRegistry::getRemoteDBRegistry().getURL(accNumber, dbName));
     }
 }
 
-QString LoadRemoteDocumentTask::getFileName(){
+QString LoadRemoteDocumentTask::getFileName() {
 
-    if( sourceUrl.isHyperLink() ) {
-        return sourceUrl.fileName();
+    if (sourceUrl.isHyperLink()) {
+        return dbName == RemoteDBRegistry::ENSEMBL ? QString("%1.fa").arg(accNumber) : sourceUrl.fileName();
     } else {
         if (format.isEmpty()) {
             format = getFileFormat(dbName);
         }
-        accNumber.replace(";",",");
+        accNumber.replace(";", ",");
         QStringList accIds = accNumber.split(",");
-        if (accIds.size() == 1 ) {
+        if (accIds.size() == 1) {
             return accNumber + "." + format;
         } else if (accIds.size() > 1) {
             return accIds.first() + "_misc." + format;
@@ -259,10 +250,10 @@ QString LoadRemoteDocumentTask::getFileName(){
     return "";
 }
 
-QList<Task*> LoadRemoteDocumentTask::onSubTaskFinished( Task* subTask ){
+QList<Task*> LoadRemoteDocumentTask::onSubTaskFinished(Task* subTask) {
     QList<Task*> subTasks;
     if (subTask->hasError()) {
-        if( subTask == copyDataTask || subTask == loadDataFromEntrezTask ) {
+        if (subTask == copyDataTask || subTask == loadDataFromEntrezTask) {
             setError(tr("Cannot find %1 in %2 database").arg(accNumber).arg(dbName) + ": " + subTask->getError());
         }
         return subTasks;
@@ -272,7 +263,7 @@ QList<Task*> LoadRemoteDocumentTask::onSubTaskFinished( Task* subTask ){
             subTasks.append(loadDocumentTask);
             if (!subTask->isCanceled()) {
                 RecentlyDownloadedCache * cache = AppContext::getRecentlyDownloadedCache();
-                if(cache != NULL) {
+                if (cache != NULL) {
                     cache->append(fullPath);
                 }
             } else if (subTask == copyDataTask) {
@@ -280,7 +271,7 @@ QList<Task*> LoadRemoteDocumentTask::onSubTaskFinished( Task* subTask ){
                 notLoadedFile.remove();
             }
         }
-    } else if ( subTask == loadDocumentTask) {
+    } else if (subTask == loadDocumentTask) {
         resultDocument = loadDocumentTask->takeDocument();
     }
     return subTasks;
@@ -297,7 +288,7 @@ QString LoadRemoteDocumentTask::getRetType() const {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 RecentlyDownloadedCache::RecentlyDownloadedCache() {
     QStringList fileNames = AppContext::getAppSettings()->getUserAppsSettings()->getRecentlyDownloadedFileNames();
-    foreach (const QString& path, fileNames) {
+    foreach(const QString& path, fileNames) {
         QFileInfo info(path);
         if (info.exists()) {
             append(path);
@@ -309,13 +300,13 @@ bool RecentlyDownloadedCache::contains(const QString& fileName) {
     if (!urlMap.contains(fileName)) {
         return false;
     } else {
-        QString fullPath=getFullPath(fileName);
+        QString fullPath = getFullPath(fileName);
         QFile cachedFile(fullPath);
         return cachedFile.exists();
     }
 }
 
-void RecentlyDownloadedCache::append( const QString& fileName ) {
+void RecentlyDownloadedCache::append(const QString& fileName) {
     QFileInfo info(fileName);
     urlMap.insert(info.fileName(), fileName);
 }
@@ -324,7 +315,7 @@ void RecentlyDownloadedCache::remove(const QString& fullPath) {
     urlMap.remove(QFileInfo(fullPath).fileName());
 }
 
-QString RecentlyDownloadedCache::getFullPath( const QString& fileName ) {
+QString RecentlyDownloadedCache::getFullPath(const QString& fileName) {
     return urlMap.value(fileName);
 }
 
@@ -338,110 +329,106 @@ RecentlyDownloadedCache::~RecentlyDownloadedCache() {
 
 //////////////////////////////////////////////////////////////////////////
 
-BaseEntrezRequestTask::BaseEntrezRequestTask( const QString &taskName )
-    : Task( taskName, TaskFlags_FOSCOE | TaskFlag_MinimizeSubtaskErrorText ),
-    loop( NULL ), networkManager( NULL )
-{
+BaseEntrezRequestTask::BaseEntrezRequestTask(const QString &taskName)
+    : Task(taskName, TaskFlags_FOSCOE | TaskFlag_MinimizeSubtaskErrorText),
+    loop(NULL), networkManager(NULL) {
 
 }
 
-BaseEntrezRequestTask::~BaseEntrezRequestTask( )
-{
+BaseEntrezRequestTask::~BaseEntrezRequestTask() {
     delete loop;
     loop = NULL;
     delete networkManager;
     networkManager = NULL;
 }
 
-void BaseEntrezRequestTask::sl_onError(QNetworkReply::NetworkError error)
-{
-    stateInfo.setError( QString( "NetworkReply error %1" ).arg( error ) );
-    loop->exit( );
+void BaseEntrezRequestTask::sl_onError(QNetworkReply::NetworkError error) {
+    stateInfo.setError(QString("NetworkReply error %1").arg(error));
+    loop->exit();
 }
 
-void BaseEntrezRequestTask::sl_uploadProgress( qint64 bytesSent, qint64 bytesTotal)
-{
+void BaseEntrezRequestTask::sl_uploadProgress(qint64 bytesSent, qint64 bytesTotal) {
     stateInfo.progress = bytesSent / bytesTotal * 100;
 }
 
-void BaseEntrezRequestTask::onProxyAuthenticationRequired(const QNetworkProxy &proxy, QAuthenticator *auth){
+void BaseEntrezRequestTask::onProxyAuthenticationRequired(const QNetworkProxy &proxy, QAuthenticator *auth) {
     auth->setUser(proxy.user());
     auth->setPassword(proxy.password());
     disconnect(this, SLOT(onProxyAuthenticationRequired(const QNetworkProxy&, QAuthenticator*)));
 }
 
-void BaseEntrezRequestTask::createLoopAndNetworkManager(const QString& queryString)
-{
-    SAFE_POINT( NULL == networkManager, "Attempting to initialize network manager twice", );
+void BaseEntrezRequestTask::createLoopAndNetworkManager(const QString& queryString) {
+    SAFE_POINT(NULL == networkManager, "Attempting to initialize network manager twice", );
     networkManager = new QNetworkAccessManager;
-    connect( networkManager, SIGNAL( finished( QNetworkReply * ) ), this,
-        SLOT( sl_replyFinished( QNetworkReply* ) ) );
+    connect(networkManager, SIGNAL(finished(QNetworkReply *)), this,
+        SLOT(sl_replyFinished(QNetworkReply*)));
 
-    NetworkConfiguration* nc = AppContext::getAppSettings( )->getNetworkConfiguration( );
-    QNetworkProxy proxy = nc->getProxyByUrl( queryString );
-    networkManager->setProxy( proxy );
+    NetworkConfiguration* nc = AppContext::getAppSettings()->getNetworkConfiguration();
+    QNetworkProxy proxy = nc->getProxyByUrl(queryString);
+    networkManager->setProxy(proxy);
     connect(networkManager, SIGNAL(proxyAuthenticationRequired(const QNetworkProxy&, QAuthenticator*)), this, SLOT(onProxyAuthenticationRequired(const QNetworkProxy&, QAuthenticator*)));
 
-    SAFE_POINT( NULL == loop, "Attempting to initialize loop twice", );
+    SAFE_POINT(NULL == loop, "Attempting to initialize loop twice", );
     loop = new QEventLoop;
 }
 
 //////////////////////////////////////////////////////////////////////////
 
 LoadDataFromEntrezTask::LoadDataFromEntrezTask(const QString& dbId,
-                                               const QString& accNum,
-                                               const QString& retType,
-                                               const QString& path)
-    : BaseEntrezRequestTask( "LoadDataFromEntrez"),
-      searchReply(NULL),
-      downloadReply(NULL),
-      db(dbId),
-      accNumber(accNum),
-      fullPath(path),
-      format(retType)
-{
+    const QString& accNum,
+    const QString& retType,
+    const QString& path)
+    : BaseEntrezRequestTask("LoadDataFromEntrez"),
+    searchReply(NULL),
+    downloadReply(NULL),
+    db(dbId),
+    accNumber(accNum),
+    fullPath(path),
+    format(retType) {
 
 }
 
-void LoadDataFromEntrezTask::run( )
-{
+void LoadDataFromEntrezTask::run() {
     stateInfo.progress = 0;
-    ioLog.trace( "Load data from Entrez started..." );
+    ioLog.trace("Load data from Entrez started...");
 
-    ioLog.trace( "Downloading file..." );
     // Step one: download the file
-    QString traceFetchUrl = QString( EntrezUtils::NCBI_EFETCH_URL ).arg( db ).arg( accNumber ).arg( format );
+    QString traceFetchUrl = QString(EntrezUtils::NCBI_EFETCH_URL).arg(db).arg(accNumber).arg(format);
 
     createLoopAndNetworkManager(traceFetchUrl);
 
-    ioLog.trace( traceFetchUrl );
+    ioLog.details(tr("Downloading file %1").arg(traceFetchUrl));
     QUrl requestUrl(EntrezUtils::NCBI_EFETCH_URL.arg(db).arg(accNumber).arg(format));
-    downloadReply = networkManager->get( QNetworkRequest( requestUrl ) );
-    connect( downloadReply, SIGNAL( error( QNetworkReply::NetworkError ) ),
-        this, SLOT( sl_onError( QNetworkReply::NetworkError ) ) );
-    connect( downloadReply, SIGNAL(uploadProgress( qint64, qint64 ) ),
-        this, SLOT( sl_uploadProgress( qint64, qint64 ) ) );
+    runRequest(requestUrl);
+    loop->exec();
+
+    if (!isCanceled()) {
+        ioLog.trace("Download finished.");
+
+        QByteArray result = downloadReply->readAll();
+        if (((result.size() < 100) && result.contains("Nothing has been found")) || (result.contains("ID list is empty! In it there are neither IDs nor accessions"))) {
+            setError(tr("Sequence with ID=%1 is not found.").arg(accNumber));
+            return;
+        }
+
+        QFile downloadedFile(fullPath);
+        if (!downloadedFile.open(QIODevice::WriteOnly)) {
+            stateInfo.setError("Cannot open file to write!");
+            return;
+        }
+        downloadedFile.write(result);
+        downloadedFile.close();
+    }
+}
+
+void LoadDataFromEntrezTask::runRequest(const QUrl& requestUrl) {
+    downloadReply = networkManager->get(QNetworkRequest(requestUrl));
+    connect(downloadReply, SIGNAL(error(QNetworkReply::NetworkError)),
+        this, SLOT(sl_onError(QNetworkReply::NetworkError)));
+    connect(downloadReply, SIGNAL(uploadProgress(qint64, qint64)),
+        this, SLOT(sl_uploadProgress(qint64, qint64)));
 
     QTimer::singleShot(100, this, SLOT(sl_cancelCheck()));
-    loop->exec( );
-
-    if ( !isCanceled( ) ) {
-        ioLog.trace( "Download finished." );
-
-        QByteArray result = downloadReply->readAll( );
-        if (((result.size() < 100) && result.contains("Nothing has been found")) || (result.contains("ID list is empty! In it there are neither IDs nor accessions"))) {
-            setError( tr( "Sequence with ID=%1 is not found." ).arg( accNumber ) );
-            return;
-        }
-
-        QFile downloadedFile( fullPath );
-        if ( !downloadedFile.open( QIODevice::WriteOnly ) ) {
-            stateInfo.setError( "Cannot open file to write!" );
-            return;
-        }
-        downloadedFile.write( result );
-        downloadedFile.close( );
-    }
 }
 
 void LoadDataFromEntrezTask::sl_cancelCheck() {
@@ -454,67 +441,74 @@ void LoadDataFromEntrezTask::sl_cancelCheck() {
     }
 }
 
-void LoadDataFromEntrezTask::sl_replyFinished( QNetworkReply* reply )
-{
-    if ( isCanceled( ) ) {
-        loop->exit( );
+void LoadDataFromEntrezTask::sl_replyFinished(QNetworkReply* reply) {
+    if (isCanceled()) {
+        loop->exit();
         return;
     }
-    if ( reply == searchReply ) {
+    if (reply == searchReply) {
+        QString locationHeaderValue = reply->header(QNetworkRequest::LocationHeader).toString();
+        if (!locationHeaderValue.isEmpty()) {
+            QUrl redirectedUrl(locationHeaderValue);
+            coreLog.details(tr("Redirecting to %1").arg(locationHeaderValue));
+            runRequest(redirectedUrl);
+            return;
+        }
         QXmlInputSource source(reply);
         ESearchResultHandler* handler = new ESearchResultHandler;
         xmlReader.setContentHandler(handler);
         xmlReader.setErrorHandler(handler);
         bool ok = xmlReader.parse(source);
-        if ( !ok ) {
-            assert( false );
-            stateInfo.setError( "Parsing eSearch result failed" );
+        if (!ok) {
+            assert(false);
+            stateInfo.setError("Parsing eSearch result failed");
         }
         delete handler;
     }
-    loop->exit( );
+    loop->exit();
 }
 
 //////////////////////////////////////////////////////////////////////////
 
-EntrezQueryTask::EntrezQueryTask( QXmlDefaultHandler* rHandler, const QString& searchQuery )
+EntrezQueryTask::EntrezQueryTask(QXmlDefaultHandler* rHandler, const QString& searchQuery)
     : BaseEntrezRequestTask("EntrezQueryTask"),
-      queryReply(NULL),
-      resultHandler(rHandler),
-      query(searchQuery)
-{
-    SAFE_POINT( NULL != rHandler, "Invalid pointer encountered", );
+    queryReply(NULL),
+    resultHandler(rHandler),
+    query(searchQuery) {
+    SAFE_POINT(NULL != rHandler, "Invalid pointer encountered", );
 }
 
-void EntrezQueryTask::run( )
-{
+void EntrezQueryTask::run() {
     stateInfo.progress = 0;
-    ioLog.trace( "Entrez query task started..." );
+    ioLog.trace("Entrez query task started...");
 
     createLoopAndNetworkManager(query);
 
-    QUrl request( query );
-    ioLog.trace( QString( "Sending request: %1" ).arg( query ) );
-    queryReply = networkManager->get( QNetworkRequest( request ) );
-    connect( queryReply, SIGNAL( error( QNetworkReply::NetworkError ) ), this,
-        SLOT( sl_onError( QNetworkReply::NetworkError ) ) );
+    QUrl request(query);
+    runRequest(request);
 
-    loop->exec( );
-    if ( !isCanceled( ) ) {
+    loop->exec();
+    if (!isCanceled()) {
         ioLog.trace("Query finished.");
     }
 }
 
-const QXmlDefaultHandler * EntrezQueryTask::getResultHandler() const
-{
+const QXmlDefaultHandler * EntrezQueryTask::getResultHandler() const {
     return resultHandler;
 }
 
-void EntrezQueryTask::sl_replyFinished( QNetworkReply* reply )
-{
+void EntrezQueryTask::sl_replyFinished(QNetworkReply* reply) {
     assert(reply == queryReply);
-    if ( isCanceled( ) ) {
+    if (isCanceled()) {
         loop->exit();
+        return;
+    }
+    QString locationHeaderValue = reply->header(QNetworkRequest::LocationHeader).toString();
+    if (!locationHeaderValue.isEmpty()) {
+        QUrl redirectedUrl(reply->url());
+        redirectedUrl.setUrl(reply->attribute(QNetworkRequest::RedirectionTargetAttribute).toString());
+        coreLog.details(tr("Redirecting to %1").arg(redirectedUrl.url()));
+        runRequest(redirectedUrl);
         return;
     }
     QXmlInputSource source(reply);
@@ -527,10 +521,16 @@ void EntrezQueryTask::sl_replyFinished( QNetworkReply* reply )
     loop->exit();
 }
 
+void EntrezQueryTask::runRequest(const QUrl& requestUrl) {
+    ioLog.trace(QString("Sending request: %1").arg(query));
+    queryReply = networkManager->get(QNetworkRequest(requestUrl));
+    connect(queryReply, SIGNAL(error(QNetworkReply::NetworkError)), this,
+        SLOT(sl_onError(QNetworkReply::NetworkError)));
+}
+
 //////////////////////////////////////////////////////////////////////////
 
-bool ESearchResultHandler::startElement( const QString &namespaceURI, const QString &localName, const QString &qName, const QXmlAttributes &attributes )
-{
+bool ESearchResultHandler::startElement(const QString &namespaceURI, const QString &localName, const QString &qName, const QXmlAttributes &attributes) {
     Q_UNUSED(namespaceURI); Q_UNUSED(localName); Q_UNUSED(attributes);
 
     if (!metESearchResult && qName != "eSearchResult") {
@@ -544,29 +544,25 @@ bool ESearchResultHandler::startElement( const QString &namespaceURI, const QStr
     return true;
 }
 
-bool ESearchResultHandler::endElement( const QString &namespaceURI, const QString &localName, const QString &qName )
-{
+bool ESearchResultHandler::endElement(const QString &namespaceURI, const QString &localName, const QString &qName) {
     Q_UNUSED(namespaceURI); Q_UNUSED(localName);
     if ("Id" == qName) {
-        idList.append( curText );
+        idList.append(curText);
     }
     return true;
 }
 
-ESearchResultHandler::ESearchResultHandler()
-{
+ESearchResultHandler::ESearchResultHandler() {
 
     metESearchResult = false;
 }
 
-bool ESearchResultHandler::characters( const QString &str )
-{
+bool ESearchResultHandler::characters(const QString &str) {
     curText += str;
     return true;
 }
 
-bool ESearchResultHandler::fatalError( const QXmlParseException &exception )
-{
+bool ESearchResultHandler::fatalError(const QXmlParseException &exception) {
     Q_UNUSED(exception);
     assert(0);
     return false;
@@ -574,8 +570,7 @@ bool ESearchResultHandler::fatalError( const QXmlParseException &exception )
 }
 //////////////////////////////////////////////////////////////////////////
 
-bool ESummaryResultHandler::startElement( const QString &namespaceURI, const QString &localName, const QString &qName, const QXmlAttributes &attributes )
-{
+bool ESummaryResultHandler::startElement(const QString &namespaceURI, const QString &localName, const QString &qName, const QXmlAttributes &attributes) {
     Q_UNUSED(namespaceURI); Q_UNUSED(localName); Q_UNUSED(attributes);
 
     if (!metESummaryResult && qName != "eSummaryResult") {
@@ -590,8 +585,7 @@ bool ESummaryResultHandler::startElement( const QString &namespaceURI, const QSt
     return true;
 }
 
-bool ESummaryResultHandler::endElement( const QString &namespaceURI, const QString &localName, const QString &qName )
-{
+bool ESummaryResultHandler::endElement(const QString &namespaceURI, const QString &localName, const QString &qName) {
     Q_UNUSED(namespaceURI); Q_UNUSED(localName);
     if ("DocSum" == qName) {
         results.append(currentSummary);
@@ -603,7 +597,7 @@ bool ESummaryResultHandler::endElement( const QString &namespaceURI, const QStri
 
         if ("Caption" == itemName) {
             currentSummary.name = curText;
-        } else if ("Title" == itemName ) {
+        } else if ("Title" == itemName) {
             currentSummary.title = curText;
         } else if ("Length" == itemName) {
             currentSummary.size = curText.toInt();
@@ -613,19 +607,16 @@ bool ESummaryResultHandler::endElement( const QString &namespaceURI, const QStri
 }
 
 ESummaryResultHandler::ESummaryResultHandler()
-    : QXmlDefaultHandler()
-{
+    : QXmlDefaultHandler() {
     metESummaryResult = false;
 }
 
-bool ESummaryResultHandler::characters( const QString &str )
-{
+bool ESummaryResultHandler::characters(const QString &str) {
     curText += str;
     return true;
 }
 
-bool ESummaryResultHandler::fatalError( const QXmlParseException &exception )
-{
+bool ESummaryResultHandler::fatalError(const QXmlParseException &exception) {
 
     errorStr = QString("ESummary result parsing failed: %1").arg(exception.message());
 
@@ -634,7 +625,7 @@ bool ESummaryResultHandler::fatalError( const QXmlParseException &exception )
 }
 
 //////////////////////////////////////////////////////////////////////////
-static QString makeIDLink(const QString& id){
+static QString makeIDLink(const QString& id) {
     QString res = "<a href=\"%1\"><span style=\" text-decoration: underline;\">%1</span></a>";
 
     res = res.arg(id);
@@ -643,7 +634,7 @@ static QString makeIDLink(const QString& id){
 }
 
 RemoteDBRegistry::RemoteDBRegistry() {
-    queryDBs.insert(GENBANK_DNA,  GENBANK_NUCLEOTIDE_ID);
+    queryDBs.insert(GENBANK_DNA, GENBANK_NUCLEOTIDE_ID);
     queryDBs.insert(GENBANK_PROTEIN, GENBANK_PROTEIN_ID);
 
     aliases.insert("ENSEMBL", ENSEMBL);
@@ -655,14 +646,14 @@ RemoteDBRegistry::RemoteDBRegistry() {
     aliases.insert("nucleotide", GENBANK_DNA);
     aliases.insert("protein", GENBANK_PROTEIN);
 
-    const QMap<QString,DBXRefInfo>& entries = AppContext::getDBXRefRegistry()->getEntries();
+    const QMap<QString, DBXRefInfo>& entries = AppContext::getDBXRefRegistry()->getEntries();
     foreach(const DBXRefInfo& info, entries.values()) {
         if (!info.fileUrl.isEmpty()) {
             httpDBs.insert(info.name, info.fileUrl);
         }
     }
 
-    hints.insert(ENSEMBL, QObject::tr("Use Ensembl ID. For example: %1 or %2").arg(makeIDLink("ENSG00000258664")).arg(makeIDLink("ENSG00000146463")));
+    hints.insert(ENSEMBL, QObject::tr("Use Ensembl ID. For example: %1 or %2").arg(makeIDLink("ENSG00000205571")).arg(makeIDLink("ENSG00000146463")));
     hints.insert(GENBANK_DNA, QObject::tr("Use Genbank DNA accession number. For example: %1 or %2").arg(makeIDLink("NC_001363")).arg(makeIDLink("D11266")));
     hints.insert(GENBANK_PROTEIN, QObject::tr("Use Genbank protein accession number. For example: %1").arg(makeIDLink("AAA59172.1")));
     hints.insert(PDB, QObject::tr("Use PDB molecule four-letter identifier. For example: %1 or %2").arg(makeIDLink("3INS")).arg(makeIDLink("1CRN")));
@@ -678,10 +669,10 @@ RemoteDBRegistry& RemoteDBRegistry::getRemoteDBRegistry() {
 
 
 QList<QString> RemoteDBRegistry::getDBs() {
-    return  ( queryDBs.keys() + httpDBs.keys() );
+    return  (queryDBs.keys() + httpDBs.keys());
 }
 
-QString RemoteDBRegistry::getURL( const QString& accId, const QString& dbName ) {
+QString RemoteDBRegistry::getURL(const QString& accId, const QString& dbName) {
     QString result("");
     if (httpDBs.contains(dbName)) {
         result = QString(httpDBs.value(dbName)).arg(accId);
@@ -689,11 +680,11 @@ QString RemoteDBRegistry::getURL( const QString& accId, const QString& dbName ) 
     return result;
 }
 
-QString RemoteDBRegistry::getDbEntrezName( const QString& dbName ){
+QString RemoteDBRegistry::getDbEntrezName(const QString& dbName) {
     return queryDBs.value(dbName);
 }
 
-QString RemoteDBRegistry::getHint( const QString& dbName ) {
+QString RemoteDBRegistry::getHint(const QString& dbName) {
     if (hints.contains(dbName)) {
         return hints.value(dbName);
     } else {
@@ -702,13 +693,13 @@ QString RemoteDBRegistry::getHint( const QString& dbName ) {
 
 }
 
-void RemoteDBRegistry::convertAlias( QString& dbName ) {
+void RemoteDBRegistry::convertAlias(QString& dbName) {
     if (aliases.contains(dbName)) {
         dbName = aliases.value(dbName);
     }
 }
 
-bool RemoteDBRegistry::hasDbId(const QString& dbId){
+bool RemoteDBRegistry::hasDbId(const QString& dbId) {
     return queryDBs.contains(dbId) || httpDBs.contains(dbId);
 }
 

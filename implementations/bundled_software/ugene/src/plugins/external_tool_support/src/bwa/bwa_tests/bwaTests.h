@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -37,11 +37,11 @@ class BwaGObjectTask;
 class DnaAssemblyMultiTask;
 class MultipleSequenceAlignmentObject;
 
-class GTest_Bwa : public GTest {
+class GTest_Bwa : public XmlTest {
     Q_OBJECT
 public:
-    SIMPLE_XML_TEST_BODY_WITH_FACTORY_EXT(GTest_Bwa, "bwa", TaskFlag_FailOnSubtaskCancel);
-    ~GTest_Bwa();
+    SIMPLE_XML_TEST_BODY_WITH_FACTORY_EXT(GTest_Bwa, "bwa", TaskFlag_FailOnSubtaskCancel)
+
     void prepare();
     void run();
     Task::ReportResult report();

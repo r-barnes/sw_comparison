@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -306,6 +306,8 @@ namespace {
     bool compareStrings(const QString &pattern, const QString &data, Qt::MatchFlags matchPolicy) {
         if (matchPolicy.testFlag(Qt::MatchContains)) {
             return data.contains(pattern);
+        } else if (matchPolicy.testFlag(Qt::MatchStartsWith)) {
+            return data.startsWith(pattern) || pattern.startsWith(data);
         }
         return (data == pattern);
     }
@@ -412,9 +414,12 @@ QModelIndexList GTUtilsProjectTreeView::findFilteredIndexes(HI::GUITestOpStatus 
 #undef GT_METHOD_NAME
 
 #define GT_METHOD_NAME "checkFilteredGroup"
-void GTUtilsProjectTreeView::checkFilteredGroup(HI::GUITestOpStatus &os, const QString &groupName, const QStringList &namesToCheck,
-    const QStringList &alternativeNamesToCheck, const QStringList &excludedNames)
-{
+void GTUtilsProjectTreeView::checkFilteredGroup(HI::GUITestOpStatus &os,
+                                                const QString &groupName,
+                                                const QStringList &namesToCheck,
+                                                const QStringList &alternativeNamesToCheck,
+                                                const QStringList &excludedNames,
+                                                const QStringList& skipGroupIfContains) {
     const QModelIndexList groupIndexes = findFilteredIndexes(os, groupName);
     CHECK_SET_ERR(groupIndexes.size() == 1, QString("Expected to find a single filter group. Found %1").arg(groupIndexes.size()));
 
@@ -423,9 +428,18 @@ void GTUtilsProjectTreeView::checkFilteredGroup(HI::GUITestOpStatus &os, const Q
     CHECK_SET_ERR(filteredItemsCount > 0, "No project items have been filtered");
     for (int i = 0; i < filteredItemsCount; ++i) {
         const QString childName = group.child(i, 0).data().toString();
+        bool notSkipGroup = true;
+        foreach(const QString& checkToSkip, skipGroupIfContains) {
+            if (childName.contains(checkToSkip, Qt::CaseInsensitive)){
+                notSkipGroup = false;
+                break;
+            }
+        }
+        CHECK_CONTINUE(notSkipGroup);
 
         foreach (const QString &nameToCheck, namesToCheck) {
-            CHECK_SET_ERR(childName.contains(nameToCheck, Qt::CaseInsensitive), QString("Filtered item doesn't contain '%1'").arg(nameToCheck));
+            bool contains = childName.contains(nameToCheck, Qt::CaseInsensitive);
+            CHECK_SET_ERR(contains, QString("Filtered item doesn't contain '%1'").arg(nameToCheck));
         }
 
         bool oneAlternativeFound = alternativeNamesToCheck.isEmpty();
@@ -438,7 +452,8 @@ void GTUtilsProjectTreeView::checkFilteredGroup(HI::GUITestOpStatus &os, const Q
         CHECK_SET_ERR(oneAlternativeFound, QString("Filtered item doesn't contain either of strings: '%1'").arg(alternativeNamesToCheck.join("', '")));
 
         foreach(const QString &nameToCheck, excludedNames) {
-            CHECK_SET_ERR(!childName.contains(nameToCheck, Qt::CaseInsensitive), QString("Filtered item contains unexpectedly '%1'").arg(nameToCheck));
+            bool doesNotContain = !childName.contains(nameToCheck, Qt::CaseInsensitive);
+            CHECK_SET_ERR(doesNotContain, QString("Filtered item contains unexpectedly '%1'").arg(nameToCheck));
         }
     }
 }

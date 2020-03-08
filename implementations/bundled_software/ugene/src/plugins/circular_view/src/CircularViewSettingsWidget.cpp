@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -111,14 +111,15 @@ void CircularViewSettingsWidget::initLayout() {
     switch (settings->labelMode) {
     case CircularViewSettings::Inside:
         labelPositionComboBox->setCurrentText(tr("Inside"));
+        break;
     case CircularViewSettings::Outside:
         labelPositionComboBox->setCurrentText(tr("Outside"));
+        break;
     case CircularViewSettings::None:
         labelPositionComboBox->setCurrentText(tr("None"));
         break;
     default:
         labelPositionComboBox->setCurrentText(tr("Inside/Outside"));
-
     }
 
     settingsWidget = new QWidget(this);

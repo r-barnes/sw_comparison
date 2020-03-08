@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -228,12 +228,12 @@ U2::MACSSettings MACSWorker::createMACSSettings( U2OpStatus & /*os*/ ){
 class MACSInputSlotsValidator : public PortValidator {
     public:
 
-    bool validate(const IntegralBusPort *port, ProblemList &problemList) const {
+    bool validate(const IntegralBusPort *port, NotificationsList &notificationList) const {
         QVariant busMap = port->getParameter(Workflow::IntegralBusPort::BUS_MAP_ATTR_ID)->getAttributePureValue();
         bool data = isBinded(busMap.value<StrStrMap>(), TREATMENT_SLOT_ID);
         if (!data){
             QString dataName = slotName(port, TREATMENT_SLOT_ID);
-            problemList.append(Problem(IntegralBusPort::tr("The slot must be not empty: '%1'").arg(dataName)));
+            notificationList.append(WorkflowNotification(IntegralBusPort::tr("The slot must be not empty: '%1'").arg(dataName)));
             return false;
         }
 
@@ -259,7 +259,7 @@ class MACSInputSlotsValidator : public PortValidator {
         }
 
         if (hasCommonElements){
-            problemList.append(Problem(MACSWorker::tr("Input control and treatment annotations are the same")));
+            notificationList.append(WorkflowNotification(MACSWorker::tr("Input control and treatment annotations are the same")));
             return false;
         }
 
@@ -553,7 +553,7 @@ void MACSWorkerFactory::init() {
     proto->setPrompter(new MACSPrompter());
     proto->setEditor(new DelegateEditor(delegates));
     proto->setPortValidator(IN_PORT_DESCR, new MACSInputSlotsValidator());
-    proto->addExternalTool(ET_MACS);
+    proto->addExternalTool(MACSSupport::ET_MACS_ID);
     WorkflowEnv::getProtoRegistry()->registerProto(BaseActorCategories::CATEGORY_CHIP_SEQ(), proto);
     WorkflowEnv::getDomainRegistry()->getById(LocalDomainFactory::ID)->registerEntry(new MACSWorkerFactory());
 }

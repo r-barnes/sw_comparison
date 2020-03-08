@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -133,7 +133,9 @@ protected:
 class SpinBoxDelegatePropertyRelation : public AttributeRelation {
 public:
     SpinBoxDelegatePropertyRelation(const QString &relatedAttrId): AttributeRelation(relatedAttrId){}
+
     virtual RelationType getType() const {return PROPERTY_CHANGER;}
+    SpinBoxDelegatePropertyRelation *clone() const;
 
     virtual QVariant getAffectResult(const QVariant &influencingValue, const QVariant &dependentValue,
         DelegateTags *infTags, DelegateTags *depTags) const;

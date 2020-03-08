@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -121,7 +121,7 @@ GUI_TEST_CLASS_DEFINITION(test_0005) {
     GTUtilsTaskTreeView::waitTaskFinished(os);
 //    2. Align "samples/CLUSTALW/HIV-1.aln"
     GTUtilsDialog::waitForDialog(os, new GTFileDialogUtils(os, dataDir + "samples/CLUSTALW/HIV-1.aln"));
-    GTToolbar::clickButtonByTooltipOnToolbar(os, MWTOOLBAR_ACTIVEMDI, "Align sequence to this alignment");
+    GTToolbar::clickButtonByTooltipOnToolbar(os, MWTOOLBAR_ACTIVEMDI, "Align sequence(s) to this alignment");
     GTUtilsTaskTreeView::waitTaskFinished(os);
 
     GTUtilsDialog::waitForDialog(os, new PopupChooser(os, QStringList() << "Show simple overview"));
@@ -158,22 +158,18 @@ GUI_TEST_CLASS_DEFINITION(test_0006){
     GTMenu::showContextMenu(os, GTWidget::findWidget(os, "msa_overview_area"));
 //    2. Resize main window.
     QWidget* overviewSimple = GTWidget::findWidget(os, "msa_overview_area_simple");
-    QPixmap pixmapSimple1 = QPixmap::grabWidget(overviewSimple, QRect(QPoint(0,0), QPoint(200,overviewSimple->rect().height())));       // It should be replaces with GTWidget::getPixmap()
-    QImage imgSimple1 = pixmapSimple1.toImage();
+    QImage imgSimple1 = GTWidget::getImage(os, overviewSimple);
 
     QWidget* overviewGraph = GTWidget::findWidget(os, "msa_overview_area_graph");
-    QPixmap pixmapGraph1 = QPixmap::grabWidget(overviewGraph, QRect(QPoint(0,0), QPoint(200,overviewGraph->rect().height())));       // It should be replaces with GTWidget::getPixmap()
-    QImage imgGraph1 = pixmapGraph1.toImage();
+    QImage imgGraph1 = GTWidget::getImage(os, overviewGraph);
 
     QMainWindow* window = AppContext::getMainWindow()->getQMainWindow();
     window->showNormal();
 
     GTGlobals::sleep(1000);
 
-    QPixmap pixmapSimple2 = QPixmap::grabWidget(overviewSimple, QRect(QPoint(0,0), QPoint(200,overviewSimple->rect().height())));       // It should be replaces with GTWidget::getPixmap()
-    QImage imgSimple2 = pixmapSimple2.toImage();
-    QPixmap pixmapGraph2 = QPixmap::grabWidget(overviewGraph, QRect(QPoint(0,0), QPoint(200,overviewGraph->rect().height())));       // It should be replaces with GTWidget::getPixmap()
-    QImage imgGraph2 = pixmapGraph2.toImage();
+    QImage imgSimple2 = GTWidget::getImage(os, overviewSimple);
+    QImage imgGraph2 = GTWidget::getImage(os, overviewGraph);
 
     CHECK_SET_ERR(imgSimple1 != imgSimple2, "simple overview not updated");
     CHECK_SET_ERR(imgGraph1 != imgGraph2, "graph overview not updated");
@@ -191,24 +187,21 @@ GUI_TEST_CLASS_DEFINITION(test_0007){
     QWidget* overviewSimple = GTWidget::findWidget(os, "msa_overview_area_simple");
     QWidget* overviewGraph = GTWidget::findWidget(os, "msa_overview_area_graph");
 
+    //Close Project view for small screens
+    GTKeyboardDriver::keyClick('1', Qt::AltModifier);
 
     for(int i=0; i<12; i++){
         //saving overviews' images
-        QPixmap pixmapSimple1 = QPixmap::grabWidget(overviewSimple, QRect(QPoint(0,0), QPoint(200,overviewSimple->rect().height())));       // It should be replaces with GTWidget::getPixmap()
-        QImage imgSimple1 = pixmapSimple1.toImage();
-
-        QPixmap pixmapGraph1 = QPixmap::grabWidget(overviewGraph, QRect(QPoint(0,0), QPoint(200,overviewGraph->rect().height())));       // It should be replaces with GTWidget::getPixmap()
-        QImage imgGraph1 = pixmapGraph1.toImage();
+        QImage imgSimple1 = GTWidget::getImage(os, overviewSimple);
+        QImage imgGraph1 = GTWidget::getImage(os, overviewGraph);
 
         GTUtilsMSAEditorSequenceArea::selectArea(os, QPoint(0,0), QPoint(40,17));
         GTKeyboardDriver::keyClick( Qt::Key_Delete);
         GTGlobals::sleep(500);
 
         //checking images changed
-        QPixmap pixmapSimple2 = QPixmap::grabWidget(overviewSimple, QRect(QPoint(0,0), QPoint(200,overviewSimple->rect().height())));       // It should be replaces with GTWidget::getPixmap()
-        QImage imgSimple2 = pixmapSimple2.toImage();
-        QPixmap pixmapGraph2 = QPixmap::grabWidget(overviewGraph, QRect(QPoint(0,0), QPoint(200,overviewGraph->rect().height())));       // It should be replaces with GTWidget::getPixmap()
-        QImage imgGraph2 = pixmapGraph2.toImage();
+        QImage imgSimple2 = GTWidget::getImage(os, overviewSimple);
+        QImage imgGraph2 = GTWidget::getImage(os, overviewGraph);
 
         CHECK_SET_ERR(imgSimple1 != imgSimple2, "simple overview not updated");
         CHECK_SET_ERR(imgGraph1 != imgGraph2, "graph overview not updated")
@@ -226,8 +219,7 @@ GUI_TEST_CLASS_DEFINITION(test_0008) {
     QWidget *overviewGraph = GTWidget::findWidget(os, "msa_overview_area_graph");
 
     //saving overviews' images
-    QPixmap pixmapSimple1 = QPixmap::grabWidget(overviewSimple, QRect(QPoint(0, 0), QPoint(200, overviewSimple->rect().height())));       // It should be replaces with GTWidget::getPixmap()
-    QImage imgSimple1 = pixmapSimple1.toImage();
+    QImage imgSimple1 = GTWidget::getImage(os, overviewSimple);
 
 //    2. Select some area in msa view and move it with mouse.
     GTUtilsMSAEditorSequenceArea::selectArea(os, QPoint(0, 0), QPoint(10, 10));
@@ -238,8 +230,7 @@ GUI_TEST_CLASS_DEFINITION(test_0008) {
 //    Expected state: while mouse button is pressed graph overview is blocked. On mouse release overview updating starts.
 //    Simple overview updates simultaneously.
     //checking simple overview image changed
-    QPixmap pixmapSimple2 = QPixmap::grabWidget(overviewSimple, QRect(QPoint(0, 0), QPoint(200, overviewSimple->rect().height())));       // It should be replaces with GTWidget::getPixmap()
-    QImage imgSimple2 = pixmapSimple2.toImage();
+    QImage imgSimple2 = GTWidget::getImage(os, overviewSimple);
 
     CHECK_SET_ERR(imgSimple1 != imgSimple2, "simple overview not updated");
 
@@ -266,8 +257,7 @@ GUI_TEST_CLASS_DEFINITION(test_0009) {
     QWidget *overviewGraph = GTWidget::findWidget(os, "msa_overview_area_graph");
 
     //saving overviews' images
-    QPixmap pixmapSimple1 = QPixmap::grabWidget(overviewSimple, QRect(QPoint(0, 0), QPoint(200, overviewSimple->rect().height())));       // It should be replaces with GTWidget::getPixmap()
-    QImage imgSimple1 = pixmapSimple1.toImage();
+    QImage imgSimple1 = GTWidget::getImage(os, overviewSimple);
 
 //    2. Select one symbol.
     GTUtilsMSAEditorSequenceArea::moveTo(os, QPoint(5, 5));
@@ -280,8 +270,7 @@ GUI_TEST_CLASS_DEFINITION(test_0009) {
 //    Expected state: while button is pressed graph overview is blocked. Overview updating starts on button release.
 //    Simple overview updates simultaneously.
     //checking simple overview image changed
-    QPixmap pixmapSimple2 = QPixmap::grabWidget(overviewSimple, QRect(QPoint(0, 0), QPoint(200, overviewSimple->rect().height())));       // It should be replaces with GTWidget::getPixmap()
-    QImage imgSimple2 = pixmapSimple2.toImage();
+    QImage imgSimple2 = GTWidget::getImage(os, overviewSimple);
 
     CHECK_SET_ERR(imgSimple1 != imgSimple2, "simple overview not updated");
 
@@ -302,8 +291,7 @@ GUI_TEST_CLASS_DEFINITION(test_0010) {
     QWidget* overviewGraph = GTWidget::findWidget(os, "msa_overview_area_graph");
 
     //saving overviews' images
-    QPixmap pixmapSimple1 = QPixmap::grabWidget(overviewSimple, QRect(QPoint(0, 0), QPoint(200, overviewSimple->rect().height())));       // It should be replaces with GTWidget::getPixmap()
-    QImage imgSimple1 = pixmapSimple1.toImage();
+    QImage imgSimple1 = GTWidget::getImage(os, overviewSimple);
 
 //    2. Select one symbol.
     GTUtilsMSAEditorSequenceArea::moveTo(os, QPoint(5, 5));
@@ -316,8 +304,7 @@ GUI_TEST_CLASS_DEFINITION(test_0010) {
 //    Expected state: while button is pressed graph overview is blocked. Overview updating starts on button release.
 //    Simple overview updates simultaneously.
     //checking simple overview image changed
-    QPixmap pixmapSimple2 = QPixmap::grabWidget(overviewSimple, QRect(QPoint(0, 0), QPoint(200, overviewSimple->rect().height())));       // It should be replaces with GTWidget::getPixmap()
-    QImage imgSimple2 = pixmapSimple2.toImage();
+    QImage imgSimple2 = GTWidget::getImage(os, overviewSimple);
 
     CHECK_SET_ERR(imgSimple1 != imgSimple2, "simple overview not updated");
 
@@ -513,16 +500,16 @@ GUI_TEST_CLASS_DEFINITION(test_0019) {
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0020) {
-/* 1. Open "_common_data/clustal/test_1393.aln".
+/* 1. Open "_common_data/regression/1393/test_1393.aln".
  * 2. Show simple overview.
  * 3. Select whole alignment.
  * Expected state: whole simple overview is filled with a selection rect.
- * 4. Click "Align sequence to this alignment" button on the tool bar and select "data/samples/fastq/eas.fastq".
+ * 4. Click "Align sequence(s) to this alignment" button on the tool bar and select "data/samples/fastq/eas.fastq".
  * Expected state: sequences are added, two of five sequences are selected both in the sequence area and simple overview.
  * Current state: sequences are added, two of five sequences are selected in the sequence area, but the simple overview is filled with a selection rect like whole alignment is selected.
  */
 
-    GTFileDialog::openFile(os, testDir + "_common_data/clustal/test_1393.aln");
+    GTFileDialog::openFile(os, testDir + "_common_data/regression/1393/test_1393.aln");
     GTUtilsTaskTreeView::waitTaskFinished(os);
 
     GTUtilsDialog::waitForDialog(os, new PopupChooser(os, QStringList() << "Show simple overview"));
@@ -531,7 +518,7 @@ GUI_TEST_CLASS_DEFINITION(test_0020) {
     GTUtilsMSAEditorSequenceArea::selectArea(os);
 
     GTUtilsDialog::waitForDialog(os, new GTFileDialogUtils(os, dataDir + "samples/FASTQ/eas.fastq"));
-    GTToolbar::clickButtonByTooltipOnToolbar(os, MWTOOLBAR_ACTIVEMDI, "Align sequence to this alignment");
+    GTToolbar::clickButtonByTooltipOnToolbar(os, MWTOOLBAR_ACTIVEMDI, "Align sequence(s) to this alignment");
     GTUtilsTaskTreeView::waitTaskFinished(os);
 
     QWidget *overviewSimple = GTWidget::findWidget(os, "msa_overview_area_simple");
@@ -540,14 +527,14 @@ GUI_TEST_CLASS_DEFINITION(test_0020) {
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0021) {
-/* 1. Open "_common_data/clustal/test_1393.aln".
+/* 1. Open "_common_data/regression/1393/test_1393.aln".
  * 2. Select whole alignment.
  * 3. Show simple overview.
  * Expected state: whole simple overview is filled with a selection rect.
  * Current state: selection not showed.
  */
 
-    GTFileDialog::openFile(os, testDir + "_common_data/clustal/test_1393.aln");
+    GTFileDialog::openFile(os, testDir + "_common_data/regression/1393/test_1393.aln");
     GTUtilsTaskTreeView::waitTaskFinished(os);
 
     GTUtilsMSAEditorSequenceArea::selectArea(os);
@@ -561,7 +548,7 @@ GUI_TEST_CLASS_DEFINITION(test_0021) {
 }
 
 GUI_TEST_CLASS_DEFINITION(test_0022) {
-/* 1. Open "_common_data/clustal/test_1393.aln".
+/* 1. Open "_common_data/regression/1393/test_1393.aln".
  * 2. Open ProjectView if it closed
  * 3. Select whole alignment.
  * 4. Show simple overview.
@@ -571,7 +558,7 @@ GUI_TEST_CLASS_DEFINITION(test_0022) {
  * Current state: selection is not full.
  */
 
-    GTFileDialog::openFile(os, testDir + "_common_data/clustal/test_1393.aln");
+    GTFileDialog::openFile(os, testDir + "_common_data/regression/1393/test_1393.aln");
     GTUtilsTaskTreeView::waitTaskFinished(os);
 
     GTUtilsProjectTreeView::openView(os);

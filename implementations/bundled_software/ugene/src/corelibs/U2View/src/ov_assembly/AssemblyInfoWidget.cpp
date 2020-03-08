@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -122,7 +122,7 @@ AssemblyInfoWidget::AssemblyInfoWidget(AssemblyBrowser *browser, QWidget *p)
 ////////////////////////////////////
 const QString AssemblyInfoWidgetFactory::GROUP_ID = "OP_ASS_INFO";
 const QString AssemblyInfoWidgetFactory::GROUP_ICON_STR = ":core/images/chart_bar.png";
-const QString AssemblyInfoWidgetFactory::GROUP_DOC_PAGE = "21433323";
+const QString AssemblyInfoWidgetFactory::GROUP_DOC_PAGE = "24742522";
 
 
 AssemblyInfoWidgetFactory::AssemblyInfoWidgetFactory()

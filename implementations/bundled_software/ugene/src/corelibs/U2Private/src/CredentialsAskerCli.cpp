@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -41,7 +41,7 @@
 static struct termios oldTerm, newTerm;
 
 /* Initialize new terminal i/o settings */
-void initTermios(int echo) {
+static void initTermios(int echo) {
     tcgetattr(0, &oldTerm); /* grab old terminal i/o settings */
     newTerm = oldTerm; /* make new settings same as old settings */
     newTerm.c_lflag &= ~ICANON; /* disable buffered i/o */
@@ -84,34 +84,26 @@ static const QString ASTERISC_STR = "*";
 static const QString YES_STR = "Y";
 static const QString NO_STR = "N";
 
-static const QString ENTER_PWD_STR = QObject::tr("Enter password: ");
-static const QString ENTER_LOGIN_STR = QObject::tr("Enter user name: ");
-
-static const QString REMEMBER_PWD_QUESTION = QObject::tr("Would you like UGENE to remember the password?");
-static const QString CONNECTION_START_STR = QObject::tr("Connect to the '%1' ...\n");
-static const QString LOGIN_NOTIFICATION_STR = QObject::tr("You are going to log in as '%1'.\n");
-static const QString USE_ANOTHER_LOGIN_QUESTION = QObject::tr("Would you like to log in as another user?");
-
 namespace U2 {
 
 namespace {
 
-void printString(const QString &str) {
+static void printString(const QString &str) {
     std::cout << str.toLocal8Bit().constData();
 }
 
-QString getChar() {
+static QString getChar() {
     const char c = _getch();
     return QString::fromLocal8Bit(QByteArray(1, c));
 }
 
-QString getLine() {
+static QString getLine() {
     std::string result;
     getline(std::cin, result);
     return QString::fromStdString(result);
 }
 
-bool askYesNoQuestion(const QString &question) {
+static bool askYesNoQuestion(const QString &question) {
     QString readKey;
     int yes = -1;
     int no = -1;
@@ -126,12 +118,12 @@ bool askYesNoQuestion(const QString &question) {
     return 0 == yes;
 }
 
-bool inputFinish(const QString &key) {
+static bool inputFinish(const QString &key) {
     return (NEW_LINE_STR == key) || (RETURN_STR == key) || (RETURN_STR + NEW_LINE_STR == key);
 }
 
-QString askPwd() {
-    printString(ENTER_PWD_STR);
+static QString askPwd() {
+    printString(QObject::tr("Enter password: "));
 
     QString pwd;
 
@@ -159,13 +151,13 @@ bool CredentialsAskerCli::askWithFixedLogin(const QString &resourceUrl) const {
     SAFE_POINT(!AppContext::isGUIMode(), "Unexpected application run mode", false);
 
     QString userName;
-    const QString shortDbiUrl = U2DbiUtils::full2shortDbiUrl(resourceUrl, userName);
+    QString shortDbiUrl = U2DbiUtils::full2shortDbiUrl(resourceUrl, userName);
 
-    printString(CONNECTION_START_STR.arg(shortDbiUrl));
-    printString(LOGIN_NOTIFICATION_STR.arg(userName));
+    printString(QObject::tr("Connect to the '%1' ...\n").arg(shortDbiUrl));
+    printString(QObject::tr("You are going to log in as '%1'.\n").arg(userName));
 
-    const QString pwd = askPwd();
-    const bool isRemembered = askYesNoQuestion(REMEMBER_PWD_QUESTION);
+    QString pwd = askPwd();
+    bool isRemembered = askYesNoQuestion(QObject::tr("Would you like UGENE to remember the password?"));
 
     saveCredentials(resourceUrl, pwd, isRemembered);
     return true;
@@ -175,22 +167,22 @@ bool CredentialsAskerCli::askWithModifiableLogin(QString &resourceUrl) const {
     SAFE_POINT(!AppContext::isGUIMode(), "Unexpected application run mode", false);
 
     QString userName;
-    const QString shortDbiUrl = U2DbiUtils::full2shortDbiUrl(resourceUrl, userName);
+    QString shortDbiUrl = U2DbiUtils::full2shortDbiUrl(resourceUrl, userName);
 
-    printString(CONNECTION_START_STR.arg(shortDbiUrl));
-    printString(LOGIN_NOTIFICATION_STR.arg(userName));
-    const bool logAsAnotherUser = askYesNoQuestion(USE_ANOTHER_LOGIN_QUESTION);
+    printString(QObject::tr("Connect to the '%1' ...\n").arg(shortDbiUrl));
+    printString(QObject::tr("You are going to log in as '%1'.\n").arg(userName));
+    bool logAsAnotherUser = askYesNoQuestion(QObject::tr("Would you like to log in as another user?"));
 
     if (logAsAnotherUser) {
         do {
-            printString(ENTER_LOGIN_STR);
+            printString(QObject::tr("Enter user name: "));
             userName = getLine();
         } while (!userName.isEmpty());
         printString(NEW_LINE_STR);
     }
 
-    const QString pwd = askPwd();
-    const bool isRemembered = askYesNoQuestion(REMEMBER_PWD_QUESTION);
+    QString pwd = askPwd();
+    bool isRemembered = askYesNoQuestion(QObject::tr("Would you like UGENE to remember the password?"));
 
     resourceUrl = U2DbiUtils::createFullDbiUrl(userName, shortDbiUrl);
     saveCredentials(resourceUrl, pwd, isRemembered);

@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -22,6 +22,7 @@
 #ifndef _U2_EXPORT_SEQUENCES_TASK
 #define _U2_EXPORT_SEQUENCES_TASK
 
+#include <QSet>
 #include <U2Core/DNASequence.h>
 #include <U2Core/MultipleSequenceAlignment.h>
 #include <U2Core/Task.h>
@@ -30,30 +31,28 @@ namespace U2 {
 
 class PrepareSequenceObjectsTask : public Task {
 public:
-    PrepareSequenceObjectsTask(const MultipleSequenceAlignment& msa, const QStringList& seqNames, bool trimGaps);
+    PrepareSequenceObjectsTask(const MultipleSequenceAlignment& msa, const QSet<qint64>& rowIds, bool trimGaps);
 
     void run();
 
-    QList<DNASequence> getSequences() const;
+    const QList<DNASequence>& getSequences() const {return sequences;}
 private:
-    const MultipleSequenceAlignment msa;
-    QStringList seqNames;
+    MultipleSequenceAlignment msa;
+    QSet<qint64> rowIds;
     bool trimGaps;
     QList<DNASequence> sequences;
 };
 
 class ExportSequencesTask : public Task {
 public:
-    ExportSequencesTask(const MultipleSequenceAlignment& msa, const QStringList& seqNames, bool trimGaps, bool addToProjectFlag,
+    ExportSequencesTask(const MultipleSequenceAlignment& msa, const QSet<qint64>& rowIds, bool trimGaps, bool addToProjectFlag,
         const QString& dirUrl, const DocumentFormatId& format, const QString& extension, const QString& customFileName = QString());
 
-    void prepare();
 protected:
     QList<Task*> onSubTaskFinished(Task* subTask);
 private:
-    const MultipleSequenceAlignment msa;
-    QStringList seqNames;
-    bool trimGaps;
+    MultipleSequenceAlignment msa;
+    QList<qint64> rowIds;
     bool addToProjectFlag;
     QString dirUrl;
     DocumentFormatId format;

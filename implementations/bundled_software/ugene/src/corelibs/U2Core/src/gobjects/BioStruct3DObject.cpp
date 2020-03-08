@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -20,7 +20,6 @@
  */
 
 #include <U2Core/DatatypeSerializeUtils.h>
-#include <U2Core/DNASequence.h>
 #include <U2Core/DocumentModel.h>
 #include <U2Core/GHints.h>
 #include <U2Core/GObjectTypes.h>
@@ -50,8 +49,7 @@ U2DataType U2BioStruct3D::getType() const {
 /////// BioStruct3DObject Implementation ///////////////////////////////////////////////////////////////////
 
 BioStruct3DObject * BioStruct3DObject::createInstance(const BioStruct3D &bioStruct3D,
-    const QString &objectName, const U2DbiRef &dbiRef, U2OpStatus &os, const QVariantMap &hintsMap)
-{
+    const QString &objectName, const U2DbiRef &dbiRef, U2OpStatus &os, const QVariantMap &hintsMap) {
     U2BioStruct3D object(dbiRef);
     object.visualName = objectName;
     object.serializer = BioStruct3DSerializer::ID;
@@ -70,15 +68,13 @@ BioStruct3DObject * BioStruct3DObject::createInstance(const BioStruct3D &bioStru
 
 BioStruct3DObject::BioStruct3DObject(const QString &objectName, const U2EntityRef &structRef,
     const QVariantMap &hintsMap)
-    : GObject(GObjectTypes::BIOSTRUCTURE_3D, objectName, hintsMap)
-{
+    : GObject(GObjectTypes::BIOSTRUCTURE_3D, objectName, hintsMap) {
     entityRef = structRef;
 }
 
 BioStruct3DObject::BioStruct3DObject(const BioStruct3D &bioStruct3D, const QString &objectName,
     const U2EntityRef &structRef, const QVariantMap &hintsMap)
-    : GObject(GObjectTypes::BIOSTRUCTURE_3D, objectName, hintsMap), bioStruct3D(bioStruct3D)
-{
+    : GObject(GObjectTypes::BIOSTRUCTURE_3D, objectName, hintsMap), bioStruct3D(bioStruct3D) {
     entityRef = structRef;
 }
 

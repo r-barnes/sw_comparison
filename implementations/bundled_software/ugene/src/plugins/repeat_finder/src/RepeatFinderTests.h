@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -44,7 +44,7 @@ namespace U2 {
 class FindRepeatsTask;
 class TandemFinder;
 
-class GTest_FindSingleSequenceRepeatsTask : public GTest {
+class GTest_FindSingleSequenceRepeatsTask : public XmlTest {
     Q_OBJECT
 public:
     SIMPLE_XML_TEST_BODY_WITH_FACTORY_EXT(GTest_FindSingleSequenceRepeatsTask, "find-repeats", TaskFlags_FOSCOE);
@@ -70,7 +70,7 @@ public:
 
 };
 
-class GTest_FindTandemRepeatsTask : public GTest {
+class GTest_FindTandemRepeatsTask : public XmlTest {
     Q_OBJECT
 public:
     SIMPLE_XML_TEST_BODY_WITH_FACTORY_EXT(GTest_FindTandemRepeatsTask, "find-tandems", TaskFlags_FOSCOE);
@@ -95,7 +95,7 @@ public:
 
 };
 
-class GTest_FindRealTandemRepeatsTask : public GTest {
+class GTest_FindRealTandemRepeatsTask : public XmlTest {
     Q_OBJECT
 public:
     SIMPLE_XML_TEST_BODY_WITH_FACTORY_EXT(GTest_FindRealTandemRepeatsTask, "find-tandems-real", TaskFlags_FOSCOE);
@@ -123,7 +123,7 @@ public:
 class SArrayIndex;
 class SArrayBasedFindTask;
 
-class GTest_SArrayBasedFindTask : public GTest {
+class GTest_SArrayBasedFindTask : public XmlTest {
     Q_OBJECT
 public:
     SIMPLE_XML_TEST_BODY_WITH_FACTORY_EXT(GTest_SArrayBasedFindTask, "sarray-based-find", TaskFlags_FOSCOE);

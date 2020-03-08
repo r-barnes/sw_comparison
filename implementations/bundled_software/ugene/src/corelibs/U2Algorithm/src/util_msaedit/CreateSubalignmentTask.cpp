@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -86,11 +86,11 @@ void CreateSubalignmentTask::prepare() {
     }
 
     //TODO: add "remove empty rows and columns" flag to crop function
-    QSet<QString> rowNames;
-    foreach (const QString& name, cfg.seqNames) {
-        rowNames.insert(name);
+    if (cfg.rowIds.isEmpty()) {
+        resultMAObj->crop(cfg.window, cfg.sequenceNames.toSet());
+    } else {
+        resultMAObj->crop(cfg.window, cfg.rowIds);
     }
-    resultMAObj->crop(cfg.window, rowNames);
 
     if (cfg.saveImmediately) {
         addSubTask(new SaveDocumentTask(resultDocument, iof));

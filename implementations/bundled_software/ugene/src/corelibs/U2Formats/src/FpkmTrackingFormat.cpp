@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -73,10 +73,8 @@ FormatDetectionScore FpkmTrackingLineValidateFlags::getFormatDetectionScore()
 //-------------------------------------------------------------------
 //  FPKMTrackingFormat
 //-------------------------------------------------------------------
-const QString FpkmTrackingFormat::FORMAT_NAME = QObject::tr("FPKM Tracking Format");
 
 const QString FpkmTrackingFormat::NO_VALUE_STR = "-";
-
 const QString FpkmTrackingFormat::TRACKING_ID_COLUMN = "tracking_id";
 const QString FpkmTrackingFormat::CLASS_CODE_COLUMN = "class_code";
 const QString FpkmTrackingFormat::NEAREST_REF_ID_COLUMN = "nearest_ref_id";
@@ -89,8 +87,9 @@ const QString FpkmTrackingFormat::COVERAGE_COLUMN = "coverage";
 
 
 FpkmTrackingFormat::FpkmTrackingFormat(QObject* parent)
-    : DocumentFormat(parent, DocumentFormatFlag_SupportWriting, QStringList("fpkm_tracking"))
+    : TextDocumentFormat(parent, BaseDocumentFormats::FPKM_TRACKING_FORMAT, DocumentFormatFlag_SupportWriting, QStringList("fpkm_tracking"))
 {
+    formatName = tr("FPKM Tracking Format");
     formatDescription = tr("The FPKM (fragments per kilobase of exon model per million mapped fragments)"
         " Tracking Format is a native Cufflinks format to output estimated expression values.");
 
@@ -98,7 +97,7 @@ FpkmTrackingFormat::FpkmTrackingFormat(QObject* parent)
 }
 
 
-Document* FpkmTrackingFormat::loadDocument(IOAdapter* io, const U2DbiRef&  dbiRef, const QVariantMap& hints, U2OpStatus& os)
+Document* FpkmTrackingFormat::loadTextDocument(IOAdapter* io, const U2DbiRef&  dbiRef, const QVariantMap& hints, U2OpStatus& os)
 {
     CHECK_EXT(io != NULL && io->isOpen(), os.setError(L10N::badArgument("IO adapter")), NULL);
     QList<GObject*> objects;
@@ -111,11 +110,13 @@ Document* FpkmTrackingFormat::loadDocument(IOAdapter* io, const U2DbiRef&  dbiRe
 }
 
 
-int readFpkmTrLine(QString &buffer, IOAdapter* io, QScopedArrayPointer<char> &charbuff) {
+int readFpkmTrLine(QString &buffer, IOAdapter* io, QScopedArrayPointer<char> &charbuff, U2OpStatus& os) {
     int len;
     buffer.clear();
     do {
         len = io->readLine(charbuff.data(), DocumentFormat::READ_BUFF_SIZE - 1);
+        CHECK_EXT(!io->hasError(), os.setError(io->errorString()), -1);
+
         charbuff.data()[len] = '\0';
         buffer.append(QString(charbuff.data()));
     } while (DocumentFormat::READ_BUFF_SIZE - 1 == len);
@@ -138,10 +139,10 @@ QList<SharedAnnotationData> FpkmTrackingFormat::parseDocument(IOAdapter* io, QSt
     QString qstrbuf;
 
     // Validate the header
-    length = readFpkmTrLine(qstrbuf, io, buff);
-    if (0 == length) {
-        return result;
-    }
+    length = readFpkmTrLine(qstrbuf, io, buff, os);
+    CHECK_OP(os, result);
+    CHECK(length != 0, result);
+
     QStringList columnsNames;
     parseHeader(qstrbuf, columnsNames);
 
@@ -149,7 +150,7 @@ QList<SharedAnnotationData> FpkmTrackingFormat::parseDocument(IOAdapter* io, QSt
     bool fileIsValid = true;
     int lineNumber = 1;
 
-    while ((length = readFpkmTrLine(qstrbuf, io, buff)) > 0) {
+    while ((length = readFpkmTrLine(qstrbuf, io, buff, os)) > 0) {
         // Parse and validate the line
         FpkmTrackingLineValidateFlags validationStatus;
         FpkmTrackingLineData fpkmTrLineData = parseAndValidateLine(qstrbuf, columnsNames, validationStatus);
@@ -232,8 +233,9 @@ QList<SharedAnnotationData> FpkmTrackingFormat::parseDocument(IOAdapter* io, QSt
         // Move to the next line
         lineNumber++;
     }
+    CHECK_OP(os, result);
 
-    if (false == fileIsValid) {
+    if (!fileIsValid) {
         ioLog.error("FPKM Tracking Format parsing error: one or more errors occurred while parsing the input file,"
             " see TRACE log for details!");
     }
@@ -416,7 +418,7 @@ FpkmTrackingLineData FpkmTrackingFormat::parseAndValidateLine(QString line, QStr
     return parsedData;
 }
 
-FormatCheckResult FpkmTrackingFormat::checkRawData(const QByteArray& rawData, const GUrl& /* = GUrl */) const
+FormatCheckResult FpkmTrackingFormat::checkRawTextData(const QByteArray& rawData, const GUrl& /* = GUrl */) const
 {
     const char* data = rawData.constData();
     int size = rawData.size();

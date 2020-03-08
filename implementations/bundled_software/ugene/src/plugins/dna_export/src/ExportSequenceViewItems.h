@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -72,9 +72,6 @@ protected slots:
     void sl_onSequenceContextRemoved(ADVSequenceObjectContext* c);
     void sl_exportBlastResultToAlignment();
 
-    void sl_onAnnotationSelectionChanged(AnnotationSelection *, const QList<Annotation *> &added, const QList<Annotation *> &removed);
-    void sl_onSequenceSelectionChanged(LRegionsSelection* thiz, const QVector<U2Region>& added, const QVector<U2Region>& removed);
-
     void updateActions();
 
 private:
@@ -82,7 +79,6 @@ private:
     void prepareMAFromAnnotations(MultipleSequenceAlignment& ma, bool translate, U2OpStatus& os);
     void prepareMAFromSequences(MultipleSequenceAlignment& ma, bool translate, U2OpStatus& os);
     void fetchSequencesFromRemoteDB(const QString & listId);
-
     void selectionToAlignment(const QString& title, bool annotations, bool translate);
 
     AnnotatedDNAView*   view;

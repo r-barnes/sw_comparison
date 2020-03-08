@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -30,7 +30,7 @@ namespace U2 {
 // NOTE: "fd" stays for Format Detection
 
 /** Check that given file will get specified score */
-class GTest_CheckScore : public GTest {
+class GTest_CheckScore : public XmlTest {
     Q_OBJECT
 
 public:
@@ -38,7 +38,6 @@ public:
 
     virtual void run();
     virtual ReportResult report();
-    virtual void cleanup() {};
 
 private:
     QString fileURL;
@@ -51,7 +50,7 @@ private:
 };
 
 /** Check that format detected exatly for specified file */
-class GTest_PerfectMatch : public GTest {
+class GTest_PerfectMatch : public XmlTest {
     Q_OBJECT
 
 public:
@@ -59,7 +58,6 @@ public:
 
     virtual void run();
     virtual ReportResult report();
-    virtual void cleanup() {};
 
 private:
     QString fileURL;

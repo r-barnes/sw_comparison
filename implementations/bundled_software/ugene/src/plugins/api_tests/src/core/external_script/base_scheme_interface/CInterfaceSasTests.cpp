@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -373,6 +373,7 @@ IMPLEMENT_TEST( CInterfaceSasTests, import_phred_qualities_sas ) {
     QString readerName;
     CHECK_U2_ERROR( error );
     error = getActorDisplayName( "read-sequence", readerName );
+    CHECK_U2_ERROR( error );
     gauto_array<wchar_t> wReaderName( toDisposableWString( readerName ) );
     error = setSchemeElementAttribute( scheme, wReaderName.get( ), L"url-in.dataset",
         L"Dataset 1" );

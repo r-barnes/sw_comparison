@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -34,14 +34,13 @@ namespace U2{
 class PhyTreeObject;
 class MultipleSequenceAlignmentObject;
 
-class GTest_NeighborJoin : public GTest {
+class GTest_NeighborJoin : public XmlTest {
 	Q_OBJECT
 public:
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_NeighborJoin, "test-neighbor-join");
 
     void prepare();
     Task::ReportResult report();
-    void cleanup();
 
 private:    
     QString inputDocCtxName;

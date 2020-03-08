@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -306,11 +306,8 @@ void DotPlotSplitter::sl_dotPlotChanged(ADVSequenceObjectContext* sequenceX, ADV
 }
 
 void DotPlotSplitter::sl_dotPlotSelecting() {
-    bool selecting = false;
     foreach (DotPlotWidget* w, dotPlotList) {
-        selecting = w->hasSelection();
-
-        if (selecting) {
+        if (w->hasSelection()) {
             break;
         }
     }

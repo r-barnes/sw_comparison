@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -111,7 +111,7 @@ bool McaEditor::isChromVisible(qint64 rowId) const {
 }
 
 bool McaEditor::isChromVisible(int rowIndex) const {
-    return !ui->getCollapseModel()->isItemCollapsed(rowIndex);
+    return !ui->getCollapseModel()->isGroupWithMaRowIndexCollapsed(rowIndex);
 }
 
 bool McaEditor::isChromatogramButtonChecked() const {

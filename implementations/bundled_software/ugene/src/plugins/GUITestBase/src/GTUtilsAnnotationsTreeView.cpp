@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -143,6 +143,26 @@ QList<U2Region> GTUtilsAnnotationsTreeView::getAnnotatedRegions(HI::GUITestOpSta
     foreach (QTreeWidgetItem* item, treeItems) {
         AVAnnotationItem* annotationItem = dynamic_cast<AVAnnotationItem*>(item);
         CHECK_OPERATION(annotationItem != NULL, continue);
+
+        Annotation *ann = annotationItem->annotation;
+        res.append(ann->getRegions().toList());
+    }
+    return res;
+}
+#undef GT_METHOD_NAME
+
+#define GT_METHOD_NAME "getSelectedAnnotatedRegions"
+QList<U2Region> GTUtilsAnnotationsTreeView::getSelectedAnnotatedRegions(HI::GUITestOpStatus &os) {
+    QList<U2Region> res;
+
+    QTreeWidget *treeWidget = getTreeWidget(os);
+    GT_CHECK_RESULT(treeWidget != NULL, "Tree widget is NULL", res);
+
+    QList<QTreeWidgetItem*> treeItems = GTTreeWidget::getItems(treeWidget->invisibleRootItem());
+    foreach(QTreeWidgetItem* item, treeItems) {
+        AVAnnotationItem* annotationItem = dynamic_cast<AVAnnotationItem*>(item);
+        CHECK_OPERATION(annotationItem != NULL, continue);
+        CHECK_CONTINUE(annotationItem->isSelected());
 
         Annotation *ann = annotationItem->annotation;
         res.append(ann->getRegions().toList());

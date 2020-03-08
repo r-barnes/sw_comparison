@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -23,10 +23,12 @@
 #include <QScopedPointer>
 
 #include <U2Core/AppContext.h>
+#include <U2Core/AppResources.h>
 #include <U2Core/BaseDocumentFormats.h>
 #include <U2Core/DNASequenceObject.h>
 #include <U2Core/DocumentUtils.h>
 #include <U2Core/GUrlUtils.h>
+#include <U2Core/L10n.h>
 #include <U2Core/QObjectScopedPointer.h>
 #include <U2Core/U2SafePoints.h>
 
@@ -40,6 +42,10 @@
 #include "CreateFragmentDialog.h"
 #include "EditFragmentDialog.h"
 
+// This is maximum sequence size we allow to use with construct molecule task on 32-bit OSes: 300Mb.
+// UGENE has 2Gb limitation on 32-bit systems and cloning algorithm is not optimized for memory limits.
+#define MAX_MOLECULE_SEQUENCE_LENGTH_32_BIT_OS (300 * 1000 * 1000)
+
 namespace U2 {
 
 ConstructMoleculeDialog::ConstructMoleculeDialog(const QList<DNAFragment>& fragmentList, QWidget* p)
@@ -47,12 +53,12 @@ ConstructMoleculeDialog::ConstructMoleculeDialog(const QList<DNAFragment>& fragm
     fragments(fragmentList),
     saveController(NULL) {
     setupUi(this);
-    new HelpButton(this, buttonBox, "21433371");
+    new HelpButton(this, buttonBox, "24742570");
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("OK"));
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
 
     tabWidget->setCurrentIndex(0);
-    const QString coreLengthStr = ConstructMoleculeDialog::tr("core length");
+    QString coreLengthStr = ConstructMoleculeDialog::tr("core length");
 
     foreach(const DNAFragment& frag, fragments) {
         QString fragItem = QString("%1 (%2) %3 [%4 - %5 bp]")
@@ -93,9 +99,17 @@ void ConstructMoleculeDialog::accept()
     }
 
     QList<DNAFragment> toLigate;
-    foreach(int idx, selected)
-    {
-        toLigate.append(fragments[idx]);
+    qint64 resultSequenceSize = 0;
+    foreach(int idx, selected) {
+        const DNAFragment& fragment = fragments[idx];
+        foreach (const U2Region& region, fragment.getFragmentRegions()) {
+            resultSequenceSize += region.length;
+        }
+        toLigate.append(fragment);
+    }
+    if (AppResourcePool::is32BitBuild() && resultSequenceSize > MAX_MOLECULE_SEQUENCE_LENGTH_32_BIT_OS) {
+        QMessageBox::warning(this->window(), L10N::warningTitle(),  tr("Selected region is too large to proceed!"));
+        return;
     }
 
     LigateFragmentsTaskConfig cfg;

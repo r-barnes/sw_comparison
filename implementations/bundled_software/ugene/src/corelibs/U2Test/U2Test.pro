@@ -32,7 +32,7 @@ TRANSLATIONS += transl/russian.ts
 
 FORMS += src/gui_tests/GUITestingWindow.ui
 
-if(exclude_list_enabled()|!exists( ../../libs_3rdparty/QSpec/QSpec.pro )) {
+if (contains(DEFINES, HI_EXCLUDED)) {
 
 HEADERS -= src/gui_tests/UGUITest.h \
            src/gui_tests/UGUITestBase.h \

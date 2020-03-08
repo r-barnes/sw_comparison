@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -46,11 +46,14 @@ public:
     virtual QWidget * createGUI(U2OpStatus &os) = 0;
 
     void updateGUI(const QVariant &newValue);
+    void updateVisibility(bool);
 
     DelegateTags * tags() const;
+    AttributeWidget* attributeWidget() const {return widget;}
 
 signals:
     void si_updateGUI(const QVariant &newValue);
+    void si_updateVisibility(bool);
 
 protected:
     Actor *actor;

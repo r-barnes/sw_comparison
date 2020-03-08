@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -24,7 +24,6 @@
 
 #include <U2Core/AppContext.h>
 #include <U2Core/AssemblyObject.h>
-#include <U2Core/DocumentModel.h>
 #include <U2Core/DocumentUtils.h>
 #include <U2Core/GObjectUtils.h>
 #include <U2Core/GUrlUtils.h>
@@ -40,10 +39,9 @@
 namespace U2 {
 
 CopyDocumentTask::CopyDocumentTask(Document *_srcDoc, const DocumentFormatId &_formatId,
-                                   const QString &_dstUrl, bool _addToProject)
-: Task("Copy document", TaskFlag_NoRun), srcDoc(_srcDoc), dstDoc(NULL), formatId(_formatId),
-dstUrl(_dstUrl), addToProject(_addToProject), cloneTask(NULL), saveTask(NULL)
-{
+    const QString &_dstUrl, bool _addToProject)
+    : Task("Copy document", TaskFlag_NoRun), srcDoc(_srcDoc), dstDoc(NULL), formatId(_formatId),
+    dstUrl(_dstUrl), addToProject(_addToProject), cloneTask(NULL), saveTask(NULL) {
 
 }
 
@@ -62,7 +60,7 @@ void CopyDocumentTask::prepare() {
     }
     IOAdapterFactory *iof = AppContext::getIOAdapterRegistry()->getIOAdapterFactoryById(IOAdapterUtils::url2io(dstUrl));
     CHECK_EXT(iof != NULL, stateInfo.setError(QString("Can not create IO factory for %1").arg(dstUrl)), );
-    DocumentFormatRegistry *dfr =  AppContext::getDocumentFormatRegistry();
+    DocumentFormatRegistry *dfr = AppContext::getDocumentFormatRegistry();
     DocumentFormat *df = dfr->getFormatById(formatId);
     CHECK_EXT(df != NULL, stateInfo.setError(QString("Unknown document format IO factory: %1").arg(formatId)), );
 
@@ -114,8 +112,7 @@ void CopyDocumentTask::sl_onCopySaved() {
 }
 
 CloneObjectsTask::CloneObjectsTask(Document *_srcDoc, Document *_dstDoc)
-: Task("Clone objects", TaskFlag_None), srcDoc(_srcDoc), dstDoc(_dstDoc)
-{
+    : Task("Clone objects", TaskFlag_None), srcDoc(_srcDoc), dstDoc(_dstDoc) {
     CHECK_EXT(NULL != srcDoc, stateInfo.setError("NULL source document"), );
     CHECK_EXT(NULL != dstDoc, stateInfo.setError("NULL destination document"), );
 }
@@ -125,11 +122,11 @@ void CloneObjectsTask::run() {
     CHECK_EXT(NULL != df, stateInfo.setError("NULL document format"), );
 
     QList<GObject*> objs = srcDoc->getObjects();
-    foreach(GObject *srcObj, objs){
-        if(df->isObjectOpSupported(dstDoc, DocumentFormat::DocObjectOp_Add, srcObj->getGObjectType())){
+    foreach(GObject *srcObj, objs) {
+        if (df->isObjectOpSupported(dstDoc, DocumentFormat::DocObjectOp_Add, srcObj->getGObjectType())) {
             GObject *dstObj = srcObj->clone(dstDoc->getDbiRef(), stateInfo);
             CHECK_OP(stateInfo, );
-            if (dstObj->getGObjectType() == GObjectTypes::MULTIPLE_SEQUENCE_ALIGNMENT){
+            if (dstObj->getGObjectType() == GObjectTypes::MULTIPLE_SEQUENCE_ALIGNMENT) {
                 QString name = QFileInfo(dstDoc->getURLString()).baseName();
                 dstObj->setGObjectName(name);
                 dstObj->setModified(false);

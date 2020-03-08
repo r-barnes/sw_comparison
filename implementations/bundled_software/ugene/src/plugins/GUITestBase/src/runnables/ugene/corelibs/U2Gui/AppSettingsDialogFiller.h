@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -40,13 +40,17 @@ public:
     void commonScenario();
 
     static void openTab(HI::GUITestOpStatus &os, Tabs tab);
-
+    static void clickOnTool(HI::GUITestOpStatus &os, const QString& toolName);
+    static void setExternalToolsDir(HI::GUITestOpStatus &os, const QString& dirPath);
     static void setExternalToolPath(HI::GUITestOpStatus &os, const QString& toolName, const QString& toolPath);
+    static void setExternalToolPath(HI::GUITestOpStatus &os, const QString& toolName, const QString& path, const QString& name);
     static QString getExternalToolPath(HI::GUITestOpStatus &os, const QString& toolName);
     static bool isExternalToolValid(HI::GUITestOpStatus &os, const QString& toolName);
     static void clearToolPath(HI::GUITestOpStatus &os, const QString& toolName);
-
+    static bool isToolDescriptionContainsString(HI::GUITestOpStatus &os, const QString& toolName, const QString& checkIfContains);
     static void setTemporaryDirPath(HI::GUITestOpStatus &os, const QString &path);
+    static void setDocumentsDirPath(HI::GUITestOpStatus &os, const QString &path);
+    static void setWorkflowOutputDirPath(HI::GUITestOpStatus &os, const QString &path);
 
 private:
     style itemStyle;

@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -1344,10 +1344,18 @@ IMPLEMENT_TEST(MsaDbiUtilsUnitTests, removeRegion_wrongId) {
     while (true == baseRowIds.contains(customId)) {
         customId = rand();
     }
+
+    QStringList ids;
+    foreach (qint64 id, rowIds) {
+        ids << QString::number(id);
+    }
+    coreLog.details(QString("MsaDbiUtilsUnitTests_removeRegion_wrongId: Existing IDs: %1; a custom wrong ID: %2").arg(ids.join(", ")).arg(customId));
+
     rowIds << customId;
     U2OpStatusImpl tmpOs;
     MsaDbiUtils::removeRegion(msaRef, rowIds, 0, 5, tmpOs);
-    CHECK_TRUE(tmpOs.hasError(), "No error occurred for negative pos");
+    CHECK_TRUE(tmpOs.hasError(), "No error occurred for wrong ID");
+    coreLog.details(QString("MsaDbiUtilsUnitTests_removeRegion_wrongId: an error message in tmpOs: %1").arg(tmpOs.getError()));
 }
 
 IMPLEMENT_TEST(MsaDbiUtilsUnitTests, removeRegion_wrongCount) {
@@ -1363,7 +1371,7 @@ IMPLEMENT_TEST(MsaDbiUtilsUnitTests, removeRegion_wrongCount) {
     rowIds << baseRowIds[0];
     U2OpStatusImpl tmpOs;
     MsaDbiUtils::removeRegion(msaRef, rowIds, 0, 0, tmpOs);
-    CHECK_TRUE(tmpOs.hasError(), "No error occurred for negative pos");
+    CHECK_TRUE(tmpOs.hasError(), "No error occurred for wrong count");
 
     MultipleSequenceAlignmentExporter ex;
     MultipleSequenceAlignment al = ex.getAlignment(msaRef.dbiRef, msaRef.entityId, os);

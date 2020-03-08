@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -67,12 +67,12 @@ DnaAssemblyDialog::DnaAssemblyDialog(QWidget* p, const QStringList& shortReadsUr
 {
     setupUi(this);
     QMap<QString,QString> helpPagesMap;
-    helpPagesMap.insert("BWA","21433405");
-    helpPagesMap.insert("BWA-MEM","21433439");
-    helpPagesMap.insert("BWA-SW","21433433");
-    helpPagesMap.insert("Bowtie","21433402");
-    helpPagesMap.insert("Bowtie2","21433430");
-    helpPagesMap.insert("UGENE Genome Aligner","21433408");
+    helpPagesMap.insert("BWA","24742604");
+    helpPagesMap.insert("BWA-MEM","24742638");
+    helpPagesMap.insert("BWA-SW","24742632");
+    helpPagesMap.insert("Bowtie","24742601");
+    helpPagesMap.insert("Bowtie2","24742629");
+    helpPagesMap.insert("UGENE Genome Aligner","24742607");
     new ComboboxDependentHelpButton(this, buttonBox, methodNamesBox, helpPagesMap);
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Start"));
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));

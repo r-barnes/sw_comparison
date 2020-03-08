@@ -1,6 +1,6 @@
 /**
 * UGENE - Integrated Bioinformatics Tools.
-* Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+* Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
 * http://ugene.net
 *
 * This program is free software; you can redistribute it and/or
@@ -32,6 +32,12 @@ public:
         Consensus,
     };
 
+    enum FileFormat {
+        FASTA,
+        GenBank,
+        PlainText
+    };
+
     static const QMap<Tabs, QString> tabsNames;
     static const QMap<Tabs, QString> innerWidgetNames;
 
@@ -50,7 +56,13 @@ public:
     static void setThreshold(HI::GUITestOpStatus &os, int threshold);
     static int getThreshold(HI::GUITestOpStatus &os);
 
+    static void setExportFileName(HI::GUITestOpStatus &os, QString exportFileName);
+    static QString getExportFileName(HI::GUITestOpStatus &os);
+
+    static void setFileFormat(HI::GUITestOpStatus &os, FileFormat fileFormat);
+
     static void pushResetButton(HI::GUITestOpStatus &os);
+    static void pushExportButton(HI::GUITestOpStatus &os);
 
 private:
     static QMap<Tabs, QString> initNames();

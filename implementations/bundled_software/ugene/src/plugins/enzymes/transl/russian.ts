@@ -582,71 +582,76 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>U2::ConstructMoleculeDialog</name>
     <message>
-        <location filename="../src/ConstructMoleculeDialog.cpp" line="91"/>
+        <location filename="../src/ConstructMoleculeDialog.cpp" line="97"/>
         <source>No fragments are selected!
  Please construct molecule from available fragments.</source>
         <translation>Выберите фрагменты, составляющие новую молекулу.</translation>
     </message>
     <message>
-        <location filename="../src/ConstructMoleculeDialog.cpp" line="285"/>
+        <location filename="../src/ConstructMoleculeDialog.cpp" line="299"/>
         <source>Set new molecule file name</source>
         <translation>Задайте имя файла</translation>
     </message>
     <message>
-        <location filename="../src/ConstructMoleculeDialog.cpp" line="55"/>
+        <location filename="../src/ConstructMoleculeDialog.cpp" line="61"/>
         <source>core length</source>
         <translation>длина ядра</translation>
     </message>
     <message>
-        <location filename="../src/ConstructMoleculeDialog.cpp" line="210"/>
-        <location filename="../src/ConstructMoleculeDialog.cpp" line="219"/>
+        <location filename="../src/ConstructMoleculeDialog.cpp" line="224"/>
+        <location filename="../src/ConstructMoleculeDialog.cpp" line="233"/>
         <source>Blunt</source>
         <translation>&quot;Срез&quot;</translation>
     </message>
     <message>
-        <location filename="../src/ConstructMoleculeDialog.cpp" line="208"/>
-        <location filename="../src/ConstructMoleculeDialog.cpp" line="217"/>
+        <location filename="../src/ConstructMoleculeDialog.cpp" line="222"/>
+        <location filename="../src/ConstructMoleculeDialog.cpp" line="231"/>
         <source>Fwd</source>
         <translation>Прям</translation>
     </message>
     <message>
-        <location filename="../src/ConstructMoleculeDialog.cpp" line="51"/>
+        <location filename="../src/ConstructMoleculeDialog.cpp" line="57"/>
         <source>OK</source>
         <translation>OK</translation>
     </message>
     <message>
-        <location filename="../src/ConstructMoleculeDialog.cpp" line="52"/>
+        <location filename="../src/ConstructMoleculeDialog.cpp" line="58"/>
         <source>Cancel</source>
         <translation>Отмена</translation>
     </message>
     <message>
-        <location filename="../src/ConstructMoleculeDialog.cpp" line="208"/>
-        <location filename="../src/ConstructMoleculeDialog.cpp" line="217"/>
+        <location filename="../src/ConstructMoleculeDialog.cpp" line="111"/>
+        <source>Selected region is too large to proceed!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ConstructMoleculeDialog.cpp" line="222"/>
+        <location filename="../src/ConstructMoleculeDialog.cpp" line="231"/>
         <source>Rev</source>
         <translation>Обр</translation>
     </message>
     <message>
-        <location filename="../src/ConstructMoleculeDialog.cpp" line="212"/>
+        <location filename="../src/ConstructMoleculeDialog.cpp" line="226"/>
         <source>Left end</source>
         <translation>Левый конец</translation>
     </message>
     <message>
-        <location filename="../src/ConstructMoleculeDialog.cpp" line="221"/>
+        <location filename="../src/ConstructMoleculeDialog.cpp" line="235"/>
         <source>Right end</source>
         <translation>Правый конец</translation>
     </message>
     <message>
-        <location filename="../src/ConstructMoleculeDialog.cpp" line="223"/>
+        <location filename="../src/ConstructMoleculeDialog.cpp" line="237"/>
         <source>yes</source>
         <translation>да</translation>
     </message>
     <message>
-        <location filename="../src/ConstructMoleculeDialog.cpp" line="223"/>
+        <location filename="../src/ConstructMoleculeDialog.cpp" line="237"/>
         <source>no</source>
         <translation>нет</translation>
     </message>
     <message>
-        <location filename="../src/ConstructMoleculeDialog.cpp" line="224"/>
+        <location filename="../src/ConstructMoleculeDialog.cpp" line="238"/>
         <source>Make fragment reverse complement</source>
         <translation>Сделать фрагмент обратно-комплементарным</translation>
     </message>
@@ -655,41 +660,41 @@ p, li { white-space: pre-wrap; }
     <name>U2::CreateFragmentDialog</name>
     <message>
         <location filename="../src/CreateFragmentDialog.cpp" line="55"/>
-        <location filename="../src/CreateFragmentDialog.cpp" line="77"/>
+        <location filename="../src/CreateFragmentDialog.cpp" line="76"/>
         <source>OK</source>
         <translation>OK</translation>
     </message>
     <message>
         <location filename="../src/CreateFragmentDialog.cpp" line="56"/>
-        <location filename="../src/CreateFragmentDialog.cpp" line="78"/>
+        <location filename="../src/CreateFragmentDialog.cpp" line="77"/>
         <source>Cancel</source>
         <translation>Отмена</translation>
     </message>
     <message>
-        <location filename="../src/CreateFragmentDialog.cpp" line="106"/>
+        <location filename="../src/CreateFragmentDialog.cpp" line="104"/>
         <source>Left end contains unsupported symbols!</source>
         <translation>Левый конец содержит неподдерживаемые символы!</translation>
     </message>
     <message>
-        <location filename="../src/CreateFragmentDialog.cpp" line="116"/>
+        <location filename="../src/CreateFragmentDialog.cpp" line="114"/>
         <source>Right end contains unsupported symbols!</source>
         <translation>Правый конец содержит неподдерживаемые символы!</translation>
     </message>
     <message>
-        <location filename="../src/CreateFragmentDialog.cpp" line="127"/>
+        <location filename="../src/CreateFragmentDialog.cpp" line="125"/>
         <source>Invalid fragment region!
 Choose another region.</source>
         <translation>Invalid fragment region!
 Choose another region.</translation>
     </message>
     <message>
-        <location filename="../src/CreateFragmentDialog.cpp" line="132"/>
-        <location filename="../src/CreateFragmentDialog.cpp" line="137"/>
+        <location filename="../src/CreateFragmentDialog.cpp" line="130"/>
+        <location filename="../src/CreateFragmentDialog.cpp" line="135"/>
         <source>Error</source>
         <translation>Проблема</translation>
     </message>
     <message>
-        <location filename="../src/CreateFragmentDialog.cpp" line="137"/>
+        <location filename="../src/CreateFragmentDialog.cpp" line="135"/>
         <source>Cannot create an annotation object. Please check settings</source>
         <translation>Невозможно создать аннотацию. Проверьте настройки</translation>
     </message>
@@ -745,42 +750,42 @@ Choose another region.</translation>
 <context>
     <name>U2::DigestSequenceTask</name>
     <message>
-        <location filename="../src/CloningUtilTasks.cpp" line="131"/>
+        <location filename="../src/CloningUtilTasks.cpp" line="147"/>
         <source>Can&apos;t use restriction site %1 for digestion,  cleavage site is unknown </source>
         <translation>Невозможно использовать сайт %1 для разбиения на фрагменты, точка разреза неопределена</translation>
     </message>
     <message>
-        <location filename="../src/CloningUtilTasks.cpp" line="213"/>
+        <location filename="../src/CloningUtilTasks.cpp" line="229"/>
         <source>Unable to digest into fragments: intersecting restriction sites %1 (%2..%3) and %4 (%5..%6)</source>
         <translation>Не удалость разбить на фрагменты перескающиеся сайты рестрикции  %1 (%2..%3) и %4 (%5..%6)</translation>
     </message>
     <message>
-        <location filename="../src/CloningUtilTasks.cpp" line="319"/>
+        <location filename="../src/CloningUtilTasks.cpp" line="340"/>
         <source>circular</source>
         <translation>круговая</translation>
     </message>
     <message>
-        <location filename="../src/CloningUtilTasks.cpp" line="319"/>
+        <location filename="../src/CloningUtilTasks.cpp" line="340"/>
         <source>linear</source>
         <translation>линейная</translation>
     </message>
     <message>
-        <location filename="../src/CloningUtilTasks.cpp" line="320"/>
+        <location filename="../src/CloningUtilTasks.cpp" line="341"/>
         <source>&lt;h3&gt;&lt;br&gt;Digest into fragments %1 (%2)&lt;/h3&gt;</source>
         <translation>&lt;h3&gt;&lt;br&gt;Разбиение на фрагменты %1 (%2)&lt;/h3&gt;</translation>
     </message>
     <message>
-        <location filename="../src/CloningUtilTasks.cpp" line="321"/>
+        <location filename="../src/CloningUtilTasks.cpp" line="342"/>
         <source>&lt;br&gt;Generated %1 fragments.</source>
         <translation>&lt;br&gt;Создано %1 фрагментов.</translation>
     </message>
     <message>
-        <location filename="../src/CloningUtilTasks.cpp" line="330"/>
+        <location filename="../src/CloningUtilTasks.cpp" line="351"/>
         <source>&lt;br&gt;&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;%1:&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;From %3 (%2) To %5 (%4) - %6 bp </source>
         <translation>&lt;br&gt;&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;%1:&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;От %3 (%2) До %5 (%4) - %6 bp </translation>
     </message>
     <message>
-        <location filename="../src/CloningUtilTasks.cpp" line="356"/>
+        <location filename="../src/CloningUtilTasks.cpp" line="377"/>
         <source>Conserved annotation %1 (%2) is disrupted by the digestion. Try changing the restriction sites.</source>
         <translation>Conserved annotation %1 (%2) is disrupted by the digestion. Try changing the restriction sites.</translation>
     </message>
@@ -1206,22 +1211,22 @@ To start ligation create a project or open an existing.</source>
 <context>
     <name>U2::LigateFragmentsTask</name>
     <message>
-        <location filename="../src/CloningUtilTasks.cpp" line="378"/>
+        <location filename="../src/CloningUtilTasks.cpp" line="419"/>
         <source>Fragments %1 and  %2 are inconsistent. Blunt and sticky ends incompatibility</source>
         <translation>Фрагменты %1 и  %2 несопоставимы. Липкий конец и срез невозможно соединить</translation>
     </message>
     <message>
-        <location filename="../src/CloningUtilTasks.cpp" line="388"/>
+        <location filename="../src/CloningUtilTasks.cpp" line="429"/>
         <source>Right overhang from %1 and left overhang from %2 are inconsistent.</source>
         <translation>Правый липкий конец фрагмента %1 несовместим с левым липким концом фрагмента %2.</translation>
     </message>
     <message>
-        <location filename="../src/CloningUtilTasks.cpp" line="434"/>
+        <location filename="../src/CloningUtilTasks.cpp" line="482"/>
         <source>Unknown DNA alphabet in fragment %1 of %2</source>
         <translation>Неизвестный алфавит у фрагмента %1 последовательности %2</translation>
     </message>
     <message>
-        <location filename="../src/CloningUtilTasks.cpp" line="501"/>
+        <location filename="../src/CloningUtilTasks.cpp" line="555"/>
         <source>Add constructed molecule</source>
         <translation>Добавить созданную молекулу</translation>
     </message>
@@ -1273,7 +1278,7 @@ To start ligation create a project or open an existing.</source>
     </message>
     <message>
         <location filename="../src/EnzymesQuery.cpp" line="114"/>
-        <source>If &lt;i&gt;True&lt;/i&gt; considers the sequence circular. That allows to search for restriction sites between the end and the beginning of the sequence.</source>
+        <source>If &lt;i&gt;True&lt;/i&gt; considers the sequence circular. That allows one to search for restriction sites between the end and the beginning of the sequence.</source>
         <translation>Если&lt;i&gt;Истина&lt;/i&gt; то последовательность рассматривается как круговая. Сайты будут искаться между началом и концом последовательности.</translation>
     </message>
 </context>

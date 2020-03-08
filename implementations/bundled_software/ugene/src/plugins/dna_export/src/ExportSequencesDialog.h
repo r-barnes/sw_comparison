@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -36,8 +36,9 @@ class ExportSequencesDialog : public QDialog, Ui_ExportSequencesDialog {
     Q_OBJECT
 public:
     ExportSequencesDialog(bool multiMode, bool allowComplement, bool allowTranslation,
-        bool allowBackTranslation, const QString &defaultFileName, const QString &sourceFileBaseName,
-        const DocumentFormatId &f, QWidget *p);
+                          bool allowBackTranslation, const QString &defaultFileName,
+                          const QString &sourceFileBaseName,
+                          const DocumentFormatId &f, QWidget *p);
 
     void updateModel();
     bool multiMode;

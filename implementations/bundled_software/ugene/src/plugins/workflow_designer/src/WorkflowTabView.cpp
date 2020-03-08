@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -19,20 +19,23 @@
  * MA 02110-1301, USA.
  */
 
-#include <QMouseEvent>
 #include <QGraphicsView>
 #include <QInputDialog>
 #include <QMenu>
+#include <QMouseEvent>
 #include <QPushButton>
 #include <QTabBar>
 #include <QVBoxLayout>
 
 #include <U2Core/AppContext.h>
+#include <U2Core/SignalBlocker.h>
 #include <U2Core/U2SafePoints.h>
 
-#include "WorkflowViewController.h"
+#include <U2Designer/DashboardInfoRegistry.h>
+#include <U2Designer/ScanDashboardsDirTask.h>
 
 #include "WorkflowTabView.h"
+#include "WorkflowViewController.h"
 
 namespace U2 {
 
@@ -55,7 +58,8 @@ private:
 };
 
 WorkflowTabView::WorkflowTabView(WorkflowView *_parent)
-: QTabWidget(_parent), parent(_parent)
+    : QTabWidget(_parent),
+      parent(_parent)
 {
     setUsesScrollButtons(true);
     setTabPosition(QTabWidget::North);
@@ -69,13 +73,13 @@ WorkflowTabView::WorkflowTabView(WorkflowView *_parent)
     }
 
     setDocumentMode(true);
-    ScanDashboardsDirTask *t = new ScanDashboardsDirTask();
-    connect(t, SIGNAL(si_stateChanged()), SLOT(sl_dashboardsLoaded()));
-    AppContext::getTaskScheduler()->registerTopLevelTask(t);
+    connect(this, SIGNAL(currentChanged(int)), SLOT(sl_showDashboard(int)));
+
     tabBar()->installEventFilter(this);
 
-    connect(this, SIGNAL(currentChanged(int)), SLOT(sl_showDashboard(int)));
     setObjectName("WorkflowTabView");
+    sl_dashboardsListChanged(AppContext::getDashboardInfoRegistry()->getAllIds(), QStringList());
+    RegistryConnectionBlocker::connectRegistry(this);
 }
 
 void WorkflowTabView::sl_showDashboard(int idx) {
@@ -94,10 +98,14 @@ void WorkflowTabView::sl_workflowStateChanged(bool isRunning) {
     closeButton->setEnabled(!isRunning);
 }
 
-int WorkflowTabView::addDashboard(Dashboard *db) {
+int WorkflowTabView::appendDashboard(Dashboard *db) {
+    RegistryConnectionBlocker registryConnectionBlocker(this);
+    Q_UNUSED(registryConnectionBlocker);
+
     if (db->getName().isEmpty()) {
         db->setName(generateName());
     }
+
     int idx = addTab(db, db->getName());
 
     CloseButton *closeButton = new CloseButton(db);
@@ -110,13 +118,24 @@ int WorkflowTabView::addDashboard(Dashboard *db) {
     connect(db, SIGNAL(si_loadSchema(const QString &)), parent, SLOT(sl_loadScene(const QString &)));
     connect(db, SIGNAL(si_hideLoadBtnHint()), this, SIGNAL(si_hideLoadBtnHint()));
     connect(this, SIGNAL(si_hideLoadBtnHint()), db, SLOT(sl_hideLoadBtnHint()));
+
     emit si_countChanged();
     return idx;
 }
 
+void WorkflowTabView::removeDashboard(Dashboard *dashboard) {
+    CHECK(!dashboard->isWorkflowInProgress(), );
+    removeTab(indexOf(dashboard));
+    delete dashboard;
+    emit si_countChanged();
+}
+
 void WorkflowTabView::addDashboard(WorkflowMonitor *monitor, const QString &baseName) {
+    RegistryConnectionBlocker registryConnectionBlocker(this);
+    Q_UNUSED(registryConnectionBlocker);
+
     QString name = generateName(baseName);
-    int idx = addDashboard(new Dashboard(monitor, name, this));
+    int idx = appendDashboard(new Dashboard(monitor, name, this));
     setCurrentIndex(idx);
 }
 
@@ -124,32 +143,10 @@ bool WorkflowTabView::hasDashboards() const {
     return count() > 0;
 }
 
-void WorkflowTabView::updateDashboards(const QList<DashboardInfo> &dashboards) {
-    QList<DashboardInfo> dbs = dashboards;
-    int i = 0;
-    while (i < count()) {
-        Dashboard *db = dynamic_cast<Dashboard*>(widget(i));
-        if (db->isWorkflowInProgress()) {
-            i++;
-            continue;
-        }
-        DashboardInfo info(db->directory());
-        if (dbs.contains(info)) {
-            dbs.removeOne(info);
-            i++;
-        } else {
-            db->setClosed();
-            removeTab(i);
-            delete db;
-        }
-    }
-    foreach (const DashboardInfo &info, dbs) {
-        addDashboard(new Dashboard(info.path, this));
-    }
-    emit si_countChanged();
-}
-
 void WorkflowTabView::sl_closeTab() {
+    RegistryConnectionBlocker registryConnectionBlocker(this);
+    Q_UNUSED(registryConnectionBlocker);
+
     CloseButton *button = dynamic_cast<CloseButton*>(sender());
     SAFE_POINT(NULL != button, "NULL close button", );
     int idx = indexOf(button->content());
@@ -161,6 +158,9 @@ void WorkflowTabView::sl_closeTab() {
 }
 
 void WorkflowTabView::sl_renameTab() {
+    RegistryConnectionBlocker registryConnectionBlocker(this);
+    Q_UNUSED(registryConnectionBlocker);
+
     QAction *rename = dynamic_cast<QAction*>(sender());
     CHECK(NULL != rename, );
     int idx = rename->data().toInt();
@@ -177,26 +177,119 @@ void WorkflowTabView::sl_renameTab() {
     }
 }
 
-void WorkflowTabView::sl_dashboardsLoaded() {
-    ScanDashboardsDirTask *t = dynamic_cast<ScanDashboardsDirTask*>(sender());
-    CHECK(NULL != t, );
-    CHECK(t->isFinished(), );
+void WorkflowTabView::sl_dashboardsListChanged(const QStringList &added, const QStringList &removed) {
+    RegistryConnectionBlocker registryConnectionBlocker(this);
+    Q_UNUSED(registryConnectionBlocker);
 
-    foreach (const QString &dbPath, t->getOpenedDashboards()) {
-        addDashboard(new Dashboard(dbPath, this));
+    int countBeforeAdding = 0;
+    {
+        SignalBlocker signalBlocker(this);
+        Q_UNUSED(signalBlocker);
+
+        for (int i = count() - 1; i >= 0; --i) {
+            Dashboard *dashboard = qobject_cast<Dashboard *>(widget(i));
+            SAFE_POINT(nullptr != dashboard, "Can't cast QWidget to Dashboard", );
+            const QString id = dashboard->getDashboardId();
+
+            if (removed.contains(id)) {
+                removeDashboard(dashboard);
+            }
+        }
+
+        countBeforeAdding = count();
+
+        DashboardInfoRegistry *dashboardInfoRegistry = AppContext::getDashboardInfoRegistry();
+        const QStringList existingIds = allIds();
+        foreach (const QString &dashboardId, added) {
+            if (!existingIds.contains(dashboardId)) {
+                const DashboardInfo dashboardInfo = dashboardInfoRegistry->getById(dashboardId);
+                if (dashboardInfo.opened) {
+                    Dashboard *dashboard = new Dashboard(dashboardInfo.path, this);
+                    appendDashboard(dashboard);
+                }
+            }
+        }
     }
-    int nDashboards = count();
-    if (nDashboards > 0) {
-        setCurrentIndex(nDashboards - 1);
+
+    const int countAfterAdding = count();
+    if (0 == countBeforeAdding && countAfterAdding > 0) {
+        const int newIndex = countAfterAdding - 1;
+        if (newIndex > 0) {
+            setCurrentIndex(countAfterAdding - 1);
+        } else {
+            // emit the signal manually, because signals emitting was blocked during the dashboards adding
+            emit currentChanged(newIndex);
+        }
+    }
+
+    emit si_countChanged();
+}
+
+void WorkflowTabView::sl_dashboardsChanged(const QStringList &dashboardIds) {
+    RegistryConnectionBlocker registryConnectionBlocker(this);
+    Q_UNUSED(registryConnectionBlocker);
+
+    QMap<QString, Dashboard *> dashboardsMap = getDashboards(dashboardIds);
+    DashboardInfoRegistry *dashboardInfoRegistry = AppContext::getDashboardInfoRegistry();
+    foreach (const QString &dashboardId, dashboardsMap.keys()) {
+        const DashboardInfo dashboardInfo = dashboardInfoRegistry->getById(dashboardId);
+        Dashboard *dashboard = dashboardsMap[dashboardId];
+        if (nullptr == dashboard) {
+            if (dashboardInfo.opened) {
+                // Currently the dashboards that become visible are added to the end
+                appendDashboard(new Dashboard(dashboardInfo.path, this));
+            }
+            continue;
+        }
+
+        if (!dashboardInfo.opened) {
+            dashboard->setClosed();
+            removeDashboard(dashboard);
+        } else if (dashboardInfo.name != dashboard->getName()) {
+            dashboard->setName(dashboardInfo.name);
+        }
     }
 }
 
-QStringList WorkflowTabView::allNames() const {
-    QStringList result;
-    for (int i=0; i<count(); i++) {
-        Dashboard *db = dynamic_cast<Dashboard*>(widget(i));
-        result << db->getName();
+QSet<QString> WorkflowTabView::allNames() const {
+    QSet<QString> result;
+
+    const QList<DashboardInfo> dashboardInfos = AppContext::getDashboardInfoRegistry()->getAllEntries();
+    foreach (const DashboardInfo &dashboardInfo, dashboardInfos) {
+        result << dashboardInfo.name;
     }
+
+    result += AppContext::getDashboardInfoRegistry()->getReservedNames();
+
+    return result;
+}
+
+QStringList WorkflowTabView::allIds() const {
+    QStringList result;
+    for (int i = 0; i < count(); i++) {
+        Dashboard *db = qobject_cast<Dashboard *>(widget(i));
+        result << db->getDashboardId();
+    }
+    return result;
+}
+
+QMap<QString, Dashboard *> WorkflowTabView::getDashboards(const QStringList &dashboardIds) const {
+    QMap<QString, Dashboard *> result;
+    for (int i = 0; i < count(); ++i) {
+        Dashboard *dashboard = qobject_cast<Dashboard *>(widget(i));
+        SAFE_POINT(nullptr != dashboard, "Can't cast QWidget to Dashboard", result);
+        if (dashboardIds.contains(dashboard->getDashboardId())) {
+            result.insert(dashboard->getDashboardId(), dashboard);
+        }
+    }
+
+    if (result.size() != dashboardIds.size()) {
+        const QSet<QString> difference = dashboardIds.toSet() - result.keys().toSet();
+        foreach (const QString &dashboardId, difference) {
+            result.insert(dashboardId, nullptr);
+        }
+    }
+
     return result;
 }
 
@@ -207,7 +300,7 @@ QString WorkflowTabView::generateName(const QString &name) const {
     }
 
     QString result;
-    QStringList all = allNames();
+    QSet<QString> all = allNames();
     int num = 1;
     do {
         result = baseName + QString(" %1").arg(num);
@@ -242,5 +335,46 @@ bool WorkflowTabView::eventFilter(QObject *watched, QEvent *event) {
     return false;
 }
 
+int RegistryConnectionBlocker::count = 0;
+
+RegistryConnectionBlocker::RegistryConnectionBlocker(WorkflowTabView *_tabView)
+    : tabView(_tabView)
+{
+    ++count;
+    if (count == 1) {
+        disconnectRegistry(tabView);
+    }
+}
+
+RegistryConnectionBlocker::~RegistryConnectionBlocker() {
+    --count;
+    if (count == 0) {
+        connectRegistry(tabView);
+    }
+}
+
+void RegistryConnectionBlocker::connectRegistry(WorkflowTabView *tabView) {
+    DashboardInfoRegistry *dashboardInfoRegistry = AppContext::getDashboardInfoRegistry();
+    QObject::connect(dashboardInfoRegistry,
+            SIGNAL(si_dashboardsListChanged(const QStringList &, const QStringList &)),
+            tabView,
+            SLOT(sl_dashboardsListChanged(const QStringList &, const QStringList &)));
+    QObject::connect(dashboardInfoRegistry,
+            SIGNAL(si_dashboardsChanged(const QStringList &)),
+            tabView,
+            SLOT(sl_dashboardsChanged(const QStringList &)));
+}
+
+void RegistryConnectionBlocker::disconnectRegistry(WorkflowTabView *tabView) {
+    DashboardInfoRegistry *dashboardInfoRegistry = AppContext::getDashboardInfoRegistry();
+    QObject::disconnect(dashboardInfoRegistry,
+               SIGNAL(si_dashboardsListChanged(const QStringList &, const QStringList &)),
+               tabView,
+               SLOT(sl_dashboardsListChanged(const QStringList &, const QStringList &)));
+    QObject::disconnect(dashboardInfoRegistry,
+               SIGNAL(si_dashboardsChanged(const QStringList &)),
+               tabView,
+               SLOT(sl_dashboardsChanged(const QStringList &)));
+}
 
 } // U2

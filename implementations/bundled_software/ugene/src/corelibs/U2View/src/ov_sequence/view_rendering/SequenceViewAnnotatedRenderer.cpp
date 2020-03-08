@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -21,14 +21,16 @@
 
 #include "SequenceViewAnnotatedRenderer.h"
 
-#include <U2Core/AnnotationTableObject.h>
 #include <U2Core/AnnotationSettings.h>
+#include <U2Core/AnnotationTableObject.h>
 #include <U2Core/AppContext.h>
+#include <U2Core/DNASequenceObject.h>
 #include <U2Core/GenbankFeatures.h>
 #include <U2Core/U1AnnotationUtils.h>
 #include <U2Core/U2SafePoints.h>
 
 #include <U2View/ADVSequenceObjectContext.h>
+#include <U2View/SequenceObjectContext.h>
 
 
 namespace U2 {
@@ -86,7 +88,13 @@ SequenceViewAnnotatedRenderer::SequenceViewAnnotatedRenderer(SequenceObjectConte
 
 void SequenceViewAnnotatedRenderer::drawAnnotations(QPainter &p, const QSize &canvasSize, const U2Region &visibleRange, const AnnotationDisplaySettings& displaySettings) {
     foreach (const AnnotationTableObject *ao, ctx->getAnnotationObjects(true)) {
-        foreach (Annotation *a, ao->getAnnotationsByRegion(visibleRange)) {
+        QList<Annotation *> annotations = ao->getAnnotationsByRegion(visibleRange);
+        QList<Annotation *> restrictionSites = ao->getAnnotationsByType(U2FeatureTypes::RestrictionSite);
+        foreach(Annotation *a, restrictionSites) {
+            CHECK_CONTINUE(!annotations.contains(a));
+            annotations.append(a);
+        }
+        foreach(Annotation *a, annotations) {
             drawAnnotation(p, canvasSize, visibleRange, a, displaySettings);
         }
     }
@@ -94,11 +102,10 @@ void SequenceViewAnnotatedRenderer::drawAnnotations(QPainter &p, const QSize &ca
 
 void SequenceViewAnnotatedRenderer::drawAnnotationSelection(QPainter &p, const QSize &canvasSize, const U2Region &visibleRange, const AnnotationDisplaySettings& displaySettings) {
     const AnnotationSelection *annSelection = ctx->getAnnotationsSelection();
-    foreach (const AnnotationSelectionData &asd, annSelection->getSelection()) {
-        AnnotationTableObject *o = asd.annotation->getGObject();
+    foreach (Annotation* annotation, annSelection->getAnnotations()) {
+        AnnotationTableObject *o = annotation->getGObject();
         if (ctx->getAnnotationObjects(true).contains(o)) {
-
-            drawAnnotation(p, canvasSize, visibleRange, asd.annotation, displaySettings, U2Region(), true);
+            drawAnnotation(p, canvasSize, visibleRange, annotation, displaySettings, U2Region(), true);
         }
     }
 }
@@ -117,59 +124,64 @@ void SequenceViewAnnotatedRenderer::drawAnnotation(QPainter &p, const QSize& can
     QPen borderPen(Qt::SolidLine);
     borderPen.setWidth(selected ? 2 : 1);
 
+    const bool isRestrictionSite = a->getType() == U2FeatureTypes::RestrictionSite;
     QVector<U2Region> location = aData->getRegions();
     bool simple = location.size() == 1;
     for (int ri = 0, ln = location.size(); ri < ln; ri++) {
         const U2Region &r = location.at(ri);
-        if (!r.intersects(visibleRange)) {
-            continue;
-        }
-        const U2Region visibleLocation = r.intersect(visibleRange);
-        const U2Region y = predefinedY.isEmpty() ? getAnnotationYRange(a, ri, as, canvasSize, visibleRange) : predefinedY;
-        if (y.startPos < 0) {
-            continue;
-        }
-
-        const int x1 = posToXCoord(visibleLocation.startPos, canvasSize, visibleRange);
-        const int x2 = posToXCoord(visibleLocation.endPos(), canvasSize, visibleRange);
-
-        const int rw = qMax(selected ? MIN_SELECTED_ANNOTATION_WIDTH : MIN_ANNOTATION_WIDTH, x2 - x1);
-        SAFE_POINT(rw > 0, "Negative length of annotationYRange", );
-
-        // annotation rect setting
-        const QRect annotationRect(x1, y.startPos, rw, y.length);
-        QPainterPath rectPath;
-        rectPath.addRect(x1, y.startPos, rw, y.length);
-        // find out if the arrow is needed
-        const bool leftTrim  = visibleLocation.startPos != r.startPos;
-        const bool rightTrim = visibleLocation.endPos() != r.endPos();
-        const bool drawArrow = aData->getStrand().isCompementary() ? !leftTrim : !rightTrim;
-        if (displaySettings.displayAnnotationArrows && drawArrow) {
-            bool isLeft = false;
-            if (1 == ri && aData->findFirstQualifierValue("rpt_type") == "inverted") { //temporary solution for drawing inverted repeats correct
-                isLeft = true;
-            } else {
-                isLeft = aData->getStrand().isCompementary();
+        if (r.intersects(visibleRange)) {
+            const U2Region visibleLocation = r.intersect(visibleRange);
+            const U2Region y = predefinedY.isEmpty() ? getAnnotationYRange(a, ri, as, canvasSize, visibleRange) : predefinedY;
+            if (y.startPos < 0) {
+                continue;
             }
-            addArrowPath(rectPath, annotationRect, isLeft);
-        }
 
-        rectPath.setFillRule(Qt::WindingFill);
-        p.fillPath(rectPath, as->color);
-        p.fillPath(rectPath, annMetrics.gradientMaskBrush);
+            const int x1 = posToXCoord(visibleLocation.startPos, canvasSize, visibleRange);
+            const int x2 = posToXCoord(visibleLocation.endPos(), canvasSize, visibleRange);
 
-        p.setPen(borderPen);
-        if (rw > MIN_ANNOTATION_WIDTH) {
-            p.drawPath(rectPath);
-            if (displaySettings.displayAnnotationNames && annotationRect.width() >= MIN_ANNOTATION_TEXT_WIDTH) {
-                const QString aText = prepareAnnotationText(aData, as);
-                drawBoundedText(p, annotationRect, aText);
+            const int rw = qMax(selected ? MIN_SELECTED_ANNOTATION_WIDTH : MIN_ANNOTATION_WIDTH, x2 - x1);
+            SAFE_POINT(rw > 0, "Negative length of annotationYRange", );
+
+            // annotation rect setting
+            const QRect annotationRect(x1, y.startPos, rw, y.length);
+            QPainterPath rectPath;
+            rectPath.addRect(x1, y.startPos, rw, y.length);
+            // find out if the arrow is needed
+            const bool leftTrim = visibleLocation.startPos != r.startPos;
+            const bool rightTrim = visibleLocation.endPos() != r.endPos();
+            const bool drawArrow = aData->getStrand().isCompementary() ? !leftTrim : !rightTrim;
+            if (displaySettings.displayAnnotationArrows && drawArrow) {
+                bool isLeft = false;
+                if (1 == ri && aData->findFirstQualifierValue("rpt_type") == "inverted") { //temporary solution for drawing inverted repeats correct
+                    isLeft = true;
+                } else {
+                    isLeft = aData->getStrand().isCompementary();
+                }
+                addArrowPath(rectPath, annotationRect, isLeft);
             }
-            if (simple && annotationRect.width() > MIN_WIDTH_TO_DRAW_EXTRA_FEATURES && displaySettings.displayCutSites) {
-                drawCutSite(p, aData, r, annotationRect, as->color, canvasSize, visibleRange);
+
+            rectPath.setFillRule(Qt::WindingFill);
+            p.fillPath(rectPath, as->color);
+            p.fillPath(rectPath, annMetrics.gradientMaskBrush);
+
+            p.setPen(borderPen);
+            if (rw > MIN_ANNOTATION_WIDTH) {
+                p.drawPath(rectPath);
+                if (displaySettings.displayAnnotationNames && annotationRect.width() >= MIN_ANNOTATION_TEXT_WIDTH) {
+                    const QString aText = prepareAnnotationText(aData, as);
+                    drawBoundedText(p, annotationRect, aText);
+                }
+                if (simple &&
+                    annotationRect.width() > MIN_WIDTH_TO_DRAW_EXTRA_FEATURES &&
+                    displaySettings.displayCutSites) {
+                    drawCutSite(p, aData, r, annotationRect, as->color, canvasSize, visibleRange);
+                }
             }
+            drawAnnotationConnections(p, a, as, displaySettings, canvasSize, visibleRange);
+        } else if (isRestrictionSite && simple && displaySettings.displayCutSites) {
+            p.setPen(borderPen);
+            drawCutSite(p, aData, r, QRect(), as->color, canvasSize, visibleRange);
         }
-        drawAnnotationConnections(p, a, as, displaySettings, canvasSize, visibleRange);
     }
 }
 
@@ -280,8 +292,9 @@ void SequenceViewAnnotatedRenderer::drawCutSite(QPainter &p, const SharedAnnotat
         }
     }
 
-    U2Region cutSiteY = aData->getStrand().isDirect() ? getMirroredYRange(U2Strand(U2Strand::Complementary))
-                                                      : getMirroredYRange(U2Strand(U2Strand::Direct));
+    bool isDirectStrand = aData->getStrand().isDirect();
+    U2Region cutSiteY = isDirectStrand ? getMirroredYRange(U2Strand(U2Strand::Complementary))
+                                       : getMirroredYRange(U2Strand(U2Strand::Direct));
     QRect mirroredAnnotationRect = annotationRect;
     mirroredAnnotationRect.setY(cutSiteY.startPos);
     mirroredAnnotationRect.setHeight(cutSiteY.length);
@@ -290,15 +303,14 @@ void SequenceViewAnnotatedRenderer::drawCutSite(QPainter &p, const SharedAnnotat
     toInsert.color = color;
     if (hasD) {
         toInsert.direct = true;
-        toInsert.pos = aData->getStrand().isDirect() ? r.startPos + cutD
-                                                     : r.startPos + cutC;
-        aData->getStrand().isDirect() ? toInsert.r = annotationRect : toInsert.r = mirroredAnnotationRect;
+        toInsert.pos = correctCutPos(isDirectStrand ? r.startPos + cutD : r.startPos + cutC);
+        toInsert.r = isDirectStrand ? annotationRect : mirroredAnnotationRect;
         drawCutSite(p, toInsert, canvasSize, visibleRange);
     }
     if (hasC) {
         toInsert.direct = false;
-        toInsert.pos = aData->getStrand().isDirect() ? r.endPos() - cutC : r.endPos() - cutD;
-        aData->getStrand().isCompementary() ? toInsert.r = annotationRect : toInsert.r = mirroredAnnotationRect;
+        toInsert.pos = correctCutPos(isDirectStrand ? r.endPos() - cutC : r.endPos() - cutD);
+        toInsert.r = !isDirectStrand ? annotationRect : mirroredAnnotationRect;
         drawCutSite(p, toInsert, canvasSize, visibleRange);
     }
 
@@ -306,6 +318,7 @@ void SequenceViewAnnotatedRenderer::drawCutSite(QPainter &p, const SharedAnnotat
 
 void SequenceViewAnnotatedRenderer::drawCutSite(QPainter& p, const CutSiteDrawData& cData, const QSize& canvasSize, const U2Region& visibleRange) {
     int xCenter = posToXCoord(cData.pos, canvasSize, visibleRange);
+    CHECK(xCenter != -1, );
 
     int xLeft = xCenter - CUT_SITE_HALF_WIDTH;
     int xRight= xCenter + CUT_SITE_HALF_WIDTH;
@@ -358,6 +371,23 @@ void SequenceViewAnnotatedRenderer::addArrowPath(QPainterPath& path, const QRect
 
     path = path.subtracted(dRectPath);
     path = path.united(arrowPath);
+}
+
+qint64 SequenceViewAnnotatedRenderer::correctCutPos(const qint64 pos) const {
+    const bool isCircular = ctx->getSequenceObject()->isCircular();
+    const qint64 sequenceLength = ctx->getSequenceLength();
+    qint64 result = pos;
+    if (isCircular) {
+        if (result < 0) {
+            result = sequenceLength + result;
+        } else if (result > sequenceLength) {
+            result = result - sequenceLength;
+        }
+    } else {
+        result = qBound((qint64)0, result, sequenceLength);
+    }
+
+    return result;
 }
 
 } // namespace

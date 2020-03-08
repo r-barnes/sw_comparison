@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -61,6 +61,9 @@ void ConstructMoleculeDialogFiller::commonScenario() {
         case ClickCancel:
             clickCancel();
             break;
+        case ClickOk:
+            clickOk();
+            break;
         default:
             GT_CHECK(false, "An unrecognized action type");
         }
@@ -87,6 +90,12 @@ void ConstructMoleculeDialogFiller::invertAddedFragment(const QVariant &actionDa
 #define GT_METHOD_NAME "clickCancel"
 void ConstructMoleculeDialogFiller::clickCancel() {
     GTUtilsDialog::clickButtonBox(os, dialog, QDialogButtonBox::Cancel);
+}
+#undef GT_METHOD_NAME
+
+#define GT_METHOD_NAME "clickOk"
+void ConstructMoleculeDialogFiller::clickOk() {
+    GTUtilsDialog::clickButtonBox(os, dialog, QDialogButtonBox::Ok);
 }
 #undef GT_METHOD_NAME
 

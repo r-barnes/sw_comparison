@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -22,8 +22,9 @@
 #ifndef _U1_ANNOTATION_UTILS_H_
 #define _U1_ANNOTATION_UTILS_H_
 
-#include <U2Core/AnnotationData.h>
 #include <U2Core/Annotation.h>
+#include <U2Core/AnnotationData.h>
+#include <U2Core/AnnotationSelection.h>
 #include <U2Core/DNASequence.h>
 #include <U2Core/GUrl.h>
 
@@ -94,11 +95,22 @@ public:
 
     static QList<U2Region> getRelatedLowerCaseRegions(const U2SequenceObject *so, const QList<GObject *> &anns);
 
+    /**
+    * Check if it's the selection of the circular view, which contains the junction point
+    * Return true if the "Annotation Selection Data" argument contains two selected regions and two location IDs,
+    * And if one of these regions has start point equals to zero, and another one has end pos equals to sequence length
+    */
+    static bool isAnnotationAroundJunctionPoint(const Annotation* annotation, const qint64 sequenceLength);
+    static bool isRegionsAroundJunctionPoint(const QVector<U2Region>& regions, const qint64 sequenceLength);
+
     static char * applyLowerCaseRegions(char *seq, qint64 first, qint64 len, qint64 globalOffset, const QList<U2Region> &regs);
 
     static QString guessAminoTranslation(AnnotationTableObject *ao, const DNAAlphabet *al);
 
     static QList<AnnotatedRegion> getAnnotatedRegionsByStartPos(QList<AnnotationTableObject*> annotationObjects, qint64 startPos);
+
+    /** Shifts annotation around the circular sequence and returns new location. */
+    static U2Location shiftLocation(const U2Location& location, qint64 shift, qint64 sequenceLength);
 
     /**
      * Adds or replaces "/note" qualifier if description is not empty.

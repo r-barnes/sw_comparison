@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -96,6 +96,7 @@ public:
     virtual QQueue<Message> getMessages(int startIndex, int endIndex) const;
 
     QVariantMap getContext() const {return context;}
+    QVariantMap getLastMessageContext() const {return lastMessageContext;}
     void setContext(const QVariantMap& m, int metadataId);
     int getContextMetadataId() const;
 
@@ -120,6 +121,7 @@ protected:
     BusMap *busMap;
     // context of an output message. See put() for details
     QVariantMap context;
+    QVariantMap lastMessageContext;
     int contextMetadataId;
     //
     IntegralBus* complement;

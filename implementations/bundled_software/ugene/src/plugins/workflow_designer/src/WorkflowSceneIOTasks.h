@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -50,7 +50,7 @@ private:
 class LoadWorkflowSceneTask : public Task {
     Q_OBJECT
 public:
-    LoadWorkflowSceneTask(Schema *schema, Metadata *meta, WorkflowScene *scene, const QString &url, bool noUrl = false);
+    LoadWorkflowSceneTask(Schema *schema, Metadata *meta, WorkflowScene *scene, const QString &url, bool noUrl = false, bool disableWizardAutorun = false);
     virtual void run();
     virtual Task::ReportResult report();
 
@@ -64,6 +64,7 @@ private:
     QString rawData;
     LoadWorkflowTask::FileFormat format;
     bool noUrl;
+    bool disableWizardAutorun;
 };
 
 } //namespace

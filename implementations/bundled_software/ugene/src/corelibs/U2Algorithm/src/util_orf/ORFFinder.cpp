@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -423,7 +423,7 @@ void ORFFindAlgorithm::checkStopCodonOnJunction(const U2SequenceObject &dnaSeq, 
 char* ORFFindAlgorithm::getCodonFromJunction(const U2SequenceObject &dnaSeq, ORFAlgorithmStrand strand,
                                              int symbolsFromEnd) {
     SAFE_POINT(strand != ORFAlgorithmStrand_Both, "Invalid strand: direct or complement are the only possible variants!", NULL);
-    SAFE_POINT(symbolsFromEnd == 1 || symbolsFromEnd == 2, "Codon can be splitted only in two places: after the first or the second symbol!", NULL);
+    SAFE_POINT(symbolsFromEnd == 1 || symbolsFromEnd == 2, "Codon can be split only in two places: after the first or the second symbol!", NULL);
 
     char *tmp = new char[3];
     int seqLen = dnaSeq.getSequenceLength();

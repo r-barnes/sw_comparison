@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -115,7 +115,7 @@ MultipleSequenceAlignmentRowData::MultipleSequenceAlignmentRowData(const U2MsaRo
       alignment(msaData),
       initialRowInDb(rowInDb)
 {
-    SAFE_POINT(alignment != NULL, "Parent MultipleSequenceAlignmentData is NULL", );
+    SAFE_POINT(alignment != NULL, "Parent MultipleSequenceAlignmentData are NULL", );
     removeTrailingGaps();
 }
 
@@ -136,7 +136,7 @@ MultipleSequenceAlignmentRowData::MultipleSequenceAlignmentRowData(const Multipl
       alignment(msaData),
       initialRowInDb(row->initialRowInDb)
 {
-    SAFE_POINT(alignment != NULL, "Parent MultipleSequenceAlignmentData is NULL", );
+    SAFE_POINT(alignment != NULL, "Parent MultipleSequenceAlignmentData are NULL", );
 }
 
 MultipleSequenceAlignmentRowData::~MultipleSequenceAlignmentRowData() {

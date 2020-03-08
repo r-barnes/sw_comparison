@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -226,8 +226,8 @@ void BaseWorker::restoreActualChannelsState() {
     }
 }
 
-QList<ExternalToolListener*> BaseWorker::createLogListeners(int listenersNumber) {
-    return context->getMonitor()->createWorkflowListeners(actor->getLabel(), listenersNumber);
+QList<ExternalToolListener*> BaseWorker::createLogListeners(int listenersNumber) const {
+    return context->getMonitor()->createWorkflowListeners(actor->getId(), actor->getLabel(), listenersNumber);
 }
 
 void BaseWorker::addMessagesFromBackupToAppropriratePort(CommunicationChannel *channel) {

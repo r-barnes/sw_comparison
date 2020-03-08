@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -31,9 +31,9 @@
 #include <U2Core/U2IdTypes.h>
 
 #ifdef _DEBUG
-#   define U2_PRODUCT_NAME      "UGENED"
+#define U2_PRODUCT_NAME      "UGENED"
 #else
-#   define U2_PRODUCT_NAME      "UGENE"
+#define U2_PRODUCT_NAME      "UGENE"
 #endif
 
 /** used to store settings with a project name in a key, etc. Same in debug and release */
@@ -50,49 +50,49 @@
 
 
 #ifdef BUILDING_U2CORE_DLL
-#   define U2CORE_EXPORT Q_DECL_EXPORT
+#define U2CORE_EXPORT Q_DECL_EXPORT
 #else
-#   define U2CORE_EXPORT Q_DECL_IMPORT
+#define U2CORE_EXPORT Q_DECL_IMPORT
 #endif
 #ifdef BUILDING_U2FORMATS_DLL
-#   define U2FORMATS_EXPORT Q_DECL_EXPORT
+#define U2FORMATS_EXPORT Q_DECL_EXPORT
 #else
-#   define U2FORMATS_EXPORT Q_DECL_IMPORT
+#define U2FORMATS_EXPORT Q_DECL_IMPORT
 #endif
 #ifdef BUILDING_U2ALGORITHM_DLL
-#   define U2ALGORITHM_EXPORT Q_DECL_EXPORT
+#define U2ALGORITHM_EXPORT Q_DECL_EXPORT
 #else
-#   define U2ALGORITHM_EXPORT Q_DECL_IMPORT
+#define U2ALGORITHM_EXPORT Q_DECL_IMPORT
 #endif
 #ifdef BUILDING_U2TEST_DLL
-#   define U2TEST_EXPORT Q_DECL_EXPORT
+#define U2TEST_EXPORT Q_DECL_EXPORT
 #else
-#   define U2TEST_EXPORT Q_DECL_IMPORT
+#define U2TEST_EXPORT Q_DECL_IMPORT
 #endif
 #ifdef BUILDING_U2LANG_DLL
-#   define U2LANG_EXPORT Q_DECL_EXPORT
+#define U2LANG_EXPORT Q_DECL_EXPORT
 #else
-#   define U2LANG_EXPORT Q_DECL_IMPORT
+#define U2LANG_EXPORT Q_DECL_IMPORT
 #endif
 #ifdef BUILDING_U2GUI_DLL
-#   define U2GUI_EXPORT Q_DECL_EXPORT
+#define U2GUI_EXPORT Q_DECL_EXPORT
 #else
-#   define U2GUI_EXPORT Q_DECL_IMPORT
+#define U2GUI_EXPORT Q_DECL_IMPORT
 #endif
 #ifdef BUILDING_U2VIEW_DLL
-#   define U2VIEW_EXPORT Q_DECL_EXPORT
+#define U2VIEW_EXPORT Q_DECL_EXPORT
 #else
-#   define U2VIEW_EXPORT Q_DECL_IMPORT
+#define U2VIEW_EXPORT Q_DECL_IMPORT
 #endif
 #ifdef BUILDING_U2DESIGNER_DLL
-#   define U2DESIGNER_EXPORT Q_DECL_EXPORT
+#define U2DESIGNER_EXPORT Q_DECL_EXPORT
 #else
-#   define U2DESIGNER_EXPORT Q_DECL_IMPORT
+#define U2DESIGNER_EXPORT Q_DECL_IMPORT
 #endif
 #ifdef BUILDING_U2PRIVATE_DLL
-#   define U2PRIVATE_EXPORT Q_DECL_EXPORT
+#define U2PRIVATE_EXPORT Q_DECL_EXPORT
 #else
-#   define U2PRIVATE_EXPORT Q_DECL_IMPORT
+#define U2PRIVATE_EXPORT Q_DECL_IMPORT
 #endif
 
 // UGENE_VERSION must be supplied as a preprocessor directive
@@ -113,9 +113,9 @@
 #define ENV_USE_NATIVE_DIALOGS "UGENE_USE_NATIVE_DIALOGS"
 
 #ifdef __GNUC__
-  #define ATTR_UNUSED __attribute__((unused))
+#define ATTR_UNUSED __attribute__((unused))
 #else
-  #define ATTR_UNUSED
+#define ATTR_UNUSED
 #endif
 
 #define PATH_PREFIX_DATA "data"
@@ -143,9 +143,9 @@ enum NavigationDirection {
 
 enum DNAAlphabetType {
     DNAAlphabet_UNDEFINED = 0x0,
-    DNAAlphabet_RAW     = 0x1,
-    DNAAlphabet_NUCL    = 0x2,
-    DNAAlphabet_AMINO   = 0x4
+    DNAAlphabet_RAW = 0x1,
+    DNAAlphabet_NUCL = 0x2,
+    DNAAlphabet_AMINO = 0x4
 };
 
 Q_DECLARE_FLAGS(AlphabetFlags, DNAAlphabetType)

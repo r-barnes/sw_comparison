@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -61,7 +61,7 @@ public:
 
     // returns 'false' if validations fails, otherwise 'true'
     // if validation fails, new errors appended to errorList
-    virtual bool validate(ProblemList& problemList) const;
+    virtual bool validate(NotificationsList& notificationList) const;
 
     // when schema copied, actors in new schema get new id's
     // in this case, we need to remap all links between actors

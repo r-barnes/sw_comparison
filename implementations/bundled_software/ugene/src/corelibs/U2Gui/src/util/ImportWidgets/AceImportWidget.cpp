@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -33,9 +33,7 @@ namespace U2 {
 
 const QString AceImportWidget::EXTENSION = ".ugenedb";
 
-AceImportWidget::AceImportWidget(const GUrl& url, const QVariantMap& settings) :
-    ImportWidget(url, settings)
-{
+AceImportWidget::AceImportWidget(const GUrl& url) : ImportWidget() {
     setupUi(this);
 
     initSaveController(url);

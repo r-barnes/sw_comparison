@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -166,17 +166,17 @@ void GffreadWorker::sendResult(const QString &outUrl) {
 /************************************************************************/
 class GffreadInputSlotsValidator : public PortValidator {
 public:
-    virtual bool validate(const IntegralBusPort *port, ProblemList &problemList) const {
+    virtual bool validate(const IntegralBusPort *port, NotificationsList &notificationList) const {
         bool genome = isBinded(port, GENOME_URL_SLOT_ID);
         bool transc = isBinded(port, TRANSCRIPTS_URL_SLOT_ID);
 
         QString genomeName = slotName(port, GENOME_URL_SLOT_ID);
         QString trancsName = slotName(port, TRANSCRIPTS_URL_SLOT_ID);
         if (!genome) {
-            problemList.append(Problem(QObject::tr("Genome sequence slot is not binded : '%1'").arg(genomeName)));
+            notificationList.append(WorkflowNotification(QObject::tr("Genome sequence slot is not binded : '%1'").arg(genomeName)));
         }
         if (!transc) {
-            problemList.append(Problem(QObject::tr("Transcripts slot is not binded : '%1'").arg(trancsName)));
+            notificationList.append(WorkflowNotification(QObject::tr("Transcripts slot is not binded : '%1'").arg(trancsName)));
         }
 
         return genome && transc;
@@ -221,7 +221,7 @@ void GffreadWorkerFactory::init() {
     proto->setPrompter(new GffreadPrompter());
     proto->setEditor(new DelegateEditor(delegates));
     proto->setPortValidator(IN_PORT_ID, new GffreadInputSlotsValidator());
-    proto->addExternalTool(ET_GFFREAD);
+    proto->addExternalTool(CufflinksSupport::ET_GFFREAD_ID);
     WorkflowEnv::getProtoRegistry()->registerProto(BaseActorCategories::CATEGORY_RNA_SEQ(), proto);
 
     DomainFactory *localDomain = WorkflowEnv::getDomainRegistry()->getById(LocalDomainFactory::ID);

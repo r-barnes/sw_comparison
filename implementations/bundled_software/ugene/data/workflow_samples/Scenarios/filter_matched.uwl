@@ -121,6 +121,7 @@ workflow "Filter sequence that match a pattern"{
         wizard {
             name:"Filter sequence that match a pattern Wizard";
             help-page-id:16122701;
+            auto-run: true;
             page {
                 id:1;
                 next:2;

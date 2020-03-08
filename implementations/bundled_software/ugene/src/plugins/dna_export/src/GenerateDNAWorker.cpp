@@ -1,6 +1,6 @@
 /**
 * UGENE - Integrated Bioinformatics Tools.
-* Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+* Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
 * http://ugene.net
 *
 * This program is free software; you can redistribute it and/or
@@ -227,27 +227,26 @@ Task* GenerateDNAWorker::tick() {
         }
     } else {
         if(actor->getParameter(ALGORITHM)->getAttributeValue<QString>(context) == "GC Skew") {
-            int percentA = qrand();
-            int percentC = qrand();
-            int percentT = qrand();
-            int percentG = qrand();
-            int sum = percentA + percentC + percentG + percentT;
-            percentA = (float)percentA / sum * 100;
-            percentG = (float)percentG / sum * 100;
-            percentC = (float)percentC / sum * 100;
-            percentT = (float)percentT / sum * 100;
-            int CG = percentG + percentG;
-            float gcSkew = actor->getParameter(GC_SKEW)->getAttributeValue<float>(context);
-            percentC = (1 - gcSkew)* CG / 2;
+            double percentA = qrand();
+            double percentC = qrand();
+            double percentG = qrand();
+            double percentT = qrand();
+            double sum = percentA + percentC + percentG + percentT;
+            percentA = percentA / sum * 100;
+            percentC = percentC / sum * 100;
+            percentG = percentG / sum * 100;
+            percentT = percentT / sum * 100;
+            double CG = percentC + percentG;
+            double gcSkew = actor->getParameter(GC_SKEW)->getAttributeValue<float>(context);
+            percentC = (1 - gcSkew) * CG / 2;
             percentG = percentC + gcSkew * CG;
-            if(percentC < 0 || percentC > 100 || percentG < 0 || percentG > 100) {
+            if (percentC < 0 || percentC > 100 || percentG < 0 || percentG > 100) {
                 return new FailTask("Wrong GC Skew value");
             }
-
-            cfg.content['A'] = percentA / 100.0;
-            cfg.content['C'] = percentC / 100.0;
-            cfg.content['G'] = percentG / 100.0;
-            cfg.content['T'] = percentT / 100.0;
+            cfg.content['A'] = percentA / 100;
+            cfg.content['C'] = percentC / 100;
+            cfg.content['G'] = percentG / 100;
+            cfg.content['T'] = percentT / 100;
         } else {
             int percentA = actor->getParameter(A_PERCENT_ATTR)->getAttributeValue<int>(context);
             int percentC = actor->getParameter(C_PERCENT_ATTR)->getAttributeValue<int>(context);

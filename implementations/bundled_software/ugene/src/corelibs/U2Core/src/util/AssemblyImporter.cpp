@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -125,7 +125,7 @@ void AssemblyImporter::finalizeAssembly() {
     SAFE_POINT_OP(innerOs, );
 
     if (connection.dbi->isTransactionActive()) {
-        coreLog.trace("Assembly finalization inside a transaction occured: there can be some troubles");
+        coreLog.trace("Assembly finalization inside a transaction occurred: there can be some troubles");
         Q_ASSERT(false);
     }
 

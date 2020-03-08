@@ -67,7 +67,7 @@ PairwiseAlignmentHirschbergTask::PairwiseAlignmentHirschbergTask(PairwiseAlignme
       workflowKalignSubTask(NULL)
 {
     SAFE_POINT(settings != NULL, "Task settings are not defined.", );
-    SAFE_POINT(settings->convertCustomSettings() && settings->isValid(), "Invalide task settings.", );
+    SAFE_POINT(settings->convertCustomSettings() && settings->isValid(), "Invalid task settings.", );
 
     U2OpStatus2Log os;
     DbiConnection con(settings->msaRef.dbiRef, os);

@@ -1,6 +1,6 @@
 /**
 * UGENE - Integrated Bioinformatics Tools.
-* Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+* Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
 * http://ugene.net
 *
 * This program is free software; you can redistribute it and/or
@@ -28,28 +28,26 @@
 #include <QTextStream>
 #include <QStack>
 
+#include "../TextDocumentFormat.h"
+
 namespace U2 {
 
 class IOAdapter;
 class MultipleSequenceAlignment;
 
-class U2FORMATS_EXPORT AprFormat : public DocumentFormat {
+class U2FORMATS_EXPORT AprFormat : public TextDocumentFormat {
     Q_OBJECT
 public:
     AprFormat(QObject* p);
 
-    virtual DocumentFormatId getFormatId() const { return BaseDocumentFormats::VECTOR_NTI_ALIGNX; }
-    virtual const QString& getFormatName() const { return formatName; }
-    virtual FormatCheckResult checkRawData(const QByteArray& rawData, const GUrl& url = GUrl()) const;
     virtual QString getRadioButtonText() const;
 
 protected:
-    virtual Document* loadDocument(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& fs, U2OpStatus& os);
+    virtual FormatCheckResult checkRawTextData(const QByteArray& rawData, const GUrl& url = GUrl()) const;
+    virtual Document* loadTextDocument(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& fs, U2OpStatus& os);
 
 private:
     void load(IOAdapter* io, const U2DbiRef& dbiRef, QList<GObject*>& objects, const QVariantMap &hints, U2OpStatus& ti);
-
-    QString formatName;
 };
 
 } //namespace

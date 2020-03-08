@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -33,7 +33,7 @@ namespace U2 {
 
 /* TRANSLATOR U2::IOAdapter */
 
-PlainTextFormat::PlainTextFormat(QObject* p) : DocumentFormat(p, DocumentFormatFlags_W1, QStringList("txt")) {
+PlainTextFormat::PlainTextFormat(QObject* p) : TextDocumentFormat(p, BaseDocumentFormats::PLAIN_TEXT, DocumentFormatFlags_W1, QStringList("txt")) {
     formatName = tr("Plain text");
     supportedObjectTypes+=GObjectTypes::TEXT;
     formatDescription = tr("A simple plain text file.");
@@ -41,7 +41,7 @@ PlainTextFormat::PlainTextFormat(QObject* p) : DocumentFormat(p, DocumentFormatF
 
 #define BUFF_SIZE 1024
 
-Document* PlainTextFormat::loadDocument(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& fs, U2OpStatus& os){
+Document* PlainTextFormat::loadTextDocument(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& fs, U2OpStatus& os){
     DbiOperationsBlock opBlock(dbiRef, os);
     CHECK_OP(os, NULL);
     Q_UNUSED(opBlock);
@@ -54,16 +54,16 @@ Document* PlainTextFormat::loadDocument(IOAdapter* io, const U2DbiRef& dbiRef, c
     QByteArray block(BUFF_SIZE, '\0');
     int blockLen = 0;
     while ((blockLen = io->readBlock(block.data(), BUFF_SIZE)) > 0) {
+        CHECK_EXT_BREAK(!io->hasError(), os.setError(io->errorString()));
+
         int sizeBefore = text.length();
         QString line = QString::fromLocal8Bit(block.data(), blockLen);
         text.append(line);
-        if (text.length() != sizeBefore + blockLen) {
-            os.setError(L10N::errorReadingFile(io->getURL()));
-            break;
-        }
+        CHECK_EXT_BREAK(text.length() == (sizeBefore + blockLen), os.setError(L10N::errorReadingFile(io->getURL())));
+
         os.setProgress(io->getProgress());
     }
-
+    CHECK_EXT(!io->hasError(), os.setError(io->errorString()), NULL);
     CHECK_OP(os, NULL);
 
     //todo: check file-readonly status?
@@ -104,7 +104,7 @@ void PlainTextFormat::storeRawData(const QByteArray& rawData, U2OpStatus& ts, IO
 }
 
 
-FormatCheckResult PlainTextFormat::checkRawData(const QByteArray& rawData, const GUrl&) const {
+FormatCheckResult PlainTextFormat::checkRawTextData(const QByteArray& rawData, const GUrl&) const {
     const char* data = rawData.constData();
     int size = rawData.size();
     bool hasBinaryData = TextUtils::contains(TextUtils::BINARY, data, size);

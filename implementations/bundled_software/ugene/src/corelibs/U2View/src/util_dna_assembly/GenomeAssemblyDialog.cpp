@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -56,7 +56,7 @@ GenomeAssemblyDialog::GenomeAssemblyDialog(QWidget* p)
     setupUi(this);
 
     QMap<QString,QString> helpPagesMap;
-    helpPagesMap.insert("SPAdes","21433441");
+    helpPagesMap.insert("SPAdes","24742640");
     new ComboboxDependentHelpButton(this, buttonBox, methodNamesBox, helpPagesMap);
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Start"));
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
@@ -76,7 +76,7 @@ GenomeAssemblyDialog::GenomeAssemblyDialog(QWidget* p)
         }
     }
 
-    libraryComboBox->addItems(GenomeAssemblyUtils::getLibraryTypes());
+//    libraryComboBox->addItems(GenomeAssemblyUtils::getLibraryTypes());
 
     QHeaderView* header1 = propertiesReadsTable->header();
     QHeaderView* header2 = leftReadsTable->header();
@@ -122,9 +122,9 @@ void GenomeAssemblyDialog::updateProperties()
 {
     int numProperties = propertiesReadsTable->topLevelItemCount();
     int numberOfReads =  leftReadsTable->topLevelItemCount();
-    if(GenomeAssemblyUtils::hasRightReads(libraryComboBox->currentText())){
-        numberOfReads = qMax(leftReadsTable->topLevelItemCount(), rightReadsTable->topLevelItemCount());
-    }
+//    if(GenomeAssemblyUtils::hasRightReads(libraryComboBox->currentText())){
+//        numberOfReads = qMax(leftReadsTable->topLevelItemCount(), rightReadsTable->topLevelItemCount());
+//    }
     if(numProperties > numberOfReads){
         //remove items
         for (int i = numProperties - 1; i >= numberOfReads; --i){
@@ -204,26 +204,26 @@ void GenomeAssemblyDialog::accept() {
             tr("Result assembly folder is not set!") );
         validated = false;
     } else {
-        if(GenomeAssemblyUtils::hasRightReads(libraryComboBox->currentText())){
-            if(leftReadsTable->topLevelItemCount() == 0 && rightReadsTable->topLevelItemCount() == 0){
-                QMessageBox::information(this, tr("Genome Assembly"),
-                    tr("No reads. Please, add file(s) with short reads.") );
-                validated = false;
-            }
+//        if(GenomeAssemblyUtils::hasRightReads(libraryComboBox->currentText())){
+//            if(leftReadsTable->topLevelItemCount() == 0 && rightReadsTable->topLevelItemCount() == 0){
+//                QMessageBox::information(this, tr("Genome Assembly"),
+//                    tr("No reads. Please, add file(s) with short reads.") );
+//                validated = false;
+//            }
 
-            if(leftReadsTable->topLevelItemCount() != rightReadsTable->topLevelItemCount()){
-                QMessageBox::information(this, tr("Genome Assembly"),
-                    tr("In the paired-end mode a number of lift and right reads must be equal.") );
-                validated = false;
-            }
+//            if(leftReadsTable->topLevelItemCount() != rightReadsTable->topLevelItemCount()){
+//                QMessageBox::information(this, tr("Genome Assembly"),
+//                    tr("In the paired-end mode a number of lift and right reads must be equal.") );
+//                validated = false;
+//            }
 
-        }else{
-            if(leftReadsTable->topLevelItemCount() == 0){
-                QMessageBox::information(this, tr("Genome Assembly"),
-                    tr("No reads. Please, add file(s) with short reads.") );
-                validated = false;
-            }
-        }
+//        }else{
+//            if(leftReadsTable->topLevelItemCount() == 0){
+//                QMessageBox::information(this, tr("Genome Assembly"),
+//                    tr("No reads. Please, add file(s) with short reads.") );
+//                validated = false;
+//            }
+//        }
 
         if(validated){
             library = libraryComboBox->currentText();
@@ -292,15 +292,15 @@ QList<AssemblyReads> GenomeAssemblyDialog::getReads() {
         QTreeWidgetItem* item = propertiesReadsTable->topLevelItem(i);
         ReadPropertiesItem* pitem = dynamic_cast<ReadPropertiesItem*>(item);
         if (pitem){
-            read.libNumber = pitem->getNumber();
-            read.libType = pitem->getType();
+//            read.libNumber = pitem->getNumber();
+//            read.libType = pitem->getType();
             read.orientation = pitem->getOrientation();
             read.libName = libraryComboBox->currentText();
 
             if (i < numLeftReads){
-                read.left = leftReadsTable->topLevelItem(i)->data(0, Qt::UserRole).toString();
+                read.left << leftReadsTable->topLevelItem(i)->data(0, Qt::UserRole).toString();
                 if(i < numRightReads){
-                    read.right = rightReadsTable->topLevelItem(i)->data(0, Qt::UserRole).toString();
+                    read.right << rightReadsTable->topLevelItem(i)->data(0, Qt::UserRole).toString();
                 }
                 result.append(read);
             }
@@ -399,15 +399,15 @@ void GenomeAssemblyDialog::addGuiExtension() {
 
 void GenomeAssemblyDialog::sl_onLibraryTypeChanged(){
     QString libraryType = libraryComboBox->currentText();
-    if(GenomeAssemblyUtils::hasRightReads(libraryType)){
-        rightReadsTable->setEnabled(true);
-        addRightButton->setEnabled(true);
-        removeRightButton->setEnabled(true);
-    }else{
-        rightReadsTable->setEnabled(false);
-        addRightButton->setEnabled(false);
-        removeRightButton->setEnabled(false);
-    }
+//    if(GenomeAssemblyUtils::hasRightReads(libraryType)){
+//        rightReadsTable->setEnabled(true);
+//        addRightButton->setEnabled(true);
+//        removeRightButton->setEnabled(true);
+//    }else{
+//        rightReadsTable->setEnabled(false);
+//        addRightButton->setEnabled(false);
+//        removeRightButton->setEnabled(false);
+//    }
 
     int size = propertiesReadsTable->topLevelItemCount();
     for (int i = 0; i < size; i++){
@@ -423,7 +423,7 @@ void GenomeAssemblyDialog::sl_onLibraryTypeChanged(){
 
 ReadPropertiesItem::ReadPropertiesItem(QTreeWidget *widget) : QTreeWidgetItem(widget){
     typeBox = new QComboBox(widget);
-    typeBox->addItems(GenomeAssemblyUtils::getPairTypes());
+//    typeBox->addItems(GenomeAssemblyUtils::getPairTypes());
 
     orientationBox = new QComboBox(widget);
     orientationBox->addItems(GenomeAssemblyUtils::getOrientationTypes());

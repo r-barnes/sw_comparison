@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -22,11 +22,11 @@
 #ifndef _U2_TOPHAT_WORKER_H
 #define _U2_TOPHAT_WORKER_H
 
-#include "TopHatSettings.h"
-
+#include <U2Lang/DatasetFetcher.h>
 #include <U2Lang/LocalDomain.h>
 #include <U2Lang/WorkflowUtils.h>
 
+#include "TopHatSettings.h"
 
 namespace U2 {
 namespace LocalWorkflow {
@@ -41,27 +41,6 @@ public:
 protected:
     QString composeRichDoc();
 };
-
-class DatasetData {
-public:
-    DatasetData(bool groupByDatasets, const QString &samplesMapStr);
-    bool isGroup() const;
-
-    /** Initialize the data by dataset on first check */
-    bool isCurrent(const QString &dataset);
-    void replaceCurrent(const QString &dataset);
-    QString getCurrentSample() const;
-
-private:
-    bool groupByDatasets;
-    QString samplesMapStr;
-    QString currentDataset;
-    bool inited;
-
-private:
-    void init(const QString &dataset);
-};
-
 
 class TopHatWorker : public BaseWorker
 {
@@ -84,18 +63,20 @@ protected:
     TopHatSettings settings;
 
     bool settingsAreCorrect;
-    DatasetData datasetsData;
+    DatasetFetcher readsFetcher;
+    QList<TophatSample> samples;
 
 private:
     void initInputData();
     void initPairedReads();
-    void initDatasetData();
+    void initDatasetFetcher();
     void initSettings();
     void initPathes();
+    void initSamples();
+
     QList<Actor*> getProducers(const QString &slotId) const;
+    QString getSampleName(const QString &datasetName) const;
     Task * runTophat();
-    /** Returns Tophat task is the dataset is changed */
-    Task * checkDatasets(const QVariantMap &data);
 };
 
 
@@ -109,6 +90,8 @@ public:
 
     static const QString OUT_DIR;
     static const QString SAMPLES_MAP;
+    static const QString REFERENCE_INPUT_TYPE;
+    static const QString REFERENCE_GENOME;
     static const QString BOWTIE_INDEX_DIR;
     static const QString BOWTIE_INDEX_BASENAME;
     static const QString REF_SEQ;
@@ -140,24 +123,26 @@ public:
 
 class InputSlotsValidator : public PortValidator {
 public:
-    virtual bool validate(const IntegralBusPort *port, ProblemList &problemList) const;
+    virtual bool validate(const IntegralBusPort *port, NotificationsList &notificationList) const;
 };
 
 class BowtieToolsValidator : public ActorValidator {
 public:
-    virtual bool validate(const Actor *actor, ProblemList &problemList, const QMap<QString, QString> &options) const;
+    virtual bool validate(const Actor *actor, NotificationsList &notificationList, const QMap<QString, QString> &options) const;
 
 private:
-    bool validateBowtie(const Actor *actor, ProblemList &problemList) const;
-    bool validateSamples(const Actor *actor, ProblemList &problemList) const;
+    bool validateBowtie(const Actor *actor, NotificationsList &notificationList) const;
+    bool validateSamples(const Actor *actor, NotificationsList &notificationList) const;
 };
 
 class BowtieFilesRelation : public AttributeRelation {
 public:
     BowtieFilesRelation(const QString &indexNameAttrId);
+
     QVariant getAffectResult(const QVariant &influencingValue, const QVariant &dependentValue,
         DelegateTags *infTags, DelegateTags *depTags) const;
     RelationType getType() const;
+    BowtieFilesRelation *clone() const;
 
     static QString getBowtie1IndexName(const QString &dir, const QString &fileName);
     static QString getBowtie2IndexName(const QString &dir, const QString &fileName);
@@ -166,9 +151,11 @@ public:
 class BowtieVersionRelation : public AttributeRelation {
 public:
     BowtieVersionRelation(const QString &bwtVersionAttrId);
+
     QVariant getAffectResult(const QVariant &influencingValue, const QVariant &dependentValue,
         DelegateTags *infTags, DelegateTags *depTags) const;
     RelationType getType() const;
+    BowtieVersionRelation *clone() const;
 };
 
 } // namespace LocalWorkflow

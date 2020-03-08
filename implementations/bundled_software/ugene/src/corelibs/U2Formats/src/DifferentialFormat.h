@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -27,6 +27,7 @@
 #include <U2Core/U2OpStatus.h>
 
 #include "ColumnDataParser.h"
+#include "TextDocumentFormat.h"
 
 namespace U2 {
 
@@ -35,19 +36,16 @@ namespace U2 {
  * expression, splicing, promoters and cds.
  * http://cufflinks.cbcb.umd.edu/manual.html
  */
-class U2FORMATS_EXPORT DifferentialFormat : public DocumentFormat {
+class U2FORMATS_EXPORT DifferentialFormat : public TextDocumentFormat {
     Q_OBJECT
 public:
     DifferentialFormat(QObject *parent);
 
-    DocumentFormatId getFormatId() const;
-    const QString & getFormatName() const;
-
     void storeDocument(Document *d, IOAdapter *io, U2OpStatus &os);
-    FormatCheckResult checkRawData(const QByteArray &rawData, const GUrl &url = GUrl()) const;
 
 protected:
-    Document * loadDocument(IOAdapter *io, const U2DbiRef &targetDb, const QVariantMap &hints, U2OpStatus &os);
+    FormatCheckResult checkRawTextData(const QByteArray &rawData, const GUrl &url = GUrl()) const;
+    Document * loadTextDocument(IOAdapter *io, const U2DbiRef &targetDb, const QVariantMap &hints, U2OpStatus &os);
 
 private:
     QList<ColumnDataParser::Column> getColumns() const;
@@ -63,8 +61,6 @@ private:
     static QString createValue(const SharedAnnotationData &data, const ColumnDataParser::Column &column, U2OpStatus &os);
 
 private:
-    QString formatName;
-
     static const int BUFFER_SIZE;
 };
 

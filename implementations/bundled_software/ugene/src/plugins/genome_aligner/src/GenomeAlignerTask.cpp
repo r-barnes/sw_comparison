@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -66,7 +66,7 @@ const QString GenomeAlignerTask::OPTION_READS_MEMORY_SIZE("reads_mem_size");
 const QString GenomeAlignerTask::OPTION_SEQ_PART_SIZE("seq_part_size");
 
 GenomeAlignerTask::GenomeAlignerTask( const DnaAssemblyToRefTaskSettings& _settings, bool _justBuildIndex )
-: DnaAssemblyToReferenceTask(_settings, TaskFlags_NR_FOSE_COSC | TaskFlag_ReportingIsSupported | TaskFlag_ReportingIsEnabled, _justBuildIndex),
+: DnaAssemblyToReferenceTask(_settings, TaskFlags_NR_FOSE_COSC, _justBuildIndex),
   loadDbiTask(NULL),
   createIndexTask(NULL),
   readTask(NULL),
@@ -203,7 +203,12 @@ QList<Task*> GenomeAlignerTask::onSubTaskFinished( Task* subTask ) {
 
         if (seqReader->isEnd()) {
             if (!hasError()){
-                setError(tr("Can not init short reads loader."));
+                QString error = seqReader->getMemberError();
+                if (error.isEmpty()) {
+                    setError(tr("Can not init short reads loader."));
+                } else {
+                    setError(error);
+                }
                 if (NULL != pWriteTask) {
                     pWriteTask->setFinished();
                 }
@@ -211,11 +216,19 @@ QList<Task*> GenomeAlignerTask::onSubTaskFinished( Task* subTask ) {
             return subTasks;
         }
 
+        QString assemblyObjectName = settings.resultFileName.baseFileName();
+        bool nonMergedReference = index->getNumberOfSequencesInIndex();
+        QString referenceSequenceName = nonMergedReference ? index->getFirstSequenceObjectName() : QString();
         if (settings.samOutput) {
-            seqWriter = new GenomeAlignerUrlWriter(settings.resultFileName, index->getSeqName(), index->getSeqLength());
+            seqWriter = new GenomeAlignerUrlWriter(settings.resultFileName, assemblyObjectName, index->getSeqLength());
         } else {
+            QString referenceSequenceUrl = nonMergedReference ? settings.refSeqUrl.getURLString() : QString();
             try {
-                seqWriter = new GenomeAlignerDbiWriter(settings.resultFileName.getURLString(), index->getSeqName(), index->getSeqLength());
+                seqWriter = new GenomeAlignerDbiWriter(settings.resultFileName.getURLString(),
+                                                       assemblyObjectName,
+                                                       index->getSeqLength(),
+                                                       referenceSequenceName,
+                                                       referenceSequenceUrl);
             } catch (const QString &exeptionMessage) {
                 setError(exeptionMessage);
                 if (NULL != pWriteTask) {
@@ -224,7 +237,9 @@ QList<Task*> GenomeAlignerTask::onSubTaskFinished( Task* subTask ) {
                 return subTasks;
             }
         }
-        seqWriter->setReferenceName(index->getSeqName());
+        if (!referenceSequenceName.isEmpty()) {
+            seqWriter->setReferenceName(index->getFirstSequenceObjectName());
+        }
         if (!alignContext.bestMode) {
             pWriteTask->setSeqWriter(seqWriter);
         }
@@ -237,7 +252,7 @@ QList<Task*> GenomeAlignerTask::onSubTaskFinished( Task* subTask ) {
 
         if (alignContext.bestMode) {
             // ReadShortReadsSubTask can add new data what can lead to realloc. Noone can touch these vectors without sync
-            writeTask  = new WriteAlignedReadsSubTask(alignContext.listM, seqWriter, alignContext.data, readsAligned);
+            writeTask  = new WriteAlignedReadsSubTask(alignContext.listM, writeLock, seqWriter, alignContext.data, readsAligned);
             writeTask->setSubtaskProgressWeight(0.0f);
             subTasks.append(writeTask);
             return subTasks;

@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -23,7 +23,7 @@
 #define _U2_FIND_REPEATS_DIALOG_H_
 
 #include <ui_FindRepeatsDialog.h>
-
+#include <QAction>
 #include <U2Core/U2Region.h>
 
 #include "FindRepeatsTask.h"

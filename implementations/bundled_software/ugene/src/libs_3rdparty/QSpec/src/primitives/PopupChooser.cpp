@@ -199,6 +199,17 @@ PopupCheckerByText::PopupCheckerByText(GUITestOpStatus &os,
 }
 
 PopupCheckerByText::PopupCheckerByText(GUITestOpStatus &os,
+                                       const QStringList &menuPath,
+                                       const QMap<QString, QKeySequence> &namesAndShortcuts,
+                                       PopupChecker::CheckOptions options,
+                                       GTGlobals::UseMethod useMethod)
+    : PopupCheckerByText(os, menuPath, namesAndShortcuts.keys(), options, useMethod)
+{
+    itemsShortcuts = namesAndShortcuts.values();
+}
+
+
+PopupCheckerByText::PopupCheckerByText(GUITestOpStatus &os,
                                        const QList<QStringList> &itemsPaths,
                                        PopupChecker::CheckOptions options,
                                        GTGlobals::UseMethod useMethod) :
@@ -267,11 +278,24 @@ void PopupCheckerByText::commonScenario() {
         if (options.testFlag(PopupChecker::IsChecked)) {
             GT_CHECK(act->isChecked(), "action '" + act->objectName() + "' is not checked");
             qDebug("GT_DEBUG_MESSAGE options.testFlag(IsChecked)");
-        } 
+        }
 
         if (options.testFlag(PopupChecker::IsUnchecked) ){
             GT_CHECK(!act->isChecked(), "action '" + act->objectName() + "' is checked");
             qDebug("GT_DEBUG_MESSAGE options.testFlag(IsUnchecked)");
+        }
+
+        if (options.testFlag(PopupChecker::isNotVisible)) {
+            GT_CHECK(!act->isVisible(), "action '" + act->objectName() + "' is visible, but shouldn't be");
+            qDebug("GT_DEBUG_MESSAGE options.testFlag(isNotVisible)");
+        }
+
+
+        if (!itemsShortcuts.isEmpty()) {
+            int index = itemsNames.indexOf(itemName);
+            GT_CHECK(0 <= index && index < itemsShortcuts.size(), "Unexpected shortcut list size");
+            GT_CHECK(itemsShortcuts.at(index)  == act->shortcut(), "action '" + act->text() + "' unexpected shortcut");
+
         }
     }
 

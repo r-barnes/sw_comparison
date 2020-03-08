@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -43,6 +43,9 @@ QWidget * RadioController::createGUI(U2OpStatus &/*os*/) {
     QWidget *result = new QWidget();
     QVBoxLayout *l = new QVBoxLayout(result);
     l->setMargin(0);
+#if defined(Q_OS_LINUX)
+    l->setSpacing(0);
+#endif
 
     QButtonGroup *group = new QButtonGroup(result);
     connect(group, SIGNAL(buttonClicked(QAbstractButton *)), SLOT(sl_buttonClicked(QAbstractButton *)));

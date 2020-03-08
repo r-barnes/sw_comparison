@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -215,7 +215,11 @@ void HMMIO::readHMM2(IOAdapterFactory* iof, const QString& url, TaskStateInfo& s
             break;
         }
         if (strncmp(buffer, "HMMER2.0", 8) != 0) {
-            si.setError(  tr("File format is not supported") );
+            if (strncmp(buffer, "HMMER3", 6) == 0) {
+                si.setError(tr("Model \"%1\" is a HMMER3 model, it can't be used with HMMER2.").arg(url));
+            } else {
+                si.setError(tr("File format is not supported"));
+            }
             break;
         }
 

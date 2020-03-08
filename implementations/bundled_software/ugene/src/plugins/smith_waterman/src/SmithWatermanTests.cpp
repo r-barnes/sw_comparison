@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -288,7 +288,9 @@ Task::ReportResult GTest_SmithWatermnan::report() {
 
 
     if (expectedRes.size() != resultList.size()) {
-        stateInfo.setError(QString("Not expected result: count result not coincide"));
+        stateInfo.setError(QString("Not expected result: count result not coincide, expected: %1, current: %2")
+                                   .arg(expectedRes.size())
+                                   .arg(resultList.size()));
         return ReportResult_Finished;
     }
 

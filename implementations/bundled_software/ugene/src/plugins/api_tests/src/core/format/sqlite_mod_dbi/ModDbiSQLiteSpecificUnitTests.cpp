@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -378,7 +378,7 @@ IMPLEMENT_TEST(ModDbiSQLiteSpecificUnitTests, updateMsaName_severalUndoThenActio
     for (int i = 1; i < 6; ++i) {
         names << "Renamed alignment" + QString::number(i);
     }
-    QString newName("Action occured");
+    QString newName("Action occurred");
 
     // Steps count
     int valuesCount = names.length();       // changes = valuesCount - 1;
@@ -1674,7 +1674,7 @@ IMPLEMENT_TEST(ModDbiSQLiteSpecificUnitTests, updateRowName_severalUndoThenActio
     for (int i = 0; i < 6; ++i) {
         rowNames << rowNames[i] + "test";
     }
-    QString newRowName("Action occured");
+    QString newRowName("Action occurred");
 
     // Steps count
     int valuesCount = rowNames.length();     // changes = valuesCount - 1;

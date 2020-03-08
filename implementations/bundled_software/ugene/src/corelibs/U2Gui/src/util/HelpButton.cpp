@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -27,6 +27,8 @@
 #include "HelpButton.h"
 
 namespace U2{
+
+const QString HelpButton::INVALID_VALUE = "invalid";
 
 HelpButton::HelpButton(QObject *parent, QDialogButtonBox *b, const QString& _pageId) 
 : QObject(parent), pageId(_pageId), dialogBox(b)

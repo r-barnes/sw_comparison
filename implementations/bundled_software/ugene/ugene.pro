@@ -5,9 +5,9 @@ isEmpty(QT_VERSION) {
     error("QT_VERSION not defined. Unipro UGENE does not work with Qt 3.")
 }
 
-!minQtVersion(5, 2, 1) {
+!minQtVersion(5, 3, 2) {
     message("Cannot build Unipro UGENE with Qt version $${QT_VERSION}")
-    error("Use at least Qt 5.2.1.")
+    error("Use at least Qt 5.3.2.")
 }
 
 
@@ -19,10 +19,13 @@ use_bundled_zlib() {
     SUBDIRS += src/libs_3rdparty/zlib
 }
 
+use_bundled_sqlite() {
+    SUBDIRS += src/libs_3rdparty/sqlite3
+}
+
 SUBDIRS += \
           src/libs_3rdparty/breakpad \
           src/libs_3rdparty/qscore \
-          src/libs_3rdparty/sqlite3 \
           src/libs_3rdparty/samtools \
           src/libs_3rdparty/QSpec \
           src/corelibs/U2Core \
@@ -50,15 +53,17 @@ SUBDIRS += \
           src/plugins_3rdparty/kalign \
           src/plugins_3rdparty/ptools \
           src/plugins_3rdparty/variants \
+          src/plugins/ngs_reads_classification \
           src/plugins/CoreTests \
           src/plugins/GUITestBase \
           src/plugins/annotator \
           src/plugins/api_tests \
           src/plugins/biostruct3d_view \
-          src/plugins/browser_support \
           src/plugins/chroma_view \
           src/plugins/circular_view \
+          src/plugins/clark_support \
           src/plugins/dbi_bam \
+          src/plugins/diamond_support \
           src/plugins/dna_export \
           src/plugins/dna_flexibility \
           src/plugins/dna_graphpack \
@@ -67,7 +72,9 @@ SUBDIRS += \
           src/plugins/enzymes \
           src/plugins/external_tool_support \
           src/plugins/genome_aligner \
+          src/plugins/kraken_support \
           src/plugins/linkdata_support \
+          src/plugins/metaphlan2_support \
           src/plugins/orf_marker \
           src/plugins/pcr \
           src/plugins/perf_monitor \
@@ -77,6 +84,7 @@ SUBDIRS += \
           src/plugins/smith_waterman \
           src/plugins/test_runner \
           src/plugins/weight_matrix \
+          src/plugins/wevote_support \
           src/plugins/workflow_designer
 
 use_cuda() {
@@ -97,14 +105,24 @@ exclude_list_enabled() {
     SUBDIRS -= src/libs_3rdparty/QSpec
 }
 
-if(exists( ./src/libs_3rdparty/QSpec/QSpec.pro ):!exclude_list_enabled()) {
-    message( "QSpec exists, enable GUI testing..." )
-    !exists( ./src/libs_3rdparty/QSpec/custom.pri) {
-        unix: system( cp ./installer/_common_data/humimit_custom.pri ./src/libs_3rdparty/QSpec/custom.pri )
-        win32: system (copy /B installer\_common_data\humimit_custom.pri src\libs_3rdparty\QSpec\custom.pri)
+message("Qt version is $${QT_VERSION}")
+if (useWebKit()) {
+    message("WebKit is used as web engine")
+} else {
+    message("Qt WebEngine is used as web engine")
+}
+
+GUI_TESTING_ENABLED = 0
+if (exists(./src/libs_3rdparty/QSpec/QSpec.pro): !exclude_list_enabled()) {
+    if (!useWebKit()) {
+        message ("QT WebEngine is used, GUI testing is disabled")
+    } else {
+        message( "GUI testing is enabled" )
+        GUI_TESTING_ENABLED = 1
     }
 }
-!exists( ./src/libs_3rdparty/QSpec/QSpec.pro ){
+
+!equals(GUI_TESTING_ENABLED, 1) {
     DEFINES += HI_EXCLUDED
     SUBDIRS -= src/plugins/GUITestBase
     SUBDIRS -= src/libs_3rdparty/QSpec
@@ -149,7 +167,7 @@ system($$[QT_INSTALL_BINS]/lrelease-qt5 -version > $$UGENE_DEV_NULL 2> $$UGENE_D
 
 #foreach 'language'
 for( i, UGENE_TRANSL_IDX ) {
-    UGENE_TRANSLATIONS = 
+    UGENE_TRANSLATIONS =
 
     curTranslFile = $$member( UGENE_TRANSL_FILES, $$i )
     curTranslTag  = $$member( UGENE_TRANSL_TAG, $$i )
@@ -188,7 +206,7 @@ unix {
     transl.files = ./src/_release/transl_en.qm
     transl.files += ./src/_release/transl_ru.qm
     transl.path = $$UGENE_INSTALL_DIR
-    
+
     plugins.files = ./src/_release/plugins/*
     plugins.path = $$UGENE_INSTALL_DIR/plugins
 
@@ -216,4 +234,4 @@ unix {
 
     INSTALLS += binscript ugene_starter transl plugins scripts data desktop pixmaps mime icons manual
 }
- 
+

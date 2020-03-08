@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -22,7 +22,6 @@
 #ifndef _U2_OBJECT_DBI_H_
 #define _U2_OBJECT_DBI_H_
 
-#include <U2Core/U2Type.h>
 #include <U2Core/U2Dbi.h>
 
 namespace U2 {
@@ -31,7 +30,7 @@ namespace U2 {
     Any database contains objects that are placed into folders
     Folders have unique string IDs - constructed similar to full folders names on Unix systems
     The root folder "/" is required for any DBI
-*/
+    */
 
 enum DbFolderFlag {
     DbFolderFlag_None = 0,
@@ -57,7 +56,7 @@ public:
     /**
      Retrieves U2Object fields from database entry with 'id'
      and sets these fields for 'object'
-    */
+     */
     virtual void getObject(U2Object& object, const U2DataId& id, U2OpStatus& os) = 0;
 
     /**
@@ -80,7 +79,7 @@ public:
     /**  Returns parents for the entity.
         If entity is object, returns other object this object is a part of
         If object is not a part of any other object and does not belongs to any folder - it's automatically removed.
-     */
+        */
     virtual QList<U2DataId> getParents(const U2DataId& entityId, U2OpStatus& os) = 0;
 
 
@@ -91,7 +90,7 @@ public:
     /**  Returns list of folders stored in database.
         Folders are represented as paths, separated by '/' character.
         At least one root folder is required.
-    */
+        */
     virtual QStringList getFolders(U2OpStatus& os) = 0;
 
     /** Returns the map: object -> folder path. */
@@ -100,12 +99,12 @@ public:
     /** Returns version of the folder.
         The folder version increases if new object(s)/subfolder(s) are added into this folder
         Note that if object(s)/folder(s) are added into one of the subfolders the folder version is not changed
-    */
+        */
     virtual qint64 getFolderLocalVersion(const QString& folder, U2OpStatus& os) = 0;
 
     /** Returns version of the folder that changes every time object(s)/folder(s) added
         to the specified folder or any of its child folders
-    */
+        */
     virtual qint64 getFolderGlobalVersion(const QString& folder, U2OpStatus& os) = 0;
 
     /** Returns number of top-level U2Objects in folder */
@@ -141,7 +140,7 @@ public:
         If @force is true, the object will be removed if it is possible,
         else dbi implementation can refuse to remove it.
         Requires: U2DbiFeature_RemoveObjects feature support
-    */
+        */
     virtual bool removeObject(const U2DataId& dataId, bool force, U2OpStatus& os) = 0;
     virtual bool removeObject(const U2DataId& dataId, U2OpStatus& os) { return removeObject(dataId, false, os); }
 
@@ -150,7 +149,7 @@ public:
         If @force is true, the object will be removed if it is possible,
         else dbi implementation can refuse to remove it.
         Requires: U2DbiFeature_RemoveObjects feature support
-    */
+        */
     virtual bool removeObjects(const QList<U2DataId>& dataIds, bool force, U2OpStatus& os) = 0;
     virtual bool removeObjects(const QList<U2DataId>& dataIds, U2OpStatus& os) { return removeObjects(dataIds, false, os); }
 
@@ -159,20 +158,20 @@ public:
         If the specified path is already presented in the database, nothing will be done.
         It is not required that parent folders must exist, they are created automatically.
         Requires: U2DbiFeature_ChangeFolders feature support
-    */
+        */
     virtual void createFolder(const QString& path, U2OpStatus& os) = 0;
 
     /**
         Removes folder. The folder must be existing path. Runs GC check for all objects in the folder
         Requires: U2DbiFeature_ChangeFolders feature support
-    */
+        */
     virtual bool removeFolder(const QString& folder, U2OpStatus& os) = 0;
 
     /** Renames the folder. Replaces all inner folders into the new one.
         The specified new path must be a valid unique path, not existing in the database.
         It is not required that parent folders must exist, they are created automatically.
         Requires: U2DbiFeature_ChangeFolders feature support
-    */
+        */
     virtual void renameFolder(const QString &oldPath, const QString &newPath, U2OpStatus &os) = 0;
 
     /** Returns the folder's previous path if it is set or an empty string if folder has not been moved. */
@@ -181,7 +180,7 @@ public:
     /** Adds objects to the specified folder.
         All objects must exist and have a top-level type.
         Requires: U2DbiFeature_ChangeFolders feature support
-    */
+        */
     virtual void addObjectsToFolder(const QList<U2DataId>& objectIds, const QString& toFolder, U2OpStatus& os) = 0;
 
     /** Moves objects between folders.
@@ -196,32 +195,32 @@ public:
         is needed in order to restore the object afterwards.
 
         Requires: U2DbiFeature_ChangeFolders feature support
-    */
+        */
     virtual void moveObjects(const QList<U2DataId>& objectIds, const QString& fromFolder,
         const QString& toFolder, U2OpStatus& os, bool saveFromFolder = false) = 0;
 
     /**
      Sets the new name @newName for the object with the given @id.
-    */
+     */
     virtual void renameObject(const U2DataId &id, const QString &newName, U2OpStatus &os) = 0;
 
     /** Moves objects to the folder whose path was previously stored by the 'moveObjects' method
         Returns the new path
-    */
+        */
     virtual QStringList restoreObjects(const QList<U2DataId> &objectIds, U2OpStatus &os) = 0;
 
     /** Method for databases allowing multiple clients. Updates timestamp of last access time
         to the object having `objectId`
-    */
+        */
     virtual void updateObjectAccessTime(const U2DataId &objectId, U2OpStatus &os);
 
     /** Returns whether the object is used by some client of the DB.
         The method should be overridden for DBIs with multiple clients
-    */
+        */
     virtual bool isObjectInUse(const U2DataId &id, U2OpStatus &os);
     virtual QList<U2DataId> getAllObjectsInUse(U2OpStatus &os);
 
-     /** Undo the last update operation for the object. */
+    /** Undo the last update operation for the object. */
     virtual void undo(const U2DataId& objId, U2OpStatus& os) = 0;
 
     /** Redo the last update operation for the object. */

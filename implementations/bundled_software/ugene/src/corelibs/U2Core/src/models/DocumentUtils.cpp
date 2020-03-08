@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -24,7 +24,6 @@
 #include <U2Core/AppContext.h>
 #include <U2Core/DocumentImport.h>
 #include <U2Core/GUrlUtils.h>
-#include <U2Core/IOAdapter.h>
 #include <U2Core/IOAdapterUtils.h>
 #include <U2Core/MSAUtils.h>
 #include <U2Core/MultipleSequenceAlignmentObject.h>
@@ -46,7 +45,7 @@ QSet<QString> DocumentUtils::getURLs(const QList<Document*>& docs) {
 QSet<QString> DocumentUtils::getNewDocFileNameExcludesHint() {
     QSet<QString> excludeFileNames;
     Project* p = AppContext::getProject();
-    if (p!=NULL) {
+    if (p != NULL) {
         excludeFileNames = DocumentUtils::getURLs(p->getDocuments());
     }
     return excludeFileNames;
@@ -87,9 +86,8 @@ static void placeOrderedByScore(const FormatDetectionResult& info, QList<FormatD
 // returns formats with FormatDetectionResult != Not matched sorted by FormatDetectionResult
 // FormatDetectionResult is adjusted by +FORMAT_DETECTION_EXT_BONUS if extension is matched
 
-QList<FormatDetectionResult> DocumentUtils::detectFormat( const QByteArray& rawData, const QString& ext,
-                                                     const GUrl& url, const FormatDetectionConfig& conf)
-{
+QList<FormatDetectionResult> DocumentUtils::detectFormat(const QByteArray& rawData, const QString& ext,
+    const GUrl& url, const FormatDetectionConfig& conf) {
     DocumentFormatRegistry* fr = AppContext::getDocumentFormatRegistry();
     QList< DocumentFormatId > allFormats = fr->getRegisteredFormats();
 
@@ -97,7 +95,7 @@ QList<FormatDetectionResult> DocumentUtils::detectFormat( const QByteArray& rawD
     foreach(const DocumentFormatId& id, allFormats) {
         DocumentFormat* f = fr->getFormatById(id);
         FormatCheckResult cr = f->checkRawData(rawData, url);
-        if (cr.score ==  FormatDetection_NotMatched) {
+        if (cr.score == FormatDetection_NotMatched) {
             continue;
         }
         if (conf.useExtensionBonus && f->getSupportedDocumentFileExtensions().contains(ext) && cr.score >= FormatDetection_VeryLowSimilarity) {
@@ -135,7 +133,7 @@ QList<FormatDetectionResult> DocumentUtils::detectFormat( const QByteArray& rawD
 
 QList<FormatDetectionResult> DocumentUtils::detectFormat(const GUrl& url, const FormatDetectionConfig& conf) {
     QList<FormatDetectionResult> result;
-    if( url.isEmpty() ) {
+    if (url.isEmpty()) {
         return result;
     }
     QByteArray rawData = IOAdapterUtils::readFileHeader(url);
@@ -153,9 +151,9 @@ QList<FormatDetectionResult> DocumentUtils::detectFormat(IOAdapter *io, const Fo
     if (io == NULL || !io->isOpen()) {
         return result;
     }
-    QByteArray rawData = IOAdapterUtils::readFileHeader( io );
+    QByteArray rawData = IOAdapterUtils::readFileHeader(io);
     QString ext = GUrlUtils::getUncompressedExtension(io->getURL());
-    result = detectFormat( rawData, ext , io->getURL(), conf);
+    result = detectFormat(rawData, ext, io->getURL(), conf);
     return result;
 }
 
@@ -189,8 +187,7 @@ QList<DocumentFormat*> DocumentUtils::toFormats(const QList<FormatDetectionResul
     return result;
 }
 
-bool DocumentUtils::canAddGObjectsToDocument( Document* doc, const GObjectType& type )
-{
+bool DocumentUtils::canAddGObjectsToDocument(Document* doc, const GObjectType& type) {
     if (!doc->isLoaded() || doc->isStateLocked()) {
         return false;
     }
@@ -199,8 +196,7 @@ bool DocumentUtils::canAddGObjectsToDocument( Document* doc, const GObjectType& 
     return df->isObjectOpSupported(doc, DocumentFormat::DocObjectOp_Add, type);
 }
 
-bool DocumentUtils::canRemoveGObjectFromDocument(GObject *obj)
-{
+bool DocumentUtils::canRemoveGObjectFromDocument(GObject *obj) {
     Document* doc = obj->getDocument();
 
     if (NULL == doc || !doc->isLoaded() || doc->isStateLocked()) {
@@ -215,14 +211,13 @@ bool DocumentUtils::canRemoveGObjectFromDocument(GObject *obj)
     return true;
 }
 
-void DocumentUtils::removeDocumentsContainigGObjectFromProject(GObject *obj)
-{
+void DocumentUtils::removeDocumentsContainigGObjectFromProject(GObject *obj) {
     // no results found -> delete empty annotation document
     Project* proj = AppContext::getProject();
-    if (proj!=NULL) {
+    if (proj != NULL) {
         Document* toDelete = NULL;
         QList<Document*> docs = proj->getDocuments();
-        foreach (Document* doc, docs) {
+        foreach(Document* doc, docs) {
             if (doc->getObjects().contains(obj)) {
                 toDelete = doc;
                 break;
@@ -234,7 +229,7 @@ void DocumentUtils::removeDocumentsContainigGObjectFromProject(GObject *obj)
     }
 }
 
-QFile::Permissions DocumentUtils::getPermissions(Document *doc){
+QFile::Permissions DocumentUtils::getPermissions(Document *doc) {
     return QFile(doc->getURLString()).permissions();
 }
 
@@ -247,7 +242,7 @@ Document* DocumentUtils::createCopyRestructuredWithHints(Document* doc, U2OpStat
     }
 
     if (hints.value(DocumentReadingMode_SequenceAsAlignmentHint, false).toBool()) {
-        MultipleSequenceAlignmentObject* maObj = MSAUtils::seqObjs2msaObj(doc->getObjects(), hints, os, shallowCopy);
+        MultipleSequenceAlignmentObject* maObj = MSAUtils::seqObjs2msaObj(doc->getObjects(), hints, os, shallowCopy, true);
         CHECK_OP(os, NULL);
         CHECK(maObj != NULL, resultDoc);
         QList<GObject*> objects;

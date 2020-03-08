@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -294,15 +294,15 @@ Task* BlastPlusWorker::tick() {
         QString path = actor->getParameter(BLASTPLUS_EXT_TOOL_PATH)->getAttributeValue<QString>(context);
         if(QString::compare(path, "default", Qt::CaseInsensitive) != 0){
             if(cfg.programName == "blastn"){
-                AppContext::getExternalToolRegistry()->getByName(ET_BLASTN)->setPath(path);
+                AppContext::getExternalToolRegistry()->getById(BlastPlusSupport::ET_TBLASTN_ID)->setPath(path);
             }else if(cfg.programName == "blastp"){
-                AppContext::getExternalToolRegistry()->getByName(ET_BLASTP)->setPath(path);
+                AppContext::getExternalToolRegistry()->getById(BlastPlusSupport::ET_BLASTP_ID)->setPath(path);
             }else if(cfg.programName == "blastx"){
-                AppContext::getExternalToolRegistry()->getByName(ET_BLASTX)->setPath(path);
+                AppContext::getExternalToolRegistry()->getById(BlastPlusSupport::ET_BLASTX_ID)->setPath(path);
             }else if(cfg.programName == "tblastn"){
-                AppContext::getExternalToolRegistry()->getByName(ET_TBLASTN)->setPath(path);
+                AppContext::getExternalToolRegistry()->getById(BlastPlusSupport::ET_TBLASTN_ID)->setPath(path);
             }else if(cfg.programName == "tblastx"){
-                AppContext::getExternalToolRegistry()->getByName(ET_TBLASTX)->setPath(path);
+                AppContext::getExternalToolRegistry()->getById(BlastPlusSupport::ET_TBLASTX)->setPath(path);
             }
         }
         path = actor->getParameter(BLASTPLUS_TMP_DIR_PATH)->getAttributeValue<QString>(context);
@@ -376,20 +376,22 @@ Task* BlastPlusWorker::tick() {
         cfg.matchReward = matchScores.split(" ").at(0).toInt();
         cfg.mismatchPenalty = matchScores.split(" ").at(1).toInt();
 
-        Task * t=NULL;
-        if(cfg.programName == "blastn"){
-            t = new BlastNPlusSupportTask(cfg);
-        }else if(cfg.programName == "blastp"){
-            t = new BlastPPlusSupportTask(cfg);
-        }else if(cfg.programName == "blastx"){
-            t = new BlastXPlusSupportTask(cfg);
-        }else if(cfg.programName == "tblastn"){
-            t = new TBlastNPlusSupportTask(cfg);
-        }else if(cfg.programName == "tblastx"){
-            t = new TBlastXPlusSupportTask(cfg);
+        ExternalToolSupportTask *task = nullptr;
+        if (cfg.programName == "blastn") {
+            task = new BlastNPlusSupportTask(cfg);
+        } else if (cfg.programName == "blastp") {
+            task = new BlastPPlusSupportTask(cfg);
+        } else if (cfg.programName == "blastx") {
+            task = new BlastXPlusSupportTask(cfg);
+        } else if (cfg.programName == "tblastn") {
+            task = new TBlastNPlusSupportTask(cfg);
+        } else if (cfg.programName == "tblastx") {
+            task = new TBlastXPlusSupportTask(cfg);
         }
-        connect(t, SIGNAL(si_stateChanged()), SLOT(sl_taskFinished()));
-        return t;
+        SAFE_POINT(nullptr != task, QString("An unknown program name: %1").arg(cfg.programName), new FailTask(QString("An unknown program name: %1").arg(cfg.programName)));
+        task->addListeners(createLogListeners());
+        connect(task, SIGNAL(si_stateChanged()), SLOT(sl_taskFinished()));
+        return task;
     } else if (input->isEnded()) {
         setDone();
         output->setEnded();
@@ -424,7 +426,7 @@ void BlastPlusWorker::cleanup() {
 /************************************************************************/
 /* Validator */
 /************************************************************************/
-bool ToolsValidator::validate(const Actor *actor, ProblemList &problemList, const QMap<QString, QString> &/*options*/) const {
+bool ToolsValidator::validate(const Actor *actor, NotificationsList &notificationList, const QMap<QString, QString> &/*options*/) const {
     ExternalTool *tool = getTool(getValue<QString>(actor, BLASTPLUS_PROGRAM_NAME));
     SAFE_POINT(NULL != tool, "NULL blast plus tool", false);
 
@@ -433,14 +435,14 @@ bool ToolsValidator::validate(const Actor *actor, ProblemList &problemList, cons
 
     bool valid = attr->isDefaultValue() ? !tool->getPath().isEmpty() : !attr->isEmpty();
     if (!valid) {
-        problemList << Problem(WorkflowUtils::externalToolError(tool->getName()));
+        notificationList << WorkflowNotification(WorkflowUtils::externalToolError(tool->getName()));
     }
     return valid;
 }
 
 ExternalTool * ToolsValidator::getTool(const QString &program) const {
-    QString toolId = BlastPlusSupportCommonTask::toolNameByProgram(program);
-    return AppContext::getExternalToolRegistry()->getByName(toolId);
+    QString toolId = BlastPlusSupportCommonTask::toolIdByProgram(program);
+    return AppContext::getExternalToolRegistry()->getById(toolId);
 }
 
 } //namespace LocalWorkflow

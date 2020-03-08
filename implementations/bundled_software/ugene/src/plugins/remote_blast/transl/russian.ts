@@ -2,73 +2,134 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="ru_RU">
 <context>
+    <name>HttpRequestBLAST</name>
+    <message>
+        <location filename="../src/HttpRequestBLAST.cpp" line="34"/>
+        <source>Cannot open the IO adapter</source>
+        <translation type="unfinished">Неудалось открыть адаптер</translation>
+    </message>
+    <message>
+        <location filename="../src/HttpRequestBLAST.cpp" line="53"/>
+        <source>Cannot load a page. %1</source>
+        <translation type="unfinished">Не удалось загрузить страницу. %1</translation>
+    </message>
+    <message>
+        <location filename="../src/HttpRequestBLAST.cpp" line="70"/>
+        <location filename="../src/HttpRequestBLAST.cpp" line="124"/>
+        <source>The response is empty</source>
+        <translation type="unfinished">Пустой ответ</translation>
+    </message>
+    <message>
+        <location filename="../src/HttpRequestBLAST.cpp" line="84"/>
+        <source>Nucleotide FASTA provided for protein sequence</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/HttpRequestBLAST.cpp" line="92"/>
+        <source>Cannot get the request ID</source>
+        <translation type="unfinished">Не удалось получить ID для поиска</translation>
+    </message>
+    <message>
+        <location filename="../src/HttpRequestBLAST.cpp" line="100"/>
+        <source>Cannot get the waiting time</source>
+        <translation type="unfinished">Не удалось получить время ожидания</translation>
+    </message>
+    <message>
+        <location filename="../src/HttpRequestBLAST.cpp" line="140"/>
+        <source>Database couldn&apos;t prepare the response. You can increase timeout and perform search again.</source>
+        <translation type="unfinished">База данных не готова для запроса. Вы можете увеличить таймаут и запустить снова.</translation>
+    </message>
+    <message>
+        <location filename="../src/HttpRequestBLAST.cpp" line="145"/>
+        <source>NCBI BLAST web server returned &quot;CPU usage limit was exceeded&quot; error. Probably, the query sequence is too large.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/HttpRequestBLAST.cpp" line="162"/>
+        <source>Cannot read the response</source>
+        <translation type="unfinished">Не удалось прочитать ответ</translation>
+    </message>
+    <message>
+        <location filename="../src/HttpRequestBLAST.cpp" line="228"/>
+        <location filename="../src/HttpRequestBLAST.cpp" line="235"/>
+        <location filename="../src/HttpRequestBLAST.cpp" line="252"/>
+        <source>Cannot get the location</source>
+        <translation type="unfinished">Не удалось получитьь локацию</translation>
+    </message>
+    <message>
+        <location filename="../src/HttpRequestBLAST.cpp" line="262"/>
+        <source>Cannot get the identity</source>
+        <translation type="unfinished">Не удалось получить идентификатор последовательности</translation>
+    </message>
+    <message>
+        <location filename="../src/HttpRequestBLAST.cpp" line="269"/>
+        <source>Cannot evaluate the gaps</source>
+        <translation type="unfinished">Не удалось вычислить пробелы</translation>
+    </message>
+    <message>
+        <location filename="../src/HttpRequestBLAST.cpp" line="276"/>
+        <source>Cannot get the alignment length</source>
+        <translation type="unfinished">Не удалось получить длину выравнивания</translation>
+    </message>
+    <message>
+        <location filename="../src/HttpRequestBLAST.cpp" line="289"/>
+        <source>Cannot evaluate the location</source>
+        <translation type="unfinished">Не удалось вычислить локацию</translation>
+    </message>
+</context>
+<context>
     <name>QObject</name>
     <message>
-        <location filename="../src/HttpRequestBLAST.cpp" line="35"/>
         <source>Cannot open the IO adapter</source>
-        <translation>Неудалось открыть адаптер</translation>
+        <translation type="vanished">Неудалось открыть адаптер</translation>
     </message>
     <message>
-        <location filename="../src/HttpRequestBLAST.cpp" line="95"/>
         <source>Cannot get the request ID</source>
-        <translation>Не удалось получить ID для поиска</translation>
+        <translation type="vanished">Не удалось получить ID для поиска</translation>
     </message>
     <message>
-        <location filename="../src/HttpRequestBLAST.cpp" line="104"/>
         <source>Cannot get the waiting time</source>
-        <translation>Не удалось получить время ожидания</translation>
+        <translation type="vanished">Не удалось получить время ожидания</translation>
     </message>
     <message>
-        <location filename="../src/HttpRequestBLAST.cpp" line="129"/>
         <source>The response is empty</source>
-        <translation>Пустой ответ</translation>
+        <translation type="vanished">Пустой ответ</translation>
     </message>
     <message>
-        <location filename="../src/HttpRequestBLAST.cpp" line="54"/>
         <source>Cannot load a page. %1</source>
-        <translation>Не удалось загрузить страницу. %1</translation>
+        <translation type="vanished">Не удалось загрузить страницу. %1</translation>
     </message>
     <message>
-        <location filename="../src/HttpRequestBLAST.cpp" line="146"/>
         <source>Database couldn&apos;t prepare the response. You can increase timeout and perform search again.</source>
-        <translation>База данных не готова для запроса. Вы можете увеличить таймаут и запустить снова.</translation>
+        <translation type="vanished">База данных не готова для запроса. Вы можете увеличить таймаут и запустить снова.</translation>
     </message>
     <message>
-        <location filename="../src/HttpRequestBLAST.cpp" line="151"/>
         <source>CPU usage limit in BLAST was exceeded, probably query sequence is too large</source>
-        <translation>Был превышен предел использования CPU в BLAST, вероятно, последовательность слишком большая</translation>
+        <translation type="vanished">Был превышен предел использования CPU в BLAST, вероятно, последовательность слишком большая</translation>
     </message>
     <message>
-        <location filename="../src/HttpRequestBLAST.cpp" line="169"/>
         <source>Cannot read the response</source>
-        <translation>Не удалось прочитать ответ</translation>
+        <translation type="vanished">Не удалось прочитать ответ</translation>
     </message>
     <message>
-        <location filename="../src/HttpRequestBLAST.cpp" line="237"/>
-        <location filename="../src/HttpRequestBLAST.cpp" line="245"/>
-        <location filename="../src/HttpRequestBLAST.cpp" line="263"/>
         <source>Cannot get the location</source>
-        <translation>Не удалось получитьь локацию</translation>
+        <translation type="vanished">Не удалось получитьь локацию</translation>
     </message>
     <message>
-        <location filename="../src/HttpRequestBLAST.cpp" line="274"/>
         <source>Cannot get the identity</source>
-        <translation>Не удалось получить идентификатор последовательности</translation>
+        <translation type="vanished">Не удалось получить идентификатор последовательности</translation>
     </message>
     <message>
-        <location filename="../src/HttpRequestBLAST.cpp" line="282"/>
         <source>Cannot evaluate the gaps</source>
-        <translation>Не удалось вычислить пробелы</translation>
+        <translation type="vanished">Не удалось вычислить пробелы</translation>
     </message>
     <message>
-        <location filename="../src/HttpRequestBLAST.cpp" line="290"/>
         <source>Cannot get the alignment length</source>
-        <translation>Не удалось получить длину выравнивания</translation>
+        <translation type="vanished">Не удалось получить длину выравнивания</translation>
     </message>
     <message>
-        <location filename="../src/HttpRequestBLAST.cpp" line="304"/>
         <source>Cannot evaluate the location</source>
-        <translation>Не удалось вычислить локацию</translation>
+        <translation type="vanished">Не удалось вычислить локацию</translation>
     </message>
     <message>
         <location filename="../src/RemoteBLASTWorker.cpp" line="106"/>
@@ -478,22 +539,22 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>U2::CheckNCBISequenceCircularityTask</name>
     <message>
-        <location filename="../src/RemoteBLASTTask.cpp" line="557"/>
+        <location filename="../src/RemoteBLASTTask.cpp" line="556"/>
         <source>Check NCBI sequence circularity</source>
         <translation>Проверка циркулярности NCBI последовательности</translation>
     </message>
     <message>
-        <location filename="../src/RemoteBLASTTask.cpp" line="562"/>
+        <location filename="../src/RemoteBLASTTask.cpp" line="561"/>
         <source>ID is empty</source>
         <translation>ID пуст</translation>
     </message>
     <message>
-        <location filename="../src/RemoteBLASTTask.cpp" line="588"/>
+        <location filename="../src/RemoteBLASTTask.cpp" line="587"/>
         <source>Can not check if sequence is circular! Sequence is considered to be linear.</source>
         <translation>Невозможно проверить циркулярность последовательности! Последовательность считается линейной.</translation>
     </message>
     <message>
-        <location filename="../src/RemoteBLASTTask.cpp" line="592"/>
+        <location filename="../src/RemoteBLASTTask.cpp" line="591"/>
         <source>Can not remove temporary file.</source>
         <translation>Невозможно удалить временный файл.</translation>
     </message>
@@ -501,33 +562,33 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>U2::CreateAnnotationsFromHttpBlastResultTask</name>
     <message>
-        <location filename="../src/RemoteBLASTTask.cpp" line="244"/>
+        <location filename="../src/RemoteBLASTTask.cpp" line="243"/>
         <source>Create annotations from BLAST results</source>
         <translation>Создать аннотации из результатов BLAST</translation>
     </message>
     <message>
-        <location filename="../src/RemoteBLASTTask.cpp" line="249"/>
+        <location filename="../src/RemoteBLASTTask.cpp" line="248"/>
         <source>HttpBlastResult list is empty</source>
         <translation>HttpBlastResult list is empty</translation>
     </message>
     <message>
-        <location filename="../src/RemoteBLASTTask.cpp" line="261"/>
+        <location filename="../src/RemoteBLASTTask.cpp" line="260"/>
         <source>HttpRequest is NULL!</source>
         <translation>HttpRequest is NULL!</translation>
     </message>
     <message>
+        <location filename="../src/RemoteBLASTTask.cpp" line="485"/>
         <location filename="../src/RemoteBLASTTask.cpp" line="486"/>
-        <location filename="../src/RemoteBLASTTask.cpp" line="487"/>
         <source>Wrong number of annotations</source>
         <translation>Wrong number of annotations</translation>
     </message>
     <message>
-        <location filename="../src/RemoteBLASTTask.cpp" line="543"/>
+        <location filename="../src/RemoteBLASTTask.cpp" line="542"/>
         <source>Invalid subtask</source>
         <translation>Invalid subtask</translation>
     </message>
     <message>
-        <location filename="../src/RemoteBLASTTask.cpp" line="544"/>
+        <location filename="../src/RemoteBLASTTask.cpp" line="543"/>
         <source>No corresponding annotations</source>
         <translation>No corresponding annotations</translation>
     </message>
@@ -712,38 +773,38 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>U2::Merge</name>
     <message>
-        <location filename="../src/RemoteBLASTTask.cpp" line="635"/>
+        <location filename="../src/RemoteBLASTTask.cpp" line="634"/>
         <source>Qualifier %1 not found</source>
         <translation>Квалификатор %1 не найден</translation>
     </message>
     <message>
-        <location filename="../src/RemoteBLASTTask.cpp" line="636"/>
+        <location filename="../src/RemoteBLASTTask.cpp" line="635"/>
         <source>Can not merge %1 qualifiers: values are not the same.</source>
         <translation>Can not merge %1 qualifiers: values are not the same.</translation>
     </message>
     <message>
-        <location filename="../src/RemoteBLASTTask.cpp" line="643"/>
-        <location filename="../src/RemoteBLASTTask.cpp" line="649"/>
-        <location filename="../src/RemoteBLASTTask.cpp" line="673"/>
-        <location filename="../src/RemoteBLASTTask.cpp" line="679"/>
+        <location filename="../src/RemoteBLASTTask.cpp" line="642"/>
+        <location filename="../src/RemoteBLASTTask.cpp" line="648"/>
+        <location filename="../src/RemoteBLASTTask.cpp" line="672"/>
+        <location filename="../src/RemoteBLASTTask.cpp" line="678"/>
         <source>Can not find &apos;%1&apos; qualifier</source>
         <translation>Can not find &apos;%1&apos; qualifier</translation>
     </message>
     <message>
-        <location filename="../src/RemoteBLASTTask.cpp" line="676"/>
-        <location filename="../src/RemoteBLASTTask.cpp" line="681"/>
-        <location filename="../src/RemoteBLASTTask.cpp" line="691"/>
-        <location filename="../src/RemoteBLASTTask.cpp" line="695"/>
+        <location filename="../src/RemoteBLASTTask.cpp" line="675"/>
+        <location filename="../src/RemoteBLASTTask.cpp" line="680"/>
+        <location filename="../src/RemoteBLASTTask.cpp" line="690"/>
+        <location filename="../src/RemoteBLASTTask.cpp" line="694"/>
         <source>Can not convert qualifier value &apos;%1&apos; to double</source>
         <translation>Can not convert qualifier value &apos;%1&apos; to double</translation>
     </message>
     <message>
-        <location filename="../src/RemoteBLASTTask.cpp" line="688"/>
+        <location filename="../src/RemoteBLASTTask.cpp" line="687"/>
         <source>Can not find &apos;E-value&apos; qualifier</source>
         <translation>Can not find &apos;E-value&apos; qualifier</translation>
     </message>
     <message>
-        <location filename="../src/RemoteBLASTTask.cpp" line="699"/>
+        <location filename="../src/RemoteBLASTTask.cpp" line="698"/>
         <source>Can not convert qualifier value &apos;%1&apos; to int</source>
         <translation>Can not convert qualifier value &apos;%1&apos; to int</translation>
     </message>
@@ -864,7 +925,12 @@ p, li { white-space: pre-wrap; }
         <translation>Поиск в базе данных NCBI с помощью BLAST...</translation>
     </message>
     <message>
-        <location filename="../src/RemoteBLASTPlugin.cpp" line="138"/>
+        <location filename="../src/RemoteBLASTPlugin.cpp" line="141"/>
+        <source>Selected region is too large!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/RemoteBLASTPlugin.cpp" line="155"/>
         <source>Sequence objects is NULL</source>
         <translation>Sequence objects is NULL</translation>
     </message>
@@ -877,7 +943,7 @@ p, li { white-space: pre-wrap; }
         <translation>Http Blast requests task</translation>
     </message>
     <message>
-        <location filename="../src/RemoteBLASTTask.cpp" line="169"/>
+        <location filename="../src/RemoteBLASTTask.cpp" line="171"/>
         <source>Incorrect database</source>
         <translation>Неверно задана база данных</translation>
     </message>

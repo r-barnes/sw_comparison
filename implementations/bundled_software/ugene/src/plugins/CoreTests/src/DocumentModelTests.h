@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -36,7 +36,7 @@ class LoadDocumentTask;
 class SaveDocumentTask;
 class DocumentProviderTask;
 
-class GTest_LoadDocument : public GTest {
+class GTest_LoadDocument : public XmlTest {
     Q_OBJECT
 public:
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_LoadDocument, "load-document");
@@ -62,7 +62,7 @@ private:
     bool                needVerifyLog;
 };
 
-class GTest_SaveDocument : public GTest {
+class GTest_SaveDocument : public XmlTest {
     Q_OBJECT
 public:
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_SaveDocument, "save-document");
@@ -78,7 +78,7 @@ private:
     SaveDocumentTask*   saveTask;
 };
 
-class GTest_LoadBrokenDocument : public GTest {
+class GTest_LoadBrokenDocument : public XmlTest {
     Q_OBJECT
 public:
     SIMPLE_XML_TEST_BODY_WITH_FACTORY_EXT(GTest_LoadBrokenDocument, "load-broken-document", TaskFlags(TaskFlag_NoRun)| TaskFlag_FailOnSubtaskCancel);
@@ -94,7 +94,7 @@ private:
     QString message;
 };
 
-class GTest_ImportDocument : public GTest {
+class GTest_ImportDocument : public XmlTest {
     Q_OBJECT
 public:
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_ImportDocument, "import-document");
@@ -121,7 +121,7 @@ private:
     bool                needVerifyLog;
 };
 
-class GTest_ImportBrokenDocument : public GTest {
+class GTest_ImportBrokenDocument : public XmlTest {
     Q_OBJECT
 public:
     SIMPLE_XML_TEST_BODY_WITH_FACTORY_EXT(GTest_ImportBrokenDocument, "import-broken-document", TaskFlags(TaskFlag_NoRun)| TaskFlag_FailOnSubtaskCancel);
@@ -138,7 +138,7 @@ private:
     QString message;
 };
 
-class GTest_DocumentNumObjects : public GTest {
+class GTest_DocumentNumObjects : public XmlTest {
     Q_OBJECT
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_DocumentNumObjects, "check-num-objects");
 
@@ -147,7 +147,7 @@ class GTest_DocumentNumObjects : public GTest {
     int numObjs;
 };
 
-class GTest_DocumentFormat : public GTest {
+class GTest_DocumentFormat : public XmlTest {
     Q_OBJECT
         SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_DocumentFormat, "check-document-format");
 
@@ -157,7 +157,7 @@ class GTest_DocumentFormat : public GTest {
     QString docFormat;
 };
 
-class GTest_DocumentObjectNames : public GTest {
+class GTest_DocumentObjectNames : public XmlTest {
     Q_OBJECT
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_DocumentObjectNames, "check-document-object-names");
 
@@ -167,7 +167,7 @@ class GTest_DocumentObjectNames : public GTest {
     QStringList names;
 };
 
-class GTest_DocumentObjectTypes : public GTest {
+class GTest_DocumentObjectTypes : public XmlTest {
     Q_OBJECT
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_DocumentObjectTypes, "check-document-object-types");
 
@@ -183,7 +183,7 @@ public:
 };
 
 
-class GTest_FindGObjectByName : public GTest {
+class GTest_FindGObjectByName : public XmlTest {
     Q_OBJECT
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_FindGObjectByName, "find-object-by-name");
 
@@ -200,7 +200,7 @@ private:
 
 };
 
-class GTest_CompareFiles : public GTest {
+class GTest_CompareFiles : public XmlTest {
     Q_OBJECT
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_CompareFiles, "compare-docs");
 
@@ -218,12 +218,13 @@ private:
     QStringList commentsStartWith;
     bool line_num_only;
     bool mixed_lines;
+    qint64 forceBufferSize;
 
     int first_n_lines;
 
 };
 
-class GTest_Compare_VCF_Files : public GTest {
+class GTest_Compare_VCF_Files : public XmlTest {
     Q_OBJECT
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_Compare_VCF_Files, "compare-vcf-docs");
 
@@ -239,7 +240,7 @@ private:
     static const QByteArray COMMENT_MARKER;
 };
 
-class GTest_Compare_PDF_Files : public GTest {
+class GTest_Compare_PDF_Files : public XmlTest {
     Q_OBJECT
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_Compare_PDF_Files, "compare-pdf-docs");
 

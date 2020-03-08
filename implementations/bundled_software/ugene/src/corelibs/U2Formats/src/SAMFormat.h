@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -25,25 +25,21 @@
 #include <U2Core/BaseDocumentFormats.h>
 #include <U2Core/DocumentModel.h>
 
+#include "TextDocumentFormat.h"
+
 namespace U2 {
 
 class IOAdapter;
 class DNASequence;
 
-class U2FORMATS_EXPORT  SAMFormat : public DocumentFormat {
+class U2FORMATS_EXPORT  SAMFormat : public TextDocumentFormat {
     Q_OBJECT
 public:
     SAMFormat(QObject* p = NULL);
 
-    virtual DocumentFormatId getFormatId() const {return BaseDocumentFormats::SAM;}
-
-    virtual const QString& getFormatName() const {return formatName;}
-
     virtual void storeDocument(Document* d, IOAdapter* io, U2OpStatus& os);
 
     virtual void storeEntry(IOAdapter *io, const QMap< GObjectType, QList<GObject*> > &objectsMap, U2OpStatus &os);
-
-    virtual FormatCheckResult checkRawData(const QByteArray& rawData, const GUrl& = GUrl()) const;
 
     bool storeHeader(IOAdapter* io, const QVector<QByteArray> &names, const QVector<int> &lengths, bool coordinateSorted);
 
@@ -63,7 +59,9 @@ public:
     };
 
 protected:
-    virtual Document* loadDocument(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& fs, U2OpStatus& os);
+    virtual FormatCheckResult checkRawTextData(const QByteArray& rawData, const GUrl& = GUrl()) const;
+
+    virtual Document* loadTextDocument(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& fs, U2OpStatus& os);
 
 private:
 
@@ -103,9 +101,7 @@ private:
     static const TAG_READ_GROUP_DESCRIPTION = "DS";
     static const TAG_READ_GROUP_PLATFORM = "PU";
     */
-
-    QString formatName;
-    bool skipDetection;
+bool skipDetection;
 
 };
 

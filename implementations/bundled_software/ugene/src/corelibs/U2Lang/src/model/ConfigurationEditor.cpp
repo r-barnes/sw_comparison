@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -109,6 +109,8 @@ void PropertyDelegate::setSchemaConfig(SchemaConfig *value) {
 }
 
 const QString DelegateTags::PLACEHOLDER_TEXT = "placeholder_text";
+const QString DelegateTags::FILTER = "filter";
+const QString DelegateTags::FORMAT = "format";
 
 DelegateTags::DelegateTags(QObject *parent)
 : QObject(parent)

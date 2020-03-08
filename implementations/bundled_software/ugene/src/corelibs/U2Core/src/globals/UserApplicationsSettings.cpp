@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -46,6 +46,7 @@ namespace U2 {
 #define SAVE_PROJECT_STATE QString("save_project")
 #define VISUAL_STYLE    QString("style")
 #define DOWNLOAD_DIR    QString("download_file")
+#define CUSTOM_EXTERNAL_TOOL_CONFIGS_DIR    QString("custom_external_tool_configs_dir")
 #define RECENTLY_DOWNLOADED QString("recently_downloaded")
 #define TEMPORARY_DIR QString("temporary_dir")
 #define DATA_DIR QString("data_dir")
@@ -118,16 +119,17 @@ bool UserAppsSettings::resetSettings() const {
     return AppContext::getSettings()->getValue(SETTINGS_ROOT + RESET_SETTINGS_FLAG, false).toBool();
 }
 
-void UserAppsSettings::setResetSettings(bool b){
+void UserAppsSettings::setResetSettings(bool b) {
     AppContext::getSettings()->setValue(SETTINGS_ROOT + RESET_SETTINGS_FLAG, b);
 }
 
 QString UserAppsSettings::getVisualStyle() const {
     QString defaultStyle = QApplication::style()->objectName();
+
 #ifdef Q_OS_WIN
 #define DEFAULT_STYLE_NAME ".NET"
     const char* version = qVersion();
-    if (QString("4.4.0")!=version) {
+    if (QString("4.4.0") != version) {
         if (QStyleFactory::keys().contains(DEFAULT_STYLE_NAME)) {
             defaultStyle = DEFAULT_STYLE_NAME;
         }
@@ -142,11 +144,37 @@ void UserAppsSettings::setVisualStyle(const QString& newStyle) {
 }
 
 QString UserAppsSettings::getDownloadDirPath() const {
-    return AppContext::getSettings()->getValue(SETTINGS_ROOT + DOWNLOAD_DIR, QDir::homePath()+"/.UGENE_downloaded").toString();
+    return AppContext::getSettings()->getValue(SETTINGS_ROOT + DOWNLOAD_DIR, QDir::homePath() + "/.UGENE_downloaded").toString();
 }
 
 void UserAppsSettings::setDownloadDirPath(const QString& newPath) const {
     AppContext::getSettings()->setValue(SETTINGS_ROOT + DOWNLOAD_DIR, newPath);
+}
+
+QString UserAppsSettings::getCustomToolsConfigsDirPath() const {
+    const QString defaultDir = GUrl(AppContext::getSettings()->fileName()).dirPath() + "/CustomExternalToolConfig";
+    return AppContext::getSettings()->getValue(SETTINGS_ROOT + CUSTOM_EXTERNAL_TOOL_CONFIGS_DIR, defaultDir).toString();
+}
+
+void UserAppsSettings::setCustomToolsConfigsDirPath(const QString &newPath) const {
+    const QString oldPath = getCustomToolsConfigsDirPath();
+
+    Settings *s = AppContext::getSettings();
+    s->setValue(SETTINGS_ROOT + CUSTOM_EXTERNAL_TOOL_CONFIGS_DIR, newPath);
+
+    if(oldPath != newPath) {
+        QDir dir(oldPath);
+        if (!dir.exists()) {
+            return;
+        }
+
+        dir.setNameFilters(QStringList() << "*.xml");
+        QFileInfoList fileList = dir.entryInfoList();
+        foreach (const QFileInfo &fileInfo, fileList) {
+            const QString newFileUrl = newPath + "/" + fileInfo.fileName();
+            QFile::copy(fileInfo.filePath(), newFileUrl);
+        }
+    }
 }
 
 QStringList UserAppsSettings::getRecentlyDownloadedFileNames() const {
@@ -167,17 +195,17 @@ void UserAppsSettings::setUserTemporaryDirPath(const QString& newPath) {
     emit si_temporaryPathChanged();
 }
 
-QString UserAppsSettings::getDefaultDataDirPath() const{
+QString UserAppsSettings::getDefaultDataDirPath() const {
     QString dirpath;
     dirpath = AppContext::getSettings()->getValue(SETTINGS_ROOT + DATA_DIR, QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + "/" + "UGENE_Data").toString();
     QDir d(dirpath);
-    if(!d.exists(dirpath)){
+    if (!d.exists(dirpath)) {
         d.mkpath(dirpath);
     }
     return dirpath;
 }
 
-void UserAppsSettings::setDefaultDataDirPath( const QString& newPath ){
+void UserAppsSettings::setDefaultDataDirPath(const QString& newPath) {
     AppContext::getSettings()->setValue(SETTINGS_ROOT + DATA_DIR, newPath);
 }
 
@@ -201,7 +229,7 @@ void UserAppsSettings::setTabbedWindowLayout(bool b) {
 
 QString UserAppsSettings::getCurrentProcessTemporaryDirPath(const QString& domain) const {
     qint64 pid = QCoreApplication::applicationPid();
-    QString tmpDirPath = getUserTemporaryDirPath() + "/" +  QString("ugene_tmp/p%1").arg(pid);
+    QString tmpDirPath = getUserTemporaryDirPath() + "/" + QString("ugene_tmp/p%1").arg(pid);
     if (!domain.isEmpty()) {
         tmpDirPath += "/" + domain;
     }
@@ -242,7 +270,7 @@ QString UserAppsSettings::createCurrentProcessTemporarySubDir(U2OpStatus &os, co
 }
 
 QString UserAppsSettings::getFileStorageDir() const {
-    return AppContext::getSettings()->getValue(SETTINGS_ROOT + FILE_STORAGE_DIR, QDir::homePath()+"/.UGENE_files").toString();
+    return AppContext::getSettings()->getValue(SETTINGS_ROOT + FILE_STORAGE_DIR, QDir::homePath() + "/.UGENE_files").toString();
 }
 
 void UserAppsSettings::setFileStorageDir(const QString &newPath) {

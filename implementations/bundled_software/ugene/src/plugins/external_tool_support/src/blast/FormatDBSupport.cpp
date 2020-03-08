@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -44,16 +44,23 @@
 
 namespace U2 {
 
+const QString FormatDBSupport::ET_FORMATDB = "FormatDB";
+const QString FormatDBSupport::ET_FORMATDB_ID = "USUPP_FORMAT_DB";
+const QString FormatDBSupport::ET_MAKEBLASTDB = "MakeBLASTDB";
+const QString FormatDBSupport::ET_MAKEBLASTDB_ID = "USUPP_MAKE_BLAST_DB";
+const QString FormatDBSupport::ET_GPU_MAKEBLASTDB = "GPU-MakeBLASTDB";
+const QString FormatDBSupport::ET_GPU_MAKEBLASTDB_ID = "UGENE_GPU_MAKE_BLAST_DB";
+const QString FormatDBSupport::FORMATDB_TMP_DIR = "FormatDB";
 
-FormatDBSupport::FormatDBSupport(const QString& name, const QString& path) : ExternalTool(name, path)
+FormatDBSupport::FormatDBSupport(const QString& id, const QString& name, const QString& path) : ExternalTool(id, name, path)
 {
     if (AppContext::getMainWindow() != NULL) {
         icon = QIcon(":external_tool_support/images/ncbi.png");
         grayIcon = QIcon(":external_tool_support/images/ncbi_gray.png");
         warnIcon = QIcon(":external_tool_support/images/ncbi_warn.png");
     }
-    assert((name == ET_FORMATDB)||(name == ET_MAKEBLASTDB)||(name == ET_GPU_MAKEBLASTDB));
-    if(name == ET_FORMATDB){
+    assert((id == ET_FORMATDB_ID)||(id == ET_MAKEBLASTDB_ID)||(id == ET_GPU_MAKEBLASTDB_ID));
+    if(id == ET_FORMATDB_ID){
 #ifdef Q_OS_WIN
     executableFileName="formatdb.exe";
 #else
@@ -69,7 +76,7 @@ FormatDBSupport::FormatDBSupport(const QString& name, const QString& path) : Ext
 
     versionRegExp=QRegExp("formatdb (\\d+\\.\\d+\\.\\d+)");
     toolKitName="BLAST";
-    }else if(name == ET_MAKEBLASTDB){
+    } else if(id == ET_MAKEBLASTDB_ID) {
 #ifdef Q_OS_WIN
     executableFileName="makeblastdb.exe";
 #else
@@ -84,7 +91,7 @@ FormatDBSupport::FormatDBSupport(const QString& name, const QString& path) : Ext
                    " can be searched by other BLAST+ tools.");
     versionRegExp=QRegExp("Application to create BLAST databases, version (\\d+\\.\\d+\\.\\d+\\+?)");
     toolKitName="BLAST+";
-    }else if(name == ET_GPU_MAKEBLASTDB){
+    } else if(id == ET_GPU_MAKEBLASTDB_ID) {
 #ifdef Q_OS_WIN
     executableFileName="makeblastdb.exe";
 #else
@@ -106,10 +113,10 @@ void FormatDBSupport::sl_runWithExtFileSpecify(){
     //Check that formatDB or makeblastdb and tempory folder path defined
     if (path.isEmpty()){
         QObjectScopedPointer<QMessageBox> msgBox = new QMessageBox;
-        if(name == ET_FORMATDB){
+        if(id == ET_FORMATDB_ID) {
             msgBox->setWindowTitle("BLAST "+name);
             msgBox->setText(tr("Path for BLAST %1 tool not selected.").arg(name));
-        }else{
+        } else {
             msgBox->setWindowTitle("BLAST+ "+name);
             msgBox->setText(tr("Path for BLAST+ %1 tool not selected.").arg(name));
         }
@@ -147,7 +154,7 @@ void FormatDBSupport::sl_runWithExtFileSpecify(){
     if (formatDBRunDialog->result() != QDialog::Accepted){
         return;
     }
-    FormatDBSupportTask* formatDBSupportTask = new FormatDBSupportTask(name, settings);
+    FormatDBSupportTask* formatDBSupportTask = new FormatDBSupportTask(id, settings);
     AppContext::getTaskScheduler()->registerTopLevelTask(formatDBSupportTask);
 }
 }//namespace

@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -26,11 +26,10 @@
 #include <U2Core/U2Type.h>
 #include <U2Core/U2Variant.h>
 #include <U2Core/U2Region.h>
-#include <U2Core/U2Feature.h>
 
-namespace U2{
+namespace U2 {
 
-class U2CORE_EXPORT VariantTrackObject: public GObject {
+class U2CORE_EXPORT VariantTrackObject : public GObject {
     Q_OBJECT
 
 public:
@@ -41,7 +40,7 @@ public:
     GObject * clone(const U2DbiRef &dbiRef, U2OpStatus &os, const QVariantMap &hints = QVariantMap()) const;
 
     /**U2_REGION_MAX to get all variants*/
-    U2DbiIterator<U2Variant>* getVariants(const U2Region& reg, U2OpStatus& os ) const;
+    U2DbiIterator<U2Variant>* getVariants(const U2Region& reg, U2OpStatus& os) const;
     int getVariantCount(U2OpStatus &os) const;
 
     void addVariants(const QList<U2Variant>& variants, U2OpStatus& os);

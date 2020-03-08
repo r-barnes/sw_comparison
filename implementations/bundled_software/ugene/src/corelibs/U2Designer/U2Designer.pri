@@ -3,29 +3,21 @@
 MODULE_ID=U2Designer
 include( ../../ugene_lib_common.pri )
 
-UGENE_RELATIVE_DESTDIR = ''
-
-QT += svg webkit widgets webkitwidgets
+QT += svg
+useWebKit() {
+    QT += webkitwidgets
+} else {
+    QT += webengine webenginewidgets
+}
 
 DEFINES+= QT_FATAL_ASSERT BUILDING_U2DESIGNER_DLL
 
-LIBS += -L../../_release -lU2Core -lU2Lang -lU2Gui
+LIBS += -L../../$$out_dir()
+LIBS += -lU2Core$$D -lU2Lang$$D -lU2Gui$$D
 
-!debug_and_release|build_pass {
-
-    CONFIG(debug, debug|release) {
-        DESTDIR=../../_debug
-        LIBS -= -L../../_release -lU2Core -lU2Lang -lU2Gui
-        LIBS += -L../../_debug -lU2Cored -lU2Langd -lU2Guid
-    }
-
-    CONFIG(release, debug|release) {
-        DESTDIR=../../_release
-    }
-}
+DESTDIR = ../../$$out_dir()
 
 unix {
-    target.path = $$UGENE_INSTALL_DIR/$$UGENE_RELATIVE_DESTDIR
+    target.path = $$UGENE_INSTALL_DIR/
     INSTALLS += target
 }
-

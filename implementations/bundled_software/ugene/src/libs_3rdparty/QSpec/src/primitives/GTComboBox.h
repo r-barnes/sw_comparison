@@ -33,12 +33,13 @@ class HI_EXPORT GTComboBox {
 public:
     // fails if the comboBox is NULL, index is not in a comboBox range
     // or a comboBox's index differs from a given index in the end of method's execution
-    static void setCurrentIndex(GUITestOpStatus& os, QComboBox *comboBox, int index, bool checkVal = true, GTGlobals::UseMethod method = GTGlobals::UseKeyBoard);
+    static void setCurrentIndex(GUITestOpStatus& os, QComboBox *comboBox, int index, bool checkVal = true, GTGlobals::UseMethod method = GTGlobals::UseKey);
+    static void setCurrentTextWithKeyboard(GUITestOpStatus& os, QComboBox* comboBox, const QString& text, bool checkVal = true);
 
     // Fails if the comboBox is NULL, combobox doesn't contain an item with text
     // or a comboBox current item's text differs from a given text in the end of method's execution
-    static void setIndexWithText(GUITestOpStatus& os, QComboBox * const comboBox, const QString& text, bool checkVal = true, GTGlobals::UseMethod method = GTGlobals::UseKeyBoard);
-    static void setIndexWithText(GUITestOpStatus& os, const QString &comboBoxName, const QWidget * const parent, const QString &text, bool checkVal = true, GTGlobals::UseMethod method = GTGlobals::UseKeyBoard);
+    static void setIndexWithText(GUITestOpStatus& os, QComboBox * const comboBox, const QString& text, bool checkVal = true, GTGlobals::UseMethod method = GTGlobals::UseKey);
+    static void setIndexWithText(GUITestOpStatus& os, const QString &comboBoxName, const QWidget * const parent, const QString &text, bool checkVal = true, GTGlobals::UseMethod method = GTGlobals::UseKey);
 
     static QString getCurrentText(GUITestOpStatus& os, QComboBox * const comboBox);
     static QString getCurrentText(GUITestOpStatus& os, const QString &comboBoxName, const QWidget * const parent = NULL);

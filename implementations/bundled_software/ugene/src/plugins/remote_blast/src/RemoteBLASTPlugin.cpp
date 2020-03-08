@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -103,6 +103,15 @@ void RemoteBLASTViewContext::initViewContext(GObjectView * view) {
     connect( a, SIGNAL(triggered()), SLOT(sl_showDialog()) );
 }
 
+/*
+ * NCBI blast service provides no details about request size limits.
+ * See: https://blast.ncbi.nlm.nih.gov/Blast.cgi?CMD=Web&PAGE_TYPE=BlastDocs&DOC_TYPE=DeveloperInfo
+ *
+ * But it is safe to expect that any single request should not exceed some meaningful size: normally it is below ~10k.
+ * We use 1000x bigger size (10M) to 1) keep safety 2) avoid unnecessary limitations for users.
+ */
+#define MAX_REGION_SIZE_TO_SEARCH_WITH_REMOTE_BLAST (10*1000*1000)
+
 void RemoteBLASTViewContext::sl_showDialog() {
     QAction* a = (QAction*)sender();
     GObjectViewAction* viewAction = qobject_cast<GObjectViewAction*>(a);
@@ -124,6 +133,14 @@ void RemoteBLASTViewContext::sl_showDialog() {
             regions.append(U2Region(0, seqCtx->getSequenceLength()));
         } else {
             regions =  s->getSelectedRegions();
+        }
+
+        // First check that the regions are not too large: remote service will not accept gigs of data.
+        foreach(const U2Region& region, regions) {
+            if (region.length > MAX_REGION_SIZE_TO_SEARCH_WITH_REMOTE_BLAST) {
+                QMessageBox::critical(QApplication::activeWindow(), L10N::errorTitle(), tr("Selected region is too large!"));
+                return;
+            }
         }
         U2OpStatusImpl os;
         foreach(const U2Region& r, regions) {

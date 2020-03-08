@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -20,22 +20,19 @@
  */
 
 #include <U2Core/TextUtils.h>
-#include <U2Core/U2SafePoints.h>
 
 #include "U2Qualifier.h"
 
 namespace U2 {
 
-U2Qualifier::U2Qualifier()
-{
+U2Qualifier::U2Qualifier() {
 
 }
 
 U2Qualifier::U2Qualifier(const QString &name, const QString &value)
     : name(name),
-      value(value)
-{
-//    SAFE_POINT(isValid(), "An attempt to create an invalid qualifier", );
+    value(value) {
+    //    SAFE_POINT(isValid(), "An attempt to create an invalid qualifier", );
 }
 
 bool U2Qualifier::isValid() const {
@@ -51,7 +48,7 @@ bool U2Qualifier::operator!=(const U2Qualifier &q) const {
 }
 
 bool U2Qualifier::isValidQualifierName(const QString &name) {
-    return !name.isEmpty() && name.length() <= 20 && TextUtils::fits(TextUtils::QUALIFIER_NAME_CHARS, name.toLocal8Bit().data(), name.length());
+    return !name.isEmpty() && TextUtils::fits(TextUtils::QUALIFIER_NAME_CHARS, name.toLocal8Bit().data(), name.length());
 }
 
 bool U2Qualifier::isValidQualifierValue(const QString &) {

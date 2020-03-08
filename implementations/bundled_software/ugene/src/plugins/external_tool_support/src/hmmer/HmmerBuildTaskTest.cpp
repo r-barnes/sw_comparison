@@ -1,6 +1,6 @@
 /**
 * UGENE - Integrated Bioinformatics Tools.
-* Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+* Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
 * http://ugene.net
 *
 * This program is free software; you can redistribute it and/or
@@ -296,13 +296,11 @@ Task::ReportResult GTest_UHMMER3Build::report() {
 }
 
 void GTest_UHMMER3Build::cleanup() {
-    if (delOutFile) {
+    if (!hasError() && delOutFile) {
         QFile::remove(outFile);
     }
-}
 
-GTest_UHMMER3Build::~GTest_UHMMER3Build() {
-    cleanup();
+    XmlTest::cleanup();
 }
 
 /**************************

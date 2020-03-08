@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -30,11 +30,11 @@ namespace U2 {
 using namespace WorkflowSerialize;
 namespace Workflow {
 
-bool ActorValidator::validate(const Configuration *cfg, ProblemList &problemList) const {
+bool ActorValidator::validate(const Configuration *cfg, NotificationsList &notificationList) const {
     const Actor *actor = static_cast<const Actor*>(cfg);
     SAFE_POINT(NULL != actor, "NULL actor", false);
     QMap<QString, QString> options;
-    return validate(actor, problemList, options);
+    return validate(actor, notificationList, options);
 }
 
 ActorValidatorRegistry::~ActorValidatorRegistry() {

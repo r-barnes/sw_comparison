@@ -47,6 +47,9 @@ QGroupBox::indicator:checked {
    <property name="spacing">
     <number>1</number>
    </property>
+   <property name="sizeConstraint">
+    <enum>QLayout::SetMinAndMaxSize</enum>
+   </property>
    <property name="leftMargin">
     <number>1</number>
    </property>
@@ -67,6 +70,9 @@ QGroupBox::indicator:checked {
      <layout class="QVBoxLayout" name="verticalLayout_4">
       <property name="spacing">
        <number>3</number>
+      </property>
+      <property name="sizeConstraint">
+       <enum>QLayout::SetMinAndMaxSize</enum>
       </property>
       <property name="leftMargin">
        <number>3</number>
@@ -188,11 +194,14 @@ QGroupBox::indicator:checked {
           <property name="spacing">
            <number>0</number>
           </property>
+          <property name="sizeConstraint">
+           <enum>QLayout::SetMinAndMaxSize</enum>
+          </property>
           <property name="leftMargin">
            <number>0</number>
           </property>
           <property name="topMargin">
-           <number>3</number>
+           <number>10</number>
           </property>
           <property name="rightMargin">
            <number>0</number>
@@ -282,17 +291,20 @@ QGroupBox::indicator:checked {
           <bool>true</bool>
          </property>
          <property name="checked">
-          <bool>true</bool>
+          <bool>false</bool>
          </property>
          <layout class="QVBoxLayout" name="inputLayout">
           <property name="spacing">
            <number>0</number>
           </property>
+          <property name="sizeConstraint">
+           <enum>QLayout::SetMinAndMaxSize</enum>
+          </property>
           <property name="leftMargin">
            <number>0</number>
           </property>
           <property name="topMargin">
-           <number>3</number>
+           <number>10</number>
           </property>
           <property name="rightMargin">
            <number>0</number>
@@ -301,13 +313,20 @@ QGroupBox::indicator:checked {
            <number>0</number>
           </property>
           <item>
-           <widget class="QTableView" name="table2">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>2</verstretch>
-             </sizepolicy>
+           <widget class="QScrollArea" name="inputScrollArea">
+            <property name="widgetResizable">
+             <bool>true</bool>
             </property>
+            <widget class="QWidget" name="inputScrollAreaContainer">
+             <property name="geometry">
+              <rect>
+               <x>0</x>
+               <y>0</y>
+               <width>288</width>
+               <height>68</height>
+              </rect>
+             </property>
+            </widget>
            </widget>
           </item>
          </layout>
@@ -329,17 +348,20 @@ QGroupBox::indicator:checked {
           <bool>true</bool>
          </property>
          <property name="checked">
-          <bool>true</bool>
+          <bool>false</bool>
          </property>
          <layout class="QVBoxLayout" name="outputLayout">
           <property name="spacing">
            <number>0</number>
           </property>
+          <property name="sizeConstraint">
+           <enum>QLayout::SetMinAndMaxSize</enum>
+          </property>
           <property name="leftMargin">
            <number>0</number>
           </property>
           <property name="topMargin">
-           <number>3</number>
+           <number>10</number>
           </property>
           <property name="rightMargin">
            <number>0</number>
@@ -348,13 +370,20 @@ QGroupBox::indicator:checked {
            <number>0</number>
           </property>
           <item>
-           <widget class="QTableView" name="table3">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
+           <widget class="QScrollArea" name="outputScrollArea">
+            <property name="widgetResizable">
+             <bool>true</bool>
             </property>
+            <widget class="QWidget" name="outputScrollAreaContainer">
+             <property name="geometry">
+              <rect>
+               <x>0</x>
+               <y>0</y>
+               <width>288</width>
+               <height>68</height>
+              </rect>
+             </property>
+            </widget>
            </widget>
           </item>
          </layout>

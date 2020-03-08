@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -26,6 +26,7 @@
 
 #include <U2Core/U2Assembly.h>
 #include <U2Core/Task.h>
+#include <U2Core/U2Region.h>
 #include <U2Core/U2Type.h>
 
 namespace U2 {
@@ -41,8 +42,8 @@ public:
 class GetAssemblyLengthTask : public Task {
     Q_OBJECT
 public:
-    GetAssemblyLengthTask(const U2DbiRef &dbiRef, const U2DataId &assemblyId):
-        Task(tr("Get length of Assembly"), TaskFlag_None), dbiRef(dbiRef), assemblyId(assemblyId) { }
+    GetAssemblyLengthTask(const U2DbiRef &dbiRef, const U2DataId &assemblyId) :
+        Task(tr("Get length of Assembly"), TaskFlag_None), dbiRef(dbiRef), assemblyId(assemblyId) {}
 
     void run();
 
@@ -90,7 +91,7 @@ public:
 signals:
     void si_regionIsProcessed(qint64 startPos);
 
-private slots:
+    private slots:
 
 private:
     const U2DbiRef dbiRef;

@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -42,12 +42,13 @@
 #include <U2Gui/OPWidgetFactoryRegistry.h>
 #include <U2Gui/ProjectView.h>
 
+#include "AlignSequencesToAlignment/AlignSequencesToAlignmentTask.h"
+#include "MSAEditor.h"
 #include "MaEditorFactory.h"
 #include "MaEditorNameList.h"
 #include "MaEditorTasks.h"
-#include "MSAEditor.h"
-#include "AlignSequencesToAlignment/AlignSequencesToAlignmentTask.h"
 #include "Overview/MaEditorOverviewArea.h"
+#include "RealignSequencesInAlignment/RealignSequencesInAlignmentTask.h"
 #include "view_rendering/MaEditorConsensusArea.h"
 #include "view_rendering/MaEditorSequenceArea.h"
 
@@ -55,7 +56,8 @@ namespace U2 {
 
 MSAEditor::MSAEditor(const QString& viewName, MultipleSequenceAlignmentObject* obj)
     : MaEditor(MsaEditorFactory::ID, viewName, obj),
-      alignSequencesToAlignmentAction(NULL),
+      alignSequencesToAlignmentAction(nullptr),
+      realignSomeSequenceAction(nullptr),
       treeManager(this)
 {
     initZoom();
@@ -66,6 +68,9 @@ MSAEditor::MSAEditor(const QString& viewName, MultipleSequenceAlignmentObject* o
     buildTreeAction->setEnabled(!isAlignmentEmpty());
     connect(maObject, SIGNAL(si_rowsRemoved(const QList<qint64> &)), SLOT(sl_rowsRemoved(const QList<qint64> &)));
     connect(buildTreeAction, SIGNAL(triggered()), SLOT(sl_buildTree()));
+
+    realignSomeSequenceAction = new QAction(QIcon(":/core/images/realign_some_sequences.png"), tr("Realign sequence(s) to other sequences"), this);
+    realignSomeSequenceAction->setObjectName("Realign sequence(s) to other sequences");
 
     pairwiseAlignmentWidgetsSettings = new PairwiseAlignmentWidgetsSettings;
     if (maObject->getAlphabet() != NULL) {
@@ -102,7 +107,7 @@ bool MSAEditor::onCloseEvent() {
 
 const MultipleSequenceAlignmentRow MSAEditor::getRowByLineNumber(int lineNumber) const {
     if (ui->isCollapsibleMode()) {
-        lineNumber = ui->getCollapseModel()->mapToRow(lineNumber);
+        lineNumber = ui->getCollapseModel()->getMaRowIndexByViewRowIndex(lineNumber);
     }
     return getMaObject()->getMsaRow(lineNumber);
 }
@@ -129,6 +134,7 @@ void MSAEditor::buildStaticToolbar(QToolBar* tb) {
     tb->addAction(buildTreeAction);
     tb->addAction(alignAction);
     tb->addAction(alignSequencesToAlignmentAction);
+    tb->addAction(realignSomeSequenceAction);
 
     GObjectView::buildStaticToolbar(tb);
 }
@@ -197,8 +203,8 @@ QWidget* MSAEditor::createWidget() {
     alignAction->setObjectName("Align");
     connect(alignAction, SIGNAL(triggered()), this, SLOT(sl_align()));
 
-    alignSequencesToAlignmentAction = new QAction(QIcon(":/core/images/add_to_alignment.png"), tr("Align sequence to this alignment"), this);
-    alignSequencesToAlignmentAction->setObjectName("Align sequence to this alignment");
+    alignSequencesToAlignmentAction = new QAction(QIcon(":/core/images/add_to_alignment.png"), tr("Align sequence(s) to this alignment"), this);
+    alignSequencesToAlignmentAction->setObjectName("Align sequence(s) to this alignment");
     connect(alignSequencesToAlignmentAction, SIGNAL(triggered()), this, SLOT(sl_addToAlignment()));
 
     setAsReferenceSequenceAction = new QAction(tr("Set this sequence as reference"), this);
@@ -219,6 +225,10 @@ QWidget* MSAEditor::createWidget() {
     foreach (OPWidgetFactory *factory, opWidgetFactories) {
         optionsPanel->addGroup(factory);
     }
+
+    connect(realignSomeSequenceAction, SIGNAL(triggered()), this, SLOT(sl_realignSomeSequences()));
+    connect(maObject, SIGNAL(si_alphabetChanged(const MaModificationInfo&, const DNAAlphabet*)), SLOT(sl_updateRealignAction()));
+    connect(ui->getSequenceArea(), SIGNAL(si_selectionChanged(const MaEditorSelection&, const MaEditorSelection&)), SLOT(sl_updateRealignAction()));
 
     qDeleteAll(filters);
 
@@ -275,6 +285,7 @@ void MSAEditor::updateActions() {
         alignSequencesToAlignmentAction->setEnabled(!maObject->isStateLocked());
     }
     buildTreeAction->setEnabled(!maObject->isStateLocked() && !this->isAlignmentEmpty());
+    sl_updateRealignAction();
 }
 
 void MSAEditor::copyRowFromSequence(U2SequenceObject *seqObj, U2OpStatus &os) {
@@ -319,9 +330,6 @@ void MSAEditor::sl_hideTreeOP() {
     GroupHeaderImageWidget* header = opWidget->findHeaderWidgetByGroupId("OP_MSA_TREES_WIDGET");
     QWidget* groupWidget = opWidget->findOptionsWidgetByGroupId("OP_MSA_TREES_WIDGET");
     bool openAddTreeGroup = (NULL != groupWidget);
-    if(openAddTreeGroup) {
-        //header->changeState();
-    }
 
     header->hide();
 
@@ -424,6 +432,21 @@ void MSAEditor::sl_addToAlignment() {
     }
 }
 
+void MSAEditor::sl_realignSomeSequences() {
+    const MaEditorSelection& selection = ui->getEditor()->getSelection();
+    int startSeq = selection.y();
+    int endSeq = selection.y() + selection.height() - 1;
+    MaCollapseModel* model = ui->getCollapseModel();
+    const MultipleAlignment& ma = ui->getEditor()->getMaObject()->getMultipleAlignment();
+    QSet<qint64> rowIds;
+    for (int i = startSeq; i <= endSeq; i++) {
+        rowIds.insert(ma->getRow(model->getMaRowIndexByViewRowIndex(i))->getRowId());
+    }
+    Task* realignTask = new RealignSequencesInAlignmentTask(getMaObject(), rowIds);
+    TaskWatchdog::trackResourceExistence(ui->getEditor()->getMaObject(), realignTask, tr("A problem occurred during realigning sequences. The multiple alignment is no more available."));
+    AppContext::getTaskScheduler()->registerTopLevelTask(realignTask);
+}
+
 void MSAEditor::alignSequencesFromObjectsToAlignment(const QList<GObject*>& objects) {
     SequenceObjectsExtractor extractor;
     extractor.setAlphabet(maObject->getAlphabet());
@@ -479,6 +502,19 @@ void MSAEditor::sl_rowsRemoved(const QList<qint64> &rowIds) {
             sl_unsetReferenceSeq();
             break;
         }
+    }
+}
+
+void MSAEditor::sl_updateRealignAction() {
+    if (!maObject->getAlphabet()->isRaw()) {
+        realignSomeSequenceAction->setEnabled(true);
+    } else {
+        realignSomeSequenceAction->setDisabled(true);
+        return;
+    }
+    if (ui != nullptr) {
+        U2Region sel = ui->getSequenceArea()->getSelectedMaRows();
+        realignSomeSequenceAction->setDisabled(sel.length == 0 || sel.length == maObject->getNumRows());
     }
 }
 

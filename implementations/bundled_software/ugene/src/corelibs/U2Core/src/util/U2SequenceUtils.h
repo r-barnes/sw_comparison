@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -37,14 +37,14 @@ class U2SequenceObject;
 
 /**
     U2Sequence and related structures utility functions
-*/
+    */
 class U2CORE_EXPORT U2SequenceUtils : public QObject {
     Q_OBJECT
 public:
 
     /** Extract sequence parts marked by the regions
         Note: the order of complemented regions is also reversed
-    */
+        */
     static QList<QByteArray> extractRegions(const U2EntityRef& seqRef, const QVector<U2Region>& regions,
         const DNATranslation* complTT, const DNATranslation* aminoTT, bool join, U2OpStatus& os);
 
@@ -84,7 +84,7 @@ public:
     U2Sequence finalizeSequence(U2OpStatus& os);
     /** Checks that finalized sequence has the valid id */
     U2Sequence finalizeSequenceAndValidate(U2OpStatus& os);
-    U2AlphabetId getAlphabet() const {return sequence.alphabet;}
+    U2AlphabetId getAlphabet() const { return sequence.alphabet; }
 
     void setCaseAnnotationsMode(CaseAnnotationsMode mode);
     bool isCaseAnnotationsModeOn() const;

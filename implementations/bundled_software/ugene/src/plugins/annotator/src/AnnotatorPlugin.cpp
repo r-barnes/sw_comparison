@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -22,17 +22,13 @@
 #include <QMenu>
 #include <QMessageBox>
 
-#include <U2Core/AnnotationTableObject.h>
 #include <U2Core/AppContext.h>
 #include <U2Core/GAutoDeleteList.h>
-#include <U2Core/U2SafePoints.h>
-
-#include <U2Gui/GUIUtils.h>
 #include <U2Core/QObjectScopedPointer.h>
 
-#include <U2Test/GTest.h>
+#include <U2Gui/GUIUtils.h>
+
 #include <U2Test/GTestFrameworkComponents.h>
-#include <U2Test/XMLTestFormat.h>
 
 #include <U2View/ADVConstants.h>
 #include <U2View/ADVUtils.h>
@@ -94,13 +90,13 @@ AnnotatorViewContext::AnnotatorViewContext(QObject* p, bool customAutoAnnotation
 
 void AnnotatorViewContext::initViewContext(GObjectView* v) {
     AnnotatedDNAView* av = qobject_cast<AnnotatedDNAView*>(v);
-    ADVGlobalAction* a = new ADVGlobalAction(av, QIcon(":annotator/images/regions.png"), tr("Find annotated regions..."), 30);
-    connect(a, SIGNAL(triggered()), SLOT(sl_showCollocationDialog()));
+    ADVGlobalAction* findRegionsAction = new ADVGlobalAction(av, QIcon(":annotator/images/regions.png"), tr("Find annotated regions..."), 30);
+    connect(findRegionsAction, SIGNAL(triggered()), SLOT(sl_showCollocationDialog()));
 
     if (customFeaturesAvailable) {
-        ADVGlobalAction* a = new ADVGlobalAction(av, QIcon(":annotator/images/plasmid_features.png"), tr("Annotate plasmid..."), 31);
-        a->addAlphabetFilter(DNAAlphabet_NUCL);
-        connect(a, SIGNAL(triggered()), SLOT(sl_showCustomAutoAnnotationDialog()));
+        ADVGlobalAction* annotatePlasmidAction = new ADVGlobalAction(av, QIcon(":annotator/images/plasmid_features.png"), tr("Annotate plasmid..."), 31);
+        annotatePlasmidAction->addAlphabetFilter(DNAAlphabet_NUCL);
+        connect(annotatePlasmidAction, SIGNAL(triggered()), SLOT(sl_showCustomAutoAnnotationDialog()));
     }
 }
 
@@ -113,8 +109,8 @@ void AnnotatorViewContext::sl_showCollocationDialog() {
     QSet<QString> allNames;
 
     foreach (AnnotationTableObject *ao, av->getAnnotationObjects()) {
-        foreach (Annotation *a, ao->getAnnotations()) {
-            allNames.insert(a->getName());
+        foreach (Annotation *annotation, ao->getAnnotations()) {
+            allNames.insert(annotation->getName());
         }
     }
     if (allNames.isEmpty()) {

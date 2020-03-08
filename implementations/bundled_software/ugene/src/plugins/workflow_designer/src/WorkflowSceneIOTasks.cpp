@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -28,6 +28,7 @@
 #include <U2Core/Settings.h>
 
 #include <U2Lang/HRSchemaSerializer.h>
+#include <U2Lang/Wizard.h>
 
 #include "SceneSerializer.h"
 #include "WorkflowDocument.h"
@@ -65,8 +66,15 @@ void SaveWorkflowSceneTask::run() {
 /**********************************
  * LoadWorkflowSceneTask
  **********************************/
-LoadWorkflowSceneTask::LoadWorkflowSceneTask(Schema *_schema, Metadata *_meta, WorkflowScene *_scene, const QString &_url, bool _noUrl):
-Task(tr("Load workflow scene"),TaskFlag_None), schema(_schema), meta(_meta), scene(_scene), url(_url), noUrl(_noUrl) {
+LoadWorkflowSceneTask::LoadWorkflowSceneTask(Schema *_schema, Metadata *_meta, WorkflowScene *_scene, const QString &_url, bool _noUrl, bool _disableWizardAutorun)
+    : Task(tr("Load workflow scene"),TaskFlag_None),
+      schema(_schema),
+      meta(_meta),
+      scene(_scene),
+      url(_url),
+      noUrl(_noUrl),
+      disableWizardAutorun(_disableWizardAutorun)
+{
     GCOUNTER(cvar,tvar, "LoadWorkflowSceneTask");
     assert(schema != NULL);
     assert(meta != NULL);
@@ -118,6 +126,11 @@ Task::ReportResult LoadWorkflowSceneTask::report() {
         resetSceneAndScheme( );
         return ReportResult_Finished;
     }
+
+    if (disableWizardAutorun && !schema->getWizards().isEmpty()) {
+        schema->getWizards().first()->setAutoRun(false);
+    }
+
     SceneCreator sc(schema, *meta);
     sc.recreateScene(scene);
     scene->setModified(false);

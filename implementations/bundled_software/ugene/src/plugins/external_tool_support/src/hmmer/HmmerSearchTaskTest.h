@@ -1,6 +1,6 @@
 /**
 * UGENE - Integrated Bioinformatics Tools.
-* Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+* Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
 * http://ugene.net
 *
 * This program is free software; you can redistribute it and/or
@@ -32,7 +32,7 @@ namespace U2 {
 
 class HmmerSearchTask;
 
-class GTest_UHMM3Search : public GTest {
+class GTest_UHMM3Search : public XmlTest {
     Q_OBJECT
 public:
     static const QString SEQ_DOC_CTX_NAME_TAG; /* loaded sequence document */
@@ -122,7 +122,7 @@ public:
     QList< UHMM3SearchSeqDomainResult >    domainResList;
 }; // UHMM3SearchResult
 
-class GTest_UHMM3SearchCompare : public GTest {
+class GTest_UHMM3SearchCompare : public XmlTest {
     Q_OBJECT
 public:
     static const QString ACTUAL_OUT_FILE_TAG;

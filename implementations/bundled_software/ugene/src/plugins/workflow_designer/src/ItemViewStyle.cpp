@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -79,7 +79,7 @@ void ItemViewStyle::selectBGColor() {
 
 void ItemViewStyle::selectFont() {
     bool ok;
-    QFont res = QFontDialog::getFont(&ok, defFont, owner->scene()->views().first());
+    QFont res = QFontDialog::getFont(&ok, defFont, owner->scene()->views().first(), tr("Characters Font"), QFontDialog::DontUseNativeDialog);
     if (ok) {
         defFont = res;
         WorkflowScene* sc = qobject_cast<WorkflowScene*>(owner->scene());

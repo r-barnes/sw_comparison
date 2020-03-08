@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -29,6 +29,7 @@
 #include <U2Core/AppContext.h>
 #include <U2Core/BioStruct3DObject.h>
 #include <U2Core/GObject.h>
+#include <U2Core/GObjectTypes.h>
 #include <U2Core/GObjectUtils.h>
 #include <U2Core/U2DbiRegistry.h>
 #include <U2Core/U2OpStatusUtils.h>
@@ -57,7 +58,7 @@ StructuralAlignmentDialog::StructuralAlignmentDialog(const BioStruct3DObject *fi
         : QDialog(parent), task(0)
 {
     setupUi(this);
-    new HelpButton(this, buttonBox, "21433222");
+    new HelpButton(this, buttonBox, "24742421");
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("OK"));
 
@@ -140,7 +141,7 @@ void StructuralAlignmentDialog::accept() {
 int StructuralAlignmentDialog::execIfAlgorithmAvailable() {
     StructuralAlignmentAlgorithmRegistry *reg = AppContext::getStructuralAlignmentAlgorithmRegistry();
     if (reg->getFactoriesIds().isEmpty()) {
-        QMessageBox::warning(this, "Error", "No available algorithms, make sure that apropriate plugin loaded (for ex. PTools)");
+        QMessageBox::warning(this, "Error", "No available algorithms, make sure that appropriate plugin loaded (for ex. PTools)");
         return Rejected;
     }
     else {

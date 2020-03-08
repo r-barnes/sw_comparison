@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -30,7 +30,7 @@ namespace U2 {
 
 class Document;
 
-class GTest_BioStruct3DNumberOfAtoms : public GTest {
+class GTest_BioStruct3DNumberOfAtoms : public XmlTest {
     Q_OBJECT
         SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_BioStruct3DNumberOfAtoms, "check-biostruct3d-number-of-atoms");
 
@@ -41,7 +41,7 @@ class GTest_BioStruct3DNumberOfAtoms : public GTest {
 
 };
 
-class GTest_BioStruct3DNumberOfChains : public GTest {
+class GTest_BioStruct3DNumberOfChains : public XmlTest {
     Q_OBJECT
         SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_BioStruct3DNumberOfChains, "check-biostruct3d-number-of-chains");
 
@@ -52,7 +52,7 @@ class GTest_BioStruct3DNumberOfChains : public GTest {
 };
 
 
-class GTest_BioStruct3DAtomCoordinates : public GTest {
+class GTest_BioStruct3DAtomCoordinates : public XmlTest {
     Q_OBJECT
         SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_BioStruct3DAtomCoordinates, "check-biostruct3d-atom-coords");
 
@@ -65,7 +65,7 @@ class GTest_BioStruct3DAtomCoordinates : public GTest {
 
 };
 
-class GTest_BioStruct3DAtomChainIndex : public GTest {
+class GTest_BioStruct3DAtomChainIndex : public XmlTest {
     Q_OBJECT
         SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_BioStruct3DAtomChainIndex, "check-biostruct3d-atom-chain-id");
 
@@ -78,7 +78,7 @@ class GTest_BioStruct3DAtomChainIndex : public GTest {
 
 };
 
-class GTest_BioStruct3DAtomResidueName : public GTest {
+class GTest_BioStruct3DAtomResidueName : public XmlTest {
     Q_OBJECT
         SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_BioStruct3DAtomResidueName, "check-biostruct3d-atom-residue-name");
 
@@ -92,7 +92,7 @@ class GTest_BioStruct3DAtomResidueName : public GTest {
 };
 
 
-class GTest_PDBFormatStressTest : public GTest {
+class GTest_PDBFormatStressTest : public XmlTest {
     Q_OBJECT
         SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_PDBFormatStressTest, "try-load-all-pdb-documents");
 
@@ -102,7 +102,7 @@ class GTest_PDBFormatStressTest : public GTest {
 };
 
 
-class GTest_ASNFormatStressTest : public GTest {
+class GTest_ASNFormatStressTest : public XmlTest {
     Q_OBJECT
         SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_ASNFormatStressTest, "try-load-all-mmdb-documents");
 

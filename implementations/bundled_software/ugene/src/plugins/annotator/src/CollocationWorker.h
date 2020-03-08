@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -22,10 +22,9 @@
 #ifndef _U2_ANNOTATOR_WORKER_H_
 #define _U2_ANNOTATOR_WORKER_H_
 
-#include <QSet>
-
 #include <U2Lang/LocalDomain.h>
 #include <U2Lang/WorkflowUtils.h>
+
 #include "CollocationsSearchAlgorithm.h"
 
 namespace U2 {

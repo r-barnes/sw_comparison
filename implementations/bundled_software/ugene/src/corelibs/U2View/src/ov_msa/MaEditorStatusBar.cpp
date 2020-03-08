@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -108,8 +108,6 @@ void MaEditorStatusBar::sl_lockStateChanged() {
     updateLock();
 }
 
-static const QString NONE_SELECTION = QObject::tr("none");
-
 QPair<QString, QString> MaEditorStatusBar::getGappedPositionInfo(const QPoint& pos) const{
     if (pos.isNull()) {
         return QPair<QString, QString>(NONE_MARK, NONE_MARK);
@@ -119,7 +117,7 @@ QPair<QString, QString> MaEditorStatusBar::getGappedPositionInfo(const QPoint& p
     MaEditor* editor = seqArea->getEditor();
     SAFE_POINT(editor != NULL, "Editor is NULL", p);
     SAFE_POINT(editor->getMaObject(), "MaObject is NULL", p);
-    const MultipleAlignmentRow row = editor->getMaObject()->getRow(seqArea->getSelectedRows().startPos);
+    const MultipleAlignmentRow row = editor->getMaObject()->getRow(seqArea->getSelectedMaRows().startPos);
     QString len = QString::number(row->getUngappedLength());
     if (row->charAt(pos.x()) == U2Msa::GAP_CHAR) {
         return QPair<QString, QString>(GAP_MARK, len);
@@ -161,13 +159,13 @@ void MaEditorStatusBar::updateSelectionLabel() {
     MaEditorSelection selection = seqArea->getSelection();
     QString selSize;
     if (selection.isEmpty()) {
-        selSize = NONE_SELECTION;
+        selSize = QObject::tr("none");
     } else {
         selSize = QString::number(selection.width()) + "x" + QString::number(selection.height());
     }
     QFontMetrics fm(lineLabel->font(),this);
     int maxSelLength = fm.width(selectionPattern.arg(QString::number(aliObj->getLength()) + "x" + QString::number( aliObj->getNumRows())));
-    int nonSelLength = fm.width(selectionPattern.arg(NONE_SELECTION));
+    int nonSelLength = fm.width(selectionPattern.arg(QObject::tr("none")));
 
     selectionLabel->update(selSize, 10 + qMax(maxSelLength, nonSelLength));
 }

@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -178,8 +178,7 @@ void GSequenceLineView::mousePressEvent(QMouseEvent* me) {
     }
 
     lastPressPos = renderArea->coordToPos(renderAreaPos);
-
-    SAFE_POINT(lastPressPos >= visibleRange.startPos && lastPressPos <= visibleRange.endPos(), "Last mouse press position is out of visible range!",);
+    SAFE_POINT(lastPressPos >= visibleRange.startPos && lastPressPos <= visibleRange.endPos(), "Last mouse press position is out of visible range!", );
 
     if (me->button() == Qt::RightButton) {
         QWidget::mousePressEvent(me);
@@ -348,7 +347,7 @@ void GSequenceLineView::onVisibleRangeChanged(bool signal) {
 }
 
 
-QPoint GSequenceLineView::toRenderAreaPoint(const QPoint& p) {
+QPoint GSequenceLineView::toRenderAreaPoint(const QPoint& p) const {
     assert(contentWidget);
     return p - contentWidget->pos();
 }

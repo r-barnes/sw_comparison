@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -584,17 +584,16 @@ GUI_TEST_CLASS_DEFINITION(test_0018) {
 
     //8. Right click on the reference area while the file is loading.
     //Expected: "Unassociate" and "Set reference sequence" are disabled.
-    GTUtilsDialog::waitForDialog(os, new PopupChecker(os, QStringList() << "unassociateReferenceAction", PopupChecker::IsDisabled));
-    GTWidget::click(os, GTWidget::findWidget(os, "Assembly reference sequence area"), Qt::RightButton);
     GTUtilsDialog::waitForDialog(os, new PopupChecker(os, QStringList() << "setReferenceAction", PopupChecker::IsDisabled));
+    // GTUtilsDialog::waitForDialog(os, new PopupChecker(os, QStringList() << "setReferenceAction", PopupChecker::IsDisabled));
     GTWidget::click(os, GTWidget::findWidget(os, "Assembly reference sequence area"), Qt::RightButton);
+    //GTUtilsDialog::waitForDialog(os, new PopupChecker(os, QStringList() << "unassociateReferenceAction" , PopupChecker::IsDisabled));
+    //GTWidget::click(os, GTWidget::findWidget(os, "Assembly reference sequence area"), Qt::RightButton);
 
     //9. Right click on the reference area after loading.
     //Expected: "Unassociate" and "Set reference sequence" are enabled.
     GTUtilsTaskTreeView::waitTaskFinished(os);
-    GTUtilsDialog::waitForDialog(os, new PopupChecker(os, QStringList() << "unassociateReferenceAction", PopupChecker::IsEnabled));
-    GTWidget::click(os, GTWidget::findWidget(os, "Assembly reference sequence area"), Qt::RightButton);
-    GTUtilsDialog::waitForDialog(os, new PopupChecker(os, QStringList() << "setReferenceAction", PopupChecker::IsEnabled));
+    GTUtilsDialog::waitForDialog(os, new PopupCheckerByText(os, QStringList(), QStringList() << "Set reference" << "Unassociate", PopupChecker::IsEnabled));
     GTWidget::click(os, GTWidget::findWidget(os, "Assembly reference sequence area"), Qt::RightButton);
 }
 
@@ -842,7 +841,7 @@ GUI_TEST_CLASS_DEFINITION(test_0027){
     GTFileDialog::openFile(os, testDir + "_common_data/scenarios/assembly/", "example-alignment.ugenedb");
 //    3. Drag and drop COI object to assembly browser
     GTUtilsDialog::waitForDialog(os, new MessageBoxDialogFiller(os, QMessageBox::Ok,
-                                                                "Only sequence or variant track  objects can be added to assembly browser"));
+                                                                "Only a nucleotide sequence or a variant track objects can be added to the Assembly Browser"));
     GTUtilsAssemblyBrowser::addRefFromProject(os, "COI");
 //    Expected: error message box appears
     GTGlobals::sleep(500);
@@ -983,7 +982,7 @@ GUI_TEST_CLASS_DEFINITION(test_0035){
 GUI_TEST_CLASS_DEFINITION(test_0036){
     //1. Open assembly
     GTFileDialog::openFile(os, testDir + "_common_data/ugenedb", "chrM.sorted.bam.ugenedb");
-	GTUtilsTaskTreeView::waitTaskFinished(os);
+    GTUtilsTaskTreeView::waitTaskFinished(os);
     //Check these hotkeys: up, down, left, right, +, -, pageup, pagedown
     GTUtilsAssemblyBrowser::zoomToReads(os);
 

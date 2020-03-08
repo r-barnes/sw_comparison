@@ -38,10 +38,11 @@ HEADERS += src/app_settings/AppSettingsDialogController.h \
            src/task_view/TaskStatusBar.h \
            src/task_view/TaskViewController.h \
            src/update/UgeneUpdater.h \
-           src/utils/MultilingualHtmlView.h \
-           src/welcome_page/WelcomePageController.h \
+           src/welcome_page/WelcomePageJsAgent.h \
            src/welcome_page/WelcomePageMdi.h \
+           src/welcome_page/WelcomePageMdiController.h \
            src/welcome_page/WelcomePageWidget.h
+
 FORMS += src/app_settings/directories_settings/DirectoriesSettingsWidget.ui \
          src/app_settings/format_settings/FormatSettingsWidget.ui \
          src/app_settings/logview_settings/LogSettingsWidget.ui \
@@ -61,6 +62,7 @@ FORMS += src/app_settings/directories_settings/DirectoriesSettingsWidget.ui \
          src/project_support/SaveProjectDialog.ui \
          src/project_view/ProjectViewWidget.ui \
          src/shtirlitz/StatisticalReport.ui
+
 SOURCES += src/Main.cpp \
            src/app_settings/AppSettingsDialogController.cpp \
            src/app_settings/AppSettingsGUIImpl.cpp \
@@ -99,11 +101,15 @@ SOURCES += src/Main.cpp \
            src/task_view/TaskStatusBar.cpp \
            src/task_view/TaskViewController.cpp \
            src/update/UgeneUpdater.cpp \
-           src/utils/MultilingualHtmlView.cpp \
-           src/welcome_page/WelcomePageController.cpp \
+           src/welcome_page/WelcomePageJsAgent.cpp \
            src/welcome_page/WelcomePageMdi.cpp \
+           src/welcome_page/WelcomePageMdiController.cpp \
            src/welcome_page/WelcomePageWidget.cpp
-RESOURCES += ugeneui.qrc
-TRANSLATIONS += transl/english.ts \
-                transl/russian.ts
 
+macx {
+OBJECTIVE_HEADERS += src/app_settings/ResetSettingsMac.h
+OBJECTIVE_SOURCES += src/app_settings/ResetSettingsMac.mm
+}
+
+RESOURCES += ugeneui.qrc
+TRANSLATIONS += transl/russian.ts

@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -92,8 +92,8 @@ inline bool isValidFile(const QString &link, const qint64 &processStartTime) {
 
 QList<WorkerState> WorkflowRunTask::getState( Actor* actor) {
     QList<WorkerState> ret;
-    foreach(Task* t, getSubtasks()) {
-        WorkflowIterationRunTask* rt = qobject_cast<WorkflowIterationRunTask*>(t);
+    foreach(const QPointer<Task> &t, getSubtasks()) {
+        WorkflowIterationRunTask* rt = qobject_cast<WorkflowIterationRunTask*>(t.data());
         ret << rt->getState(actor->getId());
     }
     return ret;
@@ -101,8 +101,8 @@ QList<WorkerState> WorkflowRunTask::getState( Actor* actor) {
 
 int WorkflowRunTask::getMsgNum(const Link* l) {
     int ret = 0;
-    foreach(Task* t, getSubtasks()) {
-        WorkflowIterationRunTask* rt = qobject_cast<WorkflowIterationRunTask*>(t);
+    foreach(const QPointer<Task> &t, getSubtasks()) {
+        WorkflowIterationRunTask* rt = qobject_cast<WorkflowIterationRunTask*>(t.data());
         ret += rt->getMsgNum(l);
     }
     return ret;
@@ -110,8 +110,8 @@ int WorkflowRunTask::getMsgNum(const Link* l) {
 
 int WorkflowRunTask::getMsgPassed(const Link* l) {
     int ret = 0;
-    foreach(Task* t, getSubtasks()) {
-        ret += qobject_cast<WorkflowIterationRunTask*>(t)->getMsgPassed(l);
+    foreach(const QPointer<Task> &t, getSubtasks()) {
+        ret += qobject_cast<WorkflowIterationRunTask*>(t.data())->getMsgPassed(l);
     }
     return ret;
 }
@@ -142,9 +142,9 @@ QString WorkflowRunTask::getTaskError() const {
     }
 
     foreach(WorkflowMonitor *monitor, monitors) {
-        foreach(const Problem &problem, monitor->getProblems()) {
-            if (Problem::U2_ERROR == problem.type) {
-                return problem.message;
+        foreach(const WorkflowNotification &notification, monitor->getNotifications()) {
+            if (WorkflowNotification::U2_ERROR == notification.type) {
+                return notification.message;
             }
         }
     }
@@ -163,7 +163,7 @@ WorkflowIterationRunTask::WorkflowIterationRunTask(const Schema& sh,
     : WorkflowAbstractIterationRunner(tr("Workflow run"),
     (getAdditionalFlags() | TaskFlag_CancelOnSubtaskCancel | TaskFlag_FailOnSubtaskError)),
     context(NULL), schema(new Schema()), scheduler(NULL), debugInfo(initDebugInfo),
-    isNextTickRestoring(false)
+    nextTickRestoring(false), contextInitialized(false)
 {
 
     rmap = HRSchemaSerializer::deepCopy(sh, schema, stateInfo);
@@ -253,7 +253,8 @@ void WorkflowIterationRunTask::prepare() {
         lmap.insert(key, cc);
     }
 
-    if (!context->init()) {
+    contextInitialized = context->init();
+    if (!contextInitialized) {
         stateInfo.setError(tr("Failed to create a workflow context"));
         return;
     }
@@ -282,9 +283,9 @@ QList<Task*> WorkflowIterationRunTask::onSubTaskFinished(Task* subTask) {
     while(debugInfo->isPaused() && !isCanceled()) {
         QCoreApplication::processEvents();
     }
-    if(scheduler->isReady() && isNextTickRestoring) {
+    if(scheduler->isReady() && nextTickRestoring) {
         Task *replayingTask = scheduler->replayLastWorkerTick();
-        isNextTickRestoring = false;
+        nextTickRestoring = false;
         if(NULL != replayingTask) {
             tasks << replayingTask;
             emit si_ticked();
@@ -311,12 +312,16 @@ QList<Task*> WorkflowIterationRunTask::onSubTaskFinished(Task* subTask) {
 }
 
 Task::ReportResult WorkflowIterationRunTask::report() {
+    if (!contextInitialized) {
+        return ReportResult_Finished;
+    }
     context->getMonitor()->pause();
     if (scheduler) {
         scheduler->cleanup();
         if (!scheduler->isDone()) {
             if(!hasError() && !isCanceled()) {
                 setError(tr("No workers are ready, while not all workers are done. Workflow is broken?"));
+                algoLog.error(stateInfo.getError());
             }
         }
     }
@@ -409,7 +414,7 @@ int WorkflowIterationRunTask::getDataProduced(const ActorId &actor) {
 void WorkflowIterationRunTask::sl_pauseStateChanged(bool isPaused) {
     if (isPaused) {
         if (!debugInfo->isCurrentStepIsolated()) {
-            isNextTickRestoring = scheduler->cancelCurrentTaskIfAllowed();
+            nextTickRestoring = scheduler->cancelCurrentTaskIfAllowed();
         }
         if (AppContext::isGUIMode()) {
             AppContext::getTaskScheduler()->pauseThreadWithTask(this);

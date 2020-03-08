@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -48,9 +48,10 @@ namespace U2 {
 static const int PROGRESS_UPDATE_STEP = 1000;
 
 FastqFormat::FastqFormat(QObject* p)
-    : DocumentFormat(p, DocumentFormatFlags_SW | DocumentFormatFlag_LockedIfNotCreatedByUGENE, QStringList("fastq")), fn(tr("FASTQ"))
+    : TextDocumentFormat(p, BaseDocumentFormats::FASTQ, DocumentFormatFlags_SW | DocumentFormatFlag_LockedIfNotCreatedByUGENE, QStringList() << "fastq" << "fq")
 {
     supportedObjectTypes+=GObjectTypes::SEQUENCE;
+    formatName = tr("FASTQ");
     formatDescription  = tr("FASTQ format is a text-based format for storing both a biological sequence (usually nucleotide sequence) "
         "and its corresponding quality scores. \
         Both the sequence letter and quality score are encoded with a single ASCII character for brevity. \
@@ -65,7 +66,7 @@ FastqFormat::FastqFormat(QObject* p)
 #define STATE_SEQ               47
 #define STATE_QUALITY           48
 
-FormatCheckResult FastqFormat::checkRawData(const QByteArray& rawData, const GUrl&) const {
+FormatCheckResult FastqFormat::checkRawTextData(const QByteArray& rawData, const GUrl&) const {
     const char* data = rawData.constData();
     int size = rawData.size();
 
@@ -132,7 +133,6 @@ FormatCheckResult FastqFormat::checkRawData(const QByteArray& rawData, const GUr
 }
 
 static QString readSequenceName(U2OpStatus& os, IOAdapter *io, char beginWith = '@') {
-    static const QString errorMessage = U2::FastqFormat::tr("Error while trying to find sequence name start");
 
     QByteArray buffArray(DocumentFormat::READ_BUFF_SIZE + 1, 0);
     { // read name string
@@ -141,16 +141,18 @@ static QString readSequenceName(U2OpStatus& os, IOAdapter *io, char beginWith = 
         int readedCount = 0;
         while ((readedCount == 0) && !io->isEof()) { // skip \ns
             readedCount = io->readLine(buff, DocumentFormat::READ_BUFF_SIZE, &sequenceNameStartFound);
+            CHECK_EXT(!io->hasError(), os.setError(io->errorString()), QString());
         }
-        CHECK_EXT(io->isEof() == false,,"");
-        CHECK_EXT(readedCount >= 0, os.setError(errorMessage), "");
+        CHECK(io->isEof() == false, QString());
+        CHECK_EXT(!io->hasError(), os.setError(io->errorString()), QString());
+        CHECK_EXT(readedCount >= 0, os.setError(U2::FastqFormat::tr("Error while trying to find sequence name start")), "");
 
         buffArray.resize(readedCount);
         buffArray = buffArray.trimmed();
     }
 
     const char *buff = buffArray.constData();
-    CHECK_EXT((buffArray.size() > 0) && (buff[0] == beginWith), os.setError(errorMessage), "");
+    CHECK_EXT((buffArray.size() > 0) && (buff[0] == beginWith), os.setError(U2::FastqFormat::tr("Error while trying to find sequence name start")), "");
 
     QString sequenceName = QString::fromLatin1(buff+1, buffArray.size()-1);
     return sequenceName;
@@ -170,6 +172,7 @@ static void readSequence(U2OpStatus& os, IOAdapter *io, QByteArray &sequence, ch
     while (!io->isEof()) {
         bool eolnFound = false;
         int readedCount = io->readUntil(buff, DocumentFormat::READ_BUFF_SIZE, TextUtils::LINE_BREAKS, IOAdapter::Term_Include, &eolnFound);
+        CHECK_EXT(!io->hasError(), os.setError(io->errorString()), );
         CHECK_EXT(readedCount >= 0, os.setError(U2::FastqFormat::tr("Error while reading sequence")),);
 
         QByteArray trimmed = QByteArray(buffArray.data(), readedCount);
@@ -177,11 +180,17 @@ static void readSequence(U2OpStatus& os, IOAdapter *io, QByteArray &sequence, ch
 
         if (eolnFound && checkFirstSymbol(trimmed, readUntil)) { // read quality sequence name line, reverting back
             io->skip(-readedCount);
+            if (io->hasError()) {
+                os.setError(io->errorString());
+            }
             return;
         }
 
         sequence.append(trimmed);
         CHECK_OP(os,);
+    }
+    if (io->hasError()) {
+        os.setError(io->errorString());
     }
 }
 
@@ -196,6 +205,7 @@ static void readQuality(U2OpStatus& os, IOAdapter *io, QByteArray &sequence, int
     while (!io->isEof() && (readed < count)) {
         bool eolnFound = false;
         int readedCount = io->readUntil(buff, DocumentFormat::READ_BUFF_SIZE, TextUtils::LINE_BREAKS, IOAdapter::Term_Include, &eolnFound);
+        CHECK_EXT(!io->hasError(), os.setError(io->errorString()), );
         CHECK_EXT(readedCount >= 0, os.setError(U2::FastqFormat::tr("Error while reading sequence")),);
 
         QByteArray trimmed = QByteArray(buffArray.data(), readedCount);
@@ -204,11 +214,17 @@ static void readQuality(U2OpStatus& os, IOAdapter *io, QByteArray &sequence, int
         int qualitySize = sequence.size() + trimmed.size();
         if (eolnFound && (qualitySize > count)) { // read quality sequence name line, reverting back
             io->skip(-readedCount);
+            if (io->hasError()) {
+                os.setError(io->errorString());
+            }
             return;
         }
 
         sequence.append(trimmed);
         CHECK_OP(os,);
+    }
+    if (io->hasError()) {
+        os.setError(io->errorString());
     }
 }
 
@@ -263,6 +279,9 @@ static void load(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& hints
         QString sequenceName = readSequenceName(warningOs, io, '@');
         // check for eof while trying to read another FASTQ block
         if (io->isEof()) {
+            if (io->hasError()) {
+                os.setError(io->errorString());
+            }
             break;
         }
 
@@ -321,9 +340,8 @@ static void load(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& hints
 
         QString qualSequenceName = readSequenceName(warningOs, io, '+');
         if (!qualSequenceName.isEmpty()) {
-            static const QString err = U2::FastqFormat::tr("Sequence name differs from quality scores name: %1 and %2");
             if (sequenceName != qualSequenceName){
-                warningOs.setError(err.arg(sequenceName).arg(qualSequenceName));
+                warningOs.setError(U2::FastqFormat::tr("Sequence name differs from quality scores name: %1 and %2").arg(sequenceName).arg(qualSequenceName));
             }
             if(errorLoggingBreak(warningOs, skippedLines, sequenceName)){
                 U2OpStatusImpl seqOs;
@@ -341,9 +359,8 @@ static void load(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& hints
             continue;
         }
 
-        static const QString err = U2::FastqFormat::tr("Bad quality scores: inconsistent size.");
         if(sequence.length() != qualityScores.length()){
-            warningOs.setError(err);
+            warningOs.setError(U2::FastqFormat::tr("Bad quality scores: inconsistent size."));
         }
         if(errorLoggingBreak(warningOs, skippedLines, sequenceName)){
             U2OpStatusImpl seqOs;
@@ -402,11 +419,11 @@ static void load(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& hints
     objects << new U2SequenceObject(u2seq.visualName, U2EntityRef(dbiRef, u2seq.id));
     objects << DocumentFormatUtils::addAnnotationsForMergedU2Sequence(sequenceRef, dbiRef, headers, mergedMapping, hints);
     if (headers.size() > 1) {
-        writeLockReason = DocumentFormat::MERGED_SEQ_LOCK;
+        writeLockReason = QObject::tr("Document sequences were merged");
     }
 }
 
-Document* FastqFormat::loadDocument(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& _hints, U2OpStatus& os) {
+Document* FastqFormat::loadTextDocument(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& _hints, U2OpStatus& os) {
     CHECK_EXT(io != NULL && io->isOpen(), os.setError(L10N::badArgument("IO adapter")), NULL);
     QVariantMap hints = _hints;
     QList<GObject*> objects;
@@ -533,9 +550,9 @@ void FastqFormat::storeEntry(IOAdapter *io, const QMap< GObjectType, QList<GObje
     CHECK_OP(os, );
 }
 
-DNASequence *FastqFormat::loadSequence(IOAdapter* io, U2OpStatus& os) {
-    CHECK_EXT((io != NULL) && (io->isOpen() == true), os.setError(L10N::badArgument("IO adapter")), NULL);
+DNASequence *FastqFormat::loadTextSequence(IOAdapter* io, U2OpStatus& os) {
     U2OpStatus2Log logOs;
+    CHECK_EXT((io != NULL) && (io->isOpen() == true), os.setError(L10N::badArgument("IO adapter")), NULL);
     QByteArray readBuff;
     QByteArray sequence;
     QByteArray qualityScores;
@@ -547,7 +564,7 @@ DNASequence *FastqFormat::loadSequence(IOAdapter* io, U2OpStatus& os) {
     readBuff.clear();
     QString sequenceName = readSequenceName(os, io, '@');
     // check for eof while trying to read another FASTQ block
-    CHECK_EXT(!io->isEof(), , NULL);
+    CHECK(!io->isEof(), NULL);
     CHECK_OP(os, new DNASequence());
 
     sequence.clear();
@@ -555,9 +572,9 @@ DNASequence *FastqFormat::loadSequence(IOAdapter* io, U2OpStatus& os) {
     CHECK_OP(logOs, new DNASequence());
 
     QString qualSequenceName = readSequenceName(logOs, io, '+');
+    CHECK_EXT(!io->hasError(), os.setError(io->errorString()), NULL);
     if (!qualSequenceName.isEmpty()) {
-        static const QString err = U2::FastqFormat::tr("Not a valid FASTQ file, sequence name differs from quality scores name");
-        CHECK_EXT(sequenceName == qualSequenceName, logOs.setError(err), new DNASequence());
+        CHECK_EXT(sequenceName == qualSequenceName, logOs.setError(U2::FastqFormat::tr("Not a valid FASTQ file, sequence name differs from quality scores name")), new DNASequence());
     }
 
     // read qualities
@@ -565,8 +582,7 @@ DNASequence *FastqFormat::loadSequence(IOAdapter* io, U2OpStatus& os) {
     readQuality(logOs, io, qualityScores, sequence.size());
     CHECK_OP(logOs, new DNASequence());
 
-    static const QString err = U2::FastqFormat::tr("Not a valid FASTQ file. Bad quality scores: inconsistent size.");
-    CHECK_EXT(sequence.length() == qualityScores.length(), logOs.setError(err), new DNASequence());
+    CHECK_EXT(sequence.length() == qualityScores.length(), logOs.setError(U2::FastqFormat::tr("Not a valid FASTQ file. Bad quality scores: inconsistent size.")), new DNASequence());
 
     DNASequence *seq = new DNASequence(sequenceName, sequence);
     seq->quality = DNAQuality(qualityScores);

@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -30,14 +30,12 @@ namespace U2 {
 
 class SampleAction {
 public:
-    enum LoadingMode {Select, Load, OpenWizard};
-    SampleAction(const QString &actionName, const QString &toolsMenu, const QString &samplePath, LoadingMode mode, const QString &actionText);
+    SampleAction(const QString &actionName, const QString &toolsMenu, const QString &samplePath, const QString &actionText);
 
     QString actionText;
     QString actionName;
     QString toolsMenu;
     QString samplePath;
-    LoadingMode mode;
     QStringList requiredPlugins;
 };
 

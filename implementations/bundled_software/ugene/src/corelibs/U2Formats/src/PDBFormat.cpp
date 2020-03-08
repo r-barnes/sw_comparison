@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -51,7 +51,7 @@ namespace U2 {
 QHash<QByteArray,int> PDBFormat::atomNumMap = createAtomNumMap();
 QHash<QByteArray, char> PDBFormat::acronymNameMap;
 
-PDBFormat::PDBFormat(QObject* p) : DocumentFormat(p, DocumentFormatFlag(0), QStringList("pdb"))
+PDBFormat::PDBFormat(QObject* p) : TextDocumentFormat(p, BaseDocumentFormats::PLAIN_PDB, DocumentFormatFlag(0), QStringList("pdb"))
 {
     formatName = tr("PDB");
     formatDescription = tr("The Protein Data Bank (PDB) format provides a standard representation for macromolecular structure data derived from X-ray diffraction and NMR studies.");
@@ -63,14 +63,14 @@ PDBFormat::PDBFormat(QObject* p) : DocumentFormat(p, DocumentFormatFlag(0), QStr
     supportedObjectTypes+=GObjectTypes::ANNOTATION_TABLE;
 }
 
-FormatCheckResult PDBFormat::checkRawData(const QByteArray& rawData, const GUrl&) const {
-    static QList< const char* > tags;
-    tags << "HEADER" << "ATOM" << "MODEL" << "REMARK" << "OBSLTE"
-         << "TITLE" << "SPLIT" << "CAVEAT" << "COMPND" << "SOURCE"
-         << "KEYWDS" << "EXPDTA" << "AUTHOR" << "REVDAT" << "SPRSDE" << "JRNL";
+FormatCheckResult PDBFormat::checkRawTextData(const QByteArray& rawData, const GUrl&) const {
+    static QList<QByteArray> tags = QList<QByteArray>()
+        << "HEADER" << "ATOM" << "MODEL" << "REMARK" << "OBSLTE"
+        << "TITLE" << "SPLIT" << "CAVEAT" << "COMPND" << "SOURCE"
+        << "KEYWDS" << "EXPDTA" << "AUTHOR" << "REVDAT" << "SPRSDE" << "JRNL";
 
     bool ok = false;
-    foreach (const char* tag, tags) {
+    foreach (const QByteArray &tag, tags) {
         if (rawData.startsWith(tag)) {
             ok = true;
             break;
@@ -86,7 +86,7 @@ FormatCheckResult PDBFormat::checkRawData(const QByteArray& rawData, const GUrl&
 }
 
 
-Document* PDBFormat::loadDocument(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& fs, U2OpStatus& os){
+Document* PDBFormat::loadTextDocument(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& fs, U2OpStatus& os){
     GUrl url = io->getURL();
     ioLog.trace("Start PDB parsing: " +url.getURLString());
 
@@ -525,7 +525,7 @@ void PDBFormat::PDBParser::parseSequence(BioStruct3D& biostruct, U2OpStatus& ti)
 
     if (currentPDBLine.length() < 24 /* at least one residue */)
     {
-        ti.setError(U2::PDBFormat::tr("Invalid SEQRES: less then 24 charachters"));
+        ti.setError(U2::PDBFormat::tr("Invalid SEQRES: less then 24 characters"));
         return;
     }
 

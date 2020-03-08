@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -21,15 +21,16 @@
 
 #include <QRegExp>
 
+#include <U2Core/AppContext.h>
 #include <U2Core/DNATranslation.h>
 #include <U2Core/DNAAlphabet.h>
 #include <U2Core/Log.h>
 #include <U2Core/TextUtils.h>
+#include <U2Core/U2AlphabetUtils.h>
 #include <U2Core/U2SafePoints.h>
 
 #include <U2Algorithm/DynTable.h>
 #include <U2Algorithm/RollingArray.h>
-#include <U2Core/U2AlphabetUtils.h>
 
 #include "FindAlgorithm.h"
 
@@ -118,7 +119,7 @@ FindAlgorithmSettings::FindAlgorithmSettings(const QByteArray &pattern, FindAlgo
     int _maxResult2Find )
     : pattern( pattern ), strand( strand ), complementTT( complementTT ), proteinTT( proteinTT ), sequenceAlphabet(sequenceAlphabet),
     searchRegion( searchRegion ), maxErr( maxErr ), patternSettings( _patternSettings ),
-    useAmbiguousBases( ambBases ), maxRegExpResult( _maxRegExpResult ),
+    useAmbiguousBases( ambBases ), maxRegExpResultLength( _maxRegExpResult ),
     maxResult2Find( _maxResult2Find )
 {
 
@@ -483,17 +484,14 @@ static void regExpSearch(   const QString &refSequence,
     if (cyclePoint == -1) {
         cyclePoint = sequenceRange.endPos();
     }
-
+    int percentsCompletedOnStart = percentsCompleted;
     int foundStartPos = 0;
-    while ( 0 == stopFlag
-        && -1 != ( foundStartPos = regExp.indexIn( refSequence, foundStartPos ) ) )
-    {
-        // remember that there are a few iterations, so a single one yields
-        // 1 / @conEnd of total progress
-        percentsCompleted = ( 100 * foundStartPos * ( currentStrand + 1 ) )
-            / ( sequenceRange.length * totalStrandCount );
+    while (stopFlag == 0 && (foundStartPos = regExp.indexIn(refSequence, foundStartPos)) != -1 ) {
+        // remember that there are a few iterations, so a single one yields (1 / @conEnd) of total progress
+        int percentsCompletedInner = (100 * foundStartPos * (currentStrand + 1)) / (sequenceRange.length * totalStrandCount);
+        percentsCompleted = qMin(percentsCompletedOnStart + percentsCompletedInner, 100);
 
-        const int foundLength = regExp.matchedLength( );
+        int foundLength = regExp.matchedLength();
         if ( maxResultLen >= foundLength ) {
             int resultStartPos = refSeqIsAminoTranslation ? foundStartPos * 3 : foundStartPos;
             if (resultStartPos < cyclePoint || sequenceRange.startPos != 0) {
@@ -518,12 +516,12 @@ static void regExpSearch(   const QString &refSequence,
             if ( maxResultLen >= foundSubstrLength ) {
                 int resultStartPos = refSeqIsAminoTranslation ? foundStartPos * 3 : foundStartPos;
                 if (resultStartPos < cyclePoint || sequenceRange.startPos != 0) {
-                    const int resultLen = refSeqIsAminoTranslation ? foundSubstrLength * 3 : foundSubstrLength;
+                    int resultLen = refSeqIsAminoTranslation ? foundSubstrLength * 3 : foundSubstrLength;
                     prepareResultPosition( sequenceRange.startPos + (refSeqIsAminoTranslation * aminoFrameNumber),
                                            sequenceRange.length - (refSeqIsAminoTranslation * aminoFrameNumber),
                                            resultStartPos,
                                            resultLen,
-                                           searchStrand );
+                                           searchStrand);
                     resultStartPos -= (searchStrand.isCompementary() && refSeqIsAminoTranslation ? tailCutted : 0);
 
                     sendResultToListener( resultStartPos, resultLen, searchStrand, rl );
@@ -816,14 +814,24 @@ void FindAlgorithm::find(
         searchIsCircular = false;
     }
 
+    DNATranslation* newComplTT = complTT;
+    if (complTT != nullptr) {
+        const DNAAlphabet *destinationAlphabet = complTT->getDstAlphabet();
+        if (destinationAlphabet->isExtended()) {
+            newComplTT = complTT;
+        } else {
+            newComplTT = AppContext::getDNATranslationRegistry()->lookupComplementTranslation(U2AlphabetUtils::getExtendedAlphabet(destinationAlphabet));
+        }
+    }
+
     if ( patternSettings == FindAlgorithmPatternSettings_RegExp ) {
-        findRegExp( rl, aminoTT, complTT, strand, seq, searchIsCircular, range, pattern, maxRegExpResult, stopFlag,
+        findRegExp( rl, aminoTT, newComplTT, strand, seq, searchIsCircular, range, pattern, maxRegExpResult, stopFlag,
             percentsCompleted );
         return;
     }
 
     if( patternSettings == FindAlgorithmPatternSettings_Subst ) {
-        find_subst( rl, aminoTT, complTT, strand, seq, searchIsCircular, range, pattern, patternLen,
+        find_subst( rl, aminoTT, newComplTT, strand, seq, searchIsCircular, range, pattern, patternLen,
             useAmbiguousBases, maxErr, stopFlag, percentsCompleted );
         return;
     }
@@ -838,17 +846,17 @@ void FindAlgorithm::find(
     }
 
     if (aminoTT != NULL) {
-        findInAmino(rl, aminoTT, complTT, strand, insDel, seq, range, searchIsCircular, pattern, patternLen, maxErr,
+        findInAmino(rl, aminoTT, newComplTT, strand, insDel, seq, range, searchIsCircular, pattern, patternLen, maxErr,
             stopFlag, percentsCompleted );
         return;
     }
     char* complPattern = NULL;
     QByteArray tmp;
     if (isComplement(strand)) {
-        SAFE_POINT( NULL != complTT, "Invalid translation supplied!", );
+        SAFE_POINT( NULL != newComplTT, "Invalid translation supplied!", );
         tmp.resize(patternLen);
         complPattern = tmp.data();
-        TextUtils::translate(complTT->getOne2OneMapper(), pattern, patternLen, complPattern);
+        TextUtils::translate(newComplTT->getOne2OneMapper(), pattern, patternLen, complPattern);
         TextUtils::reverse(complPattern, patternLen);
     }
 

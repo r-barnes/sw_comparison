@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -191,21 +191,37 @@ void DoubleSpinBoxDelegate::sl_commit() {
 * ComboBoxDelegate
 ********************************/
 ComboBoxDelegate::ComboBoxDelegate(const QVariantMap &items, QObject *parent)
+    : PropertyDelegate(parent)
+{
+    foreach (QString key, items.keys()) {
+        comboItems.append(qMakePair(key, items.value(key)));
+    }
+}
+ComboBoxDelegate::ComboBoxDelegate(const QList<ComboItem> &items, QObject *parent)
     : PropertyDelegate(parent),
-      items(items)
+      comboItems(items)
 {
 
 }
 
 PropertyWidget * ComboBoxDelegate::createWizardWidget(U2OpStatus & /*os*/, QWidget *parent) const {
-    return new ComboBoxWidget(items, parent);
+    return new ComboBoxWidget(comboItems, parent);
 }
 
 QWidget *ComboBoxDelegate::createEditor(QWidget *parent,
                                         const QStyleOptionViewItem &/* option */,
                                         const QModelIndex &/* index */) const
 {
-    ComboBoxWidget *editor = new ComboBoxWidget(getItems(), parent);
+    QList<ComboItem> l;
+    QVariantMap m = getAvailableItems();
+    if (m.isEmpty()) {
+         l = comboItems;
+    } else {
+        foreach (QString key, m.keys()) {
+            l.append(qMakePair(key, m.value(key)));
+        }
+    }
+    ComboBoxWidget *editor = new ComboBoxWidget(l, parent);
     connect(editor, SIGNAL(valueChanged(const QString &)),
         SLOT(sl_commit()));
     connect(editor, SIGNAL(valueChanged(const QString &)),
@@ -230,23 +246,29 @@ void ComboBoxDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
 }
 
 QVariant ComboBoxDelegate::getDisplayValue(const QVariant& val) const {
-    QString display = getItems().key(val);
+    QVariantMap m; getItems(m);
+    QString display = m.key(val);
     emit si_valueChanged( display );
     return QVariant( display );
 }
 
 void ComboBoxDelegate::getItems( QVariantMap &items ) const {
-    items = getItems();
+    items = getAvailableItems();
+    if (items.isEmpty()) {
+        foreach(ComboItem p, comboItems) {
+            items.insert(p.first, p.second);
+        }
+    }
 }
 
-QVariantMap ComboBoxDelegate::getItems() const {
+QVariantMap ComboBoxDelegate::getAvailableItems() const {
     DelegateTags *t = tags();
     if (t != NULL) {
         if (t->get("AvailableValues") != QVariant()) {
             return t->get("AvailableValues").toMap();
         }
     }
-    return items;
+    return QVariantMap();
 }
 
 void ComboBoxDelegate::sl_commit() {
@@ -457,47 +479,82 @@ QVariantMap ComboBoxWithBoolsDelegate::boolMap() {
 /********************************
 * URLDelegate
 ********************************/
-URLDelegate::URLDelegate(const QString& filter, const QString& type, bool multi, bool isPath, bool saveFile, QObject *parent, const QString &format, bool _noFilesMode)
-: PropertyDelegate(parent), lastDirType(type), multi(multi), isPath(isPath), saveFile(saveFile), noFilesMode(_noFilesMode)
+URLDelegate::URLDelegate(const QString &filter, const QString &type, const Options &_options, QObject *parent, const QString &format)
+    : PropertyDelegate(parent),
+      lastDirType(type),
+      options(_options)
 {
-    tags()->set("filter", filter);
-    tags()->set("format", format);
+    tags()->set(DelegateTags::FILTER, filter);
+    tags()->set(DelegateTags::FORMAT, format);
 }
 
-URLDelegate::URLDelegate(const DelegateTags &_tags, const QString &type, bool multi, bool isPath, bool saveFile, QObject *parent, bool noFilesMode) :
-    PropertyDelegate(parent),
-    lastDirType(type),
-    multi(multi),
-    isPath(isPath),
-    saveFile(saveFile),
-    noFilesMode(noFilesMode)
+URLDelegate::URLDelegate(const DelegateTags &_tags, const QString &type, const Options &_options, QObject *parent)
+    : PropertyDelegate(parent),
+      lastDirType(type),
+      options(_options)
 {
     *tags() = _tags;
+}
+
+URLDelegate::URLDelegate(const QString& filter, const QString& type, bool multi, bool isPath, bool saveFile, QObject *parent, const QString &format, bool noFilesMode, bool doNotUseWorkflowOutputFolder)
+    : PropertyDelegate(parent), lastDirType(type)
+{
+    tags()->set(DelegateTags::FILTER, filter);
+    tags()->set(DelegateTags::FORMAT, format);
+
+    options |= multi ? AllowSelectSeveralFiles : None;
+    options |= isPath ? AllowSelectOnlyExistingDir : None;
+    options |= saveFile ? SelectFileToSave : None;
+    options |= noFilesMode ? SelectParentDirInsteadSelectedFile : None;
+    options |= doNotUseWorkflowOutputFolder ? DoNotUseWorkflowOutputFolder : None;
+}
+
+URLDelegate::URLDelegate(const DelegateTags &_tags, const QString &type, bool multi, bool isPath, bool saveFile, QObject *parent, bool noFilesMode, bool doNotUseWorkflowOutputFolder) :
+    PropertyDelegate(parent),
+    lastDirType(type)
+{
+    *tags() = _tags;
+
+    options |= multi ? AllowSelectSeveralFiles : None;
+    options |= isPath ? AllowSelectOnlyExistingDir : None;
+    options |= saveFile ? SelectFileToSave : None;
+    options |= noFilesMode ? SelectParentDirInsteadSelectedFile : None;
+    options |= doNotUseWorkflowOutputFolder ? DoNotUseWorkflowOutputFolder : None;
 }
 
 QVariant URLDelegate::getDisplayValue(const QVariant &v) const {
     return v.toString().isEmpty() ? QVariant(DelegateTags::getString(tags(), DelegateTags::PLACEHOLDER_TEXT)) : v;
 }
 
-URLWidget * URLDelegate::createWidget(QWidget *parent) const {
+URLWidget *URLDelegate::createWidget(QWidget *parent) const {
     URLWidget *result;
-    if (noFilesMode) {
+    if (options.testFlag(SelectParentDirInsteadSelectedFile)) {
         bool isPath = false; // noFilesMode: choose a file but its dir will be committed
-        result = new NoFileURLWidget(lastDirType, multi, isPath, saveFile, tags(), parent);
+        result = new NoFileURLWidget(lastDirType,
+                                     options.testFlag(AllowSelectSeveralFiles),
+                                     isPath,
+                                     options.testFlag(SelectFileToSave),
+                                     tags(),
+                                     parent);
     } else {
-        result = new URLWidget(lastDirType, multi, isPath, saveFile, tags(), parent);
+        result = new URLWidget(lastDirType,
+                               options.testFlag(AllowSelectSeveralFiles),
+                               options.testFlag(AllowSelectOnlyExistingDir),
+                               options.testFlag(SelectFileToSave),
+                               tags(),
+                               parent);
     }
-    if (saveFile) {
+    if (!options.testFlag(DoNotUseWorkflowOutputFolder)) {
         result->setSchemaConfig(schemaConfig);
     }
     return result;
 }
 
-PropertyWidget * URLDelegate::createWizardWidget(U2OpStatus & /*os*/, QWidget *parent) const {
+PropertyWidget *URLDelegate::createWizardWidget(U2OpStatus & /*os*/, QWidget *parent) const {
     return createWidget(parent);
 }
 
-QWidget * URLDelegate::createEditor(QWidget *parent,
+QWidget *URLDelegate::createEditor(QWidget *parent,
                                        const QStyleOptionViewItem &/* option */,
                                        const QModelIndex &/* index */) const
 {
@@ -529,7 +586,7 @@ void URLDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
     QStringList urls = val.split(";", QString::SkipEmptyParts);
     val = urls.join(";");
     model->setData(index, val, ConfigurationEditor::ItemValueRole);
-    if (multi) {
+    if (options.testFlag(AllowSelectSeveralFiles)) {
         QVariantList vl;
         foreach(QString s, val.split(";")) {
             vl.append(s.trimmed());
@@ -538,11 +595,15 @@ void URLDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
     }
 }
 
+PropertyDelegate *URLDelegate::clone() {
+    return new URLDelegate(*tags(), lastDirType, options, parent());
+}
+
 PropertyDelegate::Type URLDelegate::type() const {
-    if (isPath) {
-        return saveFile ? OUTPUT_DIR : INPUT_DIR;
+    if (options.testFlag(AllowSelectOnlyExistingDir)) {
+        return options.testFlag(SelectFileToSave) ? OUTPUT_DIR : INPUT_DIR;
     }
-    return saveFile ? OUTPUT_FILE : INPUT_FILE;
+    return options.testFlag(SelectFileToSave) ? OUTPUT_FILE : INPUT_FILE;
 }
 
 /********************************
@@ -550,30 +611,30 @@ PropertyDelegate::Type URLDelegate::type() const {
 ********************************/
 FileModeDelegate::FileModeDelegate(bool appendSupported, QObject *parent)
 : ComboBoxDelegate(QVariantMap(), parent) {
-    items.insert(U2::WorkflowUtils::tr("Overwrite"), SaveDoc_Overwrite);
-    items.insert(U2::WorkflowUtils::tr("Rename"), SaveDoc_Roll);
+    comboItems.append(qMakePair(U2::WorkflowUtils::tr("Overwrite"), SaveDoc_Overwrite));
+    comboItems.append(qMakePair(U2::WorkflowUtils::tr("Rename"), SaveDoc_Roll));
     if (appendSupported) {
-        items.insert(U2::WorkflowUtils::tr("Append"), SaveDoc_Append);
+        comboItems.append(qMakePair(U2::WorkflowUtils::tr("Append"), SaveDoc_Append));
     }
 }
 
 /********************************
  * SchemaRunModeDelegate
  ********************************/
-const QString SchemaRunModeDelegate::THIS_COMPUTER_STR      = SchemaRunModeDelegate::tr( "This computer" );
-const QString SchemaRunModeDelegate::REMOTE_COMPUTER_STR    = SchemaRunModeDelegate::tr( "Remote computer" );
-
 SchemaRunModeDelegate::SchemaRunModeDelegate( QObject * parent )
 : ComboBoxDelegate( QVariantMap(), parent ) {
-    items.insert( THIS_COMPUTER_STR, true );
-    items.insert( REMOTE_COMPUTER_STR, false );
+    thisComputerOption = SchemaRunModeDelegate::tr( "This computer" );
+    remoteComputerOption = SchemaRunModeDelegate::tr( "Remote computer" );
+
+    comboItems.append(qMakePair(thisComputerOption, true ));
+    comboItems.append(qMakePair(remoteComputerOption, false ));
 
     connect( this, SIGNAL( si_valueChanged( const QString & ) ), this,
         SLOT( sl_valueChanged( const QString & ) ) );
 }
 
 void SchemaRunModeDelegate::sl_valueChanged( const QString & val ) {
-    emit si_showOpenFileButton( THIS_COMPUTER_STR == val );
+    emit si_showOpenFileButton( thisComputerOption == val );
 }
 
 
@@ -863,29 +924,75 @@ void StringSelectorDelegate::setModelData(QWidget *, QAbstractItemModel *model, 
  * CharacterDelegate
  ********************************/
 PropertyWidget * CharacterDelegate::createWizardWidget(U2OpStatus & /*os*/, QWidget *parent) const {
-    return new DefaultPropertyWidget(1, parent);
+    return new IgnoreUpDownPropertyWidget(1, parent);
 }
 
 QWidget * CharacterDelegate::createEditor(QWidget *parent,
                                    const QStyleOptionViewItem &/* option */,
                                    const QModelIndex &/* index */) const
 {
-    return new DefaultPropertyWidget(1, parent);
+    return new IgnoreUpDownPropertyWidget(1, parent);
 }
 
 void CharacterDelegate::setEditorData(QWidget *editor,
                                 const QModelIndex &index) const
 {
     QVariant val = index.model()->data(index, ConfigurationEditor::ItemValueRole);
-    DefaultPropertyWidget *lineEdit = dynamic_cast<DefaultPropertyWidget*>(editor);
+    IgnoreUpDownPropertyWidget *lineEdit = dynamic_cast<IgnoreUpDownPropertyWidget*>(editor);
     lineEdit->setValue(val);
 }
 
 void CharacterDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
                                const QModelIndex &index) const
 {
-    DefaultPropertyWidget *lineEdit = dynamic_cast<DefaultPropertyWidget*>(editor);
+    IgnoreUpDownPropertyWidget *lineEdit = dynamic_cast<IgnoreUpDownPropertyWidget*>(editor);
     model->setData(index, lineEdit->value().toString(), ConfigurationEditor::ItemValueRole);
 }
 
-}//namespace U2
+LineEditWithValidatorDelegate::LineEditWithValidatorDelegate(const QRegularExpression &_regExp, QObject *_parent)
+    : PropertyDelegate(_parent),
+      regExp(_regExp)
+{
+
+}
+
+QWidget *LineEditWithValidatorDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem & /*option*/, const QModelIndex & /*index*/) const {
+    QScopedPointer<IgnoreUpDownPropertyWidget> editor(new IgnoreUpDownPropertyWidget(NO_LIMIT, parent));
+    QLineEdit *lineEdit = editor->findChild<QLineEdit *>("mainWidget");
+    SAFE_POINT(nullptr != lineEdit, "Line edit is nullptr", nullptr);
+
+    lineEdit->setValidator(new QRegularExpressionValidator(regExp, lineEdit));
+    connect(editor.data(), SIGNAL(si_valueChanged(const QVariant &)), SLOT(sl_valueChanged()));
+    return editor.take();
+}
+
+void LineEditWithValidatorDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const {
+    QVariant val = index.model()->data(index, ConfigurationEditor::ItemValueRole);
+    IgnoreUpDownPropertyWidget *lineEdit = qobject_cast<IgnoreUpDownPropertyWidget *>(editor);
+    lineEdit->setValue(val);
+}
+
+void LineEditWithValidatorDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const {
+    IgnoreUpDownPropertyWidget *lineEdit = qobject_cast<IgnoreUpDownPropertyWidget *>(editor);
+    model->setData(index, lineEdit->value().toString(), ConfigurationEditor::ItemValueRole);
+}
+
+LineEditWithValidatorDelegate *LineEditWithValidatorDelegate::clone() {
+    return new LineEditWithValidatorDelegate(regExp, parent());
+}
+
+void LineEditWithValidatorDelegate::sl_valueChanged() {
+    IgnoreUpDownPropertyWidget* editor = qobject_cast<IgnoreUpDownPropertyWidget *>(sender());
+    CHECK(editor != NULL, );
+
+    QLineEdit* lineEdit = editor->findChild<QLineEdit*>("mainWidget");
+    SAFE_POINT(nullptr != lineEdit, "Line edit is nullptr", );
+
+    const int cursorPos = lineEdit->cursorPosition();
+
+    emit commitData(editor);
+
+    lineEdit->setCursorPosition(cursorPos);
+}
+
+}   // namespace U2

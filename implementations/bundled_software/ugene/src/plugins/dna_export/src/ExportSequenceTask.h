@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -46,8 +46,10 @@ public:
     // after calling this method the client code takes responsibility for correct release the sequence from the database
     U2SequenceObject * takeOwnedSeq();
     bool ownsSeq() const;
+    bool isEmpty() const;
 
     ExportSequenceItem & operator =(const ExportSequenceItem &other);
+    bool operator==(const ExportSequenceItem& other) const;
 
     U2EntityRef                 seqRef; // sequence to copy
     QString                     name;
@@ -90,7 +92,9 @@ public:
 
     DocumentFormatId    formatId;
 
-    QString             sequenceName;             // custom sequence name
+    QString             sequenceName;           // custom sequence name
+
+    qint64              sequenceLength;         // length of the sequence if there is the only source sequence
 };
 
 /** Exports sequences a file */
@@ -100,6 +104,10 @@ public:
     ExportSequenceTask(const ExportSequenceTaskSettings &s);
 
     void run();
+
+    static ExportSequenceItem mergedCircularItem(const ExportSequenceItem &first,
+                                                 const ExportSequenceItem &second,
+                                                 U2OpStatus &os);
 
 private:
     ExportSequenceTaskSettings config;

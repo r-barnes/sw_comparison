@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -22,19 +22,21 @@
 #ifndef _U2_WELCOME_PAGE_WIDGET_H_
 #define _U2_WELCOME_PAGE_WIDGET_H_
 
-#include "utils/MultilingualHtmlView.h"
+#include <U2Gui/U2WebView.h>
 
 namespace U2 {
 
-class WelcomePageController;
+class SimpleWebViewBasedWidgetController;
 
-class WelcomePageWidget : public MultilingualHtmlView {
+class WelcomePageWidget : public U2WebView {
     Q_OBJECT
 public:
-    WelcomePageWidget(QWidget *parent, WelcomePageController *controller);
+    WelcomePageWidget(QWidget *parent);
 
     void updateRecent(const QStringList &recentProjects, const QStringList &recentFiles);
     bool eventFilter(QObject *watched, QEvent *event);
+
+    bool isLoaded() const;
 
 protected:
     void dragEnterEvent(QDragEnterEvent *event);
@@ -42,15 +44,17 @@ protected:
     void dragMoveEvent(QDragMoveEvent *event);
 
 private slots:
-    void sl_loaded(bool ok);
+    void sl_loaded();
+
+signals:
+    void si_loaded();
 
 private:
     void updateRecentFilesContainer(const QString &id, const QStringList &files, const QString &message);
-    void addController();
+    void addRecentItem(const QString &id, const QString &file);
+    void addNoItems(const QString &id, const QString &message);
 
-private:
-    bool loaded;
-    WelcomePageController *controller;
+    SimpleWebViewBasedWidgetController *controller;
 };
 
 } // U2

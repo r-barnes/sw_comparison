@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -28,9 +28,16 @@
 
 namespace U2 {
 
+const QString TopHatSettings::INDEX = "Index";
+const QString TopHatSettings::SEQUENCE = "Sequence";
+
 TopHatInputData::TopHatInputData()
 : paired(false), fromFiles(false), workflowContext(NULL)
 {
+}
+
+int TopHatInputData::size() const {
+    return fromFiles ? urls.size() : seqIds.size();
 }
 
 void TopHatInputData::cleanupReads() {
@@ -81,5 +88,4 @@ uint TopHatSettings::getThreadsCount() {
     CHECK(0 != threads, 1);
     return threads;
 }
-
 }

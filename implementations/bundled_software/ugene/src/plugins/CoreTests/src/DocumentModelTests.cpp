@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -131,9 +131,12 @@ void GTest_LoadDocument::cleanup() {
     if (contextAdded) {
         removeContext(docContextName);
     }
-    if(tempFile){
+    if(!XMLTestUtils::parentTasksHaveError(this) && tempFile){
+        taskLog.trace(QString("Temporary file removed: %1").arg(url));
         QFile::remove(url);
     }
+
+    XmlTest::cleanup();
 }
 
 void GTest_LoadDocument::prepare() {
@@ -279,9 +282,11 @@ Task::ReportResult GTest_LoadBrokenDocument::report() {
 }
 
 void GTest_LoadBrokenDocument::cleanup() {
-    if (tempFile) {
+    if (!XMLTestUtils::parentTasksHaveError(this) && tempFile) {
         QFile::remove(url);
     }
+
+    XmlTest::cleanup();
 }
 
 /*******************************
@@ -357,11 +362,15 @@ void GTest_ImportDocument::cleanup() {
         removeContext(docContextName);
     }
 
-    if (tempFile) {
-        QFile::remove(url);
+    if (!XMLTestUtils::parentTasksHaveError(this)) {
+        if (tempFile) {
+            QFile::remove(url);
+        }
+
+        QFile::remove(destUrl);
     }
 
-    QFile::remove(destUrl);
+    XmlTest::cleanup();
 }
 
 void GTest_ImportDocument::prepare() {
@@ -406,7 +415,7 @@ void GTest_ImportBrokenDocument::init(XMLTestFormat* tf, const QDomElement& el) 
     Q_UNUSED(tf);
 
     QString             urlAttr = el.attribute("url");
-    QString             outUrlAttr = el.attribute("outUrl");
+    QString             outUrlAttr = getTempDir(env) + "/" + el.attribute("outUrl");
     QString             dir = el.attribute("dir");
     DocumentFormatId    formatId = el.attribute("format");
 
@@ -462,10 +471,14 @@ Task::ReportResult GTest_ImportBrokenDocument::report() {
 }
 
 void GTest_ImportBrokenDocument::cleanup() {
-    if (tempFile) {
-        QFile::remove(url);
+    if (!XMLTestUtils::parentTasksHaveError(this)) {
+        if (tempFile) {
+            QFile::remove(url);
+        }
+        QFile::remove(destUrl);
     }
-    QFile::remove(destUrl);
+
+    XmlTest::cleanup();
 }
 
 /*******************************
@@ -681,7 +694,9 @@ Task::ReportResult GTest_FindGObjectByName::report() {
     const QList<GObject*>& objs = doc->getObjects();
 
     foreach(GObject* obj, objs) {
-        if ((obj->getGObjectType() == type) && (obj->getGObjectName() == objName)) {
+        QString objectType = obj->getGObjectType();
+        QString objectName = obj->getGObjectName();
+        if ((objectType == type) && (objectName == objName)) {
             result = obj;
             break;
         }
@@ -699,6 +714,8 @@ void GTest_FindGObjectByName::cleanup() {
     if (result!=NULL && !objContextName.isEmpty()) {
         removeContext(objContextName);
     }
+
+    XmlTest::cleanup();
 }
 
 
@@ -715,6 +732,7 @@ static const QString COMMENTS_START_WITH = "comments_start_with";
 static const QString COMPARE_LINE_NUMBER_ONLY = "line_num_only";
 static const QString COMPARE_FIRST_N_LINES = "first_n_lines";
 static const QString COMPARE_MIXED_LINES = "mixed-lines";
+static const QString COMPARE_FORCE_BUFFER_SIZE = "buffer-size";
 
 void GTest_CompareFiles::init(XMLTestFormat *tf, const QDomElement& el) {
     Q_UNUSED(tf);
@@ -734,22 +752,28 @@ void GTest_CompareFiles::init(XMLTestFormat *tf, const QDomElement& el) {
         return;
     }
 
-    if (!el.attribute(COMPARE_FIRST_N_LINES).isEmpty()){
+    if (!el.attribute(COMPARE_FIRST_N_LINES).isEmpty()) {
         first_n_lines = el.attribute(COMPARE_FIRST_N_LINES).toInt();
-    }else{
+    } else {
         first_n_lines = -1;
     }
 
-    if (!el.attribute(COMPARE_LINE_NUMBER_ONLY).isEmpty()){
+    if (!el.attribute(COMPARE_LINE_NUMBER_ONLY).isEmpty()) {
         line_num_only = true;
-    }else{
+    } else {
         line_num_only = false;
     }
 
-    if(!el.attribute(COMPARE_MIXED_LINES).isEmpty()){
+    if (!el.attribute(COMPARE_MIXED_LINES).isEmpty()) {
         mixed_lines = true;
-    }else{
+    } else {
         mixed_lines = false;
+    }
+
+    if (!el.attribute(COMPARE_FORCE_BUFFER_SIZE).isEmpty()) {
+        forceBufferSize = el.attribute(COMPARE_FORCE_BUFFER_SIZE).toInt();
+    } else {
+        forceBufferSize = 0;
     }
 
     // Get the full documents paths
@@ -874,13 +898,14 @@ IOAdapter* GTest_CompareFiles::createIoAdapter(const QString& filePath) {
 QByteArray GTest_CompareFiles::getLine(IOAdapter* io) {
     QByteArray line;
 
-    QByteArray readBuff(READ_BUFF_SIZE + 1, 0);
+    const qint64 bufferSize = forceBufferSize > 0 ? forceBufferSize : READ_BUFF_SIZE;
+    QByteArray readBuff(bufferSize + 1, 0);
     char* buff = readBuff.data();
     bool commentString = false;
 
     do {
         bool lineOk = true;
-        qint64 len = io->readUntil(buff, READ_BUFF_SIZE, TextUtils::LINE_BREAKS, IOAdapter::Term_Include, &lineOk);
+        qint64 len = io->readUntil(buff, bufferSize, TextUtils::LINE_BREAKS, IOAdapter::Term_Include, &lineOk);
         CHECK(len != 0, "");
         CHECK_EXT(lineOk, setError("Line is too long"), "");
 

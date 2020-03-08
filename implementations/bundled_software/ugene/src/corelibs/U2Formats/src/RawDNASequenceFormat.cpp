@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -41,8 +41,7 @@ namespace U2 {
 /* TRANSLATOR U2::RawDNASequenceFormat */
 /* TRANSLATOR U2::IOAdapter */
 
-RawDNASequenceFormat::RawDNASequenceFormat(QObject* p) : DocumentFormat(p, DocumentFormatFlags_W1)
-{
+RawDNASequenceFormat::RawDNASequenceFormat(QObject* p) : TextDocumentFormat(p, BaseDocumentFormats::RAW_DNA_SEQUENCE, DocumentFormatFlags_W1) {
     formatName = tr("Raw sequence");
     fileExtensions << "seq" << "txt";
     supportedObjectTypes+=GObjectTypes::SEQUENCE;
@@ -90,53 +89,50 @@ static void load(IOAdapter* io, const U2DbiRef& dbiRef,  QList<GObject*>& object
 
     while (ok && !io->isEof()) {
         int len = io->readLine(buff, DocumentFormat::READ_BUFF_SIZE, &terminatorFound);
-        if (len <= 0){
-            continue;
-        }
+        CHECK_EXT(!io->hasError(), os.setError(io->errorString()), );
+        CHECK_CONTINUE(len > 0);
 
         seq.clear();
         bool isSeek = writer.seek(0);
-                assert(isSeek); Q_UNUSED(isSeek);
-        if (os.isCoR()) {
-            break;
-        }
+        assert(isSeek);
+        Q_UNUSED(isSeek);
+        CHECK_OP_BREAK(os);
 
-        for (int i=0; i<len && ok; i++) {
+        for (int i = 0; i < len && ok; i++) {
             char c = buff[i];
             if (ALPHAS[(uchar)c]) {
                 ok = writer.putChar(c);
             }
         }
-        if(seq.size()>0 && isStarted == false ){
+        if(seq.size() > 0 && isStarted == false ) {
             QString name = sequenceCounter == 0 ? seqName : seqName + QString("_%1").arg(sequenceCounter);
             isStarted = true;
             seqImporter.startSequence(os, dbiRef, folder, name, false);
         }
-        if(isStarted){
-            seqImporter.addBlock(seq.data(),seq.size(),os);
+        if(isStarted) {
+            seqImporter.addBlock(seq.data(), seq.size(), os);
         }
-        if (seq.size()>0 && isStarted && terminatorFound && isSplit){
+        if (seq.size()>0 && isStarted && terminatorFound && isSplit) {
             finishSequence(objects, io, os, dbiRef, fs, dbiObjects, seqImporter);
             sequenceCounter++;
             isStarted = false;
         }
-        if (os.isCoR()) {
-            break;
-        }
+        CHECK_OP_BREAK(os);
+
         os.setProgress(io->getProgress());
     }
     writer.close();
-
     CHECK_OP(os, );
+
     if (sequenceCounter == 0){
-        CHECK_EXT(isStarted == true, os.setError(RawDNASequenceFormat::tr("Sequence is empty")), );
+        CHECK_EXT(isStarted, os.setError(RawDNASequenceFormat::tr("Sequence is empty")), );
     }
     if (isStarted){
         finishSequence(objects, io, os, dbiRef, fs, dbiObjects, seqImporter);
     }
 }
 
-Document* RawDNASequenceFormat::loadDocument(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& fs, U2OpStatus& os) {
+Document* RawDNASequenceFormat::loadTextDocument(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& fs, U2OpStatus& os) {
     QList<GObject*> objects;
     load(io, dbiRef, objects, fs, os);
     CHECK_OP(os, NULL);
@@ -144,7 +140,7 @@ Document* RawDNASequenceFormat::loadDocument(IOAdapter* io, const U2DbiRef& dbiR
     return doc;
 }
 
-FormatCheckResult RawDNASequenceFormat::checkRawData(const QByteArray& rawData, const GUrl&) const {
+FormatCheckResult RawDNASequenceFormat::checkRawTextData(const QByteArray& rawData, const GUrl&) const {
     const char* data = rawData.constData();
     int size = rawData.size();
     if (QRegExp("[a-zA-Z\r\n\\*-]*").exactMatch(rawData)) {

@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -24,12 +24,9 @@
 #include "GObjectSelection.h"
 #include "SelectionTypes.h"
 
-#include <U2Core/GObject.h>
 #include <U2Core/DocumentModel.h>
 
-#include <U2Core/GObjectTypes.h>
 #include <U2Core/GObjectUtils.h>
-#include <U2Core/UnloadedObject.h>
 
 #include <U2Core/SelectionModel.h>
 
@@ -38,8 +35,8 @@ namespace U2 {
 //Warn: works only for pointer type
 template<class T> static void removeDuplicatesPointersFromList(QList<T*>& list) {
     QSet<const T*> tracked;
-    for(int i=0, n = list.size(); i < n ; i++) {
-        const T* val =  list.at(i);
+    for (int i = 0, n = list.size(); i < n; i++) {
+        const T* val = list.at(i);
         if (tracked.contains(val)) {
             list[i] = NULL;
         } else {
@@ -53,7 +50,7 @@ QList<GObject*> SelectionUtils::findObjects(GObjectType t, const MultiGSelection
     QList<GObject*> res;
     foreach(const GSelection* s, ms->getSelections()) {
         QList<GObject*> tmp = findObjects(t, s, f);
-        res+=tmp;
+        res += tmp;
     }
 
     removeDuplicatesPointersFromList(res);
@@ -64,7 +61,7 @@ QList<GObject*> SelectionUtils::findObjectsKeepOrder(GObjectType t, const MultiG
     QList<GObject*> res;
     foreach(const GSelection* s, ms->getSelections()) {
         QList<GObject*> tmp = findObjectsKeepOrder(t, s, f);
-        res+=tmp;
+        res += tmp;
     }
 
     //now remove duplicates from list
@@ -84,13 +81,13 @@ QList<GObject*> SelectionUtils::findObjectsKeepOrder(GObjectType t, const GSelec
     if (stype == GSelectionTypes::DOCUMENTS) {
         const DocumentSelection* ds = qobject_cast<const DocumentSelection*>(s);
         foreach(Document* d, ds->getSelectedDocuments()) {
-            const QList<GObject*>& objs= d->getObjects();
+            const QList<GObject*>& objs = d->getObjects();
             QList<GObject*> tmp = GObjectUtils::select(objs, t, f);
-            res+=tmp;
+            res += tmp;
         }
     } else  if (stype == GSelectionTypes::GOBJECTS) {
         const GObjectSelection* os = qobject_cast<const GObjectSelection*>(s);
-        const QList<GObject*>& objs= os->getSelectedObjects();
+        const QList<GObject*>& objs = os->getSelectedObjects();
         res = GObjectUtils::select(objs, t, f);
     }
     return res;
@@ -100,7 +97,7 @@ QList<GObject*> SelectionUtils::findObjectsKeepOrder(GObjectType t, const GSelec
 QSet<Document*> SelectionUtils::findDocumentsWithObjects(GObjectType t, const MultiGSelection* ms, UnloadedObjectFilter f, bool deriveDocsFromObjectSelection) {
     QSet<Document*> res;
     foreach(const GSelection* s, ms->getSelections()) {
-        res+=findDocumentsWithObjects(t, s, f, deriveDocsFromObjectSelection);
+        res += findDocumentsWithObjects(t, s, f, deriveDocsFromObjectSelection);
     }
     return res;
 }
@@ -117,19 +114,19 @@ QSet<Document*> SelectionUtils::findDocumentsWithObjects(GObjectType t, const GS
             if (!d->getObjects().isEmpty()) {
                 QList<GObject*> objs = d->findGObjectByType(t, f);
                 if (!objs.isEmpty()) {
-                    res+=d;
+                    res += d;
                 }
             } else if (f == UOF_LoadedAndUnloaded && !d->isLoaded()) { //document is unloaded
                 DocumentFormat* df = d->getDocumentFormat();
                 if (df->checkConstraints(c)) {
-                    res+=d;
+                    res += d;
                 }
             }
         }
     } else if (st == GSelectionTypes::GOBJECTS && deriveDocsFromObjectSelection) {
         QList<GObject*> objects = findObjects(t, s, f);
         foreach(GObject* o, objects) {
-            res+=o->getDocument();
+            res += o->getDocument();
         }
     }
     return res;
@@ -182,24 +179,24 @@ QList<GObject*> SelectionUtils::getSelectedObjects(const MultiGSelection& ms) {
 
 U2Region SelectionUtils::normalizeRegionBy3(U2Region reg, int seqLen, bool direct) {
     assert(reg.length > 0);
-    if ( seqLen < 3 ){
+    if (seqLen < 3) {
         return reg;
     }
     int d = reg.length % 3;
     if (d == 1) {
         if (direct) {
-            reg.length-=1;
+            reg.length -= 1;
         } else {
-            reg.startPos+=1;
-            reg.length-=1;
+            reg.startPos += 1;
+            reg.length -= 1;
         }
     } else if (d == 2) {
         if (direct) {
-            reg.length+=(reg.length+1 < seqLen) ? +1 : -2;
+            reg.length += (reg.length + 1 < seqLen) ? +1 : -2;
         } else {
             int prevStart = reg.startPos;
-            reg.startPos+=(reg.startPos > 0) ? -1 : +2;
-            reg.length+=prevStart - reg.startPos;
+            reg.startPos += (reg.startPos > 0) ? -1 : +2;
+            reg.length += prevStart - reg.startPos;
         }
     }
     return reg;

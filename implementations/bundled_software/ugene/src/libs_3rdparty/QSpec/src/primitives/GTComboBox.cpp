@@ -54,7 +54,6 @@ void GTComboBox::setCurrentIndex(GUITestOpStatus& os, QComboBox *comboBox, int i
     GTGlobals::sleep();
 
     switch (method){
-    case GTGlobals::UseKeyBoard:
     case GTGlobals::UseKey:{
             int currIndex = comboBox->currentIndex() == -1 ? 0 : comboBox->currentIndex();
         Qt::Key directionKey = index > currIndex ? Qt::Key_Down : Qt::Key_Up;
@@ -88,9 +87,51 @@ void GTComboBox::setCurrentIndex(GUITestOpStatus& os, QComboBox *comboBox, int i
         GTGlobals::sleep(500);
         break;
     }
+    default:
+        GT_CHECK(false, "Unexpected method");
+        break;
     }
 
 }
+#undef GT_METHOD_NAME
+
+#define GT_METHOD_NAME "setCurrentText"
+void GTComboBox::setCurrentTextWithKeyboard(GUITestOpStatus& os, QComboBox* comboBox, const QString& text, bool checkVal) {
+
+    GT_CHECK(comboBox != NULL, "QComboBox* == NULL");
+
+    if (comboBox->currentText() == text) {
+        return;
+    }
+
+    int index = comboBox->findText(text, Qt::MatchExactly);
+    GT_CHECK(index != -1, "Text " + text + " was not found");
+
+    if (comboBox->isEditable()) {
+        QPoint p = QPoint(comboBox->rect().width() - 10, 10);
+        GTWidget::click(os, comboBox, Qt::LeftButton, p);
+    } else {
+        GTWidget::setFocus(os, comboBox);
+    }
+    GTGlobals::sleep();
+
+    for (auto c : text) {
+        GTKeyboardDriver::keyClick(c.toLatin1());
+        GTGlobals::sleep(200);
+    }
+
+    GTKeyboardDriver::keyClick(Qt::Key_Enter);
+
+    GTThread::waitForMainThread();
+    GTGlobals::sleep(500);
+
+    if (checkVal) {
+        QString currentText = comboBox->currentText();
+        GT_CHECK(currentText == text, "Can't set text");
+    }
+
+}
+#undef GT_METHOD_NAME
 
 #define GT_METHOD_NAME "setIndexWithText"
 void GTComboBox::setIndexWithText(GUITestOpStatus& os, QComboBox * const comboBox, const QString& text, bool checkVal, GTGlobals::UseMethod method) {
@@ -99,8 +140,15 @@ void GTComboBox::setIndexWithText(GUITestOpStatus& os, QComboBox * const comboBo
     int index = comboBox->findText(text, Qt::MatchExactly);
     GT_CHECK(index != -1, "Text " + text + " was not found");
 
-    setCurrentIndex(os, comboBox, index, checkVal, method);
-    //CHECK_OP(os, );
+    switch (method) {
+    case GTGlobals::UseKeyBoard:
+        setCurrentTextWithKeyboard(os, comboBox, text, checkVal);
+        break;
+    default:
+        setCurrentIndex(os, comboBox, index, checkVal, method);
+        break;
+    }
+
     if(checkVal){
         QString currentText = comboBox->currentText();
         GT_CHECK(currentText == text, "Can't set text");

@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -43,23 +43,13 @@ protected:
 private slots:
 
     void sl_show();
-    void sl_addPlugin();
-    void sl_enablePlugin();
-    void sl_disablePlugin();
     void sl_enableService();
     void sl_disableService();
 
     void sl_treeCurrentItemChanged(QTreeWidgetItem * current, QTreeWidgetItem * previous);
-    void sl_treeCustomContextMenuRequested(const QPoint & pos);
-
-//plugin support monitoring
-    void sl_onPluginAdded(Plugin* p);
-    void sl_pluginRemoveFlagChanged(Plugin*);
 
     void sl_onServiceStateChanged(Service* s, ServiceState oldState);
-    void sl_onServiceRegistered(Service* s);
     void sl_onServiceUnregistered(Service* s);
-    void sl_taskStateChanged();
     void sl_showHideLicense();
     void sl_acceptLicense();
 
@@ -82,12 +72,6 @@ private:
     Ui_PluginViewWidget ui;
     
     MWMDIWindow* mdiWindow;
-    
-    QAction*    addPluginAction;
-    
-    QAction*    enablePluginAction;
-    QAction*    disablePluginAction;
-    
     QAction*    enableServiceAction;
     QAction*    disableServiceAction;
     

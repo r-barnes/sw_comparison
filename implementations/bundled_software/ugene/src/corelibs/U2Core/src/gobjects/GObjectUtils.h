@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -24,7 +24,6 @@
 
 #include <U2Core/AnnotationData.h>
 #include <U2Core/GObject.h>
-#include <U2Core/GObjectTypes.h>
 
 namespace U2 {
 
@@ -45,7 +44,7 @@ public:
 
     /*
      * Select objects from @fromObjects that are referenced by relations stored in @obj with @relationRole and @type.
-    */
+     */
     static QList<GObject*> selectRelations(GObject* obj, GObjectType type,
         GObjectRelationRole relationRole, const QList<GObject*>& fromObjects,
         UnloadedObjectFilter f);

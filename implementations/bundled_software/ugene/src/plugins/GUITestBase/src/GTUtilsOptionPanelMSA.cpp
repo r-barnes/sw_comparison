@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -122,9 +122,7 @@ void GTUtilsOptionPanelMsa::addReference(HI::GUITestOpStatus &os, QString seqNam
         GTWidget::click(os, sequenceLineEdit);
         GTKeyboardDriver::keyClick(seqName.at(0).toLatin1());
         GTGlobals::sleep(200);
-        QTreeWidget* completer = sequenceLineEdit->findChild<QTreeWidget*>();
-        GT_CHECK(completer != NULL, "auto completer widget not found");
-        GTBaseCompleter::click(os, completer, seqName);
+        GTBaseCompleter::click(os, sequenceLineEdit, seqName);
         break;
     }
     GTThread::waitForMainThread();
@@ -169,9 +167,9 @@ int GTUtilsOptionPanelMsa::getHeight(HI::GUITestOpStatus &os){
 #undef GT_METHOD_NAME
 
 #define GT_METHOD_NAME "setColorScheme"
-void GTUtilsOptionPanelMsa::setColorScheme(HI::GUITestOpStatus &os, const QString &colorSchemeName) {
+void GTUtilsOptionPanelMsa::setColorScheme(HI::GUITestOpStatus &os, const QString &colorSchemeName, GTGlobals::UseMethod method) {
     openTab(os, Highlighting);
-    GTComboBox::setIndexWithText(os, GTWidget::findExactWidget<QComboBox *>(os, "colorScheme"), colorSchemeName);
+    GTComboBox::setIndexWithText(os, GTWidget::findExactWidget<QComboBox *>(os, "colorScheme"), colorSchemeName, true, method);
 }
 #undef GT_METHOD_NAME
 
@@ -228,9 +226,7 @@ void GTUtilsOptionPanelMsa::addSeqToPA(HI::GUITestOpStatus &os, QString seqName,
         GTWidget::click(os, sequenceLineEdit);
         GTKeyboardDriver::keyClick( seqName.at(0).toLatin1());
         GTGlobals::sleep(200);
-        QTreeWidget* completer = sequenceLineEdit->findChild<QTreeWidget*>();
-        GT_CHECK(completer != NULL, "auto completer widget not found");
-        GTBaseCompleter::click(os, completer, seqName);
+        GTBaseCompleter::click(os, sequenceLineEdit, seqName);
         break;
     }
 }

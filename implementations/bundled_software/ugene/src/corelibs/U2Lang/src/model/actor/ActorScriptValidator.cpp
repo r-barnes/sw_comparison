@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -31,7 +31,7 @@ namespace Workflow {
 /************************************************************************/
 /* ActorScriptValidator */
 /************************************************************************/
-bool ActorScriptValidator::validate(const Actor *actor, ProblemList &problemList, const QMap<QString, QString> &options) const {
+bool ActorScriptValidator::validate(const Actor *actor, NotificationsList &notificationList, const QMap<QString, QString> &options) const {
     QScriptEngine engine;
     ValidationContext context(engine, actor);
     {
@@ -47,7 +47,7 @@ bool ActorScriptValidator::validate(const Actor *actor, ProblemList &problemList
         return true;
     }
 
-    problemList << context.problems();
+    notificationList << context.notifications();
     return !context.hasErrors();
 }
 
@@ -84,13 +84,13 @@ void ValidationContext::warning(const QString &message) {
     warnings << message;
 }
 
-ProblemList ValidationContext::problems() const {
-    ProblemList result;
+NotificationsList ValidationContext::notifications() const {
+    NotificationsList result;
     foreach (const QString &e, errors) {
-        result << Problem(e, actor->getId(), Problem::U2_ERROR);
+        result << WorkflowNotification(e, actor->getId(), WorkflowNotification::U2_ERROR);
     }
     foreach (const QString &w, warnings) {
-        result << Problem(w, actor->getId(), Problem::U2_WARNING);
+        result << WorkflowNotification(w, actor->getId(), WorkflowNotification::U2_WARNING);
     }
     return result;
 }

@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -38,7 +38,7 @@ class LoadEnzymeFileTask;
 class U2SequenceObject;
 
 //cppcheck-suppress noConstructor
-class GTest_FindEnzymes : public GTest {
+class GTest_FindEnzymes : public XmlTest {
     Q_OBJECT
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_FindEnzymes, "find-enzymes");
 
@@ -63,7 +63,7 @@ private:
 };
 
 //cppcheck-suppress noConstructor
-class GTest_DigestIntoFragments : public GTest {
+class GTest_DigestIntoFragments : public XmlTest {
     Q_OBJECT
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_DigestIntoFragments, "digest-into-fragments");
 
@@ -76,7 +76,8 @@ private:
     QString                 enzymesUrl;
     QStringList             enzymeNames;
     bool                    searchForEnzymes;
-    AnnotationTableObject*    aObj;
+    bool                    isCircular;
+    AnnotationTableObject*  aObj;
     U2SequenceObject*       seqObj;
     LoadEnzymeFileTask*     loadTask;
 };
@@ -84,7 +85,7 @@ private:
 class LigateFragmentsTask;
 
 //cppcheck-suppress noConstructor
-class GTest_LigateFragments : public GTest {
+class GTest_LigateFragments : public XmlTest {
     Q_OBJECT
     SIMPLE_XML_TEST_BODY_WITH_FACTORY(GTest_LigateFragments, "ligate-fragments");
 

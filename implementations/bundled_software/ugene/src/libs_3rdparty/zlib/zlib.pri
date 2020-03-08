@@ -1,13 +1,12 @@
 include( ../../ugene_globals.pri )
-UGENE_RELATIVE_DESTDIR = ''
 
 TEMPLATE = lib
 CONFIG +=thread debug_and_release staticlib
 DEFINES+= _CRT_SECURE_NO_WARNINGS
 INCLUDEPATH += src
 
-TARGET = zlib
-DESTDIR=../../_release
+TARGET = zlib$$D
+DESTDIR = ../../$$out_dir()
 
 !debug_and_release|build_pass {
 
@@ -15,7 +14,6 @@ DESTDIR=../../_release
         TARGET = zlibd
         DEFINES+=_DEBUG
         CONFIG +=console
-        DESTDIR=../../_debug
         OBJECTS_DIR=_tmp/obj/debug
         MOC_DIR=_tmp/moc/debug
     }
@@ -37,8 +35,17 @@ win32 {
     QMAKE_CXXFLAGS+=/wd4996
     QMAKE_MSVC_PROJECT_NAME=lib_3rd_zlib
 }
+win32-msvc2015 {
+	DEFINES += _SILENCE_STDEXT_HASH_DEPRECATION_WARNINGS
+	DEFINES += _XKEYCHECK_H
+}
+
+macx {
+    QMAKE_RPATHDIR += @executable_path/
+    QMAKE_LFLAGS_SONAME = -Wl,-dylib_install_name,@rpath/
+}
 
 #unix {
-#    target.path = $$UGENE_INSTALL_DIR/$$UGENE_RELATIVE_DESTDIR
+#    target.path = $$UGENE_INSTALL_DIR/
 #    INSTALLS += target
 #}

@@ -6,7 +6,8 @@ DEFINES+=U2_DISTRIBUTION_INFO=$${U2_DISTRIBUTION_INFO}
 DEFINES+=UGENE_VERSION=$${UGENE_VERSION}
 DEFINES+=UGENE_VER_MAJOR=$${UGENE_VER_MAJOR}
 DEFINES+=UGENE_VER_MINOR=$${UGENE_VER_MINOR}
-DEFINES+=UGENE_VER_PATCH=$${UGENE_VER_PATCH}
+
+CONFIG += c++11
 
 # NGS package
 _UGENE_NGS = $$(UGENE_NGS)
@@ -16,9 +17,22 @@ contains(_UGENE_NGS, 1) : DEFINES += UGENE_NGS
 win32 : QMAKE_CXXFLAGS += /MP # use parallel build with nmake
 win32 : DEFINES+= _WINDOWS
 win32-msvc2013 : DEFINES += _SCL_SECURE_NO_WARNINGS
+win32-msvc2015|greaterThan(QMAKE_MSC_VER, 1909) {
+    DEFINES += _SILENCE_STDEXT_HASH_DEPRECATION_WARNINGS _XKEYCHECK_H
+    QMAKE_CXXFLAGS-=-Zc:strictStrings
+    QMAKE_CXXFLAGS-=Zc:strictStrings
+    QMAKE_CFLAGS-=-Zc:strictStrings
+    QMAKE_CFLAGS-=Zc:strictStrings
+    QMAKE_CXXFLAGS-=-g
+    QMAKE_CFLAGS-=-g
+}
 
-win32 : QMAKE_CFLAGS_RELEASE = -O2 -Oy- -MD -Zi
-win32 : QMAKE_CXXFLAGS_RELEASE = -O2 -Oy- -MD -Zi
+greaterThan(QMAKE_MSC_VER, 1909) {
+    DEFINES += _ALLOW_KEYWORD_MACROS __STDC_LIMIT_MACROS
+}
+
+win32 : QMAKE_CFLAGS_RELEASE += -O2 -Oy- -MD -Zi
+win32 : QMAKE_CXXFLAGS_RELEASE += -O2 -Oy- -MD -Zi
 win32 : QMAKE_LFLAGS_RELEASE = /INCREMENTAL:NO /MAP /MAPINFO:EXPORTS /DEBUG
 win32 : LIBS += psapi.lib
 win32 : DEFINES += "PSAPI_VERSION=1"
@@ -27,6 +41,18 @@ macx {
     CONFIG -= warn_on
     #Ignore "'weak_import' attribute ignored" warning coming from OpenCL headers
     QMAKE_CXXFLAGS += -Wall -Wno-ignored-attributes
+}
+
+linux-g++ {
+    # We have a lot of such warning from QT -> disable them.
+    QMAKE_CXXFLAGS += -Wno-expansion-to-defined
+    
+    # build with coverage (gcov) support, now for Linux only
+    equals(UGENE_GCOV_ENABLE, 1) {
+    message("Build with gcov support. See gcov/lcov doc for generating coverage info")
+    QMAKE_CXXFLAGS += --coverage -fprofile-arcs -ftest-coverage
+    QMAKE_LFLAGS += -lgcov --coverage
+    }
 }
 
 isEmpty( INSTALL_PREFIX )  : INSTALL_PREFIX  = /usr
@@ -141,14 +167,75 @@ use_bundled_zlib() {
     DEFINES+=UGENE_USE_BUNDLED_ZLIB
 }
 
+# A function to add zlib library to the list of libraries
+defineReplace(add_z_lib) {
+    use_bundled_zlib() {
+        RES = -lzlib$$D
+    } else {
+        RES = -lz
+    }
+    return ($$RES)
+}
+
+
+# By default, UGENE uses bundled sqlite library built with special flags (see sqlite3.pri)
+# To use locally installed sqlite library use UGENE_USE_BUNDLED_SQLITE = 0
+
+defineTest( use_bundled_sqlite ) {
+    contains( UGENE_USE_BUNDLED_SQLITE, 0 ) : return (false)
+    return (true)
+}
+
+use_bundled_sqlite() {
+    DEFINES += UGENE_USE_BUNDLED_SQLITE
+}
+
+# A function to add SQLite library to the list of libraries
+defineReplace(add_sqlite_lib) {
+    use_bundled_sqlite() {
+        RES = -lugenedb$$D
+    } else {
+        RES = -lsqlite3
+    }
+    return ($$RES)
+}
+
+# Returns active UGENE output dir name for core libs and executables used by build process: _debug or _release.
+defineReplace(out_dir) {
+    !debug_and_release|build_pass {
+        CONFIG(debug, debug|release) {
+            RES = _debug
+        } else {
+            RES = _release
+        }
+    }
+    return ($$RES)
+}
+
+# Returns active UGENE output dir name for core libs and executables used by build process: _debug or _release.
+defineTest(is_debug_build) {
+    !debug_and_release|build_pass {
+        CONFIG(debug, debug|release) {
+            RES = true
+        } else {
+            RES = false
+        }
+    }
+    return ($$RES)
+}
+
+# Common library suffix for all libraries that depends on build mode: 'd' for debug and '' for release.
+# Example: 'libCore$$D.so' will result to the 'libCored.so' in debug mode and to the 'libCore.so' in release mode.
+D=
+is_debug_build() {
+    D=d
+}
+
 #Variable enabling exclude list for ugene modules
 #UGENE_EXCLUDE_LIST_ENABLED = 1
 defineTest( exclude_list_enabled ) {
     contains( UGENE_EXCLUDE_LIST_ENABLED, 1 ) : return (true)
     return (false)
-}
-if(exclude_list_enabled()|!exists( ./libs_3rdparty/QSpec/QSpec.pro )) {
-    DEFINES += HI_EXCLUDED
 }
 
 #Variable enabling exclude list for ugene non-free modules
@@ -180,4 +267,77 @@ defineTest(minQtVersion) {
         return(true)
     }
     return(false)
+}
+
+# Define which web engine should be used
+_UGENE_WEB_ENGINE__AUTO = "auto"
+_UGENE_WEB_ENGINE__WEBKIT = "webkit"
+_UGENE_WEB_ENGINE__QT = "qt"
+
+_UGENE_WEB_ENGINE = $$(UGENE_WEB_ENGINE)
+isEmpty(_UGENE_WEB_ENGINE): _UGENE_WEB_ENGINE = $$_UGENE_WEB_ENGINE__AUTO
+
+defineReplace(tryUseWebkit) {
+    !qtHaveModule(webkit) | !qtHaveModule(webkitwidgets) {
+        error("WebKit is not available. It is not included to Qt framework since Qt5.6. Qt WebEngine should be used instead")
+        return()
+    } else {
+#        message("Qt version is $${QT_VERSION}, WebKit is selected")
+        DEFINES += UGENE_WEB_KIT
+        DEFINES -= UGENE_QT_WEB_ENGINE
+        return($$DEFINES)
+    }
+}
+
+defineReplace(tryUseQtWebengine) {
+    !minQtVersion(5, 4, 0) {
+        message("Cannot build Unipro UGENE with Qt version $${QT_VERSION} and Qt WebEngine")
+        error("Use at least Qt 5.4.0 or build with WebKit")
+        return()
+    } else: !qtHaveModule(webengine) | !qtHaveModule(webenginewidgets) {
+        error("Qt WebEngine is not available. Ensure that it is installed.")
+        return()
+    } else {
+#        message("Qt version is $${QT_VERSION}, Qt WebEngine is selected")
+        DEFINES -= UGENE_WEB_KIT
+        DEFINES += UGENE_QT_WEB_ENGINE
+        return($$DEFINES)
+    }
+}
+
+equals(_UGENE_WEB_ENGINE, $$_UGENE_WEB_ENGINE__WEBKIT) {
+    DEFINES = $$tryUseWebkit()
+} else: equals(_UGENE_WEB_ENGINE, $$_UGENE_WEB_ENGINE__QT) {
+    DEFINES = $$tryUseQtWebengine()
+} else {
+    !equals(_UGENE_WEB_ENGINE, $$_UGENE_WEB_ENGINE__AUTO) {
+        warning("An unknown UGENE_WEB_ENGINE value: $${_UGENE_WEB_ENGINE}. The web engine will be selected automatically.")
+    }
+#    message("Selecting web engine automatically...")
+
+    macx {
+        # A Qt WebEngine is preferred for macOS because there are high definition displays on macs
+        minQtVersion(5, 4, 0) {
+            DEFINES = $$tryUseQtWebengine()
+        } else {
+            DEFINES = $$tryUseWebkit()
+        }
+    } else {
+        # We don't try to search WebKit on the Qt5.6 and more modern versions.
+        minQtVersion(5, 6, 0) {
+            DEFINES = $$tryUseQtWebengine()
+        } else {
+            DEFINES = $$tryUseWebkit()
+        }
+    }
+}
+
+defineTest(useWebKit) {
+    contains(DEFINES, UGENE_WEB_KIT): return(true)
+    contains(DEFINES, UGENE_QT_WEB_ENGINE): return(false)
+    return(false)
+}
+
+if (exclude_list_enabled() | !useWebKit()) {
+    DEFINES += HI_EXCLUDED
 }

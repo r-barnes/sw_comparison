@@ -1,6 +1,6 @@
 /**
 * UGENE - Integrated Bioinformatics Tools.
-* Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+* Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
 * http://ugene.net
 *
 * This program is free software; you can redistribute it and/or
@@ -56,13 +56,14 @@ static QString getLine(IOAdapter* io, char* buff, const QString& pattern, U2OpSt
     QString line;
     while (!finishedReading) {
         io->readLine(buff, AprFormat::READ_BUFF_SIZE, &lineOk);
+        CHECK_EXT(!io->hasError(), os.setError(io->errorString()), QString());
         if (!lineOk) {
             os.setError(AprFormat::tr("Unexpected end of file"));
             line = QString();
             finishedReading = true;
         }
-        QString bufferString(buff);
-        QTextStream bufferStream(&bufferString);
+        QByteArray buffQB(buff);
+        QTextStream bufferStream(buffQB);
         line = bufferStream.readLine();
         if (line.contains(pattern)) {
             finishedReading = true;
@@ -94,7 +95,7 @@ static int getNumber(QString string, int startPos, U2OpStatus& os) {
         resultLength = currentLength;
     }
     if (resultLength == 0) {
-        os.setError(AprFormat::tr("Attemt to find any number in the string failed"));
+        os.setError(AprFormat::tr("Attempt to find any number in the string failed"));
     }
     return resultLength;
 }
@@ -144,13 +145,13 @@ static void createRows(IOAdapter* io, char* buff, const int sequnenceNum, const 
     }
 }
 
-AprFormat::AprFormat(QObject* p) : DocumentFormat(p, DocumentFormatFlags(DocumentFormatFlag_CannotBeCreated), QStringList("apr")) {
+AprFormat::AprFormat(QObject* p) : TextDocumentFormat(p, BaseDocumentFormats::VECTOR_NTI_ALIGNX, DocumentFormatFlags(DocumentFormatFlag_CannotBeCreated), QStringList("apr")) {
     formatName = tr("Vector NTI/AlignX");
     formatDescription = tr("Vector NTI/AlignX is a Vector NTI format for multiple alignment");
     supportedObjectTypes += GObjectTypes::MULTIPLE_SEQUENCE_ALIGNMENT;
 }
 
-FormatCheckResult AprFormat::checkRawData(const QByteArray& rawData, const GUrl&) const {
+FormatCheckResult AprFormat::checkRawTextData(const QByteArray& rawData, const GUrl&) const {
     if (TextUtils::contains(TextUtils::BINARY, rawData.constData(), rawData.size())) {
         return FormatDetection_NotMatched;
     }
@@ -170,7 +171,7 @@ QString AprFormat::getRadioButtonText() const {
     return tr("Open in read-only mode");
 }
 
-Document* AprFormat::loadDocument(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& fs, U2OpStatus& os) {
+Document* AprFormat::loadTextDocument(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& fs, U2OpStatus& os) {
     QList <GObject*> objs;
     load(io, dbiRef, objs, fs, os);
 
@@ -194,6 +195,8 @@ void AprFormat::load(IOAdapter* io, const U2DbiRef& dbiRef, QList<GObject*>& obj
     bool lineOk = false;
 
     io->readLine(buff, READ_BUFF_SIZE, &lineOk);
+    CHECK_EXT(!io->hasError(), os.setError(io->errorString()), );
+
     QString bufferString(buff);
     QTextStream bufferStream(&bufferString);
     QString header = bufferStream.readLine();
@@ -214,10 +217,7 @@ void AprFormat::load(IOAdapter* io, const U2DbiRef& dbiRef, QList<GObject*>& obj
 
     int sequenceNum = getNumber(sequenceQuantityString, SIZE_BEFORE_NUMBER_SEQUENCE_QUANTITY, os);
     CHECK_OP(os, );
-    if (sequenceNum == 0) {
-        os.setError(AprFormat::tr("Sequences not found"));
-        return;
-    }
+    CHECK_EXT(sequenceNum != 0, os.setError(AprFormat::tr("Sequences not found")), );
 
     createRows(io, buff, sequenceNum, alignmentLength, al, os);
     CHECK_OP(os, );

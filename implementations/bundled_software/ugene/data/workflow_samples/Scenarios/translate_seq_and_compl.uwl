@@ -111,6 +111,7 @@ workflow "Get amino translations of a sequence"{
         wizard {
             name:"Get Amino Translations Wizard";
             help-page-id:16122701;
+            auto-run: true;
             page {
                 id:1;
                 next:2;

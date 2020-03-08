@@ -30,6 +30,21 @@ namespace HI {
 
 #define GT_CLASS_NAME "GTGroupBox"
 
+#define GT_METHOD_NAME "getChecked"
+bool GTGroupBox::getChecked(GUITestOpStatus &os, QGroupBox *groupBox) {
+    GT_CHECK_RESULT(groupBox != NULL, "QGroupBox is NULL", false);
+    GT_CHECK_RESULT(groupBox->isEnabled(), "QGroupBox is disabled", false);
+
+    return groupBox->isChecked();
+}
+#undef GT_METHOD_NAME
+
+#define GT_METHOD_NAME "getChecked"
+bool GTGroupBox::getChecked(GUITestOpStatus& os, const QString &groupBoxName, QWidget *parent) {
+    return GTGroupBox::getChecked(os, GTWidget::findExactWidget<QGroupBox *>(os, groupBoxName, parent));
+}
+#undef GT_METHOD_NAME
+
 #define GT_METHOD_NAME "setChecked"
 void GTGroupBox::setChecked(GUITestOpStatus &os, QGroupBox *groupBox, bool checked) {
     GT_CHECK(groupBox != NULL, "QGroupBox is NULL");
@@ -40,10 +55,25 @@ void GTGroupBox::setChecked(GUITestOpStatus &os, QGroupBox *groupBox, bool check
 
     GT_CHECK(groupBox->isEnabled(), "QGroupBox is disabled");
 
-    const QRect checkBoxRect = getCheckBoxRect(groupBox);
-    const QPoint offset(5, checkBoxRect.height() / 2);
-    GTWidget::click(os, groupBox, Qt::LeftButton, checkBoxRect.center() + offset);
-    GTGlobals::sleep();
+    QStyleOptionGroupBox options;
+    options.initFrom(groupBox);
+    if (groupBox->isFlat()) {
+        options.features |= QStyleOptionFrame::Flat;
+    }
+    options.lineWidth = 1;
+    options.midLineWidth = 0;
+    options.text = groupBox->title();
+    options.textAlignment = groupBox->alignment();
+    options.subControls = (QStyle::SC_GroupBoxFrame | QStyle::SC_GroupBoxCheckBox);
+    if (!groupBox->title().isEmpty()) {
+        options.subControls |= QStyle::SC_GroupBoxLabel;
+    }
+    options.state |= (groupBox->isChecked() ? QStyle::State_On : QStyle::State_Off);
+
+    const QRect checkboxRect = groupBox->style()->subControlRect(QStyle::CC_GroupBox, &options, QStyle::SC_GroupBoxCheckBox);
+
+    GTWidget::click(os, groupBox, Qt::LeftButton, checkboxRect.center());
+    GTGlobals::sleep(200);
 
     GT_CHECK(checked == groupBox->isChecked(), "Can't set a new state");
 }

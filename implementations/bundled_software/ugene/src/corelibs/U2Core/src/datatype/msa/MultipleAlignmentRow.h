@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -94,10 +94,13 @@ public:
      * Otherwise returns '-1'.
      */
     int getUngappedPosition(int pos) const;
+    U2Region getGapped(const U2Region& region);
 
     bool isTrailingOrLeadingGap(qint64 position) const;
 
     U2Region getCoreRegion() const;
+    U2Region getUngappedRegion(const U2Region& gappedRegion) const;
+    DNASequence getUngappedSequence() const;
 
     virtual ~MultipleAlignmentRowData();
 

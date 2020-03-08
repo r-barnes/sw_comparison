@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -25,25 +25,23 @@
 #include <U2Core/BaseDocumentFormats.h>
 #include <U2Core/DocumentModel.h>
 
+#include "TextDocumentFormat.h"
+
 namespace U2 {
 
 class IOAdapter;
 
-class U2FORMATS_EXPORT  GFFFormat : public DocumentFormat {
+class U2FORMATS_EXPORT  GFFFormat : public TextDocumentFormat {
     Q_OBJECT
 public:
     GFFFormat(QObject* p);
 
-    virtual DocumentFormatId getFormatId() const {return BaseDocumentFormats::GFF;}
-
-    virtual const QString& getFormatName() const {return formatName;}
-
     virtual void storeDocument(Document* d, IOAdapter* io, U2OpStatus& os);
 
-    virtual FormatCheckResult checkRawData(const QByteArray& rawData, const GUrl& = GUrl()) const;
-
 protected:
-    virtual Document* loadDocument(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& fs, U2OpStatus& os);
+    virtual FormatCheckResult checkRawTextData(const QByteArray& rawData, const GUrl& = GUrl()) const;
+
+    virtual Document* loadTextDocument(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& fs, U2OpStatus& os);
 
 private:
     void load(IOAdapter* io, const U2DbiRef& dbiRef, QList<GObject*>& objects, const QVariantMap& hints, U2OpStatus& si);
@@ -51,8 +49,6 @@ private:
     static QString extractSeqObjectName( QString &fastaHeaderName, const QStringList &words, QSet<QString> &names, bool &isNameModified);
 
     QStringList parseLine(const QString& line) const;
-
-    QString formatName;
 
     static const int LOCAL_READ_BUFFER_SIZE;
 };

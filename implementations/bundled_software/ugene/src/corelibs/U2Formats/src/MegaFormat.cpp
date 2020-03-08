@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -49,13 +49,13 @@ const char MegaFormat::MEGA_INDEL='-';
 const char MegaFormat::MEGA_START_COMMENT='!';
 const char MegaFormat::MEGA_END_COMMENT=';';
 
-MegaFormat::MegaFormat(QObject* p) : DocumentFormat(p, DocumentFormatFlags(DocumentFormatFlag_SupportWriting) | DocumentFormatFlag_OnlyOneObject, QStringList("meg")) {
+MegaFormat::MegaFormat(QObject* p) : TextDocumentFormat(p, BaseDocumentFormats::MEGA, DocumentFormatFlags(DocumentFormatFlag_SupportWriting) | DocumentFormatFlag_OnlyOneObject, QStringList("meg")) {
     formatName = tr("Mega");
     formatDescription = tr("Mega is a file format of native MEGA program");
     supportedObjectTypes+=GObjectTypes::MULTIPLE_SEQUENCE_ALIGNMENT;
 }
 
-Document* MegaFormat::loadDocument(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& fs, U2OpStatus& os){
+Document* MegaFormat::loadTextDocument(IOAdapter* io, const U2DbiRef& dbiRef, const QVariantMap& fs, U2OpStatus& os){
     QList<GObject*> objs;
     load(io, dbiRef, objs, fs, os);
     CHECK_OP_EXT(os, qDeleteAll(objs), NULL);
@@ -80,7 +80,7 @@ void MegaFormat::storeDocument(Document* d, IOAdapter* io, U2OpStatus& os) {
     CHECK_EXT(!os.isCoR(), os.setError(L10N::errorWritingFile(d->getURL())), );
 }
 
-FormatCheckResult MegaFormat::checkRawData(const QByteArray& rawData, const GUrl&) const {
+FormatCheckResult MegaFormat::checkRawTextData(const QByteArray& rawData, const GUrl&) const {
     QByteArray line=rawData.trimmed();
 
     if (!line.startsWith(MEGA_SEPARATOR)) {
@@ -94,7 +94,7 @@ FormatCheckResult MegaFormat::checkRawData(const QByteArray& rawData, const GUrl
     return FormatDetection_Matched;
 }
 
-bool MegaFormat::getNextLine(IOAdapter* io, QByteArray& line) {
+bool MegaFormat::getNextLine(IOAdapter* io, QByteArray& line, U2OpStatus &ti) {
     line.clear();
     QByteArray readBuffer(READ_BUFF_SIZE, '\0');
     char* buff = readBuffer.data();
@@ -103,6 +103,8 @@ bool MegaFormat::getNextLine(IOAdapter* io, QByteArray& line) {
     bool eolFound = false, eof = false;
     while (!eolFound) {
         len = io->readLine(buff, READ_BUFF_SIZE, &eolFound);
+        CHECK_EXT(!io->hasError(), ti.setError(io->errorString()), false);
+
         if (len < READ_BUFF_SIZE && !eolFound)
             eolFound = eof = true;
         line += readBuffer;
@@ -125,24 +127,26 @@ bool MegaFormat::checkName(QByteArray &name) {
 }
 
 bool MegaFormat::readName(IOAdapter* io, QByteArray &line, QByteArray &name, U2OpStatus &ti) {
-    bool eof=false;
+    bool eof = false;
 
-    line=line.mid(1);
-    line=line.trimmed();
-    skipWhites(io, line);
-    if (line.isEmpty()) {
-        return true;
-    }
-    line=line.simplified();
+    line = line.mid(1);
+    line = line.trimmed();
+    skipWhites(io, line, ti);
+    CHECK_OP(ti, eof);
+    CHECK(!line.isEmpty(), true);
 
-    int spaceIdx=line.indexOf(' ');
-    if (-1!=spaceIdx) {
-        name=line.left(spaceIdx);
-        line=line.mid(spaceIdx);
+    line = line.simplified();
+
+    int spaceIdx = line.indexOf(' ');
+    if (-1 != spaceIdx) {
+        name = line.left(spaceIdx);
+        line = line.mid(spaceIdx);
     } else {
-        name=line;
-        eof=getNextLine(io, line);
-        line=line.simplified();
+        name = line;
+        eof = getNextLine(io, line, ti);
+        CHECK_OP(ti, eof);
+
+        line = line.simplified();
     }
     if (!checkName(name)) {
         ti.setError(MegaFormat::tr("Bad name of sequence"));
@@ -153,24 +157,24 @@ bool MegaFormat::readName(IOAdapter* io, QByteArray &line, QByteArray &name, U2O
 }
 
 bool MegaFormat::skipComments(IOAdapter *io, QByteArray &line, U2OpStatus &ti) {
-    int i=0;
-    bool eof=false;
-    bool hasEnd=false;
+    int i = 0;
+    bool eof = false;
+    bool hasEnd = false;
 
     while (1) {
-        while (i<line.length() && !hasEnd) {
-            if (MEGA_END_COMMENT==line[i]) {
+        while (i < line.length() && !hasEnd) {
+            if (MEGA_END_COMMENT == line[i]) {
                 i++;
-                hasEnd=true;
+                hasEnd = true;
                 break;
             }
-            if (MEGA_SEPARATOR==line[i]) {
+            if (MEGA_SEPARATOR == line[i]) {
                 ti.setError(MegaFormat::tr("Unexpected # in comments"));
                 return eof;
             }
             i++;
         }
-        if (line.length()==i) {
+        if (line.length() == i) {
             if (eof) {
                 line.clear();
                 if (!hasEnd) {
@@ -179,21 +183,23 @@ bool MegaFormat::skipComments(IOAdapter *io, QByteArray &line, U2OpStatus &ti) {
                 }
                 break;
             }
-            eof=getNextLine(io, line);
-            line=line.simplified();
-            i=0;
+            eof = getNextLine(io, line, ti);
+            CHECK_OP(ti, eof);
+
+            line = line.simplified();
+            i = 0;
             if (!hasEnd) {
                 continue;
             }
         }
-        hasEnd=true;
-        while (i<line.length()) {
-            if (MEGA_START_COMMENT==line[i]) {
-                hasEnd=false;
+        hasEnd = true;
+        while (i < line.length()) {
+            if (MEGA_START_COMMENT == line[i]) {
+                hasEnd = false;
                 break;
-            } else if (MEGA_SEPARATOR==line[i]) {
-                line=line.mid(i);
-                i=-1;
+            } else if (MEGA_SEPARATOR == line[i]) {
+                line = line.mid(i);
+                i = -1;
                 break;
             } else if (' '!=line[i]) {
                 ti.setError(MegaFormat::tr("Unexpected symbol between comments"));
@@ -204,10 +210,10 @@ bool MegaFormat::skipComments(IOAdapter *io, QByteArray &line, U2OpStatus &ti) {
         if (!hasEnd) {
             continue;
         }
-        if (line.length()!=i) {
+        if (line.length() != i) {
             break;
         }
-        if (line.length()==i && eof) {
+        if (line.length() == i && eof) {
             line.clear();
             break;
         }
@@ -234,19 +240,16 @@ void MegaFormat::workUpIndels(MultipleSequenceAlignment& al) {
 void MegaFormat::load(U2::IOAdapter *io, const U2DbiRef& dbiRef, QList<GObject*> &objects, const QVariantMap& fs, U2::U2OpStatus &os) {
     MultipleSequenceAlignment al(io->getURL().baseFileName());
     QByteArray line;
-    bool eof=false;
-    bool firstBlock=true;
-    int sequenceIdx=0;
-    bool lastIteration=false;
+    bool eof = false;
+    bool firstBlock = true;
+    int sequenceIdx = 0;
+    bool lastIteration = false;
 
     readHeader(io, line, os);
-    if (os.hasError()) {
-        return;
-    }
+    CHECK_OP(os, );
+
     readTitle(io, line, os);
-    if (os.hasError()) {
-        return;
-    }
+    CHECK_OP(os, );
 
     //read data
     QList<int> rowLens;
@@ -266,19 +269,19 @@ void MegaFormat::load(U2::IOAdapter *io, const U2DbiRef& dbiRef, QList<GObject*>
         CHECK_OP(os, );
 
         //read the sequence
-        eof=readSequence(io, line, os, value, &lastIteration);
+        eof = readSequence(io, line, os, value, &lastIteration);
         CHECK_OP(os, );
 
-        if (0==sequenceIdx && value.contains(MEGA_IDENTICAL)) {
+        if ((0 == sequenceIdx) && value.contains(MEGA_IDENTICAL)) {
             os.setError(MegaFormat::tr("Identical symbol at the first sequence"));
             return;
         }
 
         if (firstBlock) {
-            for (int i=0; i<al->getNumRows(); i++) {
-                if (al->getMsaRow(i)->getName()==name) {
-                    firstBlock=false;
-                    sequenceIdx=0;
+            for (int i = 0; i < al->getNumRows(); i++) {
+                if (al->getMsaRow(i)->getName() == name) {
+                    firstBlock = false;
+                    sequenceIdx = 0;
                     break;
                 }
             }
@@ -386,74 +389,59 @@ void MegaFormat::storeEntry(IOAdapter *io, const QMap< GObjectType, QList<GObjec
 }
 
 void MegaFormat::readHeader(U2::IOAdapter *io, QByteArray &line, U2::U2OpStatus &ti) {
-    skipWhites(io, line);
-    if (line.isEmpty()) {
-        ti.setError(MegaFormat::tr("No header"));
-        return;
-    }
+    skipWhites(io, line, ti);
+    CHECK_OP(ti, );
+    CHECK_EXT(!line.isEmpty(), ti.setError(MegaFormat::tr("No header")), );
+    CHECK_EXT(line.startsWith(MEGA_SEPARATOR), ti.setError(MegaFormat::tr("No # before header")), );
 
-    if (!line.startsWith(MEGA_SEPARATOR)) {
-        ti.setError(MegaFormat::tr("No # before header"));
-        return;
-    }
-    line=line.mid(1);
-    line=line.trimmed();
-    skipWhites(io, line);
-    if (line.isEmpty()) {
-        ti.setError(MegaFormat::tr("No header"));
-        return;
-    }
+    line = line.mid(1);
+    line = line.trimmed();
+    skipWhites(io, line, ti);
+    CHECK_OP(ti, );
+    CHECK_EXT(!line.isEmpty(), ti.setError(MegaFormat::tr("No header")), );
+    CHECK_EXT(line.startsWith(MEGA_HEADER), ti.setError(MegaFormat::tr("Not MEGA-header")), );
 
-    if (!line.startsWith(MEGA_HEADER)) {
-        ti.setError(MegaFormat::tr("Not MEGA-header"));
-        return;
-    }
-    line=line.mid(MEGA_HEADER.length());
-    line=line.trimmed();
+    line = line.mid(MEGA_HEADER.length());
+    line = line.trimmed();
     ti.setProgress(io->getProgress());
 }
 
-void MegaFormat::skipWhites(U2::IOAdapter *io, QByteArray &line) {
+void MegaFormat::skipWhites(U2::IOAdapter *io, QByteArray &line, U2::U2OpStatus &ti) {
     while (line.isEmpty()) {
-        if (getNextLine(io, line)) {
-            if (line.isEmpty()) {
-                return;
-            }
+        bool nexLine = getNextLine(io, line, ti);
+        CHECK_OP(ti, );
+
+        if (nexLine) {
+            CHECK(!line.isEmpty(), );
         }
 
-        line=line.trimmed();
+        line = line.trimmed();
     }
 }
 
 void MegaFormat::readTitle(U2::IOAdapter *io, QByteArray &line, U2::U2OpStatus &ti) {
-    skipWhites(io, line);
-    if (line.isEmpty()) {
-        ti.setError(MegaFormat::tr("No data in file"));
-        return;
+    skipWhites(io, line, ti);
+    CHECK_OP(ti, );
+    CHECK_EXT(!line.isEmpty(), ti.setError(MegaFormat::tr("No data in file")), );
+
+    bool comment = false;
+    if (MEGA_START_COMMENT == line[0]) {
+        line = line.mid(1);
+        line = line.trimmed();
+        comment = true;
+        skipWhites(io, line, ti);
+        CHECK_OP(ti, );
+        CHECK_EXT(!line.isEmpty(), ti.setError(MegaFormat::tr("No data in file")), );
     }
 
-    bool comment=false;
-    if (MEGA_START_COMMENT==line[0]) {
-        line=line.mid(1);
-        line=line.trimmed();
-        comment=true;
-        skipWhites(io, line);
-        if (line.isEmpty()) {
-            ti.setError(MegaFormat::tr("No data in file"));
-            return;
-        }
-    }
+    line = line.simplified();
+    QByteArray word = line.left(MEGA_TITLE.length());
+    word = word.toUpper();
+    CHECK_EXT(word == MEGA_TITLE, ti.setError(MegaFormat::tr("Incorrect title")), );
 
-    line=line.simplified();
-    QByteArray word=line.left(MEGA_TITLE.length());
-    word=word.toUpper();
-    if (MEGA_TITLE!=word) {
-        ti.setError(MegaFormat::tr("Incorrect title"));
-        return;
-    }
-    line=line.mid(MEGA_TITLE.length());
+    line = line.mid(MEGA_TITLE.length());
     if (!line.isEmpty() &&
-        (TextUtils::ALPHA_NUMS[line[0]] || MEGA_IDENTICAL==line[0] || MEGA_INDEL==line[0])){
+        (TextUtils::ALPHA_NUMS[line[0]] || MEGA_IDENTICAL == line[0] || MEGA_INDEL == line[0])){
         ti.setError(MegaFormat::tr("Incorrect title"));
         return;
     }
@@ -461,42 +449,45 @@ void MegaFormat::readTitle(U2::IOAdapter *io, QByteArray &line, U2::U2OpStatus &
     //read until #
     if (comment) {
         skipComments(io, line, ti);
+        CHECK_OP(ti, );
     } else {
-        int sepIdx=line.indexOf(MEGA_SEPARATOR);
-        while (-1==sepIdx) {
-            if (getNextLine(io, line)) {
-                if (line.isEmpty()) {
-                    ti.setError(MegaFormat::tr("No data in file"));
-                    return;
-                }
+        int sepIdx = line.indexOf(MEGA_SEPARATOR);
+        while (-1 == sepIdx) {
+            bool nexLine = getNextLine(io, line, ti);
+            CHECK_OP(ti, );
+            if (nexLine) {
+                CHECK_EXT(!line.isEmpty(), ti.setError(MegaFormat::tr("No data in file")), );
             }
-            sepIdx=line.indexOf(MEGA_SEPARATOR);
+            sepIdx = line.indexOf(MEGA_SEPARATOR);
         }
-        line=line.mid(sepIdx);
+        line = line.mid(sepIdx);
     }
     ti.setProgress(io->getProgress());
 }
 
 bool MegaFormat::readSequence(U2::IOAdapter *io, QByteArray &line, U2::U2OpStatus &ti,
                               QByteArray &value, bool *lastIteration) {
-    bool hasPartOfSequence=false;
-    bool eof=false;
+    bool hasPartOfSequence = false;
+    bool eof = false;
     while (!ti.isCoR()) {
         //delete spaces from the sequence until #
         int spaceIdx=line.indexOf(' ');
         int separatorIdx;
-        while (-1!=spaceIdx) {
-            separatorIdx=line.indexOf(MEGA_SEPARATOR);
-            if (-1!=separatorIdx && separatorIdx<spaceIdx) {
+        while (-1 != spaceIdx) {
+            separatorIdx = line.indexOf(MEGA_SEPARATOR);
+            if (-1 != separatorIdx && separatorIdx<spaceIdx) {
                 break;
             }
-            line=line.left(spaceIdx).append(line.mid(spaceIdx+1));
+            line = line.left(spaceIdx).append(line.mid(spaceIdx+1));
             spaceIdx=line.indexOf(' ');
         }
 
         //read another part if it is needed
         if (line.isEmpty()) {
-            if (getNextLine(io, line)) {
+            bool nextLine = getNextLine(io, line, ti);
+            CHECK_OP(ti, eof);
+
+            if (nextLine) {
                 if (!hasPartOfSequence) {
                     ti.setError(MegaFormat::tr("Sequence has empty part"));
                     return eof;
@@ -506,58 +497,61 @@ bool MegaFormat::readSequence(U2::IOAdapter *io, QByteArray &line, U2::U2OpStatu
                 }
             }
             ti.setProgress(io->getProgress());
-            line=line.simplified();
+            line = line.simplified();
             continue;
         }
 
-        separatorIdx=line.indexOf(MEGA_SEPARATOR);
-        int commentIdx=line.indexOf(MEGA_START_COMMENT);
+        separatorIdx = line.indexOf(MEGA_SEPARATOR);
+        int commentIdx = line.indexOf(MEGA_START_COMMENT);
 
-        int sequenceEnd=(-1==separatorIdx)?line.size():separatorIdx;
-        sequenceEnd=(-1==commentIdx)?sequenceEnd:qMin(sequenceEnd, commentIdx);
+        int sequenceEnd = (-1 == separatorIdx) ? line.size() : separatorIdx;
+        sequenceEnd = (-1 == commentIdx) ? sequenceEnd : qMin(sequenceEnd, commentIdx);
         //check symbols in the sequence
-        for (int i=0; i<sequenceEnd; i++) {
-            if (!(TextUtils::ALPHAS[line[i]]) && !(line[i]==MEGA_INDEL) && !(line[i]==MEGA_IDENTICAL)) {
+        for (int i = 0; i < sequenceEnd; i++) {
+            if (!(TextUtils::ALPHAS[line[i]]) && !(line[i] == MEGA_INDEL) && !(line[i] == MEGA_IDENTICAL)) {
                 ti.setError(MegaFormat::tr("Bad symbols in a sequence"));
                 return eof;
             }
         }
         value.append(line, sequenceEnd);
-        hasPartOfSequence=true;
+        hasPartOfSequence = true;
 
-        if (-1!=commentIdx) { //skip comments untill #
-            if ((-1!=separatorIdx && commentIdx<separatorIdx)
-             || -1==separatorIdx) {
-                line=line.mid(commentIdx);
-                eof=skipComments(io, line, ti);
+        if (-1 != commentIdx) { //skip comments untill #
+            if ((-1 != separatorIdx && commentIdx < separatorIdx)
+             || -1 == separatorIdx) {
+                line = line.mid(commentIdx);
+                eof = skipComments(io, line, ti);
                 if (ti.hasError()) {
                     return eof;
                 }
-                line=line.simplified();
+                line = line.simplified();
                 if (!line.isEmpty()) {
-                    separatorIdx=0;
+                    separatorIdx = 0;
                 }
             }
         }
         if (eof) {
-            (*lastIteration)=true;
+            (*lastIteration) = true;
             break;
         }
-        if (-1==separatorIdx) {
-            if (getNextLine(io, line)) {
+        if (-1 == separatorIdx) {
+            bool nextLine = getNextLine(io, line, ti);
+            CHECK_OP(ti, eof);
+
+            if (nextLine) {
                 if (!line.isEmpty()) {
                     ti.setProgress(io->getProgress());
-                    line=line.simplified();
+                    line = line.simplified();
                     continue;
                 }
-                eof=true;
+                eof = true;
                 break;
             }
             ti.setProgress(io->getProgress());
-            line=line.simplified();
+            line = line.simplified();
             continue;
         } else {
-            line=line.mid(separatorIdx);
+            line = line.mid(separatorIdx);
             break;
         }
     }

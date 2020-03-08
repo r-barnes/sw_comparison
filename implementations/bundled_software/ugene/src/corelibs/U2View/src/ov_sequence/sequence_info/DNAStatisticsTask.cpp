@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -50,79 +50,73 @@ void DNAStatistics::clear() {
     isoelectricPoint = 0;
 }
 
-static QMap<char,double> createProteinMWMap(){
-    QMap<char,double> mwMap;
-
-    mwMap.insert('A', 89.09); // ALA
-    mwMap.insert('R', 174.20); // ARG
-    mwMap.insert('N', 132.12); // ASN
-    mwMap.insert('D', 133.10); // ASP
-    mwMap.insert('B', 132.61); // ASX
-    mwMap.insert('C', 121.15); // CYS
-    mwMap.insert('Q', 146.15); // GLN
-    mwMap.insert('E', 147.13); // GLU
-    mwMap.insert('Z', 146.64); // GLX
-    mwMap.insert( 'G', 75.07); // GLY
-    mwMap.insert( 'H', 155.16); // HIS
-    mwMap.insert( 'I',  131.17); // ILE
-    mwMap.insert( 'L', 131.17); // LEU
-    mwMap.insert( 'K', 146.19); // LYS
-    mwMap.insert( 'M', 149.21); // MET
-    mwMap.insert( 'F', 165.19); // PHE
-    mwMap.insert( 'P', 115.13); //PRO
-    mwMap.insert( 'S', 105.09); // SER
-    mwMap.insert( 'T', 119.12); // THR
-    mwMap.insert( 'W', 204.23); // TRP
-    mwMap.insert( 'Y', 181.19); // TYR
-    mwMap.insert( 'V', 117.15); // VAL
-
+static QVector<double> createProteinMWMap(){
+    QVector<double> mwMap(256, 0);
+    mwMap['A'] = 89.09; // ALA
+    mwMap['R'] = 174.20; // ARG
+    mwMap['N'] = 132.12; // ASN
+    mwMap['D'] = 133.10; // ASP
+    mwMap['B'] = 132.61; // ASX
+    mwMap['C'] = 121.15; // CYS
+    mwMap['Q'] = 146.15; // GLN
+    mwMap['E'] = 147.13; // GLU
+    mwMap['Z'] = 146.64; // GLX
+    mwMap['G'] = 75.07; // GLY
+    mwMap['H'] = 155.16; // HIS
+    mwMap['I'] = 131.17; // ILE
+    mwMap['L'] = 131.17; // LEU
+    mwMap['K'] = 146.19; // LYS
+    mwMap['M'] = 149.21; // MET
+    mwMap['F'] = 165.19; // PHE
+    mwMap['P'] = 115.13; //PRO
+    mwMap['S'] = 105.09; // SER
+    mwMap['T'] = 119.12; // THR
+    mwMap['W'] = 204.23; // TRP
+    mwMap['Y'] = 181.19; // TYR
+    mwMap['V'] = 117.15; // VAL
     return mwMap;
 }
 
-static QMap<char,double> createPKAMap() {
-    QMap<char,double> res;
-
-    res.insert('D', 4.0);
-    res.insert('C', 8.5);
-    res.insert('E', 4.4);
-    res.insert('Y', 10.0);
-    res.insert('c', 3.1); // CTERM
-    res.insert('R', 12.0);
-    res.insert('H', 6.5);
-    res.insert('K', 10.4);
-    res.insert('n',8.0); // NTERM
-
+static QVector<double> createPKAMap() {
+    QVector<double> res(256, 0);
+    res['D'] = 4.0;
+    res['C'] = 8.5;
+    res['E'] = 4.4;
+    res['Y'] = 10.0;
+    res['c'] = 3.1; // CTERM
+    res['R'] = 12.0;
+    res['H'] = 6.5;
+    res['K'] = 10.4;
+    res['n'] = 8.0; // NTERM
     return res;
 }
 
-static QMap<char,int> createChargeMap() {
-    QMap<char,int> res;
-
-    res.insert('D', -1);
-    res.insert('C', -1);
-    res.insert('E', -1);
-    res.insert('Y', -1);
-    res.insert('c', -1); // CTERM
-    res.insert('R', 1);
-    res.insert('H', 1);
-    res.insert('K', 1);
-    res.insert('n', 1); // NTERM
-
+static QVector<int> createChargeMap() {
+    QVector<int> res(256, 0);
+    res['D'] = -1;
+    res['C'] = -1;
+    res['E'] = -1;
+    res['Y'] = -1;
+    res['c'] = -1; // CTERM
+    res['R'] = 1;
+    res['H'] = 1;
+    res['K'] = 1;
+    res['n'] = 1; // NTERM
     return res;
 }
 
 
-QMap<char,double> DNAStatisticsTask::pMWMap = createProteinMWMap();
-QMap<char,double> DNAStatisticsTask::pKaMap = createPKAMap();
-QMap<char,int> DNAStatisticsTask::pChargeMap = createChargeMap();
+QVector<double> DNAStatisticsTask::pMWMap = createProteinMWMap();
+QVector<double> DNAStatisticsTask::pKaMap = createPKAMap();
+QVector<int> DNAStatisticsTask::pChargeMap = createChargeMap();
 
 DNAStatisticsTask::DNAStatisticsTask(const DNAAlphabet* alphabet,
                                      const U2EntityRef seqRef,
-                                     const U2Region& _region)
+                                     const QVector<U2Region>& regions)
     : BackgroundTask< DNAStatistics > (tr("Calculate sequence statistics"), TaskFlag_None),
       alphabet(alphabet),
       seqRef(seqRef),
-      region(_region),
+      regions(regions),
       nA(0),
       nC(0),
       nG(0),
@@ -135,60 +129,53 @@ void DNAStatisticsTask::run() {
     computeStats();
 }
 
-void DNAStatisticsTask::computeStats(){
+void DNAStatisticsTask::computeStats() {
     U2OpStatus2Log os;
     DbiConnection dbiConnection(seqRef.dbiRef, os);
     CHECK_OP(os, );
 
     U2SequenceDbi* sequenceDbi = dbiConnection.dbi->getSequenceDbi();
     CHECK(sequenceDbi != NULL, );
-    int seqLen = sequenceDbi->getSequenceObject(seqRef.entityId, os).length;
-    CHECK_OP(os, );
+    SAFE_POINT_EXT(alphabet != NULL, setError(tr("Alphabet is NULL")), );
+    qint64 totalLength = U2Region::sumLength(regions);
+    qint64 processedLength = 0;
 
-    result.clear();
-    if (region.isEmpty()) {
-        region.startPos = 0;
-        region.length = seqLen;
+    foreach (const U2Region& region, regions) {
+        QList<U2Region> blocks = U2Region::split(region, 1024 * 1024);
+        foreach(const U2Region& block, blocks) {
+            if (isCanceled() || hasError()) {
+                break;
+            }
+            QByteArray seqBlock = sequenceDbi->getSequenceData(seqRef.entityId, block, os);
+            CHECK_OP(os,);
+            const char* sequenceData = seqBlock.constData();
+            for (int i = 0, n = seqBlock.size(); i < n; i++) {
+                char c = sequenceData[i];
+                if (c == 'A') {
+                    nA++;
+                } else if (c == 'G') {
+                    nG++;
+                } else if (c == 'T' || c == 'U') {
+                    nT++;
+                } else if (c == 'C') {
+                    nC++;
+                }
+
+                if (alphabet->isAmino()) {
+                    result.molecularWeight += pMWMap.value(c);
+                }
+            }
+            processedLength += block.length;
+            stateInfo.setProgress(processedLength * 100 / totalLength);
+            CHECK_OP(stateInfo,);
+        }
     }
 
-    SAFE_POINT_EXT(alphabet != NULL, setError(tr("Alphabet is NULL")), );
-    SAFE_POINT_EXT(region.endPos() <= seqLen, setError(tr("Statistics sequence region is not valid")), );
-
-    CHECK(region.length != 0, );
-    result.length = region.length;
-
-    qint64 blockSize = 1024*1024;
-    qint64 prevEnd = 0;
-
-    do {
-        if (isCanceled() || hasError()) {
-            break;
-        }
-        U2Region r = region.intersect(U2Region(prevEnd, blockSize));
-        prevEnd += blockSize;
-        QByteArray seqBlock = sequenceDbi->getSequenceData(seqRef.entityId, r, os);
-        CHECK_OP(os, );
-        foreach(char c, seqBlock){
-            if (c == 'A') {
-                nA++;
-            } else if (c == 'G') {
-                nG++;
-            } else if (c == 'T' || c == 'U') {
-                nT++;
-            } else if (c == 'C') {
-                nC++;
-            }
-
-            if (alphabet->isAmino()) {
-                result.molecularWeight += pMWMap.value( c );
-            }
-        }
-        stateInfo.setProgress( prevEnd * 100 / region.length );
-    } while (prevEnd < region.endPos());
+    result.length = totalLength;
 
     // get alphabet type
     if (alphabet->isNucleic()) {
-        result.gcContent = 100.0 * (nG + nC) / (double) region.length;
+        result.gcContent = 100.0 * (nG + nC) / (double) totalLength;
 
         // Calculating molar weight
         // Source: http://www.basic.northwestern.edu/biotools/oligocalc.html
@@ -200,12 +187,10 @@ void DNAStatisticsTask::computeStats(){
 
         result.molarExtCoef = nA*15400 + nT*8800 + nC*7300 + nG*11700;
 
-        if (region.length < 15) {
-            result.meltingTm = (nA+nT) * 2 + (nG + nC) * 4;
-        } else {
-            if (nA+nT+nG+nC != 0) {
-                result.meltingTm = 64.9 + 41*(nG + nC-16.4)/(double)(nA+nT+nG+nC);
-            }
+        if (totalLength < 15) {
+            result.meltingTm = (nA + nT) * 2 + (nG + nC) * 4;
+        } else if (nA + nT + nG + nC != 0) {
+            result.meltingTm = 64.9 + 41 * (nG + nC - 16.4) / (double) (nA + nT + nG + nC);
         }
 
         if (result.molarExtCoef != 0) {
@@ -216,32 +201,32 @@ void DNAStatisticsTask::computeStats(){
 
     } else if (alphabet->isAmino()) {
         static const double MWH2O = 18.0;
-        result.molecularWeight = result.molecularWeight - (region.length - 1)*MWH2O;
+        result.molecularWeight = result.molecularWeight - (totalLength - 1) * MWH2O;
         result.isoelectricPoint = calcPi(sequenceDbi);
     }
 }
 
-double DNAStatisticsTask::calcPi(U2SequenceDbi* sequenceDbi)
-{
+double DNAStatisticsTask::calcPi(U2SequenceDbi* sequenceDbi) {
     U2OpStatus2Log os;
-    QMap<char,int> countMap;
-
-    qint64 blockSize = 1024*1024;
-    qint64 prevEnd = 0;
-    do {
-        if (isCanceled() || hasError()) {
-            break;
-        }
-        U2Region r = region.intersect(U2Region(prevEnd, blockSize));
-        prevEnd += blockSize;
-        QByteArray seqBlock = sequenceDbi->getSequenceData(seqRef.entityId, r, os);
-        CHECK_OP(os, 0);
-        foreach(char c, seqBlock){
-            if ( pKaMap.contains( c ) ) {
-                countMap[c]++;
+    QVector<qint64> countMap(256, 0);
+    foreach (const U2Region& region, regions) {
+        QList<U2Region> blocks = U2Region::split(region, 1024 * 1024);
+        foreach(const U2Region& block, blocks) {
+            if (isCanceled() || hasError()) {
+                break;
             }
+            QByteArray seqBlock = sequenceDbi->getSequenceData(seqRef.entityId, block, os);
+            CHECK_OP(os, 0);
+            const char* sequenceData = seqBlock.constData();
+            for (int i = 0, n = seqBlock.size(); i < n; i++) {
+                char c = sequenceData[i];
+                if (pKaMap[c] != 0) {
+                    countMap[c]++;
+                }
+            }
+            CHECK_OP(stateInfo, 0);
         }
-    } while (prevEnd < region.endPos());
+    }
 
     countMap['c'] = 1;
     countMap['n'] = 1;
@@ -252,7 +237,7 @@ double DNAStatisticsTask::calcPi(U2SequenceDbi* sequenceDbi)
     double step = INITIAL_CUTOFF;
     double pH = 0;
     while (step > CUTOFF) {
-        if ( calcChargeState(countMap,pH) > 0 ){
+        if (calcChargeState(countMap, pH) > 0) {
             pH += step;
         } else {
             step *= 0.5;
@@ -262,17 +247,15 @@ double DNAStatisticsTask::calcPi(U2SequenceDbi* sequenceDbi)
     return pH;
 }
 
-double DNAStatisticsTask::calcChargeState(const QMap<char,int>& countMap, double pH )
-{
+double DNAStatisticsTask::calcChargeState(const QVector<qint64>& countMap, double pH ) {
     double chargeState = 0.;
-    QList<char> counts = countMap.keys();
-    foreach(char r, counts) {
+    for (int i = 0; i < countMap.length(); i++) {
         if (isCanceled() || hasError()) {
             break;
         }
-        double pKa = pKaMap.value(r);
-        double charge = pChargeMap.value(r);
-        chargeState += countMap.value(r)*charge/( 1 + pow(10.0, charge*(pH-pKa)) );
+        double pKa = pKaMap[i];
+        double charge = pChargeMap[i];
+        chargeState += countMap[i] * charge / (1 + pow(10.0, charge * (pH - pKa)));
     }
     return chargeState;
 }

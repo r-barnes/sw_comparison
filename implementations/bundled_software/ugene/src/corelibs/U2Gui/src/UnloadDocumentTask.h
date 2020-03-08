@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -53,6 +53,7 @@ private:
     QPointer<Document>      doc;
     SaveDocumentTask*       saveTask;
     StateLock*              lock;
+    static const QString    ACTIVE_VIEW_ERROR;
 };
 
 class U2GUI_EXPORT ReloadDocumentTask : public Task{

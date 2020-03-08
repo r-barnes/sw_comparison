@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -62,9 +62,9 @@ CreatePhyTreeDialogController::CreatePhyTreeDialogController(QWidget* parent, co
     ui->setupUi(this);
 
     QMap<QString, QString> helpPagesMap;
-    helpPagesMap.insert("PHYLIP Neighbor Joining","21433289");
-    helpPagesMap.insert("MrBayes","21433290");
-    helpPagesMap.insert("PhyML Maximum Likelihood","21433288");
+    helpPagesMap.insert("PHYLIP Neighbor Joining","24742488");
+    helpPagesMap.insert("MrBayes","24742489");
+    helpPagesMap.insert("PhyML Maximum Likelihood","24742487");
     new ComboboxDependentHelpButton(this, ui->buttonBox, ui->algorithmBox, helpPagesMap);
 
     ui->buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Build"));
@@ -89,7 +89,7 @@ CreatePhyTreeDialogController::CreatePhyTreeDialogController(QWidget* parent, co
 }
 
 void CreatePhyTreeDialogController::accept() {
-    settings.algorithmId = ui->algorithmBox->currentText();
+    settings.algorithm = ui->algorithmBox->currentText();
 
     CHECK(checkFileName(), );
     SAFE_POINT(NULL != settingsWidget, "Settings widget is NULL", );

@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -61,7 +61,7 @@ void BedtoolsIntersectLogParser::parseOutput(const QString &partOfLog) {
 }
 
 BedtoolsIntersectTask::BedtoolsIntersectTask(const BedtoolsIntersectFilesSettings &settings)
-    : Task(tr("BedtoolsIntersect task"), TaskFlags_NR_FOSE_COSC),
+    : ExternalToolSupportTask(tr("BedtoolsIntersect task"), TaskFlags_NR_FOSE_COSC),
       settings(settings)
 {}
 
@@ -78,7 +78,8 @@ void BedtoolsIntersectTask::prepare() {
     }
 
     const QStringList args = getParameters();
-    ExternalToolRunTask* etTask = new ExternalToolRunTask(ET_BEDTOOLS, args, new BedtoolsIntersectLogParser(settings.out));
+    ExternalToolRunTask* etTask = new ExternalToolRunTask(BedtoolsSupport::ET_BEDTOOLS_ID, args, new BedtoolsIntersectLogParser(settings.out));
+    setListenerForTask(etTask);
     addSubTask(etTask);
 }
 
@@ -111,7 +112,7 @@ const QStringList BedtoolsIntersectTask::getParameters() const {
 //////////////////////////////////////////////////////////////////////////
 // BedtoolsIntersectAnnotationsByEntityTask
 BedtoolsIntersectAnnotationsByEntityTask::BedtoolsIntersectAnnotationsByEntityTask(const BedtoolsIntersectByEntityRefSettings &settings)
-    : Task(tr("Intersect annotations task"), TaskFlags_NR_FOSE_COSC),
+    : ExternalToolSupportTask(tr("Intersect annotations task"), TaskFlags_NR_FOSE_COSC),
       settings(settings),
       saveAnnotationsTask(NULL),
       intersectTask(NULL),
@@ -165,6 +166,7 @@ QList<Task*> BedtoolsIntersectAnnotationsByEntityTask::onSubTaskFinished(Task *s
                                              settings.unique,
                                              settings.report);
         intersectTask = new BedtoolsIntersectTask(stngs);
+        intersectTask->addListeners(getListeners());
         res << intersectTask;
     }
 

@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -23,6 +23,7 @@
 #ifdef Q_OS_MACX
 #include <Security/Authorization.h>
 #include <errno.h>
+#include <unistd.h>
 #endif
 #include <algorithm>
 
@@ -278,14 +279,6 @@ void MainWindowImpl::createActions() {
     openManualAction->setObjectName("Open UGENE User Manual");
     connect(openManualAction, SIGNAL(triggered()),SLOT(sl_openManualAction()));
 
-    openWDManualAction = new QAction(tr("Open Workflow Designer Manual"), this);
-    openWDManualAction->setObjectName("Open Workflow Designer Manual");
-    connect(openWDManualAction, SIGNAL(triggered()),SLOT(sl_openWDManualAction()));
-
-    openQDManualAction = new QAction(tr("Open Query Designer Manual"), this);
-    openQDManualAction->setObjectName("Open Query Designer Manual");
-    connect(openQDManualAction, SIGNAL(triggered()),SLOT(sl_openQDManualAction()));
-
     welcomePageAction = new QAction(tr("Open Start Page"), this);
     welcomePageAction->setObjectName("welcome_page");
     connect(welcomePageAction, SIGNAL(triggered()), SIGNAL(si_showWelcomePage()));
@@ -532,10 +525,6 @@ FixedMdiArea::FixedMdiArea(QWidget * parent) : QMdiArea(parent)
     setDocumentMode(true);
     setTabShape(QTabWidget::Rounded);
     setFrameStyle(QFrame::StyledPanel | QFrame::Raised);
-#ifndef Q_OS_MAC
-    // This icon looks terrible on Mac. The standart one is better.
-    setStyleSheet("QTabBar::close-button {background-image: url(\":/core/images/close_tab.png\"); }");
-#endif
 }
 
 void FixedMdiArea::setViewMode( QMdiArea::ViewMode mode )

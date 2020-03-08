@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -19,6 +19,7 @@
  * MA 02110-1301, USA.
  */
 
+#include <QKeyEvent>
 #include <QLayout>
 #include <QListView>
 #include <QMessageBox>
@@ -45,33 +46,73 @@
 namespace U2 {
 
 /************************************************************************/
-/* DefaultPropertyWidget */
+/* AbstractDefaultPropertyWidget */
 /************************************************************************/
-DefaultPropertyWidget::DefaultPropertyWidget(int maxLength, QWidget *parent)
-: PropertyWidget(parent)
-{
-    lineEdit = new QLineEdit(this);
+BaseDefaultPropertyWidget::BaseDefaultPropertyWidget(int maxLength, QWidget *parent)
+    : PropertyWidget(parent) {}
+
+QVariant BaseDefaultPropertyWidget::value() {
+    return lineEdit->text();
+}
+
+void BaseDefaultPropertyWidget::setValue(const QVariant &value) {
+    lineEdit->setText(value.toString());
+}
+
+void BaseDefaultPropertyWidget::setRequired() {
+    if (lineEdit->placeholderText().isEmpty()) {
+        lineEdit->setPlaceholderText(L10N::required());
+    }
+}
+
+void BaseDefaultPropertyWidget::sl_valueChanged(const QString &value) {
+    emit si_valueChanged(value);
+}
+
+void BaseDefaultPropertyWidget::configureLineEdit(const int maxLength) {
     if (maxLength >= 0) {
         lineEdit->setMaxLength(maxLength);
     }
     addMainWidget(lineEdit);
-    connect(lineEdit, SIGNAL(textChanged(const QString &)), SLOT(sl_valueChanged(const QString &)));
+    connect(lineEdit, SIGNAL(textChanged(const QString&)), SLOT(sl_valueChanged(const QString&)));
 }
 
-QVariant DefaultPropertyWidget::value() {
-    return lineEdit->text();
+/************************************************************************/
+/* DefaultPropertyWidget */
+/************************************************************************/
+
+DefaultPropertyWidget::DefaultPropertyWidget(int maxLength, QWidget* parent)
+    : BaseDefaultPropertyWidget(maxLength, parent)
+{
+    lineEdit = new QLineEdit(this);
+    configureLineEdit(maxLength);
 }
 
-void DefaultPropertyWidget::setValue(const QVariant &value) {
-    lineEdit->setText(value.toString());
+/************************************************************************/
+/* IgnoreUpDownPropertyWidget */
+/************************************************************************/
+
+IgnoreUpDownPropertyWidget::IgnoreUpDownPropertyWidget(int maxLength, QWidget* parent)
+    : BaseDefaultPropertyWidget(maxLength, parent)
+{
+    lineEdit = new LineEditIgnoreUpDown(this);
+    configureLineEdit(maxLength);
 }
 
-void DefaultPropertyWidget::setRequired() {
-    lineEdit->setPlaceholderText(L10N::required());
-}
+/************************************************************************/
+/* LineEditIgnoreUpDown */
+/************************************************************************/
 
-void DefaultPropertyWidget::sl_valueChanged(const QString &value) {
-    emit si_valueChanged(value);
+LineEditIgnoreUpDown::LineEditIgnoreUpDown(QWidget* parent)
+    : QLineEdit(parent) {}
+
+void LineEditIgnoreUpDown::keyPressEvent(QKeyEvent* e) {
+    if ((e->key() == Qt::Key_Up) || (e->key() == Qt::Key_Down)) {
+        e->ignore();
+        return;
+    }
+
+    QLineEdit::keyPressEvent(e);
 }
 
 /************************************************************************/
@@ -123,6 +164,7 @@ DoubleSpinBoxWidget::DoubleSpinBoxWidget(const QVariantMap &spinProperties, QWid
 : PropertyWidget(parent)
 {
     spinBox = new QDoubleSpinBox(this);
+    spinBox->setMinimumWidth(1);
     WorkflowUtils::setQObjectProperties(*spinBox, spinProperties);
     addMainWidget(spinBox);
 
@@ -145,14 +187,14 @@ void DoubleSpinBoxWidget::sl_valueChanged(double value) {
 /************************************************************************/
 /* ComboBoxWidget */
 /************************************************************************/
-ComboBoxWidget::ComboBoxWidget(const QVariantMap &items, QWidget *parent)
+ComboBoxWidget::ComboBoxWidget(const QList<ComboItem> &items, QWidget *parent)
 : PropertyWidget(parent)
 {
     comboBox = new QComboBox(this);
     addMainWidget(comboBox);
 
-    foreach (const QString &key, items.keys()) {
-        comboBox->addItem(key, items[key]);
+    foreach (const ComboItem p, items) {
+        comboBox->addItem(p.first, p.second);
     }
     connect(comboBox, SIGNAL(activated(const QString &)),
         this, SIGNAL(valueChanged(const QString &)));
@@ -175,9 +217,9 @@ void ComboBoxWidget::sl_valueChanged(int) {
 }
 
 ComboBoxWidget * ComboBoxWidget::createBooleanWidget(QWidget *parent) {
-    QVariantMap values;
-    values[ComboBoxWidget::tr("False")] = false;
-    values[ComboBoxWidget::tr("True")] = true;
+    QList<ComboItem> values;
+    values.append(qMakePair(ComboBoxWidget::tr("False"), false));
+    values.append(qMakePair(ComboBoxWidget::tr("True"), true));
     return new ComboBoxWidget(values, parent);
 }
 
@@ -536,7 +578,9 @@ void URLWidget::setValue(const QVariant &value) {
 }
 
 void URLWidget::setRequired() {
-    urlLine->setPlaceholderText(L10N::required());
+    if (urlLine->placeholderText().isEmpty()) {
+        urlLine->setPlaceholderText(L10N::required());
+    }
 }
 
 void URLWidget::activate() {
@@ -550,7 +594,6 @@ void URLWidget::sl_browse() {
         urlLine->sl_onBrowse();
         return;
     }
-
     RunFileSystem *rfs = getRFS();
     if (NULL == rfs) {
         urlLine->sl_onBrowse();

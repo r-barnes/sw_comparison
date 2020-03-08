@@ -1,6 +1,6 @@
 /**
 * UGENE - Integrated Bioinformatics Tools.
-* Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+* Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
 * http://ugene.net
 *
 * This program is free software; you can redistribute it and/or
@@ -66,7 +66,7 @@ DNASequenceGeneratorDialog::DNASequenceGeneratorDialog(QWidget* p)
       gcSkew(0)
 {
     setupUi(this);
-    new HelpButton(this, buttonBox, "21433428");
+    new HelpButton(this, buttonBox, "24742627");
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Generate"));
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
 

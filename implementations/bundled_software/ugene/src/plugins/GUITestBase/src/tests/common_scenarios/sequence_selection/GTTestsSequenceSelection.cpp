@@ -404,9 +404,9 @@ GUI_TEST_CLASS_DEFINITION(mixed_test_0003) {
     //    In the Zoom View : there is blue selection for region(1042..2658).
     //    In the Details View : there is dashed selection for region(1042..2658).
     QVector<U2Region> selection = GTUtilsSequenceView::getSelection(os);
-    CHECK_SET_ERR(selection.size() == 1, QString("Incorrect size of selected regions, expectd: 1, current: %1").arg(selection.size()));
+    CHECK_SET_ERR(selection.size() == 1, QString("Incorrect size of selected regions, expected: 1, current: %1").arg(selection.size()));
     U2Region sel = selection.first();
-    CHECK_SET_ERR(sel == U2Region(1041, 1617), QString("Unexpected selected region, expected^ start 2658, length 311, current: start %1 length %2").arg(sel.startPos).arg(sel.length));
+    CHECK_SET_ERR(sel == U2Region(1041, 1617), QString("Unexpected selected region, expected: start 2658, length 311, current: start %1 length %2").arg(sel.startPos).arg(sel.length));
 
     //5. Hold Ctrl, click on the second CDS annotation with location(2970..3873).
     GTKeyboardDriver::keyPress(Qt::Key_Control);
@@ -434,13 +434,13 @@ GUI_TEST_CLASS_DEFINITION(mixed_test_0003) {
     //    Expected state :
     //    Region(2659, 2969) is selected.
     selection = GTUtilsSequenceView::getSelection(os);
-    CHECK_SET_ERR(selection.size() == 1, QString("Incorrect size of selected regions, expectd: 1, current: %1").arg(selection.size()));
+    CHECK_SET_ERR(selection.size() == 1, QString("Incorrect size of selected regions, expected: 1, current: %1").arg(selection.size()));
     sel = selection.first();
-    CHECK_SET_ERR(sel == U2Region(2658, 311), QString("Unexpected selected region, expected^ start 2658, length 311, current: start %1 length %2").arg(sel.startPos).arg(sel.length));
+    CHECK_SET_ERR(sel == U2Region(2658, 311), QString("Unexpected selected region, expected: start 2658, length 311, current: start %1 length %2").arg(sel.startPos).arg(sel.length));
 
     //    The first and the second CDS annotations are selected(but not their regions).
     QList<QTreeWidgetItem*> items = GTUtilsAnnotationsTreeView::findItems(os, "CDS");
-    CHECK_SET_ERR(items.size() == 4, QString("Incorect size of CDS items in the tree, expcted: 4, current: %1").arg(items.size()));
+    CHECK_SET_ERR(items.size() == 4, QString("Incorrect size of CDS items in the tree, expected: 4, current: %1").arg(items.size()));
     CHECK_SET_ERR(items[0]->isSelected(), "First item in the annotation tree view is not selected");
     CHECK_SET_ERR(items[1]->isSelected(), "Second item in the annotation tree view is not selected");
 
@@ -452,13 +452,13 @@ GUI_TEST_CLASS_DEFINITION(mixed_test_0003) {
     //    Expected state :
     //    Region(1042, 3873) is selected.
     selection = GTUtilsSequenceView::getSelection(os);
-    CHECK_SET_ERR(selection.size() == 1, QString("Incorrect size of selected regions, expectd: 1, current: %1").arg(selection.size()));
+    CHECK_SET_ERR(selection.size() == 1, QString("Incorrect size of selected regions, expected: 1, current: %1").arg(selection.size()));
     sel = selection.first();
-    CHECK_SET_ERR(sel == U2Region(1041, 2832), QString("Unexpected selected region, expected^ start 2658, length 311, current: start %1 length %2").arg(sel.startPos).arg(sel.length));
+    CHECK_SET_ERR(sel == U2Region(1041, 2832), QString("Unexpected selected region, expected: start 1041, length 2832, current: start %1 length %2").arg(sel.startPos).arg(sel.length));
 
     //    The first and the second CDS annotations are selected.
     items = GTUtilsAnnotationsTreeView::findItems(os, "CDS");
-    CHECK_SET_ERR(items.size() == 4, QString("Incorect size of CDS items in the tree, expcted: 4, current: %1").arg(items.size()));
+    CHECK_SET_ERR(items.size() == 4, QString("Incorrect size of CDS items in the tree, expected: 4, current: %1").arg(items.size()));
     CHECK_SET_ERR(items[0]->isSelected(), "First item in the annotation tree view is not selected");
     CHECK_SET_ERR(items[1]->isSelected(), "Second item in the annotation tree view is not selected");
 }

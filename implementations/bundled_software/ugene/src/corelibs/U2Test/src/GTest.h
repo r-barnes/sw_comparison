@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -71,12 +71,16 @@ public:
         return res;
     }
 
-const GTestEnvironment* getEnv() const {return env;}
+    const GTestEnvironment* getEnv() const {return env;}
+
+    void removeTempDir();
 
 protected:
     GTest* getContextProvider() const {return contextProvider;}
 
-    void failMissingValue(const QString&);
+    void failMissingValue(const QString &attribute);
+    void wrongValue(const QString &attribute);
+    void emptyValue(const QString &attribute);
 
     GTest* contextProvider;
     const GTestEnvironment* env;

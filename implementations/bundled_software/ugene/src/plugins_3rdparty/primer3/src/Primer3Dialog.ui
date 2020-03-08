@@ -1443,7 +1443,7 @@
             <bool>false</bool>
            </property>
            <property name="text">
-            <string>Show debuging info</string>
+            <string>Show debugging info</string>
            </property>
           </widget>
          </item>

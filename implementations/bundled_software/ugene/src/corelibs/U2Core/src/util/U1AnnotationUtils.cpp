@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -355,6 +355,31 @@ QList<U2Region> U1AnnotationUtils::getRelatedLowerCaseRegions(const U2SequenceOb
     return lowerCaseRegs;
 }
 
+bool U1AnnotationUtils::isAnnotationAroundJunctionPoint(const Annotation* annotation, const qint64 sequenceLength) {
+    return isRegionsAroundJunctionPoint(annotation->getRegions(), sequenceLength);
+}
+
+bool U1AnnotationUtils::isRegionsAroundJunctionPoint(const QVector<U2Region> &regions, const qint64 sequenceLength) {
+    CHECK(regions.size() > 1, false);
+
+    bool hasCorrectStart = false;
+    bool hasCorrectEnd = false;
+    foreach (const U2Region &reg, regions) {
+        if (reg.startPos == 0) {
+            hasCorrectStart = true;
+            continue;
+        }
+        const qint64 endPos = reg.endPos();
+        if (endPos == sequenceLength) {
+            hasCorrectEnd = true;
+            continue;
+        }
+    }
+    bool hasJunctionPoint = hasCorrectStart && hasCorrectEnd;
+
+    return hasJunctionPoint;
+}
+
 char * U1AnnotationUtils::applyLowerCaseRegions(char *seq, qint64 first, qint64 len,
     qint64 globalOffset, const QList<U2Region> &regs)
 {
@@ -478,6 +503,73 @@ QString U1AnnotationUtils::buildLocationString(const QVector<U2Region> &regions)
     }
     locationStr.chop(1);
     return locationStr;
+}
+
+
+U2Location U1AnnotationUtils::shiftLocation(const U2Location& location, qint64 shift, qint64 sequenceLength) {
+    const QVector<U2Region>& oldRegions = location->regions;
+    if (shift == 0 || oldRegions.isEmpty()) {
+        return location;
+    }
+    U2Location newLocation(location);
+    QVector<U2Region>& newRegions = newLocation->regions;
+    newRegions.clear();
+
+    // Check merge location either with the left or the right neighbour on the overflow.
+    QVector<int> mergeIndexes;
+    for (int i = 0; i < oldRegions.size(); i++) {
+        const U2Region& oldRegion = oldRegions[i];
+        U2Region shiftedRegion(oldRegion.startPos + (shift % sequenceLength), oldRegion.length);
+        if (shiftedRegion.startPos >= 0 && shiftedRegion.endPos() <= sequenceLength) { // no overflow.
+            newRegions.append(shiftedRegion);
+        } else if (shiftedRegion.endPos() <= 0) { // start overflow with no split.
+            U2Region newRegion(shiftedRegion.startPos + sequenceLength, shiftedRegion.length);
+            newRegions.append(newRegion);
+            bool merge = i > 0 && oldRegions[i - 1].endPos() == sequenceLength;
+            if (merge) {
+                mergeIndexes << newRegions.length() - 2;
+            }
+        } else if (shiftedRegion.startPos >= sequenceLength) { // end overflow with no split.
+            U2Region newRegion(shiftedRegion.startPos - sequenceLength, shiftedRegion.length);
+            newRegions.append(newRegion);
+            bool merge = i + 1 < oldRegions.size() && oldRegions[i + 1].startPos == 0;
+            if (merge) {
+                mergeIndexes << newRegions.length() - 1;
+            }
+        } else if (shiftedRegion.startPos < 0) { // start overflow with split.
+            U2Region newRegion1(shiftedRegion.startPos + sequenceLength,  -shiftedRegion.startPos);
+            U2Region newRegion2(0, oldRegion.length - newRegion1.length);
+            newRegions.append(newRegion1);
+            newRegions.append(newRegion2);
+            newLocation->op = U2LocationOperator_Join;
+            bool merge = i > 0 && oldRegions[i - 1].endPos() == sequenceLength;
+            if (merge) {
+                mergeIndexes << newRegions.length() - 3;
+            }
+        } else if (shiftedRegion.endPos() > sequenceLength) { // end overflow with split.
+            U2Region newRegion1(shiftedRegion.startPos, sequenceLength - shiftedRegion.startPos);
+            U2Region newRegion2(0, oldRegion.length - newRegion1.length);
+            newRegions.append(newRegion1);
+            newRegions.append(newRegion2);
+            newLocation->op = U2LocationOperator_Join;
+            bool merge = i + 1 < oldRegions.size() && oldRegions[i + 1].startPos == 0;
+            if (merge) {
+                mergeIndexes << newRegions.length() - 1;
+            }
+        }
+    }
+
+    // If there was an overflow: try to merge regions around overflow point.
+    for (int i = mergeIndexes.size(); --i >= 0;) {
+        int mergeIndex = mergeIndexes[i];
+        Q_ASSERT(mergeIndex + 1 < newRegions.size());
+        U2Region& region0 = newRegions[mergeIndex];
+        U2Region& region1 = newRegions[mergeIndex + 1];
+        Q_ASSERT(region0.endPos() == region1.startPos);
+        region0.length += region1.length;
+        newRegions.removeAt(mergeIndex + 1);
+    }
+    return newLocation;
 }
 
 QMap<Annotation *, QList<QPair<QString, QString> > > FixAnnotationsUtils::fixAnnotations(U2OpStatus *os, U2SequenceObject *seqObj,

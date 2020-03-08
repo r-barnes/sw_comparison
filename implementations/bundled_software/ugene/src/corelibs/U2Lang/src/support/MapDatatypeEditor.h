@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -48,17 +48,25 @@ public:
     virtual QMap<QString,QString> getBindingsMap();
     int getOptimalHeight();
 
-protected slots:
-    void sl_showDoc();
 signals:
     void si_showDoc(const QString&);
+
+protected slots:
+    void sl_showDoc();
+
+private slots:
+    void sl_widgetDestroyed();
+
 protected:
     bool isInfoMode() const {return from == to;}
     virtual QWidget* createGUI(DataTypePtr from, DataTypePtr to);
+    virtual QString getTitle() const {return "";}
+
 protected:
     Configuration* cfg;
     const QString propertyName;
     DataTypePtr from, to;
+    QWidget* mainWidget;
     QTableWidget* table;
     QTextEdit* doc;
 
@@ -81,12 +89,13 @@ public:
 
 protected:
     virtual QWidget* createGUI(DataTypePtr from, DataTypePtr to);
+    QString getTitle() const;
+
     Workflow::IntegralBusPort* port;
+
 private slots:
     void handleDataChanged(const QModelIndex & topLeft, const QModelIndex & bottomRight);
-
 }; // BusPortEditor
-
 
 class U2LANG_EXPORT DescriptorListEditorDelegate : public QItemDelegate
 {
@@ -99,9 +108,8 @@ public:
     virtual void setEditorData(QWidget *editor, const QModelIndex &index) const;
     virtual void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const;
 
-    //void updateEditorGeometry(QWidget *editor,
-    //  const QStyleOptionViewItem &option, const QModelIndex &index) const;
-
+private slots:
+    void sl_commitData();
 }; // DescriptorListEditorDelegate
 
 class ItemDelegateForHeaders : public QItemDelegate {

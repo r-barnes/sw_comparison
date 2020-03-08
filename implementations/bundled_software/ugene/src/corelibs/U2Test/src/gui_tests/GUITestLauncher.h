@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -34,8 +34,8 @@ namespace U2 {
 class GUITestLauncher: public Task {
     Q_OBJECT
 public:
-    GUITestLauncher(int _suiteNumber, bool _noIgnored = false);
-    GUITestLauncher(QString _pathToSuite = "", bool _noIgnored = false);
+    GUITestLauncher(int _suiteNumber, bool _noIgnored = false, QString _iniFileTemplate = "");
+    GUITestLauncher(QString _pathToSuite = "", bool _noIgnored = false, QString _iniFileTemplate = "");
 
     virtual void run();
     virtual QString generateReport() const;
@@ -47,6 +47,7 @@ private:
     bool noIgnored;
     QString pathToSuite;
     QString testOutDir;
+    QString iniFileTemplate;
 
     static QStringList getTestProcessArguments(const QString &testName);
     QProcessEnvironment getProcessEnvironment(QString testName);

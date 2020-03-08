@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -144,7 +144,7 @@ void CodonTableView::setAminoTranslation(const QString& trId) {
     DNAAlphabetRegistry* alphReg = AppContext::getDNAAlphabetRegistry();
     SAFE_POINT(alphReg != NULL, "DNAAlphabetRegistry is NULL!", );
     const DNAAlphabet* alph = alphReg->findById(BaseDNAAlphabetIds::NUCL_RNA_DEFAULT());
-    SAFE_POINT(alph != NULL, "Standart RNA alphabet not found!", );
+    SAFE_POINT(alph != NULL, "Standard RNA alphabet not found!", );
 
     DNATranslation* tr = trReg->lookupTranslation(alph, trId);
     SAFE_POINT(tr != NULL, "No translation found!", );

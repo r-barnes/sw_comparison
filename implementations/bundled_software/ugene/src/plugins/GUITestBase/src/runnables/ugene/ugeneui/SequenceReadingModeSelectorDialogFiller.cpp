@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -48,7 +48,7 @@ void SequenceReadingModeSelectorDialogFiller::commonScenario()
     GT_CHECK(buttonBox != NULL, "buttonBox not found");
     if (cancel) {
         QPushButton *button = buttonBox->button(QDialogButtonBox::Cancel);
-        GT_CHECK(button != NULL, "standart button not found");
+        GT_CHECK(button != NULL, "standard button not found");
         GTWidget::click(os, button);
         return;
     }

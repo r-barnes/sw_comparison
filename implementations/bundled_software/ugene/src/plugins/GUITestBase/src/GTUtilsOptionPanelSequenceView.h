@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -93,8 +93,13 @@ public:
 
     // In Silico PCR tab
     static void setForwardPrimer(HI::GUITestOpStatus &os, const QString &primer);
+    static void setForwardPrimerMismatches(HI::GUITestOpStatus &os, const int mismatches);
     static void setReversePrimer(HI::GUITestOpStatus &os, const QString &primer);
+    static void setReversePrimerMismatches(HI::GUITestOpStatus &os, const int mismatches);
     static void showPrimersDetails(HI::GUITestOpStatus &os);
+    static int productsCount(HI::GUITestOpStatus &os);
+    static void pressFindProducts(HI::GUITestOpStatus &os);
+    static void pressExtractProduct(HI::GUITestOpStatus &os);
 
     // Utility
     static bool isSearchAlgorithmShowHideWidgetOpened(HI::GUITestOpStatus &os);

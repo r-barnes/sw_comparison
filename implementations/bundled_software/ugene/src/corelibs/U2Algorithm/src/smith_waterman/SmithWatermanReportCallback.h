@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -97,7 +97,7 @@ public:
                                     const QByteArray &refSequence,
                                     const QByteArray &pattern, const QString &refSeqName,
                                     const QString &patternName, const DNAAlphabet *alphabet,
-                                    const DNATranslation* amitoTT = NULL,                                                                  
+                                    const DNATranslation* amitoTT = NULL,
                                     WhatDoYouWantFromMe plan = SequenceView_Search);
 
                                 //Smith-Waterman alignment in MSA Editor (in new window)

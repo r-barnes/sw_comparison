@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -72,7 +72,7 @@ void createTestConnection(HI::GUITestOpStatus &os) {
 
 GUI_TEST_CLASS_DEFINITION(read_gui_test_0001) {
     GTUtilsWorkflowDesigner::openWorkflowDesigner(os);
-    GTUtilsWorkflowDesigner::addAlgorithm(os, "Read Sequence");
+    GTUtilsWorkflowDesigner::addAlgorithm(os, "Read Sequence", true);
 
     createTestConnection(os);
 
@@ -141,7 +141,7 @@ GUI_TEST_CLASS_DEFINITION(read_gui_test_0003) {
 
 GUI_TEST_CLASS_DEFINITION(read_gui_test_0004) {
     GTUtilsWorkflowDesigner::openWorkflowDesigner(os);
-    GTUtilsWorkflowDesigner::addAlgorithm(os, "Read Assembly");
+    GTUtilsWorkflowDesigner::addAlgorithm(os, "Read NGS Reads Assembly");
 
     createTestConnection(os);
 
@@ -187,7 +187,7 @@ GUI_TEST_CLASS_DEFINITION(read_gui_test_0005) {
 
 GUI_TEST_CLASS_DEFINITION(read_gui_test_0006) {
     GTUtilsWorkflowDesigner::openWorkflowDesigner(os);
-    GTUtilsWorkflowDesigner::addAlgorithm(os, "Read Variations");
+    GTUtilsWorkflowDesigner::addAlgorithm(os, "Read Variants");
 
     createTestConnection(os);
 
@@ -210,7 +210,7 @@ GUI_TEST_CLASS_DEFINITION(read_gui_test_0006) {
 
 GUI_TEST_CLASS_DEFINITION(read_gui_neg_test_0007) {
     GTUtilsWorkflowDesigner::openWorkflowDesigner(os);
-    GTUtilsWorkflowDesigner::addAlgorithm(os, "File List");
+    GTUtilsWorkflowDesigner::addAlgorithm(os, "Read File URL(s)");
 
     QWidget *addFromDbButton = GTWidget::findWidget(os, "addFromDbButton");
     CHECK_SET_ERR(!addFromDbButton->isVisible(), "Unexpected button found");
@@ -245,7 +245,7 @@ GUI_TEST_CLASS_DEFINITION(read_gui_test_0008) {
 
 GUI_TEST_CLASS_DEFINITION(read_gui_test_0009) {
     GTUtilsWorkflowDesigner::openWorkflowDesigner(os);
-    GTUtilsWorkflowDesigner::addAlgorithm(os, "Read Assembly");
+    GTUtilsWorkflowDesigner::addAlgorithm(os, "Read NGS Reads Assembly");
 
     createTestConnection(os);
 
@@ -278,7 +278,7 @@ GUI_TEST_CLASS_DEFINITION(read_gui_test_0009) {
 
 GUI_TEST_CLASS_DEFINITION(read_gui_test_0010) {
     GTUtilsWorkflowDesigner::openWorkflowDesigner(os);
-    GTUtilsWorkflowDesigner::addAlgorithm(os, "Read Sequence");
+    GTUtilsWorkflowDesigner::addAlgorithm(os, "Read Sequence", true);
 
     createTestConnection(os);
 
@@ -315,7 +315,7 @@ GUI_TEST_CLASS_DEFINITION(read_gui_test_0010) {
 
 GUI_TEST_CLASS_DEFINITION(read_gui_test_0011) {
     GTUtilsWorkflowDesigner::openWorkflowDesigner(os);
-    GTUtilsWorkflowDesigner::addAlgorithm(os, "Read Sequence");
+    GTUtilsWorkflowDesigner::addAlgorithm(os, "Read Sequence", true);
 
     createTestConnection(os);
 
@@ -444,7 +444,7 @@ GUI_TEST_CLASS_DEFINITION(write_gui_test_0002) {
 
 GUI_TEST_CLASS_DEFINITION(write_gui_test_0003) {
     GTUtilsWorkflowDesigner::openWorkflowDesigner(os);
-    GTUtilsWorkflowDesigner::addAlgorithm(os, "Write Assembly");
+    GTUtilsWorkflowDesigner::addAlgorithm(os, "Write NGS Reads Assembly");
 
     GTUtilsWorkflowDesigner::setParameter(os, "Data storage", 1, GTUtilsWorkflowDesigner::comboValue);
     GTUtilsWorkflowDesigner::clickParameter(os, "Database");
@@ -457,7 +457,7 @@ GUI_TEST_CLASS_DEFINITION(write_gui_test_0003) {
     GTWidget::click(os, GTWidget::findWidget(os, "browsePathBtn"));
 
     GTWidget::click(os, GTWidget::findWidget(os,"sceneView"));
-    GTUtilsWorkflowDesigner::click(os, "Write Assembly");
+    GTUtilsWorkflowDesigner::click(os, "Write NGS Reads Assembly");
 
     GTUtilsWorkflowDesigner::setParameter(os, "Database", 1, GTUtilsWorkflowDesigner::comboValue);
 
@@ -500,7 +500,7 @@ GUI_TEST_CLASS_DEFINITION(save_uwl_gui_test_0001) {
     GTMenu::clickMainMenuItem(os, QStringList() << "File" << "Connect to UGENE shared database...");
 
     GTUtilsWorkflowDesigner::openWorkflowDesigner(os);
-    GTUtilsWorkflowDesigner::addAlgorithm(os, "Write Variations");
+    GTUtilsWorkflowDesigner::addAlgorithm(os, "Write Variants");
 
     GTUtilsWorkflowDesigner::setParameter(os, "Data storage", 1, GTUtilsWorkflowDesigner::comboValue);
 
@@ -713,7 +713,7 @@ GUI_TEST_CLASS_DEFINITION(run_workflow_gui_test_0006) {
 GUI_TEST_CLASS_DEFINITION(test_3726) {
 //    1. Open WD.
     GTUtilsWorkflowDesigner::openWorkflowDesigner(os);
-    GTUtilsWorkflowDesigner::addAlgorithm(os, "Read Sequence");
+    GTUtilsWorkflowDesigner::addAlgorithm(os, "Read Sequence", true);
 //    2. Add "Read Sequence" to the scene.
     createTestConnection(os);
 //    3. Press "Add data from shared databases" on the property editor.

@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -39,7 +39,7 @@ FormatDBSupportRunDialog::FormatDBSupportRunDialog(const QString &_name, FormatD
         QDialog(_parent), name(_name), settings(_settings)
 {
     setupUi(this);
-    new HelpButton(this, buttonBox, "21433421");
+    new HelpButton(this, buttonBox, "24742620");
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Format"));
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
     formatButton = buttonBox->button(QDialogButtonBox::Ok);
@@ -115,7 +115,7 @@ void FormatDBSupportRunDialog::sl_onBrowseDatabasePath(){
 void FormatDBSupportRunDialog::sl_lineEditChanged(){
     bool hasSpacesInInputFiles=false;
     bool hasSpacesInOutputDBPath=false;
-    if(name == ET_FORMATDB){
+    if(name == FormatDBSupport::ET_FORMATDB){
         if(inputFilesRadioButton->isChecked()){
             bool warning = inputFilesLineEdit->text().contains(' ');
             QString tooltip = warning ? tr("Input files paths contain space characters.") : "";
@@ -130,7 +130,7 @@ void FormatDBSupportRunDialog::sl_lineEditChanged(){
             hasSpacesInInputFiles |= warning;
         }
     }
-    if(name == ET_MAKEBLASTDB){
+    if(name == FormatDBSupport::ET_MAKEBLASTDB) {
         bool pathWarning = databasePathLineEdit->text().contains(' ');
         QString pathTooltip = pathWarning ? tr("Output database path contain space characters.") : "";
         GUIUtils::setWidgetWarning(databasePathLineEdit, pathWarning);

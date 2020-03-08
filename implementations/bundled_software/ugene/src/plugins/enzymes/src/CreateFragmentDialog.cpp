@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -31,6 +31,7 @@
 #include <U2Core/DNASequenceSelection.h>
 #include <U2Core/GObjectRelationRoles.h>
 #include <U2Core/GObjectUtils.h>
+#include <U2Core/GObjectTypes.h>
 #include <U2Core/Settings.h>
 #include <U2Core/U1AnnotationUtils.h>
 #include <U2Core/U2AlphabetUtils.h>
@@ -46,12 +47,11 @@
 
 namespace U2 {
 
-CreateFragmentDialog::CreateFragmentDialog(ADVSequenceObjectContext* ctx,  QWidget* p)
-: QDialog(p), seqCtx(ctx)
-{
+CreateFragmentDialog::CreateFragmentDialog(ADVSequenceObjectContext* ctx, QWidget* p)
+    : QDialog(p), seqCtx(ctx) {
 
     setupUi(this);
-    new HelpButton(this, buttonBox, "21433370");
+    new HelpButton(this, buttonBox, "24742569");
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("OK"));
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
 
@@ -59,7 +59,7 @@ CreateFragmentDialog::CreateFragmentDialog(ADVSequenceObjectContext* ctx,  QWidg
 
     seqObj = ctx->getSequenceObject();
 
-    rs=new RegionSelector(this, ctx->getSequenceLength(), false, ctx->getSequenceSelection());
+    rs = new RegionSelector(this, ctx->getSequenceLength(), false, ctx->getSequenceSelection());
     rangeSelectorLayout->addWidget(rs);
 
     relatedAnnotations = ctx->getAnnotationObjects(true).toList();
@@ -70,40 +70,38 @@ CreateFragmentDialog::CreateFragmentDialog(ADVSequenceObjectContext* ctx,  QWidg
 }
 
 CreateFragmentDialog::CreateFragmentDialog(U2SequenceObject* obj, const U2Region& region, QWidget* p)
-    : QDialog(p), seqCtx(NULL)
-{
+    : QDialog(p), seqCtx(NULL) {
     setupUi(this);
-    new HelpButton(this, buttonBox, "21433370");
+    new HelpButton(this, buttonBox, "24742569");
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("OK"));
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
     seqObj = obj;
 
-    QList<GObject*> aObjects = GObjectUtils::findAllObjects(UOF_LoadedOnly,GObjectTypes::ANNOTATION_TABLE);
+    QList<GObject*> aObjects = GObjectUtils::findAllObjects(UOF_LoadedOnly, GObjectTypes::ANNOTATION_TABLE);
     QList<GObject*> related = GObjectUtils::findObjectsRelatedToObjectByRole(seqObj, GObjectTypes::ANNOTATION_TABLE,
         ObjectRole_Sequence, aObjects, UOF_LoadedOnly);
 
-    foreach (GObject* obj, related) {
+    foreach(GObject* obj, related) {
         AnnotationTableObject *aObj = qobject_cast<AnnotationTableObject *>(obj);
         assert(aObj != NULL);
         relatedAnnotations.append(aObj);
     }
 
-    rs=new RegionSelector(this, seqObj->getSequenceLength(), false);
+    rs = new RegionSelector(this, seqObj->getSequenceLength(), false);
     rs->setCustomRegion(region);
     rangeSelectorLayout->addWidget(rs);
 
     setupAnnotationsWidget();
 }
 
-void CreateFragmentDialog::accept()
-{
+void CreateFragmentDialog::accept() {
     QString leftOverhang, rightOverhang;
 
     if (leftEndBox->isChecked()) {
         leftOverhang = lCustomOverhangEdit->text();
         const DNAAlphabet* alph = U2AlphabetUtils::findBestAlphabet(leftOverhang.toLatin1());
         if (!alph->isNucleic()) {
-            QMessageBox::warning(this, windowTitle(),tr("Left end contains unsupported symbols!"));
+            QMessageBox::warning(this, windowTitle(), tr("Left end contains unsupported symbols!"));
             return;
         }
 
@@ -113,18 +111,18 @@ void CreateFragmentDialog::accept()
         rightOverhang = rCustomOverhangEdit->text();
         const DNAAlphabet* alph = U2AlphabetUtils::findBestAlphabet(rightOverhang.toLatin1());
         if (!alph->isNucleic()) {
-            QMessageBox::warning(this, windowTitle(),tr("Right end contains unsupported symbols!"));
+            QMessageBox::warning(this, windowTitle(), tr("Right end contains unsupported symbols!"));
             return;
         }
     }
-    bool isRegionOk=false;
-    U2Region reg=rs->getRegion(&isRegionOk);
-    if(!isRegionOk){
+    bool isRegionOk = false;
+    U2Region reg = rs->getRegion(&isRegionOk);
+    if (!isRegionOk) {
         rs->showErrorMessage();
         return;
     }
     if (reg.length <= 0) {
-        QMessageBox::warning(this, windowTitle(),tr("Invalid fragment region!\nChoose another region."));
+        QMessageBox::warning(this, windowTitle(), tr("Invalid fragment region!\nChoose another region."));
         return;
     }
     QString err = ac->validate();
@@ -133,14 +131,14 @@ void CreateFragmentDialog::accept()
         return;
     }
     bool objectPrepared = ac->prepareAnnotationObject();
-    if (!objectPrepared){
+    if (!objectPrepared) {
         QMessageBox::warning(this, tr("Error"), tr("Cannot create an annotation object. Please check settings"));
         return;
     }
     const CreateAnnotationModel& m = ac->getModel();
     AnnotationTableObject *obj = m.getAnnotationObject();
     QString groupName = m.groupName;
-    SAFE_POINT(!groupName.isEmpty() && obj != NULL, "Invalid annotation data!",);
+    SAFE_POINT(!groupName.isEmpty() && obj != NULL, "Invalid annotation data!", );
 
     SharedAnnotationData ad(new AnnotationData);
     ad->location->regions.append(reg);
@@ -167,12 +165,12 @@ void CreateFragmentDialog::accept()
     QString rightOverhangType = rightOverhang.isEmpty() ? OVERHANG_TYPE_BLUNT : OVERHANG_TYPE_STICKY;
     ad->qualifiers.append(U2Qualifier(QUALIFIER_RIGHT_TYPE, rightOverhangType));
     ad->qualifiers.append(U2Qualifier(QUALIFIER_SOURCE, seqObj->getGObjectName()));
-    ad->name = QString("Fragment (%1-%2)").arg(reg.startPos+1).arg(reg.endPos());
+    ad->name = QString("Fragment (%1-%2)").arg(reg.startPos + 1).arg(reg.endPos());
 
     obj->addAnnotations(QList<SharedAnnotationData>() << ad, groupName);
     dnaFragment = DNAFragment(ad, seqObj, relatedAnnotations);
 
-    if(seqCtx != NULL){
+    if (seqCtx != NULL) {
         seqCtx->getAnnotatedDNAView()->tryAddObject(obj);
     }
 

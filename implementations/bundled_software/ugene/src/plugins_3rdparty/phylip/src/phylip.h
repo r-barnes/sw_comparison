@@ -1,11 +1,11 @@
 #ifndef _PHYLIP_H_
 #define _PHYLIP_H_
 
-/* version 3.696.
+/* version 3.697.
    Written by Joseph Felsenstein, Akiko Fuseki, Sean Lamont, Andrew Keeffe,
    Mike Palczewski, Doug Buxton and Dan Fineman.
 
-   Copyright (c) 1980-2014, Joseph Felsenstein
+   Copyright (c) 1980-2017, Joseph Felsenstein
    All rights reserved.
 
    Redistribution and use in source and binary forms, with or without
@@ -31,7 +31,7 @@
    POSSIBILITY OF SUCH DAMAGE.
 */
 
-#define PHY_VERSION "3.696"
+#define PHY_VERSION "3.697"
 
 /* Debugging options */
 /* Define this to disable assertions */

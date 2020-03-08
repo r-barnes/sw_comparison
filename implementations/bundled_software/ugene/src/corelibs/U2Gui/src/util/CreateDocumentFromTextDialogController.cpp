@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -49,7 +49,7 @@ CreateDocumentFromTextDialogController::CreateDocumentFromTextDialogController(Q
       saveController(NULL) {
     ui = new Ui_CreateDocumentFromTextDialog();
     ui->setupUi(this);
-    new HelpButton(this, ui->buttonBox, "21433126");
+    new HelpButton(this, ui->buttonBox, "24742325");
 
     initSaveController();
 

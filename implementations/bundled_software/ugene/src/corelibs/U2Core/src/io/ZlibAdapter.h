@@ -1,6 +1,6 @@
 /**
  * UGENE - Integrated Bioinformatics Tools.
- * Copyright (C) 2008-2018 UniPro <ugene@unipro.ru>
+ * Copyright (C) 2008-2020 UniPro <ugene@unipro.ru>
  * http://ugene.net
  *
  * This program is free software; you can redistribute it and/or
@@ -39,7 +39,7 @@ public:
 
     virtual bool open(const GUrl& url, IOAdapterMode m_ );
 
-    virtual bool isOpen() const {return io->isOpen();}
+    virtual bool isOpen() const;
 
     virtual void close();
 
@@ -49,9 +49,9 @@ public:
 
     virtual bool skip(qint64 nBytes);
 
-    virtual qint64 left() const {return -1;}
+    virtual qint64 left() const;
 
-    virtual int getProgress() const {return io->getProgress();}
+    virtual int getProgress() const;
 
     virtual qint64 bytesRead() const;
 
@@ -61,12 +61,6 @@ public:
      * should be invoked after open() ( needs z not null )
      */
     bool skip( const GZipIndexAccessPoint& point, qint64 offset );
-
-    /**
-     * on error *ok set to false and GZipIndex() is returned
-     * io - opened ioadapter, on the beginning of the file
-     */
-    static GZipIndex buildGzipIndex( IOAdapter* io, qint64 span, bool* ok = NULL );
 
     /**
      * returns -1 if a file is failed to open
