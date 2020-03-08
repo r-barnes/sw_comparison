@@ -1,13 +1,9 @@
 #include "global.h"
 #include "functions.h"
 #include "timeRec.h"
-#ifdef __APPLE__
-#include <OpenCL/opencl.h>
-#else
 #include <CL/cl.h>
-#endif
-#include "../../include/rdtsc.h"
-#include "../../include/common_args.h"
+#include "rdtsc.h"
+#include "common_args.h"
 #define AOCL_ALIGNMENT 64
 
 /*************************************************************
