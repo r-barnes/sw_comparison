@@ -4,47 +4,53 @@
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>Bowtie 2 Manual – Bowtie 2 Manual</title>
-  <style type="text/css">
-      code{white-space: pre-wrap;}
-      span.smallcaps{font-variant: small-caps;}
-      div.line-block{white-space: pre-line;}
-      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  <title>Bowtie 2 Manual</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
   </style>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="doc/style.css" />
   <!--[if lt IE 9]>
     <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
   <![endif]-->
 </head>
 <body>
 <h1>Table of Contents</h1>
-<header>
+<header id="title-block-header">
 <h1 class="title">Bowtie 2 Manual</h1>
 </header>
-<nav id="TOC">
+<nav id="TOC" role="doc-toc">
 <ul>
-<li><a href="#introduction">Introduction</a><ul>
-<li><a href="#what-is-bowtie-2">What is Bowtie 2?</a></li>
+<li><a href="#introduction">Introduction</a>
+<ul>
 <li><a href="#how-is-bowtie-2-different-from-bowtie-1">How is Bowtie 2 different from Bowtie 1?</a></li>
 <li><a href="#what-isnt-bowtie-2">What isn’t Bowtie 2?</a></li>
-<li><a href="#what-does-it-mean-that-some-older-bowtie-2-versions-are-beta">What does it mean that some older Bowtie 2 versions are “beta”?</a></li>
 </ul></li>
-<li><a href="#obtaining-bowtie-2">Obtaining Bowtie 2</a><ul>
+<li><a href="#obtaining-bowtie-2">Obtaining Bowtie 2</a>
+<ul>
 <li><a href="#building-from-source">Building from source</a></li>
 <li><a href="#adding-to-path">Adding to PATH</a></li>
 </ul></li>
-<li><a href="#the-bowtie2-aligner">The <code>bowtie2</code> aligner</a><ul>
-<li><a href="#end-to-end-alignment-versus-local-alignment">End-to-end alignment versus local alignment</a><ul>
+<li><a href="#the-bowtie2-aligner">The <code>bowtie2</code> aligner</a>
+<ul>
+<li><a href="#end-to-end-alignment-versus-local-alignment">End-to-end alignment versus local alignment</a>
+<ul>
 <li><a href="#end-to-end-alignment-example">End-to-end alignment example</a></li>
 <li><a href="#local-alignment-example">Local alignment example</a></li>
 </ul></li>
-<li><a href="#scores-higher-more-similar">Scores: higher = more similar</a><ul>
+<li><a href="#scores-higher-more-similar">Scores: higher = more similar</a>
+<ul>
 <li><a href="#end-to-end-alignment-score-example">End-to-end alignment score example</a></li>
 <li><a href="#local-alignment-score-example">Local alignment score example</a></li>
 <li><a href="#valid-alignments-meet-or-exceed-the-minimum-score-threshold">Valid alignments meet or exceed the minimum score threshold</a></li>
 </ul></li>
 <li><a href="#mapping-quality-higher-more-unique">Mapping quality: higher = more unique</a></li>
-<li><a href="#aligning-pairs">Aligning pairs</a><ul>
+<li><a href="#aligning-pairs">Aligning pairs</a>
+<ul>
 <li><a href="#paired-inputs">Paired inputs</a></li>
 <li><a href="#paired-sam-output">Paired SAM output</a></li>
 <li><a href="#concordant-pairs-match-pair-expectations-discordant-pairs-dont">Concordant pairs match pair expectations, discordant pairs don’t</a></li>
@@ -53,14 +59,16 @@
 <li><a href="#some-sam-optional-fields-describe-more-paired-end-properties">Some SAM optional fields describe more paired-end properties</a></li>
 <li><a href="#mates-can-overlap-contain-or-dovetail-each-other">Mates can overlap, contain, or dovetail each other</a></li>
 </ul></li>
-<li><a href="#reporting">Reporting</a><ul>
+<li><a href="#reporting">Reporting</a>
+<ul>
 <li><a href="#distinct-alignments-map-a-read-to-different-places">Distinct alignments map a read to different places</a></li>
 <li><a href="#default-mode-search-for-multiple-alignments-report-the-best-one">Default mode: search for multiple alignments, report the best one</a></li>
 <li><a href="#k-mode-search-for-one-or-more-alignments-report-each">-k mode: search for one or more alignments, report each</a></li>
 <li><a href="#a-mode-search-for-and-report-all-alignments">-a mode: search for and report all alignments</a></li>
 <li><a href="#randomness-in-bowtie-2">Randomness in Bowtie 2</a></li>
 </ul></li>
-<li><a href="#multiseed-heuristic">Multiseed heuristic</a><ul>
+<li><a href="#multiseed-heuristic">Multiseed heuristic</a>
+<ul>
 <li><a href="#fm-index-memory-footprint">FM Index memory footprint</a></li>
 </ul></li>
 <li><a href="#ambiguous-characters">Ambiguous characters</a></li>
@@ -70,7 +78,8 @@
 <li><a href="#wrapper-scripts">Wrapper scripts</a></li>
 <li><a href="#small-and-large-indexes">Small and large indexes</a></li>
 <li><a href="#performance-tuning">Performance tuning</a></li>
-<li><a href="#command-line">Command Line</a><ul>
+<li><a href="#command-line">Command Line</a>
+<ul>
 <li><a href="#setting-function-options">Setting function options</a></li>
 <li><a href="#usage">Usage</a></li>
 <li><a href="#main-arguments">Main arguments</a></li>
@@ -78,19 +87,24 @@
 </ul></li>
 <li><a href="#sam-output">SAM output</a></li>
 </ul></li>
-<li><a href="#the-bowtie2-build-indexer">The <code>bowtie2-build</code> indexer</a><ul>
-<li><a href="#command-line-1">Command Line</a><ul>
+<li><a href="#the-bowtie2-build-indexer">The <code>bowtie2-build</code> indexer</a>
+<ul>
+<li><a href="#command-line-1">Command Line</a>
+<ul>
 <li><a href="#main-arguments-1">Main arguments</a></li>
 <li><a href="#options-1">Options</a></li>
 </ul></li>
 </ul></li>
-<li><a href="#the-bowtie2-inspect-index-inspector">The <code>bowtie2-inspect</code> index inspector</a><ul>
-<li><a href="#command-line-2">Command Line</a><ul>
+<li><a href="#the-bowtie2-inspect-index-inspector">The <code>bowtie2-inspect</code> index inspector</a>
+<ul>
+<li><a href="#command-line-2">Command Line</a>
+<ul>
 <li><a href="#main-arguments-2">Main arguments</a></li>
 <li><a href="#options-2">Options</a></li>
 </ul></li>
 </ul></li>
-<li><a href="#getting-started-with-bowtie-2-lambda-phage-example">Getting started with Bowtie 2: Lambda phage example</a><ul>
+<li><a href="#getting-started-with-bowtie-2-lambda-phage-example">Getting started with Bowtie 2: Lambda phage example</a>
+<ul>
 <li><a href="#indexing-a-reference-genome">Indexing a reference genome</a></li>
 <li><a href="#aligning-example-reads">Aligning example reads</a></li>
 <li><a href="#paired-end-example">Paired-end example</a></li>
@@ -105,19 +119,23 @@
  ! of this text document, or see the HTML manual online.
  ! -->
 <h1 id="introduction">Introduction</h1>
-<h2 id="what-is-bowtie-2">What is Bowtie 2?</h2>
-<p><a href="http://bowtie-bio.sf.net/bowtie2">Bowtie 2</a> is an ultrafast and memory-efficient tool for aligning sequencing reads to long reference sequences. It is particularly good at aligning reads of about 50 up to 100s or 1,000s of characters to relatively long (e.g. mammalian) genomes. Bowtie 2 indexes the genome with an <a href="http://en.wikipedia.org/wiki/FM-index">FM Index</a> (based on the <a href="http://en.wikipedia.org/wiki/Burrows-Wheeler_transform">Burrows-Wheeler Transform</a> or <a href="http://en.wikipedia.org/wiki/Burrows-Wheeler_transform">BWT</a>) to keep its memory footprint small: for the human genome, its memory footprint is typically around 3.2 gigabytes of RAM. Bowtie 2 supports gapped, local, and paired-end alignment modes. Multiple processors can be used simultaneously to achieve greater alignment speed. <a href="http://cufflinks.cbcb.umd.edu/">Cufflinks</a>: a tool for transcriptome assembly and isoform quantitiation from Bowtie 2 outputs alignments in <a href="http://samtools.sourceforge.net/SAM1.pdf">SAM</a> format, enabling interoperation with a large number of other tools (e.g. <a href="http://samtools.sourceforge.net">SAMtools</a>, <a href="http://www.broadinstitute.org/gsa/wiki/index.php/The_Genome_Analysis_Toolkit">GATK</a>) that use SAM. Bowtie 2 is distributed under the <a href="http://www.gnu.org/licenses/gpl-3.0.html">GPLv3 license</a>, and it runs on the command line under Windows, Mac OS X and Linux.</p>
-<p><a href="http://bowtie-bio.sf.net/bowtie2">Bowtie 2</a> is often the first step in pipelines for comparative genomics, including for variation calling, ChIP-seq, RNA-seq, BS-seq. <a href="http://bowtie-bio.sf.net/bowtie2">Bowtie 2</a> and <a href="http://bowtie-bio.sf.net">Bowtie</a> (also called “<a href="http://bowtie-bio.sf.net">Bowtie 1</a>” here) are also tightly integrated into some tools, including <a href="http://tophat.cbcb.umd.edu/">TopHat</a>: a fast splice junction mapper for RNA-seq reads, RNA-seq reads, <a href="http://bowtie-bio.sf.net/crossbow">Crossbow</a>: a cloud-enabled software tool for analyzing resequencing data, and <a href="http://bowtie-bio.sf.net/myrna">Myrna</a>: a cloud-enabled software tool for aligning RNA-seq reads and measuring differential gene expression.</p>
-<p>If you use <a href="http://bowtie-bio.sf.net/bowtie2">Bowtie 2</a> for your published research, please cite the <a href="http://genomebiology.com/2009/10/3/R25">Bowtie paper</a>. Thank you!</p>
+<p><a href="http://bowtie-bio.sf.net/bowtie2">Bowtie 2</a> is an ultrafast and memory-efficient tool for aligning sequencing reads to long reference sequences. It is particularly good at aligning reads of about 50 up to 100s of characters to relatively long (e.g. mammalian) genomes. Bowtie 2 indexes the genome with an <a href="http://en.wikipedia.org/wiki/FM-index">FM Index</a> (based on the <a href="http://en.wikipedia.org/wiki/Burrows-Wheeler_transform">Burrows-Wheeler Transform</a> or <a href="http://en.wikipedia.org/wiki/Burrows-Wheeler_transform">BWT</a>) to keep its memory footprint small: for the human genome, its memory footprint is typically around 3.2 gigabytes of RAM. Bowtie 2 supports gapped, local, and paired-end alignment modes. Multiple processors can be used simultaneously to achieve greater alignment speed.</p>
+<p>Bowtie 2 outputs alignments in <a href="http://samtools.sourceforge.net/SAM1.pdf">SAM</a> format, enabling interoperation with a large number of other tools (e.g. <a href="http://samtools.sourceforge.net">SAMtools</a>, <a href="http://www.broadinstitute.org/gsa/wiki/index.php/The_Genome_Analysis_Toolkit">GATK</a>) that use SAM. Bowtie 2 is distributed under the <a href="http://www.gnu.org/licenses/gpl-3.0.html">GPLv3 license</a>, and it runs on the command line under Windows, Mac OS X and Linux.</p>
+<p><a href="http://bowtie-bio.sf.net/bowtie2">Bowtie 2</a> is often the first step in pipelines for comparative genomics, including for variation calling, ChIP-seq, RNA-seq, BS-seq. <a href="http://bowtie-bio.sf.net/bowtie2">Bowtie 2</a> and <a href="http://bowtie-bio.sf.net">Bowtie</a> (also called “<a href="http://bowtie-bio.sf.net">Bowtie 1</a>” here) are also tightly integrated into many other tools, some of which <a href="http://bowtie-bio.sourceforge.net/bowtie2/other_tools.shtml">are listed here</a>.</p>
+<p>If you use <a href="http://bowtie-bio.sf.net/bowtie2">Bowtie 2</a> for your published research, please cite our work. Papers describing Bowtie 2 are:</p>
+<ul>
+<li><p>Langmead B, Wilks C, Antonescu V, Charles R. <a href="https://doi.org/10.1093/bioinformatics/bty648">Scaling read aligners to hundreds of threads on general-purpose processors</a>. <em>Bioinformatics</em>. 2018 Jul 18. doi: 10.1093/bioinformatics/bty648.</p></li>
+<li><p>Langmead B, Salzberg SL. <a href="https://www.nature.com/articles/nmeth.1923">Fast gapped-read alignment with Bowtie 2</a>. <em>Nature Methods</em>. 2012 Mar 4;9(4):357-9. doi: 10.1038/nmeth.1923.</p></li>
+</ul>
 <h2 id="how-is-bowtie-2-different-from-bowtie-1">How is Bowtie 2 different from Bowtie 1?</h2>
 <p>Bowtie 1 was released in 2009 and was geared toward aligning the relatively short sequencing reads (up to 25-50 nucleotides) prevalent at the time. Since then, technology has improved both sequencing throughput (more nucleotides produced per sequencer per day) and read length (more nucleotides per read).</p>
 <p>The chief differences between Bowtie 1 and Bowtie 2 are:</p>
 <ol type="1">
-<li><p>For reads longer than about 50 bp Bowtie 2 is generally faster, more sensitive, and uses less memory than Bowtie 1. For relatively short reads ( e.g. less than 50 bp) Bowtie 1 is sometimes faster and/or more sensitive.</p></li>
+<li><p>For reads longer than about 50 bp Bowtie 2 is generally faster, more sensitive, and uses less memory than Bowtie 1. For relatively short reads (e.g. less than 50 bp) Bowtie 1 is sometimes faster and/or more sensitive.</p></li>
 <li><p>Bowtie 2 supports gapped alignment with affine gap penalties. Number of gaps and gap lengths are not restricted, except by way of the configurable scoring scheme. Bowtie 1 finds just ungapped alignments.</p></li>
 <li><p>Bowtie 2 supports <a href="#end-to-end-alignment-versus-local-alignment">local alignment</a>, which doesn’t require reads to align end-to-end. Local alignments might be “trimmed” (“soft clipped”) at one or both extremes in a way that optimizes alignment score. Bowtie 2 also supports <a href="#end-to-end-alignment-versus-local-alignment">end-to-end alignment</a> which, like Bowtie 1, requires that the read align entirely.</p></li>
 <li><p>There is no upper limit on read length in Bowtie 2. Bowtie 1 had an upper limit of around 1000 bp.</p></li>
-<li><p>Bowtie 2 allows alignments to <a href="#ambiguous-characters">overlap ambiguous characters</a> (e.g. <code>N</code>s) in the reference. Bowtie 1 does not.</p></li>
+<li><p>Bowtie 2 allows alignments to <a href="#ambiguous-characters">overlap ambiguous characters</a> (e.g. <code>N</code>s) in the reference. Bowtie 1 does not.</p></li>
 <li><p>Bowtie 2 does away with Bowtie 1’s notion of alignment “stratum”, and its distinction between “Maq-like” and “end-to-end” modes. In Bowtie 2 all alignments lie along a continuous spectrum of alignment scores where the <a href="#scores-higher-more-similar">scoring scheme</a>, similar to <a href="http://en.wikipedia.org/wiki/Needleman-Wunsch_algorithm">Needleman-Wunsch</a> and <a href="http://en.wikipedia.org/wiki/Smith_waterman">Smith-Waterman</a>.</p></li>
 <li><p>Bowtie 2’s <a href="#aligning-pairs">paired-end alignment</a> is more flexible. E.g. for pairs that do not align in a paired fashion, Bowtie 2 attempts to find unpaired alignments for each mate.</p></li>
 <li><p>Bowtie 2 reports a spectrum of mapping qualities, in contrast for Bowtie 1 which reports either 0 or high.</p></li>
@@ -125,17 +143,73 @@
 </ol>
 <p>Bowtie 2 is not a “drop-in” replacement for Bowtie 1. Bowtie 2’s command-line arguments and genome index format are both different from Bowtie 1’s.</p>
 <h2 id="what-isnt-bowtie-2">What isn’t Bowtie 2?</h2>
-<p>Bowtie 1 and Bowtie 2 are not general-purpose alignment tools like <a href="http://mummer.sourceforge.net/">MUMmer</a>, <a href="http://blast.ncbi.nlm.nih.gov/Blast.cgi">BLAST</a> or <a href="http://www.vmatch.de/">Vmatch</a>. Bowtie 2 works best when aligning to large genomes, though it supports arbitrarily small reference sequences (e.g. amplicons). It handles very long reads (i.e. upwards of 10s or 100s of kilobases), but it is optimized for the read lengths and error modes yielded by recent sequencers, such as the Illumina HiSeq 2000, Roche 454, and Ion Torrent instruments.</p>
-<p>If your goal is to align two very large sequences (e.g. two genomes), consider using <a href="http://mummer.sourceforge.net/">MUMmer</a>. If your goal is very sensitive alignment to a relatively short reference sequence (e.g. a bacterial genome), this can be done with Bowtie 2 but you may want to consider using tools like <a href="http://mummer.sourceforge.net/manual/#nucmer">NUCmer</a>, <a href="http://genome.ucsc.edu/cgi-bin/hgBlat?command=start">BLAT</a>, or <a href="http://blast.ncbi.nlm.nih.gov/Blast.cgi">BLAST</a>. These tools can be extremely slow when the reference genome is long, but are often adequate when the reference is short.</p>
-<p>Bowtie 2 does not support alignment of colorspace reads.</p>
-<h2 id="what-does-it-mean-that-some-older-bowtie-2-versions-are-beta">What does it mean that some older Bowtie 2 versions are “beta”?</h2>
-<p>We said those Bowtie 2 versions were in “beta” to convey that it was not as polished as a tool that had been around for a while, and was still in flux. Since version 2.0.1, we declared Bowtie 2 was no longer “beta”.</p>
+<p>Bowtie 2 is geared toward aligning relatively short sequencing reads to long genomes. That said, it handles arbitrarily small reference sequences (e.g. amplicons) and very long reads (i.e. upwards of 10s or 100s of kilobases), though it is slower in those settings. It is optimized for the read lengths and error modes yielded by typical Illumina sequencers.</p>
+<p>Bowtie 2 does not support alignment of colorspace reads. (Bowtie 1 does.)</p>
 <h1 id="obtaining-bowtie-2">Obtaining Bowtie 2</h1>
-<p>Download Bowtie 2 sources and binaries from the <a href="https://sourceforge.net/projects/bowtie-bio/files/bowtie2/">Download</a> section of the Sourceforge site. Binaries are available for the Intel <code>x86_64</code> architecture running Linux, Mac OS X, and Windows. If you plan to compile Bowtie 2 yourself, make sure to get the source package, i.e., the filename that ends in “-source.zip”.</p>
+<p>Bowtie 2 is available from various package managers, notably <a href="https://anaconda.org/bioconda/bowtie2">Bioconda</a>. With Bioconda installed, you should be able to install Bowtie 2 with <code>conda install bowtie2</code>.</p>
+<p>Containerized versions of Bowtie 2 are also available via the <a href="https://BioContainers.pro">Biocontainers</a> project (e.g. <a href="https://hub.docker.com/r/biocontainers/bowtie2/">via Docker Hub</a>).</p>
+<p>You can also download Bowtie 2 sources and binaries from the <a href="https://sourceforge.net/projects/bowtie-bio/files/bowtie2/">Download</a> section of the Sourceforge site. Binaries are available for the <code>x86_64</code> architecture running Linux, Mac OS X, and Windows. If you plan to compile Bowtie 2 yourself, make sure to get the source package, i.e., the filename that ends in “-source.zip”.</p>
 <h2 id="building-from-source">Building from source</h2>
 <p>Building Bowtie 2 from source requires a GNU-like environment with GCC, GNU Make and other basics. It should be possible to build Bowtie 2 on most vanilla Linux installations or on a Mac installation with <a href="http://developer.apple.com/xcode/">Xcode</a> installed. (But see note about the TBB library below). Bowtie 2 can also be built on Windows using a 64-bit MinGW distribution and MSYS. In order to simplify the MinGW setup it might be worth investigating popular MinGW personal builds since these are coming already prepared with most of the toolchains needed.</p>
 <p>First, download the source package from the <a href="https://sourceforge.net/projects/bowtie-bio/files/bowtie2/">sourceforge site</a>. Make sure you’re getting the source package; the file downloaded should end in <code>-source.zip</code>. Unzip the file, change to the unzipped directory, and build the Bowtie 2 tools by running GNU <code>make</code> (usually with the command <code>make</code>, but sometimes with <code>gmake</code>) with no arguments. If building with MinGW, run <code>make</code> from the MSYS environment.</p>
-<p>Bowtie 2 can be run on many threads. By default, Bowtie 2 uses the Threading Building Blocks library (TBB) for this. If TBB is not available on your system (e.g. <code>make</code> prints an error like <code>tbb/mutex.h: No such file or directory</code>), you can install it yourself (see <a href="https://www.threadingbuildingblocks.org">Threading Building Blocks library</a>) or build Bowtie 2 with <code>make NO_TBB=1</code> to use pthreads or Windows native multithreading instead.</p>
+<p>Bowtie 2 can be run on many threads. By default, Bowtie 2 uses the Threading Building Blocks library (TBB) for this. If TBB is not available on your system (e.g. <code>make</code> prints an error like <code>tbb/mutex.h: No such file or directory</code>), you can install it yourself from source (see <a href="https://www.threadingbuildingblocks.org">Threading Building Blocks library</a>) or install it using your operating system’s preferred package manager. The table below list some of the commands for a few of the more popular operating systems.</p>
+<table>
+<colgroup>
+<col style="width: 23%" />
+<col style="width: 20%" />
+<col style="width: 23%" />
+<col style="width: 32%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Operating System</th>
+<th style="text-align: left;">Sync Package List</th>
+<th style="text-align: left;">Search</th>
+<th style="text-align: left;">Install</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Ubuntu, Mint, Debian</td>
+<td style="text-align: left;">apt-get update</td>
+<td style="text-align: left;">apt-cache search tbb</td>
+<td style="text-align: left;">apt-get install libtbb-dev</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Fedora, CentOS</td>
+<td style="text-align: left;">yum check-update</td>
+<td style="text-align: left;">yum search tbb</td>
+<td style="text-align: left;">yum install tbb-devel.x86_64</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Arch</td>
+<td style="text-align: left;">packman -Sy</td>
+<td style="text-align: left;">pacman -Ss tbb</td>
+<td style="text-align: left;">pacman -S extra/intel-tbb</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Gentoo</td>
+<td style="text-align: left;">emerge –sync</td>
+<td style="text-align: left;">emerge –search tbb</td>
+<td style="text-align: left;">emerge dev-cpp/tbb</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">macOS</td>
+<td style="text-align: left;">brew update</td>
+<td style="text-align: left;">brew search tbb</td>
+<td style="text-align: left;">brew install tbb</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">FreeBSD</td>
+<td style="text-align: left;">pkg update</td>
+<td style="text-align: left;">pkg search tbb</td>
+<td style="text-align: left;">pkg install tbb-2019.1</td>
+</tr>
+</tbody>
+</table>
+<p>If all fails Bowtie 2 can be built with <code>make NO_TBB=1</code> to use pthreads or Windows native multithreading instead.</p>
+<p>The Bowtie 2 Makefile also includes recipes for basic automatic dependency management. Running <code>make static-libs &amp;&amp; make STATIC_BUILD=1</code> will issue a series of commands that will: 1. download TBB and zlib 2. compile them as static libraries 3. link the resulting libraries to the compiled Bowtie 2 binaries</p>
+<p>As of version 2.3.5 bowtie2 now supports aligning SRA reads. Prepackaged builds will include a package that supports SRA. If you’re building bowtie2 from source please make sure that the Java runtime is available on your system. You can then proceed with the build by running <code>make sra-deps &amp;&amp; make USE_SRA=1</code>.</p>
 <h2 id="adding-to-path">Adding to PATH</h2>
 <p>By adding your new Bowtie 2 directory to your <a href="http://en.wikipedia.org/wiki/PATH_(variable)">PATH environment variable</a>, you ensure that whenever you run <code>bowtie2</code>, <code>bowtie2-build</code> or <code>bowtie2-inspect</code> from the command line, you will get the version you just installed without having to specify the entire path. This is recommended for most users. To do this, follow your operating system’s instructions for adding the directory to your <a href="http://en.wikipedia.org/wiki/PATH_(variable)">PATH</a>.</p>
 <p>If you would like to install Bowtie 2 by copying the Bowtie 2 executable files to an existing directory in your <a href="http://en.wikipedia.org/wiki/PATH_(variable)">PATH</a>, make sure that you copy all the executables, including <code>bowtie2</code>, <code>bowtie2-align-s</code>, <code>bowtie2-align-l</code>, <code>bowtie2-build</code>, <code>bowtie2-build-s</code>, <code>bowtie2-build-l</code>, <code>bowtie2-inspect</code>, <code>bowtie2-inspect-s</code> and <code>bowtie2-inspect-l</code>.</p>
@@ -178,7 +252,7 @@ Alignment:
 <p>A mismatched base at a high-quality position in the read receives a penalty of -6 by default. A length-2 read gap receives a penalty of -11 by default (-5 for the gap open, -3 for the first extension, -3 for the second extension). A base that matches receives a bonus of +2 be default. Thus, in local alignment mode, if the read is 50 bp long and it matches the reference exactly except for one mismatch at a high-quality position and one length-2 read gap, then the overall score equals the total bonus, 2 * 49, minus the total penalty, 6 + 11, = 81.</p>
 <p>The best possible score in local mode equals the match bonus times the length of the read. This happens when there are no differences between the read and the reference.</p>
 <h3 id="valid-alignments-meet-or-exceed-the-minimum-score-threshold">Valid alignments meet or exceed the minimum score threshold</h3>
-<p>For an alignment to be considered “valid” (i.e. “good enough”) by Bowtie 2, it must have an alignment score no less than the minimum score threshold. The threshold is configurable and is expressed as a function of the read length. In end-to-end alignment mode, the default minimum score threshold is <code>-0.6 + -0.6 * L</code>, where <code>L</code> is the read length. In local alignment mode, the default minimum score threshold is <code>20 + 8.0 * ln(L)</code>, where L is the read length. This can be configured with the <a href="#bowtie2-options-score-min"><code>--score-min</code></a> option. For details on how to set options like <code>--score-min</code> that correspond to functions, see the section on <a href="#setting-function-options">setting function options</a>.</p>
+<p>For an alignment to be considered “valid” (i.e. “good enough”) by Bowtie 2, it must have an alignment score no less than the minimum score threshold. The threshold is configurable and is expressed as a function of the read length. In end-to-end alignment mode, the default minimum score threshold is <code>-0.6 + -0.6 * L</code>, where <code>L</code> is the read length. In local alignment mode, the default minimum score threshold is <code>20 + 8.0 * ln(L)</code>, where L is the read length. This can be configured with the <a href="#bowtie2-options-score-min"><code>--score-min</code></a> option. For details on how to set options like <code>--score-min</code> that correspond to functions, see the section on <a href="#setting-function-options">setting function options</a>.</p>
 <h2 id="mapping-quality-higher-more-unique">Mapping quality: higher = more unique</h2>
 <p>The aligner cannot always assign a read to its point of origin with high confidence. For instance, a read that originated inside a repeat element might align equally well to many occurrences of the element throughout the genome, leaving the aligner with no basis for preferring one over the others.</p>
 <p>Aligners characterize their degree of confidence in the point of origin by reporting a mapping quality: a non-negative integer Q = -10 log10 p, where p is an estimate of the probability that the alignment does not correspond to the read’s true point of origin. Mapping quality is sometimes abbreviated MAPQ, and is recorded in the <a href="http://samtools.sourceforge.net/SAM1.pdf">SAM</a> <code>MAPQ</code> field.</p>
@@ -234,10 +308,10 @@ Reference: GCAGATTATATGAGTCAGCTACGATATTGTTTGGGGTGACACATTACGCGTCTTTGAC</code></pr
 <p>See also: <a href="#bowtie2-options-D"><code>-D</code></a>, which puts an upper limit on the number of dynamic programming problems (i.e. seed extensions) that can “fail” in a row before Bowtie 2 stops searching. Increasing <a href="#bowtie2-options-D"><code>-D</code></a> makes Bowtie 2 slower, but increases the likelihood that it will report the correct alignment for a read that aligns many places.</p>
 <p>See also: <a href="#bowtie2-options-R"><code>-R</code></a>, which sets the maximum number of times Bowtie 2 will “re-seed” when attempting to align a read with repetitive seeds. Increasing <a href="#bowtie2-options-R"><code>-R</code></a> makes Bowtie 2 slower, but increases the likelihood that it will report the correct alignment for a read that aligns many places.</p>
 <h3 id="k-mode-search-for-one-or-more-alignments-report-each">-k mode: search for one or more alignments, report each</h3>
-<p>In <a href="#bowtie2-options-k"><code>-k</code></a> mode, Bowtie 2 searches for up to N distinct, valid alignments for each read, where N equals the integer specified with the <code>-k</code> parameter. That is, if <code>-k 2</code> is specified, Bowtie 2 will search for at most 2 distinct alignments. It reports all alignments found, in descending order by alignment score. The alignment score for a paired-end alignment equals the sum of the alignment scores of the individual mates. Each reported read or pair alignment beyond the first has the SAM ‘secondary’ bit (which equals 256) set in its FLAGS field. See the <a href="http://samtools.sourceforge.net/SAM1.pdf">SAM specification</a> for details.</p>
+<p>In <a href="#bowtie2-options-k"><code>-k</code></a> mode, Bowtie 2 searches for up to N distinct, valid alignments for each read, where N equals the integer specified with the <code>-k</code> parameter. That is, if <code>-k 2</code> is specified, Bowtie 2 will search for at most 2 distinct alignments. It reports all alignments found, in descending order by alignment score. The alignment score for a paired-end alignment equals the sum of the alignment scores of the individual mates. Each reported read or pair alignment beyond the first has the SAM ‘secondary’ bit (which equals 256) set in its FLAGS field. Supplementary alignments will also be assigned a MAPQ of 255. See the <a href="http://samtools.sourceforge.net/SAM1.pdf">SAM specification</a> for details.</p>
 <p>Bowtie 2 does not “find” alignments in any specific order, so for reads that have more than N distinct, valid alignments, Bowtie 2 does not guarantee that the N alignments reported are the best possible in terms of alignment score. Still, this mode can be effective and fast in situations where the user cares more about whether a read aligns (or aligns a certain number of times) than where exactly it originated.</p>
 <h3 id="a-mode-search-for-and-report-all-alignments">-a mode: search for and report all alignments</h3>
-<p><a href="#bowtie2-options-a"><code>-a</code></a> mode is similar to <a href="#bowtie2-options-k"><code>-k</code></a> mode except that there is no upper limit on the number of alignments Bowtie 2 should report. Alignments are reported in descending order by alignment score. The alignment score for a paired-end alignment equals the sum of the alignment scores of the individual mates. Each reported read or pair alignment beyond the first has the SAM ‘secondary’ bit (which equals 256) set in its FLAGS field. See the <a href="http://samtools.sourceforge.net/SAM1.pdf">SAM specification</a> for details.</p>
+<p><a href="#bowtie2-options-a"><code>-a</code></a> mode is similar to <a href="#bowtie2-options-k"><code>-k</code></a> mode except that there is no upper limit on the number of alignments Bowtie 2 should report. Alignments are reported in descending order by alignment score. The alignment score for a paired-end alignment equals the sum of the alignment scores of the individual mates. Each reported read or pair alignment beyond the first has the SAM ‘secondary’ bit (which equals 256) set in its FLAGS field. Supplementary alignments will be assigned a MAPQ of 255. See the <a href="http://samtools.sourceforge.net/SAM1.pdf">SAM specification</a> for details.</p>
 <p>Some tools are designed with this reporting mode in mind. Bowtie 2 is not! For very large genomes, this mode is very slow.</p>
 <h3 id="randomness-in-bowtie-2">Randomness in Bowtie 2</h3>
 <p>Bowtie 2’s search for alignments for a given read is “randomized.” That is, when Bowtie 2 encounters a set of equally-good choices, it uses a pseudo-random number to choose. For example, if Bowtie 2 discovers a set of 3 equally-good alignments and wants to decide which to report, it picks a pseudo-random integer 0, 1 or 2 and reports the corresponding alignment. Arbitrary choices can crop up at various points during alignment.</p>
@@ -256,6 +330,7 @@ Reference: GCAGATTATATGAGTCAGCTACGATATTGTTTGGGGTGACACATTACGCGTCTTTGAC</code></pr
 <p>Note that the <a href="#multiseed-heuristic">multiseed heuristic</a> cannot find <em>seed</em> alignments that overlap ambiguous reference characters. For an alignment overlapping an ambiguous reference character to be found, it must have one or more seed alignments that do not overlap ambiguous reference characters.</p>
 <h2 id="presets-setting-many-settings-at-once">Presets: setting many settings at once</h2>
 <p>Bowtie 2 comes with some useful combinations of parameters packaged into shorter “preset” parameters. For example, running Bowtie 2 with the <a href="#bowtie2-options-very-sensitive"><code>--very-sensitive</code></a> option is the same as running with options: <code>-D 20 -R 3 -N 0 -L 20 -i S,1,0.50</code>. The preset options that come with Bowtie 2 are designed to cover a wide area of the speed/sensitivity/accuracy trade-off space, with the presets ending in <code>fast</code> generally being faster but less sensitive and less accurate, and the presets ending in <code>sensitive</code> generally being slower but more sensitive and more accurate. See the <a href="#preset-options-in---end-to-end-mode">documentation for the preset options</a> for details.</p>
+<p>As of Bowtie2 v2.4.0, individual preset values can be overridden by providing the specific options e.g. the configured seed length of 20 in the [<code>--very-senitive</code>] preset above can be changed to 25 by also specifying the <code>-L 25</code> parameter anywhere on the command line.</p>
 <h2 id="filtering">Filtering</h2>
 <p>Some reads are skipped or “filtered out” by Bowtie 2. For example, reads may be filtered out because they are extremely short or have a high proportion of ambiguous nucleotides. Bowtie 2 will still print a SAM record for such a read, but no alignment will be reported and the <code>YF:i</code> SAM optional field will be set to indicate the reason the read was filtered.</p>
 <ul>
@@ -313,11 +388,11 @@ Reference: GCAGATTATATGAGTCAGCTACGATATTGTTTGGGGTGACACATTACGCGTCTTTGAC</code></pr
 <pre><code>f(x) = 1.0 + 5.4 * ln(x)</code></pre>
 <p>See the documentation for the option in question to learn what the parameter <code>x</code> is for. For example, in the case if the <a href="#bowtie2-options-score-min"><code>--score-min</code></a> option, the function <code>f(x)</code> sets the minimum alignment score necessary for an alignment to be considered valid, and <code>x</code> is the read length.</p>
 <h3 id="usage">Usage</h3>
-<pre><code>bowtie2 [options]* -x &lt;bt2-idx&gt; {-1 &lt;m1&gt; -2 &lt;m2&gt; | -U &lt;r&gt; | --interleaved &lt;i&gt;} -S [&lt;sam&gt;]</code></pre>
+<pre><code>bowtie2 [options]* -x &lt;bt2-idx&gt; {-1 &lt;m1&gt; -2 &lt;m2&gt; | -U &lt;r&gt; | --interleaved &lt;i&gt; | --sra-acc &lt;acc&gt; | b &lt;bam&gt;} -S [&lt;sam&gt;]</code></pre>
 <h3 id="main-arguments">Main arguments</h3>
 <table>
 <tr>
-<td>
+<td id="bowtie2-options-x">
 <pre><code>-x &lt;bt2-idx&gt;</code></pre>
 </td>
 <td>
@@ -325,23 +400,23 @@ Reference: GCAGATTATATGAGTCAGCTACGATATTGTTTGGGGTGACACATTACGCGTCTTTGAC</code></pr
 </td>
 </tr>
 <tr>
-<td>
+<td id="bowtie2-options-1">
 <pre><code>-1 &lt;m1&gt;</code></pre>
 </td>
 <td>
-<p>Comma-separated list of files containing mate 1s (filename usually includes <code>_1</code>), e.g. <code>-1 flyA_1.fq,flyB_1.fq</code>. Sequences specified with this option must correspond file-for-file and read-for-read with those specified in <code>&lt;m2&gt;</code>. Reads may be a mix of different lengths. If <code>-</code> is specified, <code>bowtie2</code> will read the mate 1s from the “standard in” or “stdin” filehandle.</p>
+<p>Comma-separated list of files containing mate 1s (filename usually includes <code>_1</code>), e.g. <code>-1 flyA_1.fq,flyB_1.fq</code>. Sequences specified with this option must correspond file-for-file and read-for-read with those specified in <code>&lt;m2&gt;</code>. Reads may be a mix of different lengths. If <code>-</code> is specified, <code>bowtie2</code> will read the mate 1s from the “standard in” or “stdin” filehandle.</p>
 </td>
 </tr>
 <tr>
-<td>
+<td id="bowtie2-options-2">
 <pre><code>-2 &lt;m2&gt;</code></pre>
 </td>
 <td>
-<p>Comma-separated list of files containing mate 2s (filename usually includes <code>_2</code>), e.g. <code>-2 flyA_2.fq,flyB_2.fq</code>. Sequences specified with this option must correspond file-for-file and read-for-read with those specified in <code>&lt;m1&gt;</code>. Reads may be a mix of different lengths. If <code>-</code> is specified, <code>bowtie2</code> will read the mate 2s from the “standard in” or “stdin” filehandle.</p>
+<p>Comma-separated list of files containing mate 2s (filename usually includes <code>_2</code>), e.g. <code>-2 flyA_2.fq,flyB_2.fq</code>. Sequences specified with this option must correspond file-for-file and read-for-read with those specified in <code>&lt;m1&gt;</code>. Reads may be a mix of different lengths. If <code>-</code> is specified, <code>bowtie2</code> will read the mate 2s from the “standard in” or “stdin” filehandle.</p>
 </td>
 </tr>
 <tr>
-<td>
+<td id="bowtie2-options-U">
 <pre><code>-U &lt;r&gt;</code></pre>
 </td>
 <td>
@@ -349,7 +424,32 @@ Reference: GCAGATTATATGAGTCAGCTACGATATTGTTTGGGGTGACACATTACGCGTCTTTGAC</code></pr
 </td>
 </tr>
 <tr>
+<td id="bowtie2-options-interleaved">
+<pre><code>--interleaved</code></pre>
+</td>
 <td>
+<p>Reads interleaved FASTQ files where the first two records (8 lines) represent a mate pair.</p>
+</td>
+</tr>
+<tr>
+<td id="bowtie2-options-sra-acc">
+<pre><code>--sra-acc</code></pre>
+</td>
+<td>
+<p>Reads are SRA accessions. If the accession provided cannot be found in local storage it will be fetched from the NCBI database. If you find that SRA alignments are long running please rerun your command with the <a href="#bowtie2-options-p"><code>-p</code>/<code>--threads</code></a> parameter set to desired number of threads.</p>
+<p>NB: this option is only available if bowtie 2 is compiled with the necessary SRA libraries. See <a href="#obtaining-bowtie-2">Obtaining Bowtie 2</a> for details.</p>
+</td>
+</tr>
+<tr>
+<td id="bowtie2-options-b">
+<pre><code>-b &lt;bam&gt;</code></pre>
+</td>
+<td>
+<p>Reads are unaligned BAM records sorted by read name. The <a href="#bowtie2-options-align-paired-reads"><code>--align-paired-reads</code></a> and <a href="#bowtie2-options-preserve-tags"><code>--preserve-tags</code></a> options affect the way Bowtie 2 processes records.</p>
+</td>
+</tr>
+<tr>
+<td id="bowtie2-options-S">
 <pre><code>-S &lt;sam&gt;</code></pre>
 </td>
 <td>
@@ -366,14 +466,6 @@ Reference: GCAGATTATATGAGTCAGCTACGATATTGTTTGGGGTGACACATTACGCGTCTTTGAC</code></pr
 </td>
 <td>
 <p>Reads (specified with <code>&lt;m1&gt;</code>, <code>&lt;m2&gt;</code>, <code>&lt;s&gt;</code>) are FASTQ files. FASTQ files usually have extension <code>.fq</code> or <code>.fastq</code>. FASTQ is the default format. See also: <a href="#bowtie2-options-solexa-quals"><code>--solexa-quals</code></a> and <a href="#bowtie2-options-int-quals"><code>--int-quals</code></a>.</p>
-</td>
-</tr>
-<tr>
-<td id="bowtie2-options-interleaved">
-<pre><code>--interleaved</code></pre>
-</td>
-<td>
-<p>Reads interleaved FASTQ files where the first two records (8 lines) represent a mate pair.</p>
 </td>
 </tr>
 <tr>
@@ -465,6 +557,14 @@ Reads are substrings (k-mers) extracted from a FASTA file <code>&lt;s&gt;</code>
 </td>
 </tr>
 <tr>
+<td id="bowtie2-options-trim-to">
+<pre><code>--trim-to [3:|5:]&lt;int&gt;</code></pre>
+</td>
+<td>
+<p>Trim reads exceeding <code>&lt;int&gt;</code> bases. Bases will be trimmed from either the 3’ (right) or 5’ (left) end of the read. If the read end if not specified, bowtie 2 will default to trimming from the 3’ (right) end of the read. <a href="#bowtie2-options-trim-to"><code>--trim-to</code></a> and <a href="#bowtie2-options-3"><code>-3</code></a>/<a href="#bowtie2-options-5"><code>-5</code></a> are mutually exclusive.</p>
+</td>
+</tr>
+<tr>
 <td id="bowtie2-options-phred33-quals">
 <pre><code>--phred33</code></pre>
 </td>
@@ -520,7 +620,7 @@ Reads are substrings (k-mers) extracted from a FASTA file <code>&lt;s&gt;</code>
 <pre><code>--sensitive</code></pre>
 </td>
 <td>
-<p>Same as: <code>-D 15 -R 2 -L 22 -i S,1,1.15</code> (default in <a href="#bowtie2-options-end-to-end"><code>--end-to-end</code></a> mode)</p>
+<p>Same as: <code>-D 15 -R 2 -N 0 -L 22 -i S,1,1.15</code> (default in <a href="#bowtie2-options-end-to-end"><code>--end-to-end</code></a> mode)</p>
 </td>
 </tr>
 <tr>
@@ -582,7 +682,7 @@ Reads are substrings (k-mers) extracted from a FASTA file <code>&lt;s&gt;</code>
 <pre><code>-L &lt;int&gt;</code></pre>
 </td>
 <td>
-<p>Sets the length of the seed substrings to align during <a href="#multiseed-heuristic">multiseed alignment</a>. Smaller values make alignment slower but more sensitive. Default: the <a href="#bowtie2-options-sensitive"><code>--sensitive</code></a> preset is used by default, which sets <code>-L</code> to 20 both in <a href="#bowtie2-options-end-to-end"><code>--end-to-end</code></a> mode and in <a href="#bowtie2-options-local"><code>--local</code></a> mode.</p>
+<p>Sets the length of the seed substrings to align during <a href="#multiseed-heuristic">multiseed alignment</a>. Smaller values make alignment slower but more sensitive. Default: the <a href="#bowtie2-options-sensitive"><code>--sensitive</code></a> preset is used by default, which sets <code>-L</code> to 22 and 20 in <a href="#bowtie2-options-end-to-end"><code>--end-to-end</code></a> mode and in <a href="#bowtie2-options-local"><code>--local</code></a> mode.</p>
 </td>
 </tr>
 <tr>
@@ -664,7 +764,7 @@ Seed 4 rc:                   TTATGCATGA</code></pre>
 <pre><code>--local</code></pre>
 </td>
 <td>
-<p>In this mode, Bowtie 2 does not require that the entire read align from one end to the other. Rather, some characters may be omitted (“soft clipped”) from the ends in order to achieve the greatest possible alignment score. The match bonus <a href="#bowtie2-options-ma"><code>--ma</code></a> is used in this mode, and the best possible alignment score is equal to the match bonus (<a href="#bowtie2-options-ma"><code>--ma</code></a>) times the length of the read. Specifying <code>--local</code> and one of the presets (e.g. <code>--local --very-fast</code>) is equivalent to specifying the local version of the preset (<code>--very-fast-local</code>). This is mutually exclusive with <a href="#bowtie2-options-end-to-end"><code>--end-to-end</code></a>. <code>--end-to-end</code> is the default mode.</p>
+<p>In this mode, Bowtie 2 does not require that the entire read align from one end to the other. Rather, some characters may be omitted (“soft clipped”) from the ends in order to achieve the greatest possible alignment score. The match bonus <a href="#bowtie2-options-ma"><code>--ma</code></a> is used in this mode, and the best possible alignment score is equal to the match bonus (<a href="#bowtie2-options-ma"><code>--ma</code></a>) times the length of the read. Specifying <code>--local</code> and one of the presets (e.g. <code>--local --very-fast</code>) is equivalent to specifying the local version of the preset (<code>--very-fast-local</code>). This is mutually exclusive with <a href="#bowtie2-options-end-to-end"><code>--end-to-end</code></a>. <code>--end-to-end</code> is the default mode.</p>
 </td>
 </tr>
 </table>
@@ -831,6 +931,25 @@ Seed 4 rc:                   TTATGCATGA</code></pre>
 </td>
 </tr>
 </table>
+<h4 id="bam-options">BAM options</h4>
+<table>
+<tr>
+<td id="bowtie2-options-align-paired-reads">
+<pre><code>--align-paired-reads</code></pre>
+</td>
+<td>
+<p>Bowtie 2 will, by default, attempt to align unpaired BAM reads. Use this option to align paired-end reads instead.</p>
+</td>
+</tr>
+<tr>
+<td id="bowtie2-options-preserve-tags">
+<pre><code>--preserve-tags</code></pre>
+</td>
+<td>
+<p>Preserve tags from the original BAM record by appending them to the end of the corresponding Bowtie 2 SAM output.</p>
+</td>
+</tr>
+</table>
 <h4 id="output-options">Output options</h4>
 <table>
 <tr>
@@ -957,7 +1076,7 @@ Seed 4 rc:                   TTATGCATGA</code></pre>
 <pre><code>--rg &lt;text&gt;</code></pre>
 </td>
 <td>
-<p>Add <code>&lt;text&gt;</code> (usually of the form <code>TAG:VAL</code>, e.g. <code>SM:Pool1</code>) as a field on the <code>@RG</code> header line. Note: in order for the <code>@RG</code> line to appear, <a href="#bowtie2-options-rg-id"><code>--rg-id</code></a> must also be specified. This is because the <code>ID</code> tag is required by the <a href="http://samtools.sourceforge.net/SAM1.pdf">SAM Spec</a>. Specify <code>--rg</code> multiple times to set multiple fields. See the <a href="http://samtools.sourceforge.net/SAM1.pdf">SAM Spec</a> for details about what fields are legal.</p>
+<p>Add <code>&lt;text&gt;</code> (usually of the form <code>TAG:VAL</code>, e.g. <code>SM:Pool1</code>) as a field on the <code>@RG</code> header line. Note: in order for the <code>@RG</code> line to appear, <a href="#bowtie2-options-rg-id"><code>--rg-id</code></a> must also be specified. This is because the <code>ID</code> tag is required by the <a href="http://samtools.sourceforge.net/SAM1.pdf">SAM Spec</a>. Specify <code>--rg</code> multiple times to set multiple fields. See the <a href="http://samtools.sourceforge.net/SAM1.pdf">SAM Spec</a> for details about what fields are legal.</p>
 </td>
 </tr>
 <tr>
@@ -969,11 +1088,11 @@ Seed 4 rc:                   TTATGCATGA</code></pre>
 </td>
 </tr>
 <tr>
-<td id="bowtie2-options-soft-clipped-unmapped-tlen-sec-seq">
+<td id="bowtie2-options-soft-clipped-unmapped-tlen">
 <pre><code>--soft-clipped-unmapped-tlen</code></pre>
 </td>
 <td>
-<p>Consider soft-clipped bases unmapped when calculating <code>TLEN</code>.</p>
+<p>Consider soft-clipped bases unmapped when calculating <code>TLEN</code>. Only available in <a href="#bowtie2-options-local"><code>--local</code></a> mode.</p>
 </td>
 </tr>
 <tr>
@@ -1524,7 +1643,7 @@ Sequence-N  &lt;name&gt;  &lt;len&gt;</code></pre>
 <pre><code>@HD VN:1.0  SO:unsorted
 @SQ SN:gi|9626243|ref|NC_001416.1|  LN:48502
 @PG ID:bowtie2  PN:bowtie2  VN:2.0.1
-r1  0   gi|9626243|ref|NC_001416.1| 18401   42  122M    *   0   0   TGAATGCGAACTCCGGGACGCTCAGTAATGTGACGATAGCTGAAAACTGTACGATAAACNGTACGCTGAGGGCAGAAAAAATCGTCGGGGACATTNTAAAGGCGGCGAGCGCGGCTTTTCCG  +&quot;@6&lt;:27(F&amp;5)9)&quot;B:%B+A-%5A?2$HCB0B+0=D&lt;7E/&lt;.03#!.F77@6B==?C&quot;7&gt;;))%;,3-$.A06+&lt;-1/@@?,26&quot;&gt;=?*@&#39;0;$:;??G+:#+(A?9+10!8!?()?7C&gt;  AS:i:-5 XN:i:0  XM:i:3  XO:i:0  XG:i:0  NM:i:3  MD:Z:59G13G21G26    YT:Z:UU
+r1  0   gi|9626243|ref|NC_001416.1| 18401   42  122M    *   0   0   TGAATGCGAACTCCGGGACGCTCAGTAATGTGACGATAGCTGAAAACTGTACGATAAACNGTACGCTGAGGGCAGAAAAAATCGTCGGGGACATTNTAAAGGCGGCGAGCGCGGCTTTTCCG  +&quot;@6&lt;:27(F&amp;5)9&quot;B):%B+A-%5A?2$HCB0B+0=D&lt;7E/&lt;.03#!.F77@6B==?C&quot;7&gt;;))%;,3-$.A06+&lt;-1/@@?,26&quot;&gt;=?*@&#39;0;$:;??G+:#+(A?9+10!8!?()?7C&gt;  AS:i:-5 XN:i:0  XM:i:3  XO:i:0  XG:i:0  NM:i:3  MD:Z:59G13G21G26    YT:Z:UU
 r2  0   gi|9626243|ref|NC_001416.1| 8886    42  275M    *   0   0   NTTNTGATGCGGGCTTGTGGAGTTCAGCCGATCTGACTTATGTCATTACCTATGAAATGTGAGGACGCTATGCCTGTACCAAATCCTACAATGCCGGTGAAAGGTGCCGGGATCACCCTGTGGGTTTATAAGGGGATCGGTGACCCCTACGCGAATCCGCTTTCAGACGTTGACTGGTCGCGTCTGGCAAAAGTTAAAGACCTGACGCCCGGCGAACTGACCGCTGAGNCCTATGACGACAGCTATCTCGATGATGAAGATGCAGACTGGACTGC (#!!&#39;+!$&quot;&quot;%+(+)&#39;%)%!+!(&amp;++)&#39;&#39;&quot;#&quot;#&amp;#&quot;!&#39;!(&quot;%&#39;&quot;&quot;(&quot;+&amp;%$%*%%#$%#%#!)*&#39;(#&quot;)(($&amp;$&#39;&amp;%+&amp;#%*)*#*%*&#39;)(%+!%%*&quot;$%&quot;#+)$&amp;&amp;+)&amp;)*+!&quot;*)!*!(&quot;&amp;&amp;&quot;*#+&quot;&amp;&quot;&#39;(%)*(&quot;&#39;!$*!!%$&amp;&amp;&amp;$!!&amp;&amp;&quot;(*&quot;$&amp;&quot;#&amp;!$%&#39;%&quot;#)$#+%*+)!&amp;*)+(&quot;&quot;#!)!%*#&quot;*)*&#39;)&amp;&quot;)($+*%%)!*)!(&#39;(%&quot;&quot;+%&quot;$##&quot;#+((&#39;!*(($*&#39;!&quot;*(&#39;&quot;+)&amp;%#&amp;$+(&#39;**$$&amp;+*&amp;!#%)&#39;)&#39;(+(!%+ AS:i:-14    XN:i:0  XM:i:8  XO:i:0  XG:i:0  NM:i:8  MD:Z:0A0C0G0A108C23G9T81T46 YT:Z:UU
 r3  16  gi|9626243|ref|NC_001416.1| 11599   42  338M    *   0   0   GGGCGCGTTACTGGGATGATCGTGAAAAGGCCCGTCTTGCGCTTGAAGCCGCCCGAAAGAAGGCTGAGCAGCAGACTCAAGAGGAGAAAAATGCGCAGCAGCGGAGCGATACCGAAGCGTCACGGCTGAAATATACCGAAGAGGCGCAGAAGGCTNACGAACGGCTGCAGACGCCGCTGCAGAAATATACCGCCCGTCAGGAAGAACTGANCAAGGCACNGAAAGACGGGAAAATCCTGCAGGCGGATTACAACACGCTGATGGCGGCGGCGAAAAAGGATTATGAAGCGACGCTGTAAAAGCCGAAACAGTCCAGCGTGAAGGTGTCTGCGGGCGAT  7F$%6=$:9B@/F&#39;&gt;=?!D?@0(:A*)7/&gt;9C&gt;6#1&lt;6:C(.CC;#.;&gt;;2&#39;$4D:?&amp;B!&gt;689?(0(G7+0=@37F)GG=&gt;?958.D2E04C&lt;E,*AD%G0.%$+A:&#39;H;?8&lt;72:88?E6((CF)6DF#.)=&gt;B&gt;D-=&quot;C&#39;B080E&#39;5BH&quot;77&#39;:&quot;@70#4%A5=6.2/1&gt;;9&quot;&amp;-H6)=$/0;5E:&lt;8G!@::1?2DC7C*;@*#.1C0.D&gt;H/20,!&quot;C-#,6@%&lt;+&lt;D(AG-).?&amp;#0.00&#39;@)/F8?B!&amp;&quot;170,)&gt;:?&lt;A7#1(A@0E#&amp;A.*DC.E&quot;)AH&quot;+.,5,2&gt;5&quot;2?:G,F&quot;D0B8D-6$65D&lt;D!A/38860.*4;4B&lt;*31?6  AS:i:-22    XN:i:0  XM:i:8  XO:i:0  XG:i:0  NM:i:8  MD:Z:80C4C16A52T23G30A8T76A41   YT:Z:UU
 r4  0   gi|9626243|ref|NC_001416.1| 40075   42  184M    *   0   0   GGGCCAATGCGCTTACTGATGCGGAATTACGCCGTAAGGCCGCAGATGAGCTTGTCCATATGACTGCGAGAATTAACNGTGGTGAGGCGATCCCTGAACCAGTAAAACAACTTCCTGTCATGGGCGGTAGACCTCTAAATCGTGCACAGGCTCTGGCGAAGATCGCAGAAATCAAAGCTAAGT(=8B)GD04*G%&amp;4F,1&#39;A&gt;.C&amp;7=F$,+#6!))43C,5/5+)?-/0&gt;/D3=-,2/+.1?@-&gt;;)00!&#39;3!7BH$G)HG+ADC&#39;#-9F)7&lt;7&quot;$?&amp;.&gt;0)@5;4,!0-#C!15CF8&amp;HB+B==H&gt;7,/)C5)5*+(F5A%D,EA&lt;(&gt;G9E0&gt;7&amp;/E?4%;#&#39;92)&lt;5+@7:A.(BG@BG86@.G AS:i:-1 XN:i:0  XM:i:1  XO:i:0  XG:i:0  NM:i:1  MD:Z:77C106 YT:Z:UU

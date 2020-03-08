@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """
  Copyright 2014, Ben Langmead <langmea@cs.jhu.edu>
@@ -21,7 +21,7 @@
 
 
 import os
-import imp
+import sys
 import inspect
 import logging
 import argparse
@@ -29,7 +29,7 @@ import subprocess
 from collections import deque
 
 def main():
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(add_help = False)
 
     group = parser.add_mutually_exclusive_group()
     group.add_argument('--debug', action='store_true')
@@ -44,8 +44,8 @@ def main():
     inspect_bin_name      = 'bowtie-inspect'
     inspect_bin_s         = 'bowtie2-inspect-s'
     inspect_bin_l         = 'bowtie2-inspect-l'
-    idx_ext_l             = '.1.bt2l'; 
-    idx_ext_s             = '.1.bt2'; 
+    idx_ext_l             = '.1.bt2l'
+    idx_ext_s             = '.1.bt2'
     curr_script           = os.path.realpath(inspect.getsourcefile(main))
     ex_path               = os.path.dirname(curr_script)
     inspect_bin_spec      = os.path.join(ex_path,inspect_bin_s)
@@ -55,7 +55,7 @@ def main():
 
     if script_options.verbose:
         logging.getLogger().setLevel(logging.INFO)
-        
+
     if script_options.debug:
         inspect_bin_spec += '-debug'
         inspect_bin_l += '-debug'
@@ -63,7 +63,7 @@ def main():
     if script_options.sanitized:
         inpsect_bin_spec += '-sanitized'
         inspect_bin_l += '-sanitized'
-        
+
     if script_options.large_index:
         inspect_bin_spec = os.path.join(ex_path,inspect_bin_l)
     elif len(argv) >= 1:
@@ -72,12 +72,12 @@ def main():
         small_idx_exists = os.path.exists(idx_basename + idx_ext_s)
         if large_idx_exists and not small_idx_exists:
             inspect_bin_spec = os.path.join(ex_path,inspect_bin_l)
-    
+
     argv.appendleft('basic-0')
     argv.appendleft('--wrapper')
     argv.appendleft(inspect_bin_spec)
     logging.info('Command: %s' %  ' '.join(argv))
-    subprocess.call(argv)
-        
+    sys.exit(subprocess.call(list(argv)))
+
 if __name__ == '__main__':
     main()

@@ -4,7 +4,7 @@ Bowtie 2 NEWS
 Bowtie 2 is available for download from the project website,
 http://bowtie-bio.sf.net/bowtie2 and on Github,
 https://github.com/BenLangmead/bowtie2/releases.  2.0.0-beta1 is
-the first version released to the public and 2.3.3 is the latest
+the first version released to the public and 2.4.1 is the latest
 version.  Bowtie 2 is licensed under the GPLv3 license.  See `LICENSE'
 file for details.
 
@@ -19,10 +19,100 @@ Please report any issues to the Bowtie 2 Github page or using the Sourceforge bu
 Version Release History
 =======================
 
+Version 2.4.1 - Feb 28, 2020
+
+    * Fixed an issue that would cause the `bowtie2` wrapper script to incorrectly
+      process certain arguments.
+
+Version 2.4.0 - Feb 25, 2020
+
+    * Fixed an issue in `-b <bam>` input mode where one might prematurely close the
+      read file pointer causing “Bad file descriptor” in other threads
+    * Fixed an issue that could cause `bowtie2` to crash in `--no-1mm-upfront` mode
+    * Modified `bowtie2-build` to better handle of flags and positional parameters
+    * Migrated all `python` scripts to `python3`
+    * Added support for wildcards in input files to `bowtie2`, e.g. `bowtie2 -x
+      index -q *.fq` as opposed to `bowtie2 -x index -q 1.fq,2.fq,3.fq...`
+    * Fixed an issue causing <code>bowtie2</code> to incorrectly process read names
+      with slash mates plus extra characters (see
+      [#265](https://github.com/BenLangmead/bowtie2/issues/265))
+    * Clarified support for overriding presets with more specific options e.g
+      `bowtie2 -x index --local --very-fast-local --L22 -q reads.fq` will set the
+      seed length to 22, overriding the 25 set by `--very-fast-local`
+    * Modified SAM output for `-k`/`-a` so that supplementary alignments get
+      assigned a MAPQ of 255
+    * Fixed an issue that would sometimes cause `bowtie2-build` to not generate
+      reverse index files
+    * Added preliminary support for ppc64le architectures with the help of SIMDE
+      project (see [#271](https://github.com/BenLangmead/bowtie2/issues/271))
+    * Fixed an issue causing `bowtie2` to incorrectly calculate the MAPQ when `--mp`
+      was specified in combination with `--ignore-quals`
+
+Version 2.3.5.1 - Apr 16, 2019
+
+    * Added official support for BAM input files
+    * Added official support for CMake build system
+    * Added changes to Makefile for creating Reproducible builds (via [210](https://github.com/BenLangmead/bowtie2/pull/210))
+    * Fix an issue whereby building on aarch64 would require patching sed commands (via [#243](https://github.com/BenLangmead/bowtie2/pull/243))
+    * Fix an issue whereby `bowtie2` would incorrectly throw an error while processing `--interleaved` input
+
+Version 2.3.5 - Mar 16, 2019
+
+    * Added support for obtaining input reads directly from the Sequence Read Archive, via NCBI's [NGS language bindings](https://github.com/ncbi/ngs).  This is activated via the [`--sra-acc`](manual.shtml#bowtie2-options-sra-acc) option.  This implementation is based on Daehwan Kim's in [HISAT2](https://ccb.jhu.edu/software/hisat2).  Supports both unpaired and paired-end inputs.
+    * Bowtie 2 now compiles on ARM architectures (via [#216](https://github.com/BenLangmead/bowtie2/pull/216))
+    * `--interleaved` can now be combined with FASTA inputs (worked only with FASTQ before)
+    * Fixed issue whereby large indexes were not successfully found in the `$BOWTIE2_INDEXES` directory
+    * Fixed input from FIFOs (e.g. via process substitution) to distinguish gzip-compressed versus uncompressed input
+    * Fixed issue whereby arguments containing `bz2` `lz4` were misinterpretted as files
+    * Fixed several compiler warnings
+    * Fixed issue whereby both ends of a paired-end read could have negative TLEN if they exactly coincided
+    * Fixed issue whereby `bowtie2-build` would hang on end-of-file (via [#228](https://github.com/BenLangmead/bowtie2/pull/228))
+    * Fixed issue whereby wrapper script would sometimes create zombie processes (via [#51](https://github.com/BenLangmead/bowtie2/pull/51))
+    * Fixed issue whereby `bowtie2-build` and `bowtie2-inspect` wrappers would fail on some versions of Python/PyPy
+    * Replaced old, unhelpful `README.md` in the project with a version that includes badges, links and some highlights from the manual
+    * Note: BAM input support and CMake build support both remain experimental, but we expect to finalize them in the next release
+
+Version 2.3.4.3 - Sep 17, 2018
+
+    * Fixed an issue causing `bowtie2-build` and `bowtie2-inspect`
+      to output incomplete help text.
+    * Fixed an issue causing `bowtie2-inspect` to crash.
+    * Fixed an issue preventing `bowtie2` from processing paired and/or
+      unpaired FASTQ reads together with interleaved FASTQ reads.
+
+Version 2.3.4.2 - Aug 7, 2018
+
+    * Fixed issue causing `bowtie2` to fail in `--fast-local` mode.
+    * Fixed issue causing `--soft-clipped-unmapped-tlen` to be a positional argument.
+    * New option `--trim-to N` causes `bowtie2` to trim reads longer
+      than `N` bases to exactly `N` bases.  Can trim from either 3'
+      or 5' end, e.g. `--trim-to 5:30` trims reads to 30 bases,
+      truncating at the 5' end.
+    * Updated "Building from source" manual section with additional
+      instructions on installing TBB.
+    * Several other updates to manual, including new mentions of
+      [Bioconda](http://bioconda.github.io) and
+      [Biocontainers](https://biocontainers.pro).
+    * Fixed an issue preventing `bowtie2` from processing more than
+      one pattern source when running single threaded.
+    * Fixed an issue causing `bowtie2` and `bowtie2-inspect` to crash if
+      the index contains a gap-only segment.
+    * Added experimental BAM input mode `-b`. Works only with unpaired
+      input reads and BAM files that are sorted by read name (`samtools
+      sort -n`). BAM input mode also supports the following options:
+        o `--preserve-sam-tags`: Preserve any optional fields present in BAM record
+        o `--align-paired-reads`: Paired-end mode for BAM files
+    * Added experimental cmake support
+
+Thread-scaling paper appears - July 19, 2018
+
+    * Our latest work on Bowtie's core thread scaling capabilities
+      [just appeared Open Access in the journal Bioinformatics](href="https://academic.oup.com/bioinformatics/advance-article/doi/10.1093/bioinformatics/bty648/5055585)
+
 Version 2.3.4.1 - Feb 3, 2018
 
     * Fixed an issue with `--reorder` that caused bowtie2 to crash
-    while reordering SAM output
+      while reordering SAM output
 
 Version 2.3.4 - Dec 29, 2017
 

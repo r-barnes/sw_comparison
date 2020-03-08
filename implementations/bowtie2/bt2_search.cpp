@@ -62,17 +62,21 @@
 #include "aligner_seed2.h"
 #include "bt2_search.h"
 #ifdef WITH_TBB
- #include <tbb/compat/thread>
+ #include <thread>
+#endif
+
+#if __cplusplus <= 199711L
+#define unique_ptr auto_ptr
 #endif
 
 using namespace std;
 
 static int FNAME_SIZE;
 #ifdef WITH_TBB
-static tbb::atomic<int> thread_counter;
+static std::atomic<int> thread_counter;
 #else
 static int thread_counter;
-static MUTEX_T thread_counter_mutex; 
+static MUTEX_T thread_counter_mutex;
 #endif
 
 static EList<string> mates1;  // mated reads (first mate)
@@ -84,6 +88,7 @@ static bool startVerbose; // be talkative at startup
 int gQuiet;               // print nothing but the alignments
 static int sanityCheck;   // enable expensive sanity checks
 static int format;        // default read format is FASTQ
+static bool interleaved;  // reads are interleaved
 static string origString; // reference text, or filename(s)
 static int seed;          // srandom() seed
 static int timing;        // whether to report basic timing data
@@ -97,6 +102,7 @@ static int ipause;        // pause before maching?
 static uint32_t qUpto;    // max # of queries to read
 static int gTrim5;        // amount to trim from 5' end
 static int gTrim3;        // amount to trim from 3' end
+static pair<short, size_t> trimTo; // trim reads exceeding given length from either 3' or 5'-end
 static int offRate;       // keep default offRate
 static bool solexaQuals;  // quality strings are solexa quals, not phred, and subtract 64 (not 33)
 static bool phred64Quals; // quality chars are phred, but must subtract 64 (not 33)
@@ -176,6 +182,8 @@ static bool sam_print_zi;
 static bool sam_print_zp;
 static bool sam_print_zu;
 static bool sam_print_zt;
+static bool preserve_tags;     // Only applies when aligning BAM files
+static bool align_paired_reads; // Process only the paired reads in BAM file
 static bool bwaSwLike;
 static bool gSeedLenIsSet;
 static float bwaSwLikeC;
@@ -263,6 +271,10 @@ static string bt2index;      // read Bowtie 2 index from files with this prefix
 static EList<pair<int, string> > extra_opts;
 static size_t extra_opts_cur;
 
+#ifdef USE_SRA
+static EList<string> sra_accs;
+#endif
+
 #define DMAX std::numeric_limits<double>::max()
 
 static void resetOptions() {
@@ -275,6 +287,7 @@ static void resetOptions() {
 	gQuiet					= false;
 	sanityCheck				= 0;  // enable expensive sanity checks
 	format					= FASTQ; // default read format is FASTQ
+	interleaved				= false; // reads are not interleaved by default
 	origString				= ""; // reference text, or filename(s)
 	seed					= 0; // srandom() seed
 	timing					= 0; // whether to report basic timing data
@@ -288,6 +301,7 @@ static void resetOptions() {
 	qUpto					= 0xffffffff; // max # of queries to read
 	gTrim5					= 0; // amount to trim from 5' end
 	gTrim3					= 0; // amount to trim from 3' end
+	trimTo = pair<short, size_t>(5, 0); // default: don't do any trimming
 	offRate					= -1; // keep default offRate
 	solexaQuals				= false; // quality strings are solexa quals, not phred, and subtract 64 (not 33)
 	phred64Quals			= false; // quality chars are phred, but must subtract 64 (not 33)
@@ -369,6 +383,8 @@ static void resetOptions() {
 	sam_print_zp            = false;
 	sam_print_zu            = false;
 	sam_print_zt            = false;
+	preserve_tags           = false;
+	align_paired_reads      = false;
 	bwaSwLike               = false;
 	gSeedLenIsSet			= false;
 	bwaSwLikeC              = 5.5f;
@@ -453,9 +469,12 @@ static void resetOptions() {
 	bowtie2p5 = false;
 	logDps.clear();          // log seed-extend dynamic programming problems
 	logDpsOpp.clear();       // log mate-search dynamic programming problems
+#ifdef USE_SRA
+	sra_accs.clear();
+#endif
 }
 
-static const char *short_options = "fF:qbzhcu:rv:s:aP:t3:5:w:p:k:M:1:2:I:X:CQ:N:i:L:U:x:S:g:O:D:R:";
+static const char *short_options = "bfF:qbzhcu:rv:s:aP:t3:5:w:p:k:M:1:2:I:X:CQ:N:i:L:U:x:S:g:O:D:R:";
 
 static struct option long_options[] = {
 {(char*)"verbose",                     no_argument,        0,                   ARG_VERBOSE},
@@ -506,7 +525,7 @@ static struct option long_options[] = {
 {(char*)"12",                          required_argument,  0,                   ARG_ONETWO},
 {(char*)"tab5",                        required_argument,  0,                   ARG_TAB5},
 {(char*)"tab6",                        required_argument,  0,                   ARG_TAB6},
-{(char*)"interleaved",                 required_argument,  0,                   ARG_INTERLEAVED_FASTQ},
+{(char*)"interleaved",                 required_argument,  0,                   ARG_INTERLEAVED},
 {(char*)"phred33-quals",               no_argument,        0,                   ARG_PHRED33},
 {(char*)"phred64-quals",               no_argument,        0,                   ARG_PHRED64},
 {(char*)"phred33",                     no_argument,        0,                   ARG_PHRED33},
@@ -643,6 +662,12 @@ static struct option long_options[] = {
 {(char*)"xeq",                         no_argument,        0,                   ARG_XEQ},
 {(char*)"thread-ceiling",              required_argument,  0,                   ARG_THREAD_CEILING},
 {(char*)"thread-piddir",               required_argument,  0,                   ARG_THREAD_PIDDIR},
+{(char*)"trim-to",                     required_argument,  0,                   ARG_TRIM_TO},
+{(char*)"preserve-tags",               no_argument,        0,                   ARG_PRESERVE_TAGS},
+{(char*)"align-paired-reads",          no_argument,        0,                   ARG_ALIGN_PAIRED_READS},
+#ifdef USE_SRA
+{(char*)"sra-acc",                     required_argument,  0,                   ARG_SRA_ACC},
+#endif
 {(char*)0,                             0,                  0,                   0} //  terminator
 };
 
@@ -693,7 +718,11 @@ static void printUsage(ostream& out) {
 		tool_name = "bowtie2";
 	}
 	out << "Usage: " << endl
-	    << "  " << tool_name.c_str() << " [options]* -x <bt2-idx> {-1 <m1> -2 <m2> | -U <r> | --interleaved <i>} [-S <sam>]" << endl
+#ifdef USE_SRA
+	    << "  " << tool_name.c_str() << " [options]* -x <bt2-idx> {-1 <m1> -2 <m2> | -U <r> | --interleaved <i> | --sra-acc <acc> | -b <bam>} [-S <sam>]" << endl
+#else
+	    << "  " << tool_name.c_str() << " [options]* -x <bt2-idx> {-1 <m1> -2 <m2> | -U <r> | --interleaved <i> | -b <bam>} [-S <sam>]" << endl
+#endif
 	    << endl
 		<<     "  <bt2-idx>  Index filename prefix (minus trailing .X." + gEbwt_ext + ")." << endl
 		<<     "             NOTE: Bowtie 1 and Bowtie 2 indexes are not compatible." << endl
@@ -709,10 +738,15 @@ static void printUsage(ostream& out) {
 	if(wrapper == "basic-0") {
 		out << "             Could be gzip'ed (extension: .gz) or bzip2'ed (extension: .bz2)." << endl;
 	}
-	out <<     "  <i>        Files with interleaved paired-end FASTQ reads" << endl;
+	out <<     "  <i>        Files with interleaved paired-end FASTQ/FASTA reads" << endl;
 	if(wrapper == "basic-0") {
 		out << "             Could be gzip'ed (extension: .gz) or bzip2'ed (extension: .bz2)." << endl;
 	}
+#ifdef USE_SRA
+	out <<     "  <acc>      Files are SRA accessions. Accessions not found in local storage will\n"
+	    <<     "             be fetched from NCBI." << endl;
+#endif
+	out <<     "  <bam>      Files are unaligned BAM sorted by read name." << endl;
 	out <<     "  <sam>      File for SAM output (default: stdout)" << endl
 	    << endl
 	    << "  <m1>, <m2>, <r> can be comma-separated lists (no whitespace) and can be" << endl
@@ -720,11 +754,11 @@ static void printUsage(ostream& out) {
 		// Wrapper script should write <bam> line next
 		<< endl
 	    << "Options (defaults in parentheses):" << endl
-		<< endl
+	    << endl
 	    << " Input:" << endl
 	    << "  -q                 query input files are FASTQ .fq/.fastq (default)" << endl
-		<< "  --tab5             query input files are TAB5 .tab5" << endl
-		<< "  --tab6             query input files are TAB6 .tab6" << endl
+	    << "  --tab5             query input files are TAB5 .tab5" << endl
+	    << "  --tab6             query input files are TAB6 .tab6" << endl
 	    << "  --qseq             query input files are in Illumina's qseq format" << endl
 	    << "  -f                 query input files are (multi-)FASTA .fa/.mfa" << endl
 	    << "  -r                 query input files are raw one-sequence-per-line" << endl
@@ -736,70 +770,78 @@ static void printUsage(ostream& out) {
 	    << "  -u/--upto <int>    stop after first <int> reads/pairs (no limit)" << endl
 	    << "  -5/--trim5 <int>   trim <int> bases from 5'/left end of reads (0)" << endl
 	    << "  -3/--trim3 <int>   trim <int> bases from 3'/right end of reads (0)" << endl
+	    << "  --trim-to [3:|5:]<int> trim reads exceeding <int> bases from either 3' or 5' end" << endl
+	    << "                     If the read end is not specified then it defaults to 3 (0)" << endl
 	    << "  --phred33          qualities are Phred+33 (default)" << endl
 	    << "  --phred64          qualities are Phred+64" << endl
 	    << "  --int-quals        qualities encoded as space-delimited integers" << endl
-		<< endl
+	    << endl
 	    << " Presets:                 Same as:" << endl
-		<< "  For --end-to-end:" << endl
-		<< "   --very-fast            -D 5 -R 1 -N 0 -L 22 -i S,0,2.50" << endl
-		<< "   --fast                 -D 10 -R 2 -N 0 -L 22 -i S,0,2.50" << endl
-		<< "   --sensitive            -D 15 -R 2 -N 0 -L 22 -i S,1,1.15 (default)" << endl
-		<< "   --very-sensitive       -D 20 -R 3 -N 0 -L 20 -i S,1,0.50" << endl
-		<< endl
-		<< "  For --local:" << endl
-		<< "   --very-fast-local      -D 5 -R 1 -N 0 -L 25 -i S,1,2.00" << endl
-		<< "   --fast-local           -D 10 -R 2 -N 0 -L 22 -i S,1,1.75" << endl
-		<< "   --sensitive-local      -D 15 -R 2 -N 0 -L 20 -i S,1,0.75 (default)" << endl
-		<< "   --very-sensitive-local -D 20 -R 3 -N 0 -L 20 -i S,1,0.50" << endl
-		<< endl
+	    << "  For --end-to-end:" << endl
+	    << "   --very-fast            -D 5 -R 1 -N 0 -L 22 -i S,0,2.50" << endl
+	    << "   --fast                 -D 10 -R 2 -N 0 -L 22 -i S,0,2.50" << endl
+	    << "   --sensitive            -D 15 -R 2 -N 0 -L 22 -i S,1,1.15 (default)" << endl
+	    << "   --very-sensitive       -D 20 -R 3 -N 0 -L 20 -i S,1,0.50" << endl
+	    << endl
+	    << "  For --local:" << endl
+	    << "   --very-fast-local      -D 5 -R 1 -N 0 -L 25 -i S,1,2.00" << endl
+	    << "   --fast-local           -D 10 -R 2 -N 0 -L 22 -i S,1,1.75" << endl
+	    << "   --sensitive-local      -D 15 -R 2 -N 0 -L 20 -i S,1,0.75 (default)" << endl
+	    << "   --very-sensitive-local -D 20 -R 3 -N 0 -L 20 -i S,1,0.50" << endl
+	    << endl
 	    << " Alignment:" << endl
-		<< "  -N <int>           max # mismatches in seed alignment; can be 0 or 1 (0)" << endl
-		<< "  -L <int>           length of seed substrings; must be >3, <32 (22)" << endl
-		<< "  -i <func>          interval between seed substrings w/r/t read len (S,1,1.15)" << endl
-		<< "  --n-ceil <func>    func for max # non-A/C/G/Ts permitted in aln (L,0,0.15)" << endl
-		<< "  --dpad <int>       include <int> extra ref chars on sides of DP table (15)" << endl
-		<< "  --gbar <int>       disallow gaps within <int> nucs of read extremes (4)" << endl
-		<< "  --ignore-quals     treat all quality values as 30 on Phred scale (off)" << endl
+	    << "  -N <int>           max # mismatches in seed alignment; can be 0 or 1 (0)" << endl
+	    << "  -L <int>           length of seed substrings; must be >3, <32 (22)" << endl
+	    << "  -i <func>          interval between seed substrings w/r/t read len (S,1,1.15)" << endl
+	    << "  --n-ceil <func>    func for max # non-A/C/G/Ts permitted in aln (L,0,0.15)" << endl
+	    << "  --dpad <int>       include <int> extra ref chars on sides of DP table (15)" << endl
+	    << "  --gbar <int>       disallow gaps within <int> nucs of read extremes (4)" << endl
+	    << "  --ignore-quals     treat all quality values as 30 on Phred scale (off)" << endl
 	    << "  --nofw             do not align forward (original) version of read (off)" << endl
 	    << "  --norc             do not align reverse-complement version of read (off)" << endl
 	    << "  --no-1mm-upfront   do not allow 1 mismatch alignments before attempting to" << endl
 	    << "                     scan for the optimal seeded alignments"
 	    << endl
-		<< "  --end-to-end       entire read must align; no clipping (on)" << endl
-		<< "   OR" << endl
-		<< "  --local            local alignment; ends might be soft clipped (off)" << endl
-		<< endl
+	    << "  --end-to-end       entire read must align; no clipping (on)" << endl
+	    << "   OR" << endl
+	    << "  --local            local alignment; ends might be soft clipped (off)" << endl
+	    << endl
 	    << " Scoring:" << endl
-		<< "  --ma <int>         match bonus (0 for --end-to-end, 2 for --local) " << endl
-		<< "  --mp <int>         max penalty for mismatch; lower qual = lower penalty (6)" << endl
-		<< "  --np <int>         penalty for non-A/C/G/Ts in read/ref (1)" << endl
-		<< "  --rdg <int>,<int>  read gap open, extend penalties (5,3)" << endl
-		<< "  --rfg <int>,<int>  reference gap open, extend penalties (5,3)" << endl
-		<< "  --score-min <func> min acceptable alignment score w/r/t read length" << endl
-		<< "                     (G,20,8 for local, L,-0.6,-0.6 for end-to-end)" << endl
-		<< endl
+	    << "  --ma <int>         match bonus (0 for --end-to-end, 2 for --local) " << endl
+	    << "  --mp <int>         max penalty for mismatch; lower qual = lower penalty (6)" << endl
+	    << "  --np <int>         penalty for non-A/C/G/Ts in read/ref (1)" << endl
+	    << "  --rdg <int>,<int>  read gap open, extend penalties (5,3)" << endl
+	    << "  --rfg <int>,<int>  reference gap open, extend penalties (5,3)" << endl
+	    << "  --score-min <func> min acceptable alignment score w/r/t read length" << endl
+	    << "                     (G,20,8 for local, L,-0.6,-0.6 for end-to-end)" << endl
+	    << endl
 	    << " Reporting:" << endl
 	    << "  (default)          look for multiple alignments, report best, with MAPQ" << endl
-		<< "   OR" << endl
+	    << "   OR" << endl
 	    << "  -k <int>           report up to <int> alns per read; MAPQ not meaningful" << endl
-		<< "   OR" << endl
+	    << "   OR" << endl
 	    << "  -a/--all           report all alignments; very slow, MAPQ not meaningful" << endl
-		<< endl
+	    << endl
 	    << " Effort:" << endl
 	    << "  -D <int>           give up extending after <int> failed extends in a row (15)" << endl
 	    << "  -R <int>           for reads w/ repetitive seeds, try <int> sets of seeds (2)" << endl
-		<< endl
-		<< " Paired-end:" << endl
+	    << endl
+	    << " Paired-end:" << endl
 	    << "  -I/--minins <int>  minimum fragment length (0)" << endl
 	    << "  -X/--maxins <int>  maximum fragment length (500)" << endl
 	    << "  --fr/--rf/--ff     -1, -2 mates align fw/rev, rev/fw, fw/fw (--fr)" << endl
-		<< "  --no-mixed         suppress unpaired alignments for paired reads" << endl
-		<< "  --no-discordant    suppress discordant alignments for paired reads" << endl
-		<< "  --dovetail         concordant when mates extend past each other" << endl
-		<< "  --no-contain       not concordant when one mate alignment contains other" << endl
-		<< "  --no-overlap       not concordant when mates overlap at all" << endl
-		<< endl
+	    << "  --no-mixed         suppress unpaired alignments for paired reads" << endl
+	    << "  --no-discordant    suppress discordant alignments for paired reads" << endl
+	    << "  --dovetail         concordant when mates extend past each other" << endl
+	    << "  --no-contain       not concordant when one mate alignment contains other" << endl
+	    << "  --no-overlap       not concordant when mates overlap at all" << endl
+	    << endl
+	    << " BAM:" << endl
+	    << "  --align-paired-reads Bowtie2 will, by default, attempt to align unpaired BAM reads." << endl
+	    << "                     Use this option to align paired-end reads instead." << endl
+	    << "  --preserve-tags    Preserve tags from the original BAM record by" << endl
+	    << "                     appending them to the end of the corresponding SAM output." << endl
+	    << endl
 	    << " Output:" << endl;
 	//if(wrapper == "basic-0") {
 	//	out << "  --bam              output directly to BAM (by piping through 'samtools view')" << endl;
@@ -815,9 +857,9 @@ static void printUsage(ostream& out) {
 	}
 	out << "  --quiet            print nothing to stderr except serious errors" << endl
 	//  << "  --refidx           refer to ref. seqs by 0-based index rather than name" << endl
-		<< "  --met-file <path>  send metrics to file at <path> (off)" << endl
-		<< "  --met-stderr       send metrics to stderr (off)" << endl
-		<< "  --met <int>        report internal counters & metrics every <int> secs (1)" << endl
+	    << "  --met-file <path>  send metrics to file at <path> (off)" << endl
+	    << "  --met-stderr       send metrics to stderr (off)" << endl
+	    << "  --met <int>        report internal counters & metrics every <int> secs (1)" << endl
 	// Following is supported in the wrapper instead
 	    << "  --no-unal          suppress SAM records for unaligned reads" << endl
 	    << "  --no-head          suppress header lines, i.e. lines starting with @" << endl
@@ -830,7 +872,7 @@ static void printUsage(ostream& out) {
 	    << "                      at the expense of generating non-standard SAM." << endl
 	    << "  --xeq              Use '='/'X', instead of 'M,' to specify matches/mismatches in SAM record." << endl
 	    << "  --soft-clipped-unmapped-tlen Exclude soft-clipped bases when reporting TLEN" << endl
-		<< endl
+	    << endl
 	    << " Performance:" << endl
 	//    << "  -o/--offrate <int> override offrate of index; must be >= index's offrate" << endl
 	    << "  -p/--threads <int> number of alignment threads to launch (1)" << endl
@@ -841,20 +883,19 @@ static void printUsage(ostream& out) {
 #ifdef BOWTIE_SHARED_MEM
 		//<< "  --shmem            use shared mem for index; many 'bowtie's can share" << endl
 #endif
-		<< endl
+	    << endl
 	    << " Other:" << endl
-		<< "  --qc-filter        filter out reads that are bad according to QSEQ filter" << endl
+	    << "  --qc-filter        filter out reads that are bad according to QSEQ filter" << endl
 	    << "  --seed <int>       seed for random number generator (0)" << endl
 	    << "  --non-deterministic seed rand. gen. arbitrarily instead of using read attributes" << endl
 	//  << "  --verbose          verbose output for debugging" << endl
 	    << "  --version          print version information and quit" << endl
-	    << "  -h/--help          print this usage message" << endl
-	    ;
+	    << "  -h/--help          print this usage message" << endl;
 	if(wrapper.empty()) {
 		cerr << endl
 		     << "*** Warning ***" << endl
-			 << "'bowtie2-align' was run directly.  It is recommended that you run the wrapper script 'bowtie2' instead." << endl
-			 << endl;
+		     << "'bowtie2-align' was run directly.  It is recommended that you run the wrapper script 'bowtie2' instead." << endl
+		     << endl;
 	}
 }
 
@@ -944,6 +985,12 @@ static string applyPreset(const string& sorig, Presets& presets) {
 static bool saw_M;
 static bool saw_a;
 static bool saw_k;
+static bool saw_trim3;
+static bool saw_trim5;
+static bool saw_trim_to;
+static bool saw_bam;
+static bool saw_preserve_tags;
+static bool saw_align_paired_reads;
 static EList<string> presetList;
 
 /**
@@ -982,7 +1029,16 @@ static void parseOption(int next_option, const char *arg) {
 		case ARG_ONETWO: tokenize(arg, ",", mates12); format = TAB_MATE5; break;
 		case ARG_TAB5:   tokenize(arg, ",", mates12); format = TAB_MATE5; break;
 		case ARG_TAB6:   tokenize(arg, ",", mates12); format = TAB_MATE6; break;
-		case ARG_INTERLEAVED_FASTQ: tokenize(arg, ",", mates12); format = INTERLEAVED; break;
+		case ARG_INTERLEAVED: {
+			tokenize(arg, ",", mates12);
+			interleaved = true;
+			break;
+		}
+		case 'b': {
+			format = BAM;
+			saw_bam = true;
+			break;
+		}
 		case 'f': format = FASTA; break;
 		case 'F': {
 			format = FASTA_CONT;
@@ -1000,7 +1056,7 @@ static void parseOption(int next_option, const char *arg) {
 			// -b INT   Mismatch penalty [3]
 			// -q INT   Gap open penalty [5]
 			// -r INT   Gap extension penalty. The penalty for a contiguous
-			//          gap of size k is q+k*r. [2] 
+			//          gap of size k is q+k*r. [2]
 			polstr += ";MA=1;MMP=C3;RDG=5,2;RFG=5,2";
 			break;
 		}
@@ -1026,6 +1082,16 @@ static void parseOption(int next_option, const char *arg) {
 		case ARG_SEED_SUMM: seedSumm = true; break;
 		case ARG_SC_UNMAPPED: scUnMapped = true; break;
 		case ARG_XEQ: xeq = true; break;
+		case ARG_PRESERVE_TAGS: {
+			preserve_tags = true;
+			saw_preserve_tags = true;
+			break;
+		}
+		case ARG_ALIGN_PAIRED_READS: {
+			align_paired_reads = true;
+			saw_align_paired_reads = true;
+			break;
+		}
 		case ARG_MM: {
 #ifdef BOWTIE_MM
 			useMm = true;
@@ -1101,6 +1167,26 @@ static void parseOption(int next_option, const char *arg) {
 			break;
 		case '3': gTrim3 = parseInt(0, "-3/--trim3 arg must be at least 0", arg); break;
 		case '5': gTrim5 = parseInt(0, "-5/--trim5 arg must be at least 0", arg); break;
+		case ARG_TRIM_TO: {
+			if (strlen(arg) > 1 && arg[1] != ':') {
+				trimTo.first = 3;
+				trimTo.second = parseInt(0, "--trim-to: the number of bases to trim must be at least 0", arg);
+				break;
+			}
+			pair<int, int> res = parsePair<int>(arg, ':');
+			if (res.first != 3 && res.first != 5) {
+				cerr << "--trim-to: trim position must be either 3 or 5" << endl;
+				printUsage(cerr);
+				throw 1;
+			}
+			if(res.second < 0) {
+				cerr << "--trim-to: the number bases to trim must be at least 0" << endl;
+				printUsage(cerr);
+				throw 1;
+			}
+			trimTo = static_cast<pair<short, size_t> >(res);
+			break;
+		}
 		case 'h': printUsage(cout); throw 0; break;
 		case ARG_USAGE: printUsage(cout); throw 0; break;
 		//
@@ -1463,17 +1549,18 @@ static void parseOption(int next_option, const char *arg) {
 			}
 			break;
 		}
-		case ARG_VERSION: showVersion = 1; break;
+#ifdef USE_SRA
+        case ARG_SRA_ACC: {
+            tokenize(arg, ",", sra_accs);
+            format = SRA_FASTA;
+            break;
+        }
+#endif
+        case ARG_VERSION: showVersion = 1; break;
 		default:
 			printUsage(cerr);
 			throw 1;
 	}
-	if (!localAlign && scUnMapped) {
-		scUnMapped = false;
-		cerr << "WARNING: --soft-clipped-unmapped-tlen can only be set for "
-		     << "local alignment... ignoring" << endl;
-	}
-
 }
 
 /**
@@ -1485,6 +1572,12 @@ static void parseOptions(int argc, const char **argv) {
 	saw_M = false;
 	saw_a = false;
 	saw_k = false;
+	saw_trim3 = false;
+	saw_trim5 = false;
+	saw_trim_to = false;
+	saw_bam = false;
+	saw_preserve_tags = false;
+	saw_align_paired_reads = false;
 	presetList.clear();
 	if(startVerbose) { cerr << "Parsing options: "; logTime(cerr, true); }
 	while(true) {
@@ -1503,12 +1596,36 @@ static void parseOptions(int argc, const char **argv) {
 		}
 		parseOption(next_option, arg);
 	}
+
+	if (!localAlign && scUnMapped) {
+		cerr << "ERROR: --soft-clipped-unmapped-tlen can only be set for local alignments." << endl;
+		exit(1);
+	}
+
+	if ((saw_trim3 || saw_trim5) && saw_trim_to) {
+		cerr << "ERROR: --trim5/--trim3 and --trim-to are mutually exclusive "
+			 << "options." << endl;
+		exit(1);
+	}
+
+	if (!saw_bam && saw_preserve_tags) {
+		cerr << "--preserve_tags can only be used when aligning BAM reads." << endl;
+		exit(1);
+	}
+
+	if (!saw_bam && saw_align_paired_reads) {
+		cerr << "--align-paired-reads can only be used when aligning BAM reads." << endl;
+		exit(1);
+	}
 	// Now parse all the presets.  Might want to pick which presets version to
 	// use according to other parameters.
-	auto_ptr<Presets> presets(new PresetsV0());
+	unique_ptr<Presets> presets(new PresetsV0());
 	// Apply default preset
-	if(!defaultPreset.empty()) {
+	if (presetList.empty())
 		polstr = applyPreset(defaultPreset, *presets.get()) + polstr;
+	else {
+		for (size_t i = presetList.size(); i != 0; i--)
+			polstr = applyPreset(presetList[i-1], *presets.get()) + polstr;
 	}
 	// Apply specified presets
 	for(size_t i = 0; i < presetList.size(); i++) {
@@ -1567,6 +1684,10 @@ static void parseOptions(int argc, const char **argv) {
 		cerr << "Error: " << mates1.size() << " mate files/sequences were specified with -1, but " << mates2.size() << endl
 		     << "mate files/sequences were specified with -2.  The same number of mate files/" << endl
 		     << "sequences must be specified with -1 and -2." << endl;
+		throw 1;
+	}
+	if(interleaved && (format != FASTA && format != FASTQ)) {
+		cerr << "Error: --interleaved only works in combination with FASTA (-f) and FASTQ (-q) formats." << endl;
 		throw 1;
 	}
 	if(qualities.size() && format != FASTA) {
@@ -1662,7 +1783,7 @@ createPatsrcFactory(
 	int tid)
 {
 	PatternSourcePerThreadFactory *patsrcFact;
-	patsrcFact = new PatternSourcePerThreadFactory(patcomp, pp);
+	patsrcFact = new PatternSourcePerThreadFactory(patcomp, pp, tid);
 	assert(patsrcFact != NULL);
 	return patsrcFact;
 }
@@ -1749,7 +1870,7 @@ struct PerfMetrics {
 		nbtfiltst = 0;
 		nbtfiltsc = 0;
 		nbtfiltdo = 0;
-		
+
 		olmu.reset();
 		sdmu.reset();
 		wlmu.reset();
@@ -1843,7 +1964,7 @@ struct PerfMetrics {
 				/*  5 */ "SameReadBase"   "\t"
 				/*  6 */ "UnfilteredRead" "\t"
 				/*  7 */ "UnfilteredBase" "\t"
-				
+
 				/*  8 */ "Paired"         "\t"
 				/*  9 */ "Unpaired"       "\t"
 				/* 10 */ "AlConUni"       "\t"
@@ -1859,7 +1980,7 @@ struct PerfMetrics {
 				/* 20 */ "AlUnpUni"       "\t"
 				/* 21 */ "AlUnpRep"       "\t"
 				/* 22 */ "AlUnpFail"      "\t"
-				
+
 				/* 23 */ "SeedSearch"     "\t"
 				/* 24 */ "NRange"         "\t"
 				/* 25 */ "NElt"           "\t"
@@ -1981,19 +2102,19 @@ struct PerfMetrics {
 				/* 129 */ "DebugMemPeak"   "\t" // DEBUG_CAT
 #endif
 				"\n";
-			
+
 			if(name != NULL) {
 				if(o != NULL) o->writeChars("Name\t");
 				if(metricsStderr) stderrSs << "Name\t";
 			}
-			
+
 			if(o != NULL) o->writeChars(str);
 			if(metricsStderr) stderrSs << str;
 			first = false;
 		}
-		
+
 		if(total) mergeIncrementals();
-		
+
 		// 0. Read name, if needed
 		if(name != NULL) {
 			if(o != NULL) {
@@ -2004,14 +2125,14 @@ struct PerfMetrics {
 				stderrSs << (*name) << '\t';
 			}
 		}
-			
+
 		// 1. Current time in secs
 		itoa10<time_t>(curtime, buf);
 		if(metricsStderr) stderrSs << buf << '\t';
 		if(o != NULL) { o->writeChars(buf); o->write('\t'); }
-		
+
 		const OuterLoopMetrics& ol = total ? olm : olmu;
-		
+
 		// 2. Reads
 		itoa10<uint64_t>(ol.reads, buf);
 		if(metricsStderr) stderrSs << buf << '\t';
@@ -2101,7 +2222,7 @@ struct PerfMetrics {
 		if(o != NULL) { o->writeChars(buf); o->write('\t'); }
 
 		const SeedSearchMetrics& sd = total ? sdm : sdmu;
-		
+
 		// 23. Seed searches
 		itoa10<uint64_t>(sd.seedsearch, buf);
 		if(metricsStderr) stderrSs << buf << '\t';
@@ -2134,9 +2255,9 @@ struct PerfMetrics {
 		itoa10<uint64_t>(sd.bweds, buf);
 		if(metricsStderr) stderrSs << buf << '\t';
 		if(o != NULL) { o->writeChars(buf); o->write('\t'); }
-		
+
 		const WalkMetrics& wl = total ? wlm : wlmu;
-		
+
 		// 31. Burrows-Wheeler ops in resolver
 		itoa10<uint64_t>(wl.bwops, buf);
 		if(metricsStderr) stderrSs << buf << '\t';
@@ -2153,7 +2274,7 @@ struct PerfMetrics {
 		itoa10<uint64_t>(wl.reports, buf);
 		if(metricsStderr) stderrSs << buf << '\t';
 		if(o != NULL) { o->writeChars(buf); o->write('\t'); }
-		
+
 		// 35. Redundant seed hit
 		itoa10<uint64_t>(total ? swmSeed.rshit : swmuSeed.rshit, buf);
 		if(metricsStderr) stderrSs << buf << '\t';
@@ -2171,7 +2292,7 @@ struct PerfMetrics {
 		itoa10<uint64_t>(total ? sdm.bestmin2 : sdmu.bestmin2, buf);
 		if(metricsStderr) stderrSs << buf << '\t';
 		if(o != NULL) { o->writeChars(buf); o->write('\t'); }
-		
+
 		// 39. Exact aligner attempts
 		itoa10<uint64_t>(total ? swmSeed.exatts : swmuSeed.exatts, buf);
 		if(metricsStderr) stderrSs << buf << '\t';
@@ -2252,9 +2373,9 @@ struct PerfMetrics {
 		itoa10<uint64_t>(total ? swmMate.sws3 : swmuMate.sws3, buf);
 		if(metricsStderr) stderrSs << buf << '\t';
 		if(o != NULL) { o->writeChars(buf); o->write('\t'); }
-		
+
 		const SSEMetrics& dpSse16s = total ? dpSse16Seed : dpSse16uSeed;
-		
+
 		// 58. 16-bit SSE seed-extend DPs tried
 		itoa10<uint64_t>(dpSse16s.dp, buf);
 		if(metricsStderr) stderrSs << buf << '\t';
@@ -2315,9 +2436,9 @@ struct PerfMetrics {
 		itoa10<uint64_t>(dpSse16s.nrej, buf);
 		if(metricsStderr) stderrSs << buf << '\t';
 		if(o != NULL) { o->writeChars(buf); o->write('\t'); }
-		
+
 		const SSEMetrics& dpSse8s = total ? dpSse8Seed : dpSse8uSeed;
-		
+
 		// 73. 8-bit SSE seed-extend DPs tried
 		itoa10<uint64_t>(dpSse8s.dp, buf);
 		if(metricsStderr) stderrSs << buf << '\t';
@@ -2378,9 +2499,9 @@ struct PerfMetrics {
 		itoa10<uint64_t>(dpSse8s.nrej, buf);
 		if(metricsStderr) stderrSs << buf << '\t';
 		if(o != NULL) { o->writeChars(buf); o->write('\t'); }
-		
+
 		const SSEMetrics& dpSse16m = total ? dpSse16Mate : dpSse16uMate;
-		
+
 		// 88. 16-bit SSE mate-finding DPs tried
 		itoa10<uint64_t>(dpSse16m.dp, buf);
 		if(metricsStderr) stderrSs << buf << '\t';
@@ -2441,9 +2562,9 @@ struct PerfMetrics {
 		itoa10<uint64_t>(dpSse16m.nrej, buf);
 		if(metricsStderr) stderrSs << buf << '\t';
 		if(o != NULL) { o->writeChars(buf); o->write('\t'); }
-		
+
 		const SSEMetrics& dpSse8m = total ? dpSse8Mate : dpSse8uMate;
-		
+
 		// 103. 8-bit SSE mate-finding DPs tried
 		itoa10<uint64_t>(dpSse8m.dp, buf);
 		if(metricsStderr) stderrSs << buf << '\t';
@@ -2504,7 +2625,7 @@ struct PerfMetrics {
 		itoa10<uint64_t>(dpSse8m.nrej, buf);
 		if(metricsStderr) stderrSs << buf << '\t';
 		if(o != NULL) { o->writeChars(buf); o->write('\t'); }
-		
+
 		// 118. Backtrace candidates filtered due to starting cell
 		itoa10<uint64_t>(total ? nbtfiltst : nbtfiltst_u, buf);
 		if(metricsStderr) stderrSs << buf << '\t';
@@ -2517,7 +2638,7 @@ struct PerfMetrics {
 		itoa10<uint64_t>(total ? nbtfiltdo : nbtfiltdo_u, buf);
 		if(metricsStderr) stderrSs << buf << '\t';
 		if(o != NULL) { o->writeChars(buf); o->write('\t'); }
-		
+
 #ifdef USE_MEM_TALLY
 		// 121. Overall memory peak
 		itoa10<size_t>(gMemTally.peak() >> 20, buf);
@@ -2561,7 +2682,7 @@ struct PerfMetrics {
 		if(metricsStderr) cerr << stderrSs.str().c_str() << endl;
 		if(!total) mergeIncrementals();
 	}
-	
+
 	void mergeIncrementals() {
 		olm.merge(olmu);
 		sdm.merge(sdmu);
@@ -2831,16 +2952,16 @@ class ThreadCounter {
 public:
 	ThreadCounter() {
 #ifdef WITH_TBB
-		thread_counter.fetch_and_increment();
+		thread_counter.fetch_add(1);
 #else
 		ThreadSafe ts(thread_counter_mutex);
 		thread_counter++;
 #endif
 	}
-	
+
 	~ThreadCounter() {
 #ifdef WITH_TBB
-		thread_counter.fetch_and_decrement();
+		thread_counter.fetch_sub(1);
 #else
 		ThreadSafe ts(thread_counter_mutex);
 		thread_counter--;
@@ -2861,7 +2982,7 @@ public:
  *     we can skip all stages, report the result immediately and move to next
  *     read/pair
  *   + If not identical, continue
- * - 
+ * -
  */
 #ifdef WITH_TBB
 //void multiseedSearchWorker::operator()() const {
@@ -2878,7 +2999,7 @@ static void multiseedSearchWorker(void *vp) {
 	PatternComposer&        patsrc   = *multiseed_patsrc;
 	PatternParams           pp       = multiseed_pp;
 	const Ebwt&             ebwtFw   = *multiseed_ebwtFw;
-	const Ebwt&             ebwtBw   = *multiseed_ebwtBw;
+	const Ebwt*             ebwtBw   = multiseed_ebwtBw;
 	const Scoring&          sc       = *multiseed_sc;
 	const BitPairReference& ref      = *multiseed_refs;
 	AlnSink&                msink    = *multiseed_msink;
@@ -2888,10 +3009,10 @@ static void multiseedSearchWorker(void *vp) {
 #ifdef PER_THREAD_TIMING
 		uint64_t ncpu_changeovers = 0;
 		uint64_t nnuma_changeovers = 0;
-		
+
 		int current_cpu = 0, current_node = 0;
 		get_cpu_and_node(current_cpu, current_node);
-		
+
 		std::stringstream ss;
 		std::string msg;
 		ss << "thread: " << tid << " time: ";
@@ -2903,11 +3024,11 @@ static void multiseedSearchWorker(void *vp) {
 		// events of interest on a per-read, per-seed, per-join, or per-SW
 		// level.  These in turn can be used to diagnose performance
 		// problems, or generally characterize performance.
-		
+
 		//const BitPairReference& refs   = *multiseed_refs;
-		auto_ptr<PatternSourcePerThreadFactory> patsrcFact(createPatsrcFactory(patsrc, pp, tid));
-		auto_ptr<PatternSourcePerThread> ps(patsrcFact->create());
-		
+		unique_ptr<PatternSourcePerThreadFactory> patsrcFact(createPatsrcFactory(patsrc, pp, tid));
+		unique_ptr<PatternSourcePerThread> ps(patsrcFact->create());
+
 		// Thread-local cache for seed alignments
 		PtrWrap<AlignmentCache> scLocal;
 		if(!msNoCache) {
@@ -2915,13 +3036,13 @@ static void multiseedSearchWorker(void *vp) {
 		}
 		AlignmentCache scCurrent(seedCacheCurrentMB * 1024 * 1024, false);
 		// Thread-local cache for current seed alignments
-		
+
 		// Interfaces for alignment and seed caches
 		AlignmentCacheIface ca(
 			&scCurrent,
 			scLocal.get(),
 			msNoCache ? NULL : multiseed_ca);
-		
+
 		// Instantiate an object for holding reporting-related parameters.
 		ReportingParams rp(
 			(allHits ? std::numeric_limits<THitInt>::max() : khits), // -k
@@ -2932,15 +3053,15 @@ static void multiseedSearchWorker(void *vp) {
 			gReportMixed);     // report unpaired alignments for paired reads?
 
 		// Instantiate a mapping quality calculator
-		auto_ptr<Mapq> bmapq(new_mapq(mapqv, scoreMin, sc));
-		
+		unique_ptr<Mapq> bmapq(new_mapq(mapqv, scoreMin, sc));
+
 		// Make a per-thread wrapper for the global MHitSink object.
 		AlnSinkWrap msinkwrap(
 			msink,         // global sink
 			rp,            // reporting parameters
 			*bmapq,        // MAPQ calculator
 			(size_t)tid);  // thread id
-		
+
 		// Write dynamic-programming problem descriptions here
 		ofstream *dpLog = NULL, *dpLogOpp = NULL;
 		if(!logDps.empty()) {
@@ -2951,7 +3072,7 @@ static void multiseedSearchWorker(void *vp) {
 			dpLogOpp = new ofstream(logDpsOpp.c_str(), ofstream::out);
 			dpLogOpp->sync_with_stdio(false);
 		}
-		
+
 		SeedAligner al;
 		SwDriver sd(exactCacheCurrentMB * 1024 * 1024);
 		SwAligner sw(dpLog), osw(dpLogOpp);
@@ -2994,12 +3115,12 @@ static void multiseedSearchWorker(void *vp) {
 			gContainMatesOK,
 			gOlapMatesOK,
 			gExpandToFrag);
-		
+
 		PerfMetrics metricsPt; // per-thread metrics object; for read-level metrics
 		BTString nametmp;
 		EList<Seed> seeds1, seeds2;
 		EList<Seed> *seeds[2] = { &seeds1, &seeds2 };
-		
+
 		PerReadMetrics prm;
 
 		// Used by thread with threadid == 1 to measure time elapsed
@@ -3269,7 +3390,7 @@ static void multiseedSearchWorker(void *vp) {
 					// Whether we're done with mate1 / mate2
 					bool done[2] = { !filt[0], !filt[1] };
 					size_t nelt[2] = {0, 0};
-										
+
 						// Find end-to-end exact alignments for each read
 						if(doExactUpFront) {
 							for(size_t matei = 0; matei < (paired ? 2:1); matei++) {
@@ -3331,7 +3452,7 @@ static void multiseedSearchWorker(void *vp) {
 										!filt[mate ^ 1],// opposite mate filtered out?
 										shs[mate],      // seed hits for anchor
 										ebwtFw,         // bowtie index
-										&ebwtBw,        // rev bowtie index
+										ebwtBw,         // rev bowtie index
 										ref,            // packed reference strings
 										sw,             // dyn prog aligner, anchor
 										osw,            // dyn prog aligner, opposite
@@ -3381,7 +3502,7 @@ static void multiseedSearchWorker(void *vp) {
 										mate == 0,      // mate #1?
 										shs[mate],      // seed hits
 										ebwtFw,         // bowtie index
-										&ebwtBw,        // rev bowtie index
+										ebwtBw,         // rev bowtie index
 										ref,            // packed reference strings
 										sw,             // dynamic prog aligner
 										sc,             // scoring scheme
@@ -3473,7 +3594,7 @@ static void multiseedSearchWorker(void *vp) {
 									swmSeed.mm1atts++;
 									al.oneMmSearch(
 										&ebwtFw,        // BWT index
-										&ebwtBw,        // BWT' index
+										ebwtBw,         // BWT' index
 										*rds[mate],     // read
 										sc,             // scoring scheme
 										minsc[mate],    // minimum score
@@ -3513,7 +3634,7 @@ static void multiseedSearchWorker(void *vp) {
 										!filt[mate ^ 1],// opposite mate filtered out?
 										shs[mate],      // seed hits for anchor
 										ebwtFw,         // bowtie index
-										&ebwtBw,        // rev bowtie index
+										ebwtBw,         // rev bowtie index
 										ref,            // packed reference strings
 										sw,             // dyn prog aligner, anchor
 										osw,            // dyn prog aligner, opposite
@@ -3563,7 +3684,7 @@ static void multiseedSearchWorker(void *vp) {
 										mate == 0,      // mate #1?
 										shs[mate],      // seed hits
 										ebwtFw,         // bowtie index
-										&ebwtBw,        // rev bowtie index
+										ebwtBw,         // rev bowtie index
 										ref,            // packed reference strings
 										sw,             // dynamic prog aligner
 										sc,             // scoring scheme
@@ -3668,7 +3789,7 @@ static void multiseedSearchWorker(void *vp) {
 								if(interval[mate] <= (int)roundi) {
 									// Can't do this round, seeds already packed as
 									// tight as possible
-									continue; 
+									continue;
 								}
 								size_t offset = (interval[mate] * roundi) / nrounds[mate];
 								assert(roundi == 0 || offset > 0);
@@ -3718,7 +3839,7 @@ static void multiseedSearchWorker(void *vp) {
 								al.searchAllSeeds(
 									*seeds[mate],     // search seeds
 									&ebwtFw,          // BWT index
-									&ebwtBw,          // BWT' index
+									ebwtBw,           // BWT' index
 									*rds[mate],       // read
 									sc,               // scoring scheme
 									ca,               // alignment cache
@@ -3789,7 +3910,7 @@ static void multiseedSearchWorker(void *vp) {
 											!filt[mate ^ 1],// opposite mate filtered out?
 											shs[mate],      // seed hits for anchor
 											ebwtFw,         // bowtie index
-											&ebwtBw,        // rev bowtie index
+											ebwtBw,         // rev bowtie index
 											ref,            // packed reference strings
 											sw,             // dyn prog aligner, anchor
 											osw,            // dyn prog aligner, opposite
@@ -3839,7 +3960,7 @@ static void multiseedSearchWorker(void *vp) {
 											mate == 0,      // mate #1?
 											shs[mate],      // seed hits
 											ebwtFw,         // bowtie index
-											&ebwtBw,        // rev bowtie index
+											ebwtBw,         // rev bowtie index
 											ref,            // packed reference strings
 											sw,             // dynamic prog aligner
 											sc,             // scoring scheme
@@ -3898,7 +4019,7 @@ static void multiseedSearchWorker(void *vp) {
 									}
 								} // if(!seedSumm)
 							} // for(size_t matei = 0; matei < 2; matei++)
-							
+
 							// We don't necessarily have to continue investigating both
 							// mates.  We continue on a mate only if its average
 							// interval length is high (> 1000)
@@ -3991,10 +4112,10 @@ static void multiseedSearchWorker(void *vp) {
 			metricsPt.reset();
 		}
 	} // while(true)
-	
+
 	// One last metrics merge
 	MERGE_METRICS(metrics);
-	
+
 	if(dpLog    != NULL) dpLog->close();
 	if(dpLogOpp != NULL) dpLogOpp->close();
 
@@ -4007,7 +4128,7 @@ static void multiseedSearchWorker(void *vp) {
 #endif
 	}
 #ifdef WITH_TBB
-	p->done->fetch_and_add(1);
+	p->done->fetch_add(1);
 #endif
 
 	return;
@@ -4038,11 +4159,11 @@ static void multiseedSearchWorker_2p5(void *vp) {
 	// events of interest on a per-read, per-seed, per-join, or per-SW
 	// level.  These in turn can be used to diagnose performance
 	// problems, or generally characterize performance.
-	
+
 	ThreadCounter tc;
-	auto_ptr<PatternSourcePerThreadFactory> patsrcFact(createPatsrcFactory(patsrc, pp, tid));
-	auto_ptr<PatternSourcePerThread> ps(patsrcFact->create());
-	
+	unique_ptr<PatternSourcePerThreadFactory> patsrcFact(createPatsrcFactory(patsrc, pp, tid));
+	unique_ptr<PatternSourcePerThread> ps(patsrcFact->create());
+
 	// Instantiate an object for holding reporting-related parameters.
 	ReportingParams rp(
 		(allHits ? std::numeric_limits<THitInt>::max() : khits), // -k
@@ -4053,8 +4174,8 @@ static void multiseedSearchWorker_2p5(void *vp) {
 		gReportMixed);     // report unpaired alignments for paired reads?
 
 	// Instantiate a mapping quality calculator
-	auto_ptr<Mapq> bmapq(new_mapq(mapqv, scoreMin, sc));
-	
+	unique_ptr<Mapq> bmapq(new_mapq(mapqv, scoreMin, sc));
+
 	// Make a per-thread wrapper for the global MHitSink object.
 	AlnSinkWrap msinkwrap(
 		msink,         // global sink
@@ -4101,7 +4222,7 @@ static void multiseedSearchWorker_2p5(void *vp) {
 		gContainMatesOK,
 		gOlapMatesOK,
 		gExpandToFrag);
-	
+
 	AlignerDriver ald(
 		descConsExp,         // exponent for interpolating maximum penalty
 		descPrioritizeRoots, // whether to select roots with scores and weights
@@ -4110,10 +4231,10 @@ static void multiseedSearchWorker_2p5(void *vp) {
 		gVerbose,            // verbose?
 		descentTotSz,        // limit on total bytes of best-first search data
 		descentTotFmops);    // limit on total number of FM index ops in BFS
-	
+
 	PerfMetrics metricsPt; // per-thread metrics object; for read-level metrics
 	BTString nametmp;
-	
+
 	PerReadMetrics prm;
 
 	// Used by thread with threadid == 1 to measure time elapsed
@@ -4349,11 +4470,11 @@ static void multiseedSearchWorker_2p5(void *vp) {
 			metricsPt.reset();
 		}
 	} // while(true)
-	
+
 	// One last metrics merge
 	MERGE_METRICS(metrics);
 #ifdef WITH_TBB
-	p->done->fetch_and_add(1);
+	p->done->fetch_add(1);
 #endif
 
 	return;
@@ -4542,18 +4663,18 @@ static void multiseedSearch(
 	PatternComposer& patsrc,      // pattern source
 	AlnSink& msink,               // hit sink
 	Ebwt& ebwtFw,                 // index of original text
-	Ebwt& ebwtBw,                 // index of mirror text
+	Ebwt* ebwtBw,                 // index of mirror text
 	OutFileBuf *metricsOfb)
 {
 	multiseed_patsrc = &patsrc;
 	multiseed_pp = pp;
 	multiseed_msink  = &msink;
 	multiseed_ebwtFw = &ebwtFw;
-	multiseed_ebwtBw = &ebwtBw;
+	multiseed_ebwtBw = ebwtBw;
 	multiseed_sc     = &sc;
 	multiseed_metricsOfb      = metricsOfb;
 	Timer *_t = new Timer(cerr, "Time loading reference: ", timing);
-	auto_ptr<BitPairReference> refs(
+	unique_ptr<BitPairReference> refs(
 		new BitPairReference(
 			adjIdxBase,
 			false,
@@ -4601,9 +4722,9 @@ static void multiseedSearch(
 	}
 	if(multiseedMms > 0 || do1mmUpFront) {
 		// Load the other half of the index into memory
-		assert(!ebwtBw.isInMemory());
+		assert(!ebwtBw->isInMemory());
 		Timer _t(cerr, "Time loading mirror index: ", timing);
-		ebwtBw.loadIntoMemory(
+		ebwtBw->loadIntoMemory(
 			0, // colorspace?
 			// It's bidirectional search, so we need the reverse to be
 			// constructed as the reverse of the concatenated strings.
@@ -4615,9 +4736,9 @@ static void multiseedSearch(
 			startVerbose);
 	}
 	// Start the metrics thread
-	
+
 #ifdef WITH_TBB
-	tbb::atomic<int> all_threads_done;
+	std::atomic<int> all_threads_done;
 	all_threads_done = 0;
 #endif
 	{
@@ -4631,7 +4752,7 @@ static void multiseedSearch(
 			thread_counter = 0;
 		}
 #endif
-		
+
 		for(int i = 0; i < nthreads; i++) {
 			tids.push_back(i);
 #ifdef WITH_TBB
@@ -4661,7 +4782,7 @@ static void multiseedSearch(
 			thread_monitor(pid, orig_threads, tids, threads);
 		}
 #endif
-	
+
 #ifdef WITH_TBB
 		while(all_threads_done < nthreads) {
 			SLEEP(10);
@@ -4709,6 +4830,7 @@ static void driver(
 	}
 	PatternParams pp(
 		format,        // file format
+		interleaved,   // some or all of the reads are interleaved
 		fileParallel,  // true -> wrap files with separate PairedPatternSources
 		seed,          // pseudo-random seed
 		readsPerBatch, // # reads in a light parsing batch
@@ -4717,11 +4839,15 @@ static void driver(
 		integerQuals,  // true -> qualities are space-separated numbers
 		gTrim5,        // amt to hard clip from 5' end
 		gTrim3,        // amt to hard clip from 3' end
+		trimTo,        // trim reads exceeding given length from either 3' or 5'-end
 		fastaContLen,  // length of sampled reads for FastaContinuous...
 		fastaContFreq, // frequency of sampled reads for FastaContinuous...
 		skipReads,     // skip the first 'skip' patterns
+		qUpto,         // max number of queries to read
 		nthreads,      //number of threads for locking
-		outType != OUTPUT_SAM // whether to fix mate names
+		outType != OUTPUT_SAM, // whether to fix mate names
+		preserve_tags, // keep existing tags when aligning BAM files
+		align_paired_reads // Align only the paired reads in BAM file
 	);
 	if(gVerbose || startVerbose) {
 		cerr << "Creating PatternSource: "; logTime(cerr, true);
@@ -4734,6 +4860,9 @@ static void driver(
 		qualities,   // qualities associated with singles
 		qualities1,  // qualities associated with m1
 		qualities2,  // qualities associated with m2
+#ifdef USE_SRA
+		sra_accs,    // SRA accessions
+#endif
 		pp,          // read read-in parameters
 		gVerbose || startVerbose); // be talkative
 	// Open hit output file
@@ -4753,47 +4882,23 @@ static void driver(
 	adjIdxBase = adjustEbwtBase(argv0, bt2indexBase, gVerbose);
 	Ebwt ebwt(
 		adjIdxBase,
-	    0,        // index is colorspace
+		0,        // index is colorspace
 		-1,       // fw index
-	    true,     // index is for the forward direction
-	    /* overriding: */ offRate,
+		true,     // index is for the forward direction
+		/* overriding: */ offRate,
 		0, // amount to add to index offrate or <= 0 to do nothing
-	    useMm,    // whether to use memory-mapped files
-	    useShmem, // whether to use shared memory
-	    mmSweep,  // sweep memory-mapped files
-	    !noRefNames, // load names?
+		useMm,    // whether to use memory-mapped files
+		useShmem, // whether to use shared memory
+		mmSweep,  // sweep memory-mapped files
+		!noRefNames, // load names?
 		true,        // load SA sample?
 		true,        // load ftab?
 		true,        // load rstarts?
-	    gVerbose, // whether to be talkative
-	    startVerbose, // talkative during initialization
-	    false /*passMemExc*/,
-	    sanityCheck);
-	Ebwt* ebwtBw = NULL;
-	// We need the mirror index if mismatches are allowed
-	if(multiseedMms > 0 || do1mmUpFront) {
-		if(gVerbose || startVerbose) {
-			cerr << "About to initialize rev Ebwt: "; logTime(cerr, true);
-		}
-		ebwtBw = new Ebwt(
-			adjIdxBase + ".rev",
-			0,       // index is colorspace
-			1,       // TODO: maybe not
-		    false, // index is for the reverse direction
-		    /* overriding: */ offRate,
-			0, // amount to add to index offrate or <= 0 to do nothing
-		    useMm,    // whether to use memory-mapped files
-		    useShmem, // whether to use shared memory
-		    mmSweep,  // sweep memory-mapped files
-		    !noRefNames, // load names?
-			true,        // load SA sample?
-			true,        // load ftab?
-			true,        // load rstarts?
-		    gVerbose,    // whether to be talkative
-		    startVerbose, // talkative during initialization
-		    false /*passMemExc*/,
-		    sanityCheck);
-	}
+		gVerbose, // whether to be talkative
+		startVerbose, // talkative during initialization
+		false /*passMemExc*/,
+		sanityCheck);
+
 	if(sanityCheck && !os.empty()) {
 		// Sanity check number of patterns and pattern lengths in Ebwt
 		// against original strings
@@ -4820,11 +4925,11 @@ static void driver(
 		reorder && (nthreads > 1 || thread_stealing), // whether to reorder
 		nthreads,                        // # threads
 		nthreads > 1 || thread_stealing, // whether to be thread-safe
-		readsPerBatch,                   // size of output buffer of reads 
+		readsPerBatch,                   // size of output buffer of reads
 		skipReads);                      // first read will have this rdid
 	{
 		Timer _t(cerr, "Time searching: ", timing);
-		// Set up penalities
+		// Set up pexnalities
 		if(bonusMatch > 0 && !localAlign) {
 			cerr << "Warning: Match bonus always = 0 in --end-to-end mode; ignoring user setting" << endl;
 			bonusMatch = 0;
@@ -4931,21 +5036,55 @@ static void driver(
 		// Do the search for all input reads
 		assert(patsrc != NULL);
 		assert(mssink != NULL);
-		multiseedSearch(
-			sc,      // scoring scheme
-			pp,      // pattern params
-			*patsrc, // pattern source
-			*mssink, // hit sink
-			ebwt,    // BWT
-			*ebwtBw, // BWT'
-			metricsOfb);
+                if(multiseedMms > 0 || do1mmUpFront) {
+			if(gVerbose || startVerbose) {
+				cerr << "About to initialize rev Ebwt: "; logTime(cerr, true);
+			}
+
+			// We need the mirror index if mismatches are allowed
+			Ebwt ebwtBw = Ebwt(
+				adjIdxBase + ".rev",
+				0,       // index is colorspace
+				1,       // TODO: maybe not
+				false, // index is for the reverse direction
+				/* overriding: */ offRate,
+				0, // amount to add to index offrate or <= 0 to do nothing
+				useMm,    // whether to use memory-mapped files
+				useShmem, // whether to use shared memory
+				mmSweep,  // sweep memory-mapped files
+				!noRefNames, // load names?
+				true,        // load SA sample?
+				true,        // load ftab?
+				true,        // load rstarts?
+				gVerbose,    // whether to be talkative
+				startVerbose, // talkative during initialization
+				false /*passMemExc*/,
+				sanityCheck);
+
+			multiseedSearch(
+				sc,      // scoring scheme
+				pp,      // pattern params
+				*patsrc, // pattern source
+				*mssink, // hit sink
+				ebwt,    // BWT
+				&ebwtBw, // BWT'
+				metricsOfb);
+                } else {
+			multiseedSearch(
+				sc,      // scoring scheme
+				pp,      // pattern params
+				*patsrc, // pattern source
+				*mssink, // hit sink
+				ebwt,    // BWT
+				NULL,    // BWT'
+				metricsOfb);
+		}
+
 		// Evict any loaded indexes from memory
 		if(ebwt.isInMemory()) {
 			ebwt.evictFromMemory();
 		}
-		if(ebwtBw != NULL) {
-			delete ebwtBw;
-		}
+
 		if(!gQuiet && !seedSumm) {
 			size_t repThresh = mhits;
 			if(repThresh == 0) {
@@ -5029,7 +5168,7 @@ int bowtie(int argc, const char **argv) {
 				printUsage(cerr);
 				return 1;
 			}
-			
+
 #ifndef _WIN32
 			thread_stealing = thread_ceiling > nthreads;
 #endif
@@ -5041,11 +5180,18 @@ int bowtie(int argc, const char **argv) {
 
 			// Get query filename
 			bool got_reads = !queries.empty() || !mates1.empty() || !mates12.empty();
+#ifdef USE_SRA
+			got_reads = got_reads || !sra_accs.empty();
+#endif
 			if(optind >= argc) {
 				if(!got_reads) {
 					printUsage(cerr);
 					cerr << "***" << endl
+#ifdef USE_SRA
+					     << "Error: Must specify at least one read input with -U/-1/-2/--sra-acc" << endl;
+#else
 					     << "Error: Must specify at least one read input with -U/-1/-2" << endl;
+#endif
 					return 1;
 				}
 			} else if(!got_reads) {

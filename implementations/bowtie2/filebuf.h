@@ -87,6 +87,11 @@ public:
 		assert(_ins != NULL);
 	}
 
+
+	~FileBuf() {
+		close();
+	}
+
 	/**
 	 * Return true iff there is a stream ready to read.
 	 */
@@ -682,7 +687,10 @@ public:
 		if(cur_ + len > BUF_SZ) {
 			if(cur_ > 0) flush();
 			if(len >= BUF_SZ) {
-				fwrite(s, len, 1, out_);
+				if (fwrite(s, len, 1, out_) != 1) {
+					std::cerr << "Error outputting data" << std::endl;
+					throw 1;
+				}
 			} else {
 				memcpy(&buf_[cur_], s, len);
 				assert_eq(0, cur_);
