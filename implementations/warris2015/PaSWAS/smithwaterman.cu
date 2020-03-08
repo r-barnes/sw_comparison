@@ -92,7 +92,7 @@ void calculateScoreHost(GlobalMatrix *d_matrix, char *d_sequences, char *d_targe
 		//printf("%d, %d, %d\n", x,y,numberOfBlocks);
 
 		calculateScore<<<dimGridSW, dimBlock>>>(d_matrix, x, y, numberOfBlocks,  d_sequences, d_targets, d_globalMaxima, d_globalDirection);
-		cudaThreadSynchronize();
+		cudaDeviceSynchronize();
 		if (x == XdivSHARED_X - 1)
 			++y;
 		if (x < XdivSHARED_X - 1)
@@ -307,7 +307,7 @@ void tracebackHost(GlobalMatrix *d_matrix, GlobalMaxima *d_globalMaxima, GlobalD
 		dim3 dimGridSW(NUMBER_SEQUENCES,NUMBER_TARGETS*numberOfBlocks , 1);
 //		printf("%d, %d, %d\n", x,y,numberOfBlocks);
 		traceback<<<dimGridSW, dimBlock>>>(d_matrix, x, y, numberOfBlocks, d_globalMaxima, d_globalDirection, d_globalDirectionZeroCopy, d_indexIncrement, d_startingPoints, d_maxPossibleScore, inBlock);
-		cudaThreadSynchronize();
+		cudaDeviceSynchronize();
 		if (y == 0)
 			--x;
 		if (y > 0)
