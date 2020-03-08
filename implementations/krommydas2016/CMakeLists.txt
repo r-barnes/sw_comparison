@@ -17,3 +17,4 @@ add_executable(open_dwarves
 )
 target_include_directories(open_dwarves PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(open_dwarves PRIVATE OpenCL::OpenCL)
+target_compile_definitions(open_dwarves PRIVATE ENABLE_TIMER)
