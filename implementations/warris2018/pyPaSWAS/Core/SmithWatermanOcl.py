@@ -270,7 +270,7 @@ class SmithWatermanOcl(SmithWaterman):
     def _init_zero_copy(self):
         ''' Initializes the index used for the 'zero copy' of the found starting points '''
         index = numpy.zeros((1), dtype=numpy.int32)
-        cl.enqueue_write_buffer(self.queue, self.d_index_increment, index)
+        cl.enqueue_copy(self.queue, self.d_index_increment, index)
 
     def _compile_code(self):
         """Compile the device code with current settings"""
@@ -327,6 +327,8 @@ class SmithWatermanOcl(SmithWaterman):
         Get the resulting starting points
         @return gives the resulting starting point array as byte array
         '''
+        if self.h_starting_points_zero_copy is not None and len(self.h_starting_points_zero_copy) > 0 :
+            self.h_starting_points_zero_copy.base.release()
         self.h_starting_points_zero_copy = cl.enqueue_map_buffer(self.queue, self.d_starting_points_zero_copy, cl.map_flags.READ, 0, 
                                                                  (self.size_of_startingpoint * 
                                                                   number_of_starting_points, 1), dtype=numpy.byte)[0]
