@@ -1,0 +1,93 @@
+//---------------------------------------------------------
+// predecessor encoding/decoding 
+//---------------------------------------------------------
+// TODO maybe use an enum in the future
+type Predecessor = i8;
+
+static PRED_NONE   = 0 as Predecessor;
+static PRED_GAP_Q  = 1 as Predecessor;
+static PRED_GAP_S  = 2 as Predecessor;
+static PRED_NO_GAP = 3 as Predecessor;
+
+
+// ----------------------------------------------------------------------------
+struct Predecessors {
+    iter_view: fn(Index, Index, Index, Index, IterContext) -> PredecessorsView,
+    matrix:    fn() -> Matrix8,
+    release:   fn() -> ()
+}
+
+struct PredecessorsView {
+    write: fn(Index, Index, Predecessor) -> ()
+}
+
+
+// ----------------------------------------------------------------------------
+fn no_predecessors() -> Predecessors {
+
+    let offset_view = |offset_i: Index, offset_j: Index, 
+                       height: Index, width: Index, it: IterContext| 
+        {
+            PredecessorsView {
+                write: |_, _, _| {}
+            }
+        };
+
+    Predecessors {
+        iter_view:  offset_view,
+        matrix:     || create_matrix8(0, 0, 0, 0, alloc_cpu),
+        release:    || {}
+    }
+}
+
+
+// ----------------------------------------------------------------------------
+fn predecessors_blockwise(height: Index, 
+                          num_blocks: Index, block_width: Index, 
+                          scheme: AlignmentScheme) -> Predecessors
+{
+    let predc_height = height + num_blocks - 1;
+    let predc = create_matrix8(predc_height, block_width, 0, 0, alloc_device);
+
+    Predecessors{
+        iter_view:  traceback_view(block_width, predc, scheme),
+        matrix:     || matrix8_cpu(predc),
+        release:    || release(predc.buf)
+    }
+}
+
+
+// ----------------------------------------------------------------------------
+fn predecessors_full(height: Index, width: Index, scheme: AlignmentScheme) 
+    -> Predecessors 
+{
+    let matrix = create_matrix8(height, width, padding_h(), padding_w(), alloc_device);
+    
+    // initialize matrix
+    for i, m in iteration_matrix8_1d(matrix, matrix.height + 1){ 
+        m.write(i-1,  -1, scheme.init_predc_rows(i-1)); 
+    }
+
+    for i, m in iteration_matrix8_1d(matrix, matrix.width){ 
+        m.write( -1, i, scheme.init_predc_cols(i)); 
+    }
+
+    let iter_view = |offset_i, offset_j, _, _, it| {
+
+        let mat = view_matrix8_offset(matrix, 
+                                      read_matrix8(matrix), 
+                                      write_matrix8(matrix), 
+                                      offset_i, offset_j);
+
+        PredecessorsView {
+            write: |i, j, val| mat.write(i, j, val)
+        }
+    };
+
+    Predecessors {
+        iter_view:  iter_view,
+        matrix:     || matrix8_cpu(matrix),
+        release:    || release(matrix.buf)
+    }
+}
+

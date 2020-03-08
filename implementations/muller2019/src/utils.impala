@@ -1,0 +1,36 @@
+//-----------------------------------------------------------------------------
+fn reduce_max(vector: Vector, offset: Index, length: Index) -> (Score32, Score32)
+{
+    let index_vec = create_vector(1, 0, alloc_cpu);
+    let score_vec = create_vector(1, 0, alloc_cpu);
+
+    let idx = view_vector_cpu(index_vec);
+    let sco = view_vector_cpu(score_vec);
+
+    for a, b in iteration_reduction(vector, index_vec, score_vec, offset, length){
+        a > b
+    }
+
+    let score = sco.read(0);
+    let index = idx.read(0);
+    
+    release(index_vec.buf);
+    release(score_vec.buf);
+
+    (score, index)
+}
+
+
+//-----------------------------------------------------------------------------
+fn sort_i64(num: i32, arr: &mut[i64]) -> () {
+    // insertion sort
+    for i in range(1, num) {
+        let x = arr(i);
+        let mut j = i;
+        while j > 0 && arr(j-1) > x {
+            arr(j) = arr(j-1);
+            j = j - 1;
+        }
+        arr(j) = x;
+    }
+}
