@@ -1,0 +1,8 @@
+#ifndef INT_SUBMAT_H_INCLUDED
+#define INT_SUBMAT_H_INCLUDED
+
+#define SUBMAT_ROWS 24
+#define SUBMAT_COLS 32
+#define SUBMAT_ELEMS 768
+
+#endif
