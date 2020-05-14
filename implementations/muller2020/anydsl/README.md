@@ -1,6 +1,25 @@
 # AnyDSL
 Meta project to quickly build dependencies
 
+## Building on Linux
+
+Note: You must build LLVM from source to get AVX vectorization
+
+Install prerequisites:
+
+    sudo apt install git-svn llvm-8-dev
+
+Switch to the `cmake-based-setup` branch:
+
+    git checkout cmake-based-setup
+
+Prepare the build:
+
+    mkdir build
+    cd build
+    cmake -DCMAKE_BUILD_TYPE=Release -GNinja ..
+    ninja
+
 ## Building
 
 ```bash
