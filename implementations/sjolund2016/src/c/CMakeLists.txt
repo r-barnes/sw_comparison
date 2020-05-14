@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.9)
 
+list(APPEND CMAKE_MODULE_PATH "/usr/share/cmake/Modules/")
+
 find_package(TBB REQUIRED)
 
 include_directories(${TBB_INCLUDE_DIRS})
