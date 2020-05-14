@@ -4,14 +4,6 @@ project(gasal2 LANGUAGES CUDA CXX)
 
 find_package(OpenMP REQUIRED)
 
-if(NOT DEFINED MAX_QUERY_LEN)
-    message(FATAL_ERROR "You must set MAX_QUERY_LEN variable!")
-endif()
-
-if(NOT DEFINED N_CODE)
-    message(FATAL_ERROR "You must set the code for `N` with the N_CODE variable!")
-endif()
-
 add_library(gasal2
   src/args_parser.cpp
   src/host_batch.cpp
@@ -20,6 +12,12 @@ add_library(gasal2
   src/res.cpp
   src/gasal_align.cu 
 )
+
+set(MAX_QUERY_LEN "1024" CACHE STRING "Maximum query length")
+set(N_CODE "0x4E" CACHE STRING "Code for non-based value N")
+
+message(STATUS "ahmed2019: MAX_QUERY_LEN=${MAX_QUERY_LEN}")
+message(STATUS "ahmed2019: N_CODE=${N_CODE}")
 
 add_compile_definitions(MAX_QUERY_LEN=${MAX_QUERY_LEN})
 add_compile_definitions(N_CODE=${N_CODE})
